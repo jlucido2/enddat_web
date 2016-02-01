@@ -131,10 +131,9 @@ http://\<URL to Application\>/enddat-services/model/*
 ## External Web Services
 These are services external to enddat_web and enddat-services that are called to get data about a project area, as well as, data for the selected project.  These services are listed under the “proxy url” label within the “enddat_web Web Services” section.  
 
-Additionally, this service is called to get map tiles.  
-http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/?/?/?  
+Additionally, ArcGIS is called to get map tiles.  
 example  
 http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/3/3/1
 
 ## User Documentation
-\http://cida.usgs.gov/enddat/UserGuide.jsp
+http://cida.usgs.gov/enddat/UserGuide.jsp

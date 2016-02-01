@@ -137,4 +137,4 @@ example
 http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/3/3/1
 
 ## User Documentation
-http://cida.usgs.gov/enddat/UserGuide.jsp
+\http://cida.usgs.gov/enddat/UserGuide.jsp

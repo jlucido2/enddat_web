@@ -24,7 +24,7 @@ The project requires the following JNDI variables in the context.xml. Example va
 * Set bounding box for the project that indicates area used to discover data.
 * Choose data sources to discover data for the bounding area.
 * Upload a shapefile for radar-indicated rain data (optional).
-* Choose data sources to retrieve available data for bounding area..
+* Choose data sources to retrieve available data for bounding area.
 * Set time range and filter options for data to be retrieved.
 * Determine beach orientation (optional).
 * Select data to download and set transformation options.
@@ -46,7 +46,7 @@ http://\<URL to Application\>/uv
 http://\<URL to Application\>/precip15
 * use:  To get 15 minute precip data from radar indicated rain models
 * proxy url:  http://gis.ncdc.noaa.gov/webservices/cdo/precip15/MapServer/WFSServer
-*example: 
+* example: 
 
 http://\<URL to Application\>/precipHR
 * use:  To get hourly precipitation from radar

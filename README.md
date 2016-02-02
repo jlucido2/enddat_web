@@ -14,9 +14,9 @@ This will produce a .war file in the `target` directory. You can deploy this war
 
 The project requires the following JNDI variables in the context.xml. Example values are given.
 ```
-<Resource auth="Container" driverClassName="oracle.jdbc.OracleDriver" logAbandoned="true" maxActive="20" maxIdle="10" maxWait="10" name="jdbc/enddat" password="get_the_password" removeAbandoned="true" removeAbandonedTimeout="60" type="javax.sql.DataSource" url="jdbc:oracle:thin:@cida-eros-dbdev.er.usgs.gov:1521:devtrans" username="get_the_username" validationQuery="select * from dual"/> 
-
-<Environment name="enddat.gdp-process-url" type="java.lang.String" value="http://cida-eros-enddatgeodev.er.usgs.gov:8080/gdp-process-wps/" override="true"/> 
+<Environment name="enddat.gdp-process-url" type="java.lang.String" value="http://vm_name:8080/gdp-process-wps/" override="true"/> 
+<Environment name="enddat.service-url" type="java.lang.String" value="http://vm_name:8080/enddat-services/" override="true"/> 
+<Environment name="enddat.geoserver-url" type="java.lang.String" value="http://vm_name:8080/beaches-geoserver/" override="true"/> 
 ```
 
 ## Use Cases  
@@ -136,4 +136,4 @@ example
 http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/3/3/1
 
 ## User Documentation
-http://cida.usgs.gov/enddat/UserGuide.jsp
+ToDo

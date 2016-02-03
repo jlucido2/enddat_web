@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+    <display-name>enddat_web</display-name>
+    
+	<filter>
+		<filter-name>sanitizeInputsFilter</filter-name>
+		<filter-class>gov.usgs.cida.SanitizeInputsFilter</filter-class>
+	</filter>
+	
+	<filter-mapping>
+		<filter-name>sanitizeInputsFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+    
+    <filter>
+		<filter-name>RoutingFixFilter</filter-name>
+		<filter-class>gov.usgs.cida.tomcatfilters.RequestFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>RoutingFixFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<security-constraint>
+		<display-name>excluded</display-name>
+		<web-resource-collection>
+			<web-resource-name>noaccess</web-resource-name>
+			<url-pattern>/geo/web</url-pattern>
+			<http-method>DELETE</http-method>
+			<http-method>PUT</http-method>
+			<http-method>HEAD</http-method>
+			<http-method>OPTIONS</http-method>
+			<http-method>TRACE</http-method>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+		</web-resource-collection>
+		<auth-constraint />
+		<user-data-constraint>
+			<transport-guarantee>NONE</transport-guarantee>
+		</user-data-constraint>
+	</security-constraint>	
+	
+	<servlet>
+		<servlet-name>EnddatServiceServlet</servlet-name>
+		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
+		<init-param>
+			<param-name>forward-url-param</param-name>
+			<param-value>enddat.service-url</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forward-url</param-name>
+			<param-value>http://localhost:8080/enddat-services/</param-value>
+		</init-param>
+		<init-param>
+			<param-name>readTimeout</param-name>
+			<param-value>300000</param-value>
+		</init-param>
+		<init-param>
+			<param-name>connectTimeout</param-name>
+			<param-value>300000</param-value>
+		</init-param>
+	</servlet>
+    
+	<servlet-mapping>
+		<servlet-name>EnddatServiceServlet</servlet-name>
+		<url-pattern>/service/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>UVServlet</servlet-name>
+		<servlet-class>gov.usgs.cida.proxy.AuthIgnoringProxyServlet</servlet-class>
+		<init-param>
+			<param-name>forward-url</param-name>
+			<param-value>http://webvastage6.er.usgs.gov/ogc-swie/uv/sos</param-value>
+		</init-param>
+		<init-param>
+			<param-name>readTimeout</param-name>
+			<param-value>300000</param-value>
+		</init-param>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>UVServlet</servlet-name>
+		<url-pattern>/uv</url-pattern>
+	</servlet-mapping>
+  
+	<servlet>
+		<servlet-name>Precip15DataServlet</servlet-name>
+		<servlet-class>gov.usgs.cida.proxy.AuthIgnoringProxyServlet</servlet-class>
+		<init-param>
+			<param-name>forward-url</param-name>
+			<param-value>http://gis.ncdc.noaa.gov/webservices/cdo/precip15/MapServer/WFSServer</param-value>
+		</init-param>
+		<init-param>
+			<param-name>readTimeout</param-name>
+			<param-value>300000</param-value>
+		</init-param>
+	</servlet>
+    
+	<servlet-mapping>
+		<servlet-name>Precip15DataServlet</servlet-name>
+		<url-pattern>/precip15</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>PrecipHRDataServlet</servlet-name>
+		<servlet-class>gov.usgs.cida.proxy.AuthIgnoringProxyServlet</servlet-class>
+		<init-param>
+			<param-name>forward-url</param-name>
+			<param-value>http://gis.ncdc.noaa.gov/webservices/cdo/preciphr/MapServer/WFSServer</param-value>
+		</init-param>
+		<init-param>
+			<param-name>readTimeout</param-name>
+			<param-value>300000</param-value>
+		</init-param>
+	</servlet>
+    
+	<servlet-mapping>
+		<servlet-name>PrecipHRDataServlet</servlet-name>
+		<url-pattern>/precipHR</url-pattern>
+	</servlet-mapping>
+   
+	<servlet>
+		<servlet-name>DebugProxyServlet</servlet-name>
+		<servlet-class>gov.usgs.cida.proxy.PathPreservingProxyServlet</servlet-class>
+		<init-param>
+			<param-name>forward-url</param-name>
+			<param-value>http://internal.cida.usgs.gov/glri/glos_portal_dev/debug/</param-value>
+		</init-param>
+		<init-param>
+			<param-name>readTimeout</param-name>
+			<param-value>300000</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DebugProxyServlet</servlet-name>
+		<url-pattern>/debug/proxy/*</url-pattern>
+	</servlet-mapping>
+   
+	<servlet>
+		<servlet-name>GDPServlet</servlet-name>
+		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
+		<init-param>
+			<param-name>forward-url-param</param-name>
+			<param-value>enddat.gdp-process-url</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forward-url</param-name>
+			<param-value>http://cida.usgs.gov/gdp/process/</param-value>
+		</init-param>
+		<init-param>
+			<param-name>readTimeout</param-name>
+			<param-value>300000</param-value>
+		</init-param>
+	</servlet>
+    
+	<servlet-mapping>
+		<servlet-name>GDPServlet</servlet-name>
+		<url-pattern>/gdp/*</url-pattern>
+	</servlet-mapping>
+    
+	<servlet>
+		<servlet-name>DVServlet</servlet-name>
+		<servlet-class>gov.usgs.cida.proxy.AuthIgnoringProxyServlet</servlet-class>
+		<init-param>
+			<param-name>forward-url</param-name>
+			<param-value>http://webvastage6.er.usgs.gov/ogc-swie/dv/sos</param-value>
+		</init-param>
+		<init-param>
+			<param-name>readTimeout</param-name>
+			<param-value>300000</param-value>
+		</init-param>
+	</servlet>
+        
+	<servlet-mapping>
+		<servlet-name>DVServlet</servlet-name>
+		<url-pattern>/dv</url-pattern>
+	</servlet-mapping>
+    
+	<servlet>
+		<servlet-name>NWISSiteServlet</servlet-name>
+		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
+		<init-param>
+			<param-name>forward-url</param-name>
+			<param-value>http://waterservices.usgs.gov/nwis/site/</param-value>
+		</init-param>
+		<init-param>
+			<param-name>readTimeout</param-name>
+			<param-value>300000</param-value>
+		</init-param>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>NWISSiteServlet</servlet-name>
+		<url-pattern>/waterService/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>PMCodesServlet</servlet-name>
+		<servlet-class>gov.usgs.cida.proxy.AuthIgnoringProxyServlet</servlet-class>
+		<init-param>
+			<param-name>forward-url</param-name>
+			<param-value>http://nwis.waterdata.usgs.gov/nwis/pmcodes/pmcodes</param-value>
+		</init-param>
+		<init-param>
+			<param-name>readTimeout</param-name>
+			<param-value>300000</param-value>
+		</init-param>
+	</servlet>
+     
+	<servlet-mapping>
+		<servlet-name>PMCodesServlet</servlet-name>
+		<url-pattern>/pmcodes</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>STCodesServlet</servlet-name>
+		<servlet-class>gov.usgs.cida.proxy.AuthIgnoringProxyServlet</servlet-class>
+		<init-param>
+			<param-name>forward-url</param-name>
+			<!--<param-value>http://nwis.waterdata.usgs.gov/nwis/help/</param-value>-->
+			<param-value>http://help.waterdata.usgs.gov/code/stat_code_query?fmt=rdb</param-value>
+		</init-param>
+		<init-param>
+			<param-name>readTimeout</param-name>
+			<param-value>300000</param-value>
+		</init-param>
+	</servlet>
+     
+	<servlet-mapping>
+		<servlet-name>STCodesServlet</servlet-name>
+		<url-pattern>/stcodes</url-pattern>
+	</servlet-mapping>
+    
+	<servlet>
+		<servlet-name>BouyServlet</servlet-name>
+		<servlet-class>gov.usgs.cida.proxy.AuthIgnoringProxyServlet</servlet-class>
+		<init-param>
+			<param-name>forward-url</param-name>
+			<param-value>http://sdf.ndbc.noaa.gov/sos/server.php</param-value>
+		</init-param>
+		<init-param>
+			<param-name>readTimeout</param-name>
+			<param-value>300000</param-value>
+		</init-param>
+	</servlet>
+        
+	<servlet-mapping>
+		<servlet-name>BouyServlet</servlet-name>
+		<url-pattern>/bouy</url-pattern>
+	</servlet-mapping>
+     
+	<servlet>
+		<servlet-name>QWServlet</servlet-name>
+		<servlet-class>gov.usgs.cida.proxy.PathPreservingProxyServlet</servlet-class>
+		<init-param>
+			<param-name>forward-url</param-name>
+			<param-value>http://www.waterqualitydata.us/</param-value>
+		</init-param>
+		<init-param>
+			<param-name>readTimeout</param-name>
+			<param-value>300000</param-value>
+		</init-param>
+	</servlet>
+    
+	<servlet-mapping>
+		<servlet-name>QWServlet</servlet-name>
+		<url-pattern>/qw/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>OPeNDAPServlet</servlet-name>
+		<servlet-class>gov.usgs.cida.proxy.PathPreservingProxyServlet</servlet-class>
+		<init-param>
+			<param-name>forward-url</param-name>
+			<param-value>http://tds.glos.us/thredds/dodsC/glos/glcfs/</param-value>
+		</init-param>
+		<init-param>
+			<param-name>readTimeout</param-name>
+			<param-value>300000</param-value>
+		</init-param>
+	</servlet>
+    
+	<servlet-mapping>
+		<servlet-name>OPeNDAPServlet</servlet-name>
+		<url-pattern>/OPeNDAP/*</url-pattern>
+	</servlet-mapping>
+    
+	<servlet>
+		<servlet-name>InternalOPeNDAPServlet</servlet-name>
+		<servlet-class>gov.usgs.cida.proxy.PathPreservingProxyServlet</servlet-class>
+		<init-param>
+			<param-name>forward-url</param-name>
+			<!--<param-value>http://cida.usgs.gov/thredds/dodsC/qpe/</param-value>-->
+			<param-value>http://cida.usgs.gov/thredds/</param-value>
+			<!--<param-value>http://motherlode.ucar.edu:8081/thredds/dodsC/grib/NPVU/RFC/KMSR-North-Central-RFC/collection</param-value>-->
+		</init-param>
+		<init-param>
+			<param-name>readTimeout</param-name>
+			<param-value>300000</param-value>
+		</init-param>
+	</servlet>
+    
+	<servlet-mapping>
+		<servlet-name>InternalOPeNDAPServlet</servlet-name>
+		<url-pattern>/radar/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>GeoServerServlet</servlet-name>
+		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
+		<init-param>
+			<param-name>forward-url-param</param-name>
+			<param-value>enddat.geoserver-url</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forward-url</param-name>
+			<param-value>http://localhost:8080/beaches-geoserver/</param-value>
+		</init-param>
+		<init-param>
+			<param-name>readTimeout</param-name>
+			<param-value>300000</param-value>
+		</init-param>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>GeoServerServlet</servlet-name>
+		<url-pattern>/geo/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>GeoServerUploadServlet</servlet-name>
+		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
+		<init-param>
+			<param-name>forward-url-param</param-name>
+			<param-value>enddat.geoserver-url</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forward-url</param-name>
+			<param-value>http://localhost:8080/beaches-geoserver/</param-value>
+		</init-param>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>GeoServerUploadServlet</servlet-name>
+		<url-pattern>/geoupload/*</url-pattern>
+	</servlet-mapping>
+	
+    <servlet>
+        <servlet-name>DateService</servlet-name>
+        <servlet-class>gov.usgs.cida.dates.DateService</servlet-class>
+        <init-param>
+            <param-name>jndi_name</param-name>
+            <param-value>java:comp/env/jdbc/enddat</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DateService</servlet-name>
+        <url-pattern>/a/service/date/*</url-pattern>
+    </servlet-mapping>
+
+    <error-page>
+    	<error-code>500</error-code>
+    	<location>/error.html</location>
+    </error-page>
+    
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+</web-app>

@@ -12,7 +12,7 @@ mvn clean package
 ```
 This will produce a .war file in the `target` directory. You can deploy this war file to tomcat like any other war.
 
-The project requires the following JNDI variables in the context.xml. Example values are given.
+The project optionally uses the following JNDI variables in the context.xml. Example values are given.
 ```
 <Environment name="enddat.gdp-process-url" type="java.lang.String" value="http://vm_name:8080/gdp-process-wps/" override="true"/> 
 <Environment name="enddat.service-url" type="java.lang.String" value="http://vm_name:8080/enddat-services/" override="true"/> 
@@ -31,7 +31,7 @@ The project requires the following JNDI variables in the context.xml. Example va
 * Download data directly with URL saved from previous inquiry (optional).
 
 ## enddat_web Web Services  
-These services are part of enddat_web project and are called by the Javascript client.  These services are all proxy services except for the Date Service.
+These services are part of enddat_web and are called by the Javascript client.  These services are all proxy services except for the Date Service.
 
 http://\<URL to Application\>/service/*  
 * use:  To get the data after the project and data sources are selected and transformations are specified.  This makes a call to the loosely coupled enddat-services, which parses the parameters and builds another service call(s) to an external service provider(s). 
@@ -118,7 +118,7 @@ http://\<URL to Application\>/a/service/data/*
 * example: 
 
 ## enddat-services Web Services
-These services are part of the enddat-services project and loosely coupled with enddat_web.   
+These services are part of the enddat-services project and loosely coupled with the enddat_web project.   
 
 http://\<URL to Application\>/enddat-services/execute/*
 
@@ -129,7 +129,7 @@ http://\<URL to Application\>/enddat-services/retrieve/*
 http://\<URL to Application\>/enddat-services/model/*
 
 ## External Web Services
-These are services external to enddat_web and enddat-services that are called to get data about a project area, as well as, data for the selected project.  These services are listed under the “proxy url” label within the “enddat_web Web Services” section.  
+These are services external to enddat_web and enddat-services that are called to get data about an ENDDaT project area, as well as, data for the selected project.  These services are listed under the “proxy url” label within the “enddat_web Web Services” section.  
 
 Additionally, ArcGIS is called to get map tiles.  
 example  

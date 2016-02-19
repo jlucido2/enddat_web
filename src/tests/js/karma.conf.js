@@ -15,7 +15,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-        'src/tests/js/test-main.js',     
+        'src/tests/js/test-main.js',
       {pattern: 'src/main/webapp/js/bower_components/Squire.js/src/Squire.js', included: false},
       {pattern: 'src/main/webapp/js/bower_components/sinon/lib/sinon.js', included: false},
       {pattern: 'src/main/webapp/js/bower_components/jquery/dist/jquery.js', included: false},
@@ -51,7 +51,7 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
+    reporters: ['dots,coverage'],
 
 
     coverageReporter: {
@@ -81,12 +81,12 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: [],
+    browsers: ['Firefox'],
 
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
-    singleRun: false,
+    singleRun: true,
 
     // Concurrency level
     // how many browser should be started simultaneous

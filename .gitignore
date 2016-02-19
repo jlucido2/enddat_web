@@ -10,7 +10,7 @@ hs_err_pid*
 /target/
 /src/main/webapp/META-INF/
 /src/main/webapp/META-INF/context.xml
-/src/main/webapp/css/custom.css
+/src/main/webapp/css/
 /src/main/webapp/less/webjars/
 /src/main/webapp/js/bower_components/
 

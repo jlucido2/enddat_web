@@ -39,8 +39,6 @@
 			<jsp:param name="expires" value="never" />
 			<jsp:param name="development" value="false" />
 		</jsp:include>
-		<link rel="stylesheet" type="text/css" href="css/nude.css">
-		<link rel="stylesheet" type="text/css" href="http://www.usgs.gov/frameworkfiles/styles/framework.css">
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/js/bower_components/bootstrap/dist/css/bootstrap<%= debug ? ".css" : ".min.css"%>" />
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/js/bower_components/font-awesome/css/font-awesome<%= debug ? ".css" : ".min.css"%>" />
 	</head>

@@ -23,9 +23,4 @@
             </dl>
         </td>
     </tr>
-    <tr>
-        <td>
-            <a href="http://cida.usgs.gov/" title="CIDA Homepage. Opens in new window" target="_blank"><img src="img/CIDA_Logo.png" title="CIDA Logo" alt="CIDA Logo"></a>
-        </td>
-    </tr>
 </table>

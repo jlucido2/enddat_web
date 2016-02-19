@@ -1,0 +1,135 @@
+/* tables */
+table.tablesorter {
+	font-family:arial;
+	background-color: #CDCDCD;
+	margin:10px 0pt 15px;
+	font-size: 8pt;
+/*	width: 100%;*/
+	text-align: left;
+}
+table.tablesorter thead tr th, table.tablesorter tfoot tr th {
+	background-color: #e6EEEE;
+	border: 1px solid #FFF;
+	font-size: 8pt;
+	padding: 4px;
+}
+table.tablesorter thead tr .header {
+	background-image: url(bg.gif);
+	background-repeat: no-repeat;
+	background-position: center right;
+	cursor: pointer;
+}
+table.tablesorter tbody td {
+	color: #3D3D3D;
+	padding: 4px;
+	background-color: #FFF;
+	vertical-align: top;
+}
+table.tablesorter tbody tr.odd td {
+	background-color:#F0F0F6;
+}
+table.tablesorter thead tr .headerSortUp {
+	background-image: url(asc.gif);
+	background-color: #3399FF;
+}
+table.tablesorter thead tr .headerSortDown {
+	background-image: url(desc.gif);
+	background-color: #3399FF;
+}
+table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
+	background-color: #8dbdd8;
+}
+
+th.headerSortUp { 
+	background-image: url(img/asc.gif); 
+	background-color: #3399FF; 
+}
+
+th.headerSortDown { 
+	background-image: url(img/desc.gif); 
+	background-color: #3399FF; 
+}
+
+th.header { 
+	background-image: url(img/bg.gif);     
+	cursor: pointer; 
+	font-weight: bold; 
+	background-repeat: no-repeat; 
+	background-position: center left; 
+	padding-left: 20px; 
+	border-right: 1px solid #dad9c7; 
+	margin-left: -1px; 
+}
+
+/* Demos */
+
+.demos-nav, 
+.left-nav .demos-nav dt, 
+.left-nav .demos-nav dd, 
+.left-nav .demos-nav ul, 
+.left-nav .demos-nav li {
+	margin: 0;
+	padding: 0
+}
+
+.left-nav .demos-nav {
+	float: left;
+	width: 155px;
+	font-size: 1.1em;
+	padding:4px 4px 4px 4px;
+/*        padding:14px 23px 8px 22px;*/
+}
+
+.left-nav .demos-nav dt,
+.left-nav .demos-nav h4 {
+	margin: 0;
+	padding: 0;
+	font: normal 1.1em "Trebuchet MS", "Helvetica", "Arial",  "Verdana", "sans-serif";
+        color: #0099FF
+/*	color: #e87b10;*/
+}
+
+.left-nav .demos-nav dt,
+.left-nav .demos-nav h4 {
+	margin-top: 1.5em;
+	margin-bottom: 0;
+	padding-left: 8px;
+	padding-bottom:5px;
+	line-height: 1.2em;
+	border-bottom: 1px solid #F4F4F4;
+}
+
+.left-nav .demos-nav dd a,
+.left-nav .demos-nav li a {
+	border-bottom: 1px solid #F4F4F4;
+	display:block;
+	padding: 2px 3px 2px 8px;
+	font-size: 90%;
+	text-decoration: none;
+	color: #555 ;
+	margin:2px 0;
+	height:13px;
+}
+
+.left-nav .demos-nav dd a:hover,
+.left-nav .demos-nav dd a:focus,
+.left-nav .demos-nav li a:hover,
+.left-nav .demos-nav li a:focus {
+	background: #f3f3f3;
+	color:#000;
+	-moz-border-radius: 3px; -webkit-border-radius: 3px;
+}
+ .demos-nav dd a.selected {
+	background: #555;
+	color:#ffffff;
+	-moz-border-radius: 3px; -webkit-border-radius: 3px;
+}
+
+.tooltip {
+	background-color:#ffffff;
+	font-weight:bold;
+	border:2px #006699 solid;
+  }
+
+button.ui-datepicker-close {display: none;}​
+

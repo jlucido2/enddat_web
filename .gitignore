@@ -10,10 +10,19 @@ hs_err_pid*
 /target/
 /src/main/webapp/META-INF/
 /src/main/webapp/META-INF/context.xml
-/src/main/webapp/META-INF/
-/nb-configuration.xml
-/src/main/webapp/css/
+/src/main/webapp/css/custom.css
 /src/main/webapp/less/webjars/
+/src/main/webapp/js/bower_components/
+
+# karma tests
+/node_modules
+/node
+/etc
+/bower
+/karma
+/npm
+/coverage
+npm-debug.logcoverage.xml
 
 # eclipse files
 .settings/

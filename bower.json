@@ -1,0 +1,34 @@
+{
+	"name": "enddat_web",
+	"version": "0.0.0",
+	"homepage": "https://github.com/enddat_web",
+	"moduleType": [
+		"amd"
+	],
+	"license": "MIT",
+	"ignore": [
+		"**/.*",
+		"node_modules",
+		"bower_components",
+		"test",
+		"tests"
+	],
+	"dependencies": {
+		"jquery": "~2.1.4",
+		"requirejs": "~2.1.22",
+		"bootstrap": "https://github.com/twbs/bootstrap.git#3.3.5",
+		"text": "requirejs-text#~2.0.14",
+		"underscore": "~1.8.3",
+		"backbone": "~1.2.3",
+		"handlebars": "~4.0.3",
+		"sinon": "https://github.com/sinonjs/sinon.git#1.17.0",
+		"Squire.js": "https://github.com/iammerrick/Squire.js.git#0.2.0",
+		"font-awesome": "fontawesome#~4.4.0",
+		"requirejs-hbs": "~0.1.1",
+		"jquery-ui": "~1.11.4"
+	},
+	"resolutions": {
+		"underscore": "~1.8.3",
+		"jquery": "~2.1.4"
+	}
+}

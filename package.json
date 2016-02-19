@@ -1,0 +1,26 @@
+{
+  "name": "enddat_web",
+  "version": "1.0.0",
+  "description": "EnDDaT User Interface",
+  "main": "dataDiscovery.jsp",
+  "scripts": {
+    "test": "node/node node_modules/karma/bin/karma start src/tests/js/karma.conf.js --single-run --browsers Firefox --reporters dots,coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/USGS-CIDA/enddat_web.git"
+  },
+  "author": "OWI",
+  "license": "MIT",
+  "devDependencies": {
+    "bower": "^1.7.7",
+    "jasmine-core": "^2.4.1",
+    "karma": "^0.13.19",
+    "karma-chrome-launcher": "^0.2.2",
+    "karma-firefox-launcher": "^0.1.7",
+    "karma-jasmine": "^0.3.7",
+    "karma-js-coverage": "^0.4.0",
+    "karma-requirejs": "^0.2.4",
+    "requirejs": "^2.1.22"
+  }
+}

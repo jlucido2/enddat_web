@@ -1,28 +1,17 @@
-/*jslint browser: true */
-/*global Backbone*/
+/* jslint browser: true */
 
-var ENDDAT = ENDDAT || {};
-
-$(document).ready(function() {
+define([
+	'backbone',
+	'controller/AppRouter',
+	'module'
+], function (Backbone, Router, module) {
 	"use strict";
-	// Preload all templates and partials
-	var TEMPLATES = [
-		'home'
-	];
 
-	var PARTIALS = [
-		'warningModal'
-	];
+	var router = new Router();
 
-	ENDDAT.templates = ENDDAT.util.templateLoader();
+	Backbone.history.start({root: module.config().contextPath});
 
-	var loadTemplates = ENDDAT.templates.loadTemplates(TEMPLATES);
-	var loadPartials = ENDDAT.templates.registerPartials(PARTIALS);
-
-	$.when(loadTemplates, loadPartials).always(function() {
-		ENDDAT.router = new ENDDAT.controller.ENDDATRouter();
-		Backbone.history.start();
-	});
+	return router;
 });
 
 

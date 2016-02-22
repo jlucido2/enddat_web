@@ -17,9 +17,7 @@ module.exports = function(config) {
     files: [
         'src/tests/js/test-main.js',
       {pattern: 'src/main/webapp/bower_components/**/*.js', included: false},
-      {pattern: 'src/main/webapp/js/controller/*.js', included: false},
-      {pattern: 'src/main/webapp/js/views/*.js', included: false},
-      {pattern: 'src/main/webapp/js/utils/*.js', included: false},
+      {pattern: 'src/main/webapp/js/**/*.js', included: false},
       {pattern: 'src/main/webapp/js/hb_templates/*.hbs', included: false},
       {pattern: 'src/tests/js/views/*.js', included: false}
     ],

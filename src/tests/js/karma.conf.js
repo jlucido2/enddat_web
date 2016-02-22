@@ -16,8 +16,15 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
         'src/tests/js/test-main.js',
-      {pattern: 'src/main/webapp/bower_components/**/*.js', included: false},
-      {pattern: 'src/main/webapp/js/**/*.js', included: false},
+      {pattern: 'src/main/webapp/bower_components/Squire.js/src/Squire.js', included: false},
+      {pattern: 'src/main/webapp/bower_components/sinon/lib/sinon.js', included: false},
+      {pattern: 'src/main/webapp/bower_components/jquery/dist/jquery.js', included: false},
+      {pattern: 'src/main/webapp/bower_components/underscore/underscore.js', included: false},
+      {pattern: 'src/main/webapp/bower_components/backbone/backbone.js', included: false},
+      {pattern: 'src/main/webapp/bower_components/bootstrap/dist/js/bootstrap.js', included: false},
+      {pattern: 'src/main/webapp/bower_components/handlebars/handlebars.amd.js', included: false},
+      {pattern: 'src/main/webapp/bower_components/text/text.js', included: false},
+      {pattern: 'src/main/webapp/js/*/*.js', included: false},
       {pattern: 'src/main/webapp/js/hb_templates/*.hbs', included: false},
       {pattern: 'src/tests/js/views/*.js', included: false}
     ],

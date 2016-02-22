@@ -4,7 +4,7 @@
   "description": "EnDDaT User Interface",
   "main": "dataDiscovery.jsp",
   "scripts": {
-    "test": "node/node node_modules/karma/bin/karma start src/tests/js/karma.conf.js --single-run --browsers Firefox --reporters dots,coverage"
+    "test": "node_modules/karma/bin/karma start src/tests/js/karma.conf.js --no-single-run --browsers \"\"  --reporters progress"
   },
   "repository": {
     "type": "git",

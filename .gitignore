@@ -31,3 +31,4 @@ npm-debug.logcoverage.xml
 **/.settings 
 **/.project
 **/.classpath
+/nb-configuration.xml

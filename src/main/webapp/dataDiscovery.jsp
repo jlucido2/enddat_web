@@ -39,16 +39,18 @@
 			<jsp:param name="expires" value="never" />
 			<jsp:param name="development" value="false" />
 		</jsp:include>
-		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/js/bower_components/bootstrap/dist/css/bootstrap<%= debug ? ".css" : ".min.css"%>" />
-		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/js/bower_components/font-awesome/css/font-awesome<%= debug ? ".css" : ".min.css"%>" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<link rel="stylesheet" type="text/css" href="css/custom.css" />
 	</head>
 	<body>
 		<div class="container-fluid">
-			<jsp:include page="template/USGSHeader.jsp"></jsp:include>
-			<div class="row">
-				<div id="main-content" class="col-xs-12"></div>
-			</div>
-			<jsp:include page="template/USGSFooter.jsp"></jsp:include>
+			<header class="row">
+				<jsp:include page="template/USGSHeader.jsp"></jsp:include>
+			</header>
+			<div id="main-content" class="row"></div>
+			<footer class="row">
+				<jsp:include page="template/USGSFooter.jsp"></jsp:include>
+			</footer>	
 		</div>
 		<script>
 			var require = {

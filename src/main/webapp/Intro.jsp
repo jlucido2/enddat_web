@@ -6,7 +6,7 @@
 
 <html>
 	<head>
-	  <jsp:include page="/template/USGSHead.jsp"></jsp:include>
+	  <jsp:include page="template/USGSHead.jsp"></jsp:include>
 	  <jsp:include page="WEB-INF/jsp/css.jsp"></jsp:include>
 		<style type="text/css">
 			.bigButton {
@@ -91,7 +91,7 @@
 		</style>
 	</head>
 	<body>
-		<jsp:include page="/template/USGSHeader.jsp"></jsp:include>
+		<jsp:include page="template/USGSHeader.jsp"></jsp:include>
 		<div id="tagline">Access and Integrate Environmental Observations for Coastal Decision Support</div>      
 		<table>
 		  <tr>
@@ -130,7 +130,7 @@ Questions, comments, and requests are welcome.  Please email enddat@usgs.gov<br>
 		  </tr>
 		</table>
 				<br />
-		<jsp:include page="/template/USGSFooter.jsp"></jsp:include>
+		<jsp:include page="template/USGSFooter.jsp"></jsp:include>
 
    </body>
 </html>

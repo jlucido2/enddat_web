@@ -44,11 +44,11 @@
 	</head>
 	<body>
 		<div class="container-fluid">
-			<jsp:include page="/template/USGSHeader.jsp"></jsp:include>
+			<jsp:include page="template/USGSHeader.jsp"></jsp:include>
 			<div class="row">
 				<div id="main-content" class="col-xs-12"></div>
 			</div>
-			<jsp:include page="/template/USGSFooter.jsp"></jsp:include>
+			<jsp:include page="template/USGSFooter.jsp"></jsp:include>
 		</div>
 		<script>
 			var require = {
@@ -59,18 +59,18 @@
 				},
 				baseUrl: "<%=baseUrl%>/js/",
 				paths: {
-					"bootstrap" :  ["<%=baseUrl%>/js/bower_components/bootstrap/dist/js/bootstrap<%= debug ? "" : ".min"%>"] ,
-					"jquery": ["<%=baseUrl%>/js/bower_components/jquery/dist/jquery<%= debug ? "" : ".min"%>"],
-					"backbone": ['<%=baseUrl%>/js/bower_components/backbone/backbone<%= debug ? "" : "-min"%>'],
-					"underscore": ['<%=baseUrl%>/js/bower_components/underscore/underscore<%= debug ? "" : "-min"%>'],
-					"handlebars": ['<%=baseUrl%>/js/bower_components/handlebars/handlebars<%= debug ? "" : ".min"%>'],
-					"text": ['<%=baseUrl%>/js/bower_components/text/text'],
+					"bootstrap" :  ["<%=baseUrl%>/bower_components/bootstrap/dist/js/bootstrap<%= debug ? "" : ".min"%>"] ,
+					"jquery": ["<%=baseUrl%>/bower_components/jquery/dist/jquery<%= debug ? "" : ".min"%>"],
+					"backbone": ['<%=baseUrl%>/bower_components/backbone/backbone<%= debug ? "" : "-min"%>'],
+					"underscore": ['<%=baseUrl%>/bower_components/underscore/underscore<%= debug ? "" : "-min"%>'],
+					"handlebars": ['<%=baseUrl%>/bower_components/handlebars/handlebars<%= debug ? "" : ".min"%>'],
+					"text": ['<%=baseUrl%>/bower_components/text/text'],
 				},
 				shim: {
 					"bootstrap": [ "jquery" ]
 				}
 			};
 		</script>
-		<script data-main="init" src="<%=baseUrl%>/js/bower_components/requirejs/require.js"></script>
+		<script data-main="init" src="<%=baseUrl%>/bower_components/requirejs/require.js"></script>
 	</body>
 </html>

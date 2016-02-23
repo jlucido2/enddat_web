@@ -135,6 +135,30 @@
 		</resources>
 		<plugins>
 			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>3.0.0</version>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>src/main/webapp</directory>
+							<includes>
+								<include>bower_components/</include>
+								<include>css/</include>
+							</includes>
+							<followSymlinks>false</followSymlinks>
+						</fileset>
+						<fileset>
+							<directory>${project.basedir}</directory>
+							<includes>
+								<include>node/</include>
+								<include>node_modules/</include>
+							</includes>
+							<followSymlinks>false</followSymlinks>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.5</version>
@@ -149,7 +173,7 @@
 				<version>2.6</version>
 				<!-- Exclude the less files from the WAR -->
 				<configuration>
-					<packagingExcludes>${project.baseDir/src/main/webapp/less</packagingExcludes>
+					<packagingExcludes>less/</packagingExcludes>
 				</configuration>
 			</plugin>
 			<plugin>

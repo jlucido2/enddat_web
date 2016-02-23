@@ -9,7 +9,10 @@
 		<servlet-name>dataDiscovery</servlet-name>
 		<jsp-file>/dataDiscovery.jsp</jsp-file>
 	</servlet>
-
+	<servlet-mapping>
+		<servlet-name>dataDiscovery</servlet-name>
+		<url-pattern>/datadiscovery</url-pattern>
+	</servlet-mapping>
 	<servlet>
 		<servlet-name>EnddatServiceServlet</servlet-name>
 		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>

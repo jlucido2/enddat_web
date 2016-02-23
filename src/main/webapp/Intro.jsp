@@ -1,15 +1,8 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-   "http://www.w3.org/TR/html4/loose.dtd">
-
-<%@ page  language="java" import="java.util.*,java.text.*"%>
-
+<!DOCTYPE html>
 <html>
 	<head>
-		<jsp:include page="template/USGSHead.jsp">
-			<jsp:param name="shortName" value="Environmental Data Discovery and Transformation Service"/>
-		</jsp:include>
-		<jsp:include page="WEB-INF/jsp/css.jsp"></jsp:include>
+		<%@include file="WEB-INF/jsp/head.jsp"%>
 		<style type="text/css">
 		.bigButton {
 			-moz-box-shadow:inset 0px 50px 42px -23px #bbdaf7;
@@ -109,7 +102,7 @@ Welcome to the Environmental Data Discovery and Transformation (EnDDaT) service.
 			  <table>
 				  <tr>
 					  <td>
-						  <a href="dataDiscovery.jsp" class="bigButton" style="text-decoration: none; ">Begin Data Discovery</a>	
+						  <a href="datadiscovery" class="bigButton" style="text-decoration: none; ">Begin Data Discovery</a>	
 					  </td>
 					  <td>
 						  <a href="" class="bigButton" style="text-decoration: none;">User Guide</a>

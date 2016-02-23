@@ -183,6 +183,7 @@
 						<goals>
 							<goal>install-node-and-npm</goal>
 						</goals>
+						<phase>initialize</phase>
 						<configuration>
 							<nodeVersion>v4.2.4</nodeVersion>
 							<npmVersion>2.14.12</npmVersion>
@@ -193,12 +194,14 @@
 						<goals>
 							<goal>npm</goal>
 						</goals>
+						<phase>generate-sources</phase>
 						<configuration>
 							<arguments>install</arguments>
 						</configuration>
 					</execution>
 					<execution>
 						<id>bower install</id>
+						<phase>generate-sources</phase>
 						<goals>
 							<goal>bower</goal>
 						</goals>

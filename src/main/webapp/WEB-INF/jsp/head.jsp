@@ -1,5 +1,4 @@
 <%@page import="java.io.File"%>
-<%@page import="java.net.URL"%>
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
 <%@page import="org.apache.commons.lang.StringUtils"%>
 

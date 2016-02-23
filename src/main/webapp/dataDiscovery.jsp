@@ -10,11 +10,16 @@
 	<body>
 		<div class="container-fluid">
 			<header class="row">
-				<jsp:include page="template/USGSHeader.jsp"></jsp:include>
+				<jsp:include page="template/USGSHeader.jsp">
+					<jsp:param name="site-title" value="Environmental Data Discovery and Transformation" />
+				</jsp:include>
 			</header>
 			<div id="main-content" class="row"></div>
 			<footer class="row">
-				<jsp:include page="template/USGSFooter.jsp"></jsp:include>
+				<jsp:include page="template/USGSFooter.jsp">
+					<jsp:param name="site-url" value="http://cida.usgs.gov/enddat" />
+					<jsp:param name="contact-info" value="<a href='mailto:enddat@usgs.gov'>Enddat Team</a>" />
+				</jsp:include>
 			</footer>	
 		</div>
 		<script>

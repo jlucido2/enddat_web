@@ -3,6 +3,8 @@
 <html>
 	<head>
 		<%@include file="WEB-INF/jsp/head.jsp"%>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<link rel="stylesheet" type="text/css" href="css/custom.css" />
 		<style type="text/css">
 		.bigButton {
 			-moz-box-shadow:inset 0px 50px 42px -23px #bbdaf7;
@@ -129,7 +131,7 @@ Questions, comments, and requests are welcome.  Please email enddat@usgs.gov<br>
 	<br />
 	<jsp:include page="template/USGSFooter.jsp">
 		<jsp:param name="site-url" value="http://cida.usgs.gov/enddat" />
-		<jsp:param name="contact-info" value="<a href='mailto:enddat@usgs.gov>Enddat Team</a>" />
+		<jsp:param name="contact-info" value="<a href='mailto:enddat@usgs.gov'>Enddat Team</a>" />
 	</jsp:include>
    </body>
 </html>

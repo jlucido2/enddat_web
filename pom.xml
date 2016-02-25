@@ -240,7 +240,7 @@
 						</goals>
 						<phase>test</phase>
 						<configuration>
-							<karmaConfPath>src/tests/js/karma.conf.js</karmaConfPath>
+							<karmaConfPath>src/test/js/karma.conf.js</karmaConfPath>
 						</configuration>
 					</execution>
 				</executions>

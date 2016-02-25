@@ -12,7 +12,7 @@ hs_err_pid*
 /src/main/webapp/META-INF/context.xml
 /src/main/webapp/css/
 /src/main/webapp/less/webjars/
-/src/main/webapp/js/bower_components/
+/src/main/webapp/bower_components/
 
 # karma tests
 /node_modules
@@ -31,3 +31,6 @@ npm-debug.logcoverage.xml
 **/.settings 
 **/.project
 **/.classpath
+
+/nb-configuration.xml
+.DS_Store

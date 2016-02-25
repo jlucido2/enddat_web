@@ -12,21 +12,19 @@ require.config({
 	baseUrl: '/base/src/main/webapp/js/',
 
 	config: {
-		'views/BaseView': {
-			lookupUrl: "test_lookup/"
-		}
-	},	
+	},
 
 
 	paths: {
-		'sinon': '/base/src/main/webapp/js/bower_components/sinon/lib/sinon',
-		'squire': '/base/src/main/webapp/js/bower_components/Squire.js/src/Squire',
-		'jquery': '/base/src/main/webapp/js/bower_components/jquery/dist/jquery',
-		'bootstrap': '/base/src/main/webapp/js/bower_components/bootstrap/dist/js/bootstrap',
-		'underscore': '/base/src/main/webapp/js/bower_components/underscore/underscore',
-		'backbone': '/base/src/main/webapp/js/bower_components/backbone/backbone',
-		'handlebars': '/base/src/main/webapp/js/bower_components/handlebars/handlebars.amd',
-		'text': '/base/src/main/webapp/js/bower_components/text/text'
+		'sinon': '/base/src/main/webapp/bower_components/sinon/lib/sinon',
+		'squire': '/base/src/main/webapp/bower_components/Squire.js/src/Squire',
+		'jquery': '/base/src/main/webapp/bower_components/jquery/dist/jquery',
+		'bootstrap': '/base/src/main/webapp/bower_components/bootstrap/dist/js/bootstrap',
+		'underscore': '/base/src/main/webapp/bower_components/underscore/underscore',
+		'backbone': '/base/src/main/webapp/bower_components/backbone/backbone',
+		'handlebars': '/base/src/main/webapp/bower_components/handlebars/handlebars.amd',
+		'text': '/base/src/main/webapp/bower_components/text/text',
+		'hbs' : '/base/src/main/webapp/bower_components/requirejs-hbs/hbs'
 	},
 	shim: {
 		'jquery': {

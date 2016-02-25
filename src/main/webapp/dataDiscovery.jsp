@@ -1,54 +1,26 @@
-<%@page import="java.io.File"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
 <!DOCTYPE html>
-<%!	protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
-	{
-		try {
-			File propsFile = new File(getClass().getClassLoader().getResource("application.properties").toURI());
-			props = new DynamicReadOnlyProperties(propsFile);
-			props = props.addJNDIContexts(new String[0]);
-		} catch (Exception e) {
-			System.out.println("Could not find JNDI - Application will probably not function correctly");
-		}
-	}
-	private String getProp(String key) {
-		String result = props.getProperty(key, "");
-		return result;
-	}
-	boolean debug = Boolean.parseBoolean(getProp("development"));
-	String version = getProp("application.version");
-	String resourceSuffix = debug ? "" : "-" + version + "-min";
-%>
-<%
-	String baseUrl = props.getProperty("enddat.base.url", request.getContextPath());
-%>
-
 <html>
 	<head>
-		<jsp:include page="template/USGSHead.jsp">
-			<jsp:param name="relPath" value="" />
-			<jsp:param name="shortName" value="EnDDaT UI" />
-			<jsp:param name="title" value="EnDDaT UI" />
-			<jsp:param name="description" value="" />
-			<jsp:param name="author" value="" />
-			<jsp:param name="keywords" value="" />
-			<jsp:param name="publisher" value="" />
-			<jsp:param name="revisedDate" value="" />
-			<jsp:param name="nextReview" value="" />
-			<jsp:param name="expires" value="never" />
-			<jsp:param name="development" value="false" />
-		</jsp:include>
-		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/js/bower_components/bootstrap/dist/css/bootstrap<%= debug ? ".css" : ".min.css"%>" />
-		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/js/bower_components/font-awesome/css/font-awesome<%= debug ? ".css" : ".min.css"%>" />
+		
+		<%@include file="/WEB-INF/jsp/head.jsp"%>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<link rel="stylesheet" type="text/css" href="css/custom.css" />
 	</head>
 	<body>
 		<div class="container-fluid">
-			<jsp:include page="/template/USGSHeader.jsp"></jsp:include>
-			<div class="row">
-				<div id="main-content" class="col-xs-12"></div>
-			</div>
-			<jsp:include page="/template/USGSFooter.jsp"></jsp:include>
+			<header class="row">
+				<jsp:include page="template/USGSHeader.jsp">
+					<jsp:param name="site-title" value="Environmental Data Discovery and Transformation" />
+				</jsp:include>
+			</header>
+			<div id="main-content" class="row"></div>
+			<footer class="row">
+				<jsp:include page="template/USGSFooter.jsp">
+					<jsp:param name="site-url" value="http://cida.usgs.gov/enddat" />
+					<jsp:param name="contact-info" value="<a href='mailto:enddat@usgs.gov'>Enddat Team</a>" />
+				</jsp:include>
+			</footer>	
 		</div>
 		<script>
 			var require = {
@@ -59,18 +31,26 @@
 				},
 				baseUrl: "<%=baseUrl%>/js/",
 				paths: {
-					"bootstrap" :  ["<%=baseUrl%>/js/bower_components/bootstrap/dist/js/bootstrap<%= debug ? "" : ".min"%>"] ,
-					"jquery": ["<%=baseUrl%>/js/bower_components/jquery/dist/jquery<%= debug ? "" : ".min"%>"],
-					"backbone": ['<%=baseUrl%>/js/bower_components/backbone/backbone<%= debug ? "" : "-min"%>'],
-					"underscore": ['<%=baseUrl%>/js/bower_components/underscore/underscore<%= debug ? "" : "-min"%>'],
-					"handlebars": ['<%=baseUrl%>/js/bower_components/handlebars/handlebars<%= debug ? "" : ".min"%>'],
-					"text": ['<%=baseUrl%>/js/bower_components/text/text'],
+					"bootstrap" :  '<%=baseUrl%>bower_components/bootstrap/dist/js/bootstrap<%= development ? "" : ".min"%>',
+					"jquery": '<%=baseUrl%>bower_components/jquery/dist/jquery<%= development ? "" : ".min"%>',
+					"backbone": '<%=baseUrl%>bower_components/backbone/backbone<%= development ? "" : "-min"%>',
+					"underscore": '<%=baseUrl%>bower_components/underscore/underscore<%= development ? "" : "-min"%>',
+					"handlebars": '<%=baseUrl%>bower_components/handlebars/handlebars<%= development ? "" : ".min"%>',
+					"text": '<%=baseUrl%>bower_components/text/text',
+					"hbs" : '<%=baseUrl%>bower_components/requirejs-hbs/hbs'
 				},
 				shim: {
 					"bootstrap": [ "jquery" ]
-				}
+				},
+				packages : [
+					{
+						name : 'hbs',
+						location: "<%=baseUrl%>bower_components/requirejs-hbs",
+						main : 'hbs'
+					}
+				],
 			};
 		</script>
-		<script data-main="init" src="<%=baseUrl%>/js/bower_components/requirejs/require.js"></script>
+		<script data-main="init" src="<%=baseUrl%>bower_components/requirejs/require.js"></script>
 	</body>
 </html>

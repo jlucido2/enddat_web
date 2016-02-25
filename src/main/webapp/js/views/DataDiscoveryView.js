@@ -1,13 +1,12 @@
 define([
 	'underscore',
-	'handlebars',
 	'views/BaseView',
-	'text!hb_templates/dataDiscovery.hbs'
-], function (_, Handlebars, BaseView, hbTemplate) {
+	'hbs!hb_templates/dataDiscovery'
+], function (_, BaseView, hbTemplate) {
 	"use strict";
 
 	var view = BaseView.extend({
-		template: Handlebars.compile(hbTemplate),
+		template: hbTemplate,
 
 		/*
 		 * @constructs
@@ -17,7 +16,7 @@ define([
 
 			BaseView.prototype.initialize.apply(this, arguments);
 		},
-		
+
 		remove: function () {
 			BaseView.prototype.remove.apply(this, arguments);
 			return this;

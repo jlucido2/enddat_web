@@ -31,18 +31,26 @@
 				},
 				baseUrl: "<%=baseUrl%>/js/",
 				paths: {
-					"bootstrap" :  ["<%=baseUrl%>/bower_components/bootstrap/dist/js/bootstrap<%= development ? "" : ".min"%>"] ,
-					"jquery": ["<%=baseUrl%>/bower_components/jquery/dist/jquery<%= development ? "" : ".min"%>"],
-					"backbone": ['<%=baseUrl%>/bower_components/backbone/backbone<%= development ? "" : "-min"%>'],
-					"underscore": ['<%=baseUrl%>/bower_components/underscore/underscore<%= development ? "" : "-min"%>'],
-					"handlebars": ['<%=baseUrl%>/bower_components/handlebars/handlebars<%= development ? "" : ".min"%>'],
-					"text": ['<%=baseUrl%>/bower_components/text/text'],
+					"bootstrap" :  '<%=baseUrl%>bower_components/bootstrap/dist/js/bootstrap<%= development ? "" : ".min"%>',
+					"jquery": '<%=baseUrl%>bower_components/jquery/dist/jquery<%= development ? "" : ".min"%>',
+					"backbone": '<%=baseUrl%>bower_components/backbone/backbone<%= development ? "" : "-min"%>',
+					"underscore": '<%=baseUrl%>bower_components/underscore/underscore<%= development ? "" : "-min"%>',
+					"handlebars": '<%=baseUrl%>bower_components/handlebars/handlebars<%= development ? "" : ".min"%>',
+					"text": '<%=baseUrl%>bower_components/text/text',
+					"hbs" : '<%=baseUrl%>bower_components/requirejs-hbs/hbs'
 				},
 				shim: {
 					"bootstrap": [ "jquery" ]
-				}
+				},
+				packages : [
+					{
+						name : 'hbs',
+						location: "<%=baseUrl%>bower_components/requirejs-hbs",
+						main : 'hbs'
+					}
+				],
 			};
 		</script>
-		<script data-main="init" src="<%=baseUrl%>/bower_components/requirejs/require.js"></script>
+		<script data-main="init" src="<%=baseUrl%>bower_components/requirejs/require.js"></script>
 	</body>
 </html>

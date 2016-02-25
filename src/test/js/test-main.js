@@ -12,10 +12,7 @@ require.config({
 	baseUrl: '/base/src/main/webapp/js/',
 
 	config: {
-		'views/BaseView': {
-			lookupUrl: "test_lookup/"
-		}
-	},	
+	},
 
 
 	paths: {
@@ -26,7 +23,8 @@ require.config({
 		'underscore': '/base/src/main/webapp/bower_components/underscore/underscore',
 		'backbone': '/base/src/main/webapp/bower_components/backbone/backbone',
 		'handlebars': '/base/src/main/webapp/bower_components/handlebars/handlebars.amd',
-		'text': '/base/src/main/webapp/bower_components/text/text'
+		'text': '/base/src/main/webapp/bower_components/text/text',
+		'hbs' : '/base/src/main/webapp/bower_components/requirejs-hbs/hbs'
 	},
 	shim: {
 		'jquery': {

@@ -2,7 +2,6 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		
 		<%@include file="/WEB-INF/jsp/head.jsp"%>
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<link rel="stylesheet" type="text/css" href="css/custom.css" />

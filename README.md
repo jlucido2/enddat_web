@@ -28,6 +28,9 @@ The project optionally uses the following JNDI variables in the context.xml. Exa
 * Set time range and filter options for data to be retrieved.
 * Determine beach orientation (optional).
 * Select data to download and set transformation options.
+* Apply statistic (e.g. mean) an an interval (e.g. 6 hrs) to a dataset.
+* Specify file format for download.
+* View chosen datasets on a interactive plot (can change scale and zoom and pan across x-axis).
 * Download data directly with URL saved from previous inquiry (optional).
 
 ## enddat_web Web Services  

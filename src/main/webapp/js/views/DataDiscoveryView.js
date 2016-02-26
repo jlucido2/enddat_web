@@ -1,9 +1,8 @@
 define([
-	'underscore',
 	'views/BaseView',
 	'views/NavView',
 	'hbs!hb_templates/dataDiscovery'
-], function (_, BaseView, NavView, hbTemplate) {
+], function (BaseView, NavView, hbTemplate) {
 	"use strict";
 
 	var view = BaseView.extend({

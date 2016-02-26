@@ -1,7 +1,8 @@
 define([
+	'bootstrap',
 	'views/BaseView',
 	'hbs!hb_templates/workflowNav'
-], function(BaseView, hb_template) {
+], function(bootstrap, BaseView, hb_template) {
 	"use strict";
 
 	var view = BaseView.extend({

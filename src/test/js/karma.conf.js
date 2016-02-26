@@ -21,7 +21,7 @@ module.exports = function(config) {
       {pattern: 'src/main/webapp/bower_components/jquery/dist/jquery.js', included: false},
       {pattern: 'src/main/webapp/bower_components/underscore/underscore.js', included: false},
       {pattern: 'src/main/webapp/bower_components/backbone/backbone.js', included: false},
-      {pattern: 'src/main/webapp/bower_components/bootstrap/dist/js/bootstrap.js', included: false},
+      {pattern: 'src/main/webapp/bower_components/bootstrap/dist/js/bootstrap.js', included: true},
       {pattern: 'src/main/webapp/bower_components/handlebars/handlebars.amd.js', included: false},
       {pattern: 'src/main/webapp/bower_components/text/text.js', included: false},
 	  {pattern: 'src/main/webapp/bower_components/requirejs-hbs/hbs.js', included: false},

@@ -24,7 +24,9 @@ require.config({
 		'backbone': '/base/src/main/webapp/bower_components/backbone/backbone',
 		'handlebars': '/base/src/main/webapp/bower_components/handlebars/handlebars.amd',
 		'text': '/base/src/main/webapp/bower_components/text/text',
-		'hbs' : '/base/src/main/webapp/bower_components/requirejs-hbs/hbs'
+		'hbs' : '/base/src/main/webapp/bower_components/requirejs-hbs/hbs',
+		'leaflet' : '/base/src/main/webapp/bower_components/leaflet/dist/leaflet',
+		'leaflet-providers' : '/base/src/main/webapp/bower_components/leaflet-providers/leaflet-providers'
 	},
 	shim: {
 		'jquery': {

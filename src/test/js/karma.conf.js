@@ -25,6 +25,8 @@ module.exports = function(config) {
       {pattern: 'src/main/webapp/bower_components/handlebars/handlebars.amd.js', included: false},
       {pattern: 'src/main/webapp/bower_components/text/text.js', included: false},
 	  {pattern: 'src/main/webapp/bower_components/requirejs-hbs/hbs.js', included: false},
+	  {pattern: 'src/main/webapp/bower_components/leaflet/dist/leaflet.js', included: false},
+	  {pattern: 'src/main/webapp/bower_components/leaflet-providers/leaflet-providers.js', included: false},
       {pattern: 'src/main/webapp/js/*/*.js', included: false},
       {pattern: 'src/main/webapp/js/hb_templates/*.hbs', included: false},
       {pattern: 'src/test/js/views/*.js', included: false}

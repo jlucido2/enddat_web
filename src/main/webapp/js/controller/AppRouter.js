@@ -8,8 +8,10 @@ define([
 
 	var appRouter = Backbone.Router.extend({
 		routes: {
-			'': 'dataDiscoveryView'
-		},
+			'': 'dataDiscoveryView',
+			/* datadiscovery/#lat/xxx.xx/lon/xxx.xx/radius/x/datatset/x */
+			'datadiscovery/#lat/:lat/lon/:lon/radius/:r/datatset/:dataset' : 'dataDiscoveryView'
+				},
 
 		applicationContextDiv: '#main-content',
 
@@ -40,8 +42,13 @@ define([
 			}
 		},
 
-		dataDiscoveryView: function () {
-			this.createView(DataDiscoveryView,{});
+		dataDiscoveryView: function (lat, lon, r, dataset) {
+			this.createView(DataDiscoveryView,{
+				lat : lat,
+				lon : lon,
+				radius : r,
+				dataset : dataset
+			});
 		}
 	});
 

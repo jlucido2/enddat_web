@@ -22,7 +22,7 @@
 %>
 
 <link rel="shortcut icon" type="image/ico" href="img/favicon.ico">
-<jsp:include page="template/USGSHead.jsp">
+<jsp:include page="/template/USGSHead.jsp">
 	<jsp:param name="shortName" value="Environmental Data Discovery and Transformation Service"/>
 	<jsp:param name="relPath" value="<%= baseUrl %>" />
 	<jsp:param name="title" value="EnDDaT" />

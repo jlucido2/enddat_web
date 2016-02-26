@@ -18,8 +18,8 @@ require.config({
 	paths: {
 		'sinon': '/base/src/main/webapp/bower_components/sinon/lib/sinon',
 		'squire': '/base/src/main/webapp/bower_components/Squire.js/src/Squire',
-		'jquery': '/base/src/main/webapp/bower_components/jquery/dist/jquery',
 		'bootstrap': '/base/src/main/webapp/bower_components/bootstrap/dist/js/bootstrap',
+		'jquery': '/base/src/main/webapp/bower_components/jquery/dist/jquery',
 		'underscore': '/base/src/main/webapp/bower_components/underscore/underscore',
 		'backbone': '/base/src/main/webapp/bower_components/backbone/backbone',
 		'handlebars': '/base/src/main/webapp/bower_components/handlebars/handlebars.amd',

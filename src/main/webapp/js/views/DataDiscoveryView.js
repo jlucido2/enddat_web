@@ -1,3 +1,5 @@
+/* jslint browser: true */
+
 define([
 	'views/BaseView',
 	'views/NavView',

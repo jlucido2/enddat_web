@@ -1,0 +1,36 @@
+.workflow-nav .navbar-brand {
+	@media (min-width: @screen-sm-min) {
+		display: none;
+	}
+}
+.workflow-nav .navbar-collapse {
+	.make-row();
+}
+.workflow-nav ul {
+	li {
+		width: 100%;
+	}
+	a {
+		font-weight: normal;
+		@media (min-width: @screen-md-min) {
+			font-size: x-small;
+		}
+		text-align: center;
+		i {
+			display: block;
+			@media (max-width: @screen-sm-max) {
+				display:none;
+			}
+			
+		}
+	}
+	a:hover {
+		background-color: #D0D0D0 !important;
+	}
+	
+	a.active {
+		background-color: #345280;
+		color: white;
+	}
+}
+

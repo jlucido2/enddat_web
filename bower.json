@@ -14,7 +14,7 @@
 		"tests"
 	],
 	"dependencies": {
-		"jquery": "~2.1.4",
+		"jquery": "~2.2.1",
 		"requirejs": "~2.1.22",
 		"bootstrap": "https://github.com/twbs/bootstrap.git#3.3.5",
 		"text": "requirejs-text#~2.0.14",

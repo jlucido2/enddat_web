@@ -4,17 +4,18 @@
 	<head>
 		<%@include file="/WEB-INF/jsp/head.jsp"%>
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<link rel="stylesheet" type="text/css" href="<%=baseUrl%>bower_components/leaflet/dist/leaflet.css" />
 		<link rel="stylesheet" type="text/css" href="css/custom.css" />
 	</head>
 	<body>
 		<div class="container-fluid">
-			<header class="row">
+			<header>
 				<jsp:include page="template/USGSHeader.jsp">
 					<jsp:param name="site-title" value="Environmental Data Discovery and Transformation" />
 				</jsp:include>
 			</header>
-			<div id="main-content" class="row"></div>
-			<footer class="row">
+			<div id="main-content"></div>
+			<footer>
 				<jsp:include page="template/USGSFooter.jsp">
 					<jsp:param name="site-url" value="http://cida.usgs.gov/enddat" />
 					<jsp:param name="contact-info" value="<a href='mailto:enddat@usgs.gov'>Enddat Team</a>" />
@@ -25,7 +26,7 @@
 			var require = {
 				config: {
 					'init': {
-						'contextPath': "<%=baseUrl%>/"
+						'contextPath': "<%=baseUrl%>"
 					}
 				},
 				baseUrl: "<%=baseUrl%>/js/",
@@ -36,10 +37,16 @@
 					"underscore": '<%=baseUrl%>bower_components/underscore/underscore<%= development ? "" : "-min"%>',
 					"handlebars": '<%=baseUrl%>bower_components/handlebars/handlebars<%= development ? "" : ".min"%>',
 					"text": '<%=baseUrl%>bower_components/text/text',
-					"hbs" : '<%=baseUrl%>bower_components/requirejs-hbs/hbs'
+					"hbs" : '<%=baseUrl%>bower_components/requirejs-hbs/hbs',
+					'leaflet' : '<%=baseUrl%>bower_components/leaflet/dist/leaflet',
+					'leaflet-providers' : '<%=baseUrl%>bower_components/leaflet-providers/leaflet-providers'
 				},
 				shim: {
-					"bootstrap": [ "jquery" ]
+					"bootstrap": [ "jquery" ],
+					'leaflet' : {
+						exports: 'L'
+					},
+					'leaflet-providers' : ['leaflet']
 				},
 				packages : [
 					{

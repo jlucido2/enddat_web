@@ -1,3 +1,5 @@
+/* jslint browser : true */
+
 define([
 	'bootstrap', // Needed by the bootstrap navbar
 	'views/BaseView',
@@ -6,7 +8,15 @@ define([
 	"use strict";
 
 	var view = BaseView.extend({
-		template : hb_template
+		template : hb_template,
+
+		events : {
+			'.nav-project-loc click' : 'goToProjectLocationState'
+		},
+
+		goToProjectLocationState : function() {
+			this.router.navigate('', {trigger: true});
+		}
 	});
 
 	return view;

@@ -4,8 +4,9 @@ define([
 	'underscore',
 	'leaflet',
 	'leaflet-providers',
+	'loglevel',
 	'views/BaseView'
-], function(_, L, leafletProviders, BaseView) {
+], function(_, L, leafletProviders, log, BaseView) {
 	var view = BaseView.extend({
 
 		/*
@@ -25,6 +26,8 @@ define([
 			this.controls = [
 				L.control.layers(this.baseLayers, {})
 			];
+
+			this.listenTo(this.model, 'change:location', this.updateMarker);
 		},
 
 		render : function() {
@@ -39,6 +42,9 @@ define([
 				this.map.addControl(control);
 			}, this);
 
+			this.setUpSingleClickHandler();
+
+
 			return this;
 		},
 
@@ -47,6 +53,61 @@ define([
 				this.map.remove();
 			}
 			BaseView.prototype.remove.apply(this, arguments);
+		},
+
+		setUpSingleClickHandler : function() {
+			var self = this;
+
+			var clickTimeout;
+			var clickHandler = function(ev) {
+				var clickToCreateMarker = function() {
+					self.projLocationMarker = L.marker(ev.latlng, {
+						draggable : true,
+						title : 'Project Location'
+					});
+					self.projLocationMarker.on('dragend', function() {
+						var latlng = self.projLocationMarker.getLatLng();
+						self.model.set({
+							location : {
+								latitude : latlng.lat,
+								longitude : latlng.lng
+							}
+						});
+					});
+					self.map.addLayer(self.projLocationMarker);
+					self.model.set({
+						location : {
+							latitude : ev.latlng.lat,
+							longitude : ev.latlng.lng
+						}
+					});
+
+					self.map.off('click', clickHandler);
+					self.map.off('dblclick', doubleClickHandler);
+				};
+
+				if (!clickTimeout) {
+					clickTimeout = setTimeout(clickToCreateMarker, 500);
+				}
+			};
+			var doubleClickHandler = function() {
+				if (clickTimeout) {
+					clearTimeout(clickTimeout);
+					clickTimeout = null;
+				}
+			};
+
+			this.map.on('click', clickHandler);
+			this.map.on('dblclick', doubleClickHandler);
+		},
+
+		/*
+		 * Model event handlers
+		 */
+
+		updateMarker : function(model, location) {
+			this.projLocationMarker.setLatLng([location.latitude, location.longitude]);
+			log.debug('Project Location has been updated to ' + '[' + location.latitude + ', ' + location.longitude + ']');
 		}
 	});
 

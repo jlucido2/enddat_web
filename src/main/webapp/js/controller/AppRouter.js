@@ -3,13 +3,19 @@
 define([
 	'jquery',
 	'backbone',
+	'models/WorkflowStateModel',
 	'views/DataDiscoveryView'
-], function ($, Backbone, DataDiscoveryView) {
+], function ($, Backbone, WorkflowStateModel, DataDiscoveryView) {
 	"use strict";
 
 	var appRouter = Backbone.Router.extend({
 		routes: {
-			'': 'dataDiscoveryView'
+			'': 'specifyProjectLocationState'
+		},
+
+		initialize : function(options) {
+			Backbone.Router.prototype.initialize.apply(this, arguments);
+			this.workflowState = new WorkflowStateModel();
 		},
 
 		applicationContextDiv: '#main-content',
@@ -27,7 +33,7 @@ define([
 			this.currentView = new view($.extend({
 				el: newEl,
 				router: this
-			}, opts)).render();
+			}, opts));
 
 			return this.currentView;
 		},
@@ -41,8 +47,16 @@ define([
 			}
 		},
 
-		dataDiscoveryView: function () {
-			this.createView(DataDiscoveryView,{});
+		specifyProjectLocationState: function () {
+			if (!this.workflowState.isSpecifyProjectLocationStep()) {
+				this.workflowState.clear();
+				this.workflowState.setSpecifyProjectLocationStep();
+			}
+			if (!this.dataDiscoveryView) {
+				this.dataDiscoveryView = this.createView(DataDiscoveryView, {
+					model : this.workflowState
+				}).render();
+			}
 		}
 	});
 

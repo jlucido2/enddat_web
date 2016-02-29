@@ -7,7 +7,7 @@ define([
 	'views/BaseView',
 	'views/MapView'
 ], function($, L, BaseView, MapView) {
-	describe('views/MapView', function() {
+	xdescribe('views/MapView', function() {
 		var testView;
 		var $testDiv;
 		var fakeServer;

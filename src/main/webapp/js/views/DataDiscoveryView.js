@@ -18,6 +18,7 @@ define([
 		 * @constructs
 		 * @param {Object} options
 		 *		@prop {Jquery element} el
+		 *		@prop {models/WorkflowStateModel} model
 		 */
 		initialize: function (options) {
 			BaseView.prototype.initialize.apply(this, arguments);
@@ -27,7 +28,8 @@ define([
 			});
 			this.mapView = new MapView({
 				el : this.$(MAPVIEW_SELECTOR),
-				mapDivId : 'map-div'
+				mapDivId : 'map-div',
+				model : this.model
 			});
 
 		},
@@ -35,8 +37,9 @@ define([
 		render : function() {
 			BaseView.prototype.render.apply(this, arguments);
 			this.navView.setElement(this.$(NAVVIEW_SELECTOR)).render();
-			this.mapView.setElement(this.$(MAPVIEW_SELECTOR)).render();
-
+			if (this.model.isSpecifyProjectLocationStep() || this.model.isChooseDataStep()) {
+				this.mapView.setElement(this.$(MAPVIEW_SELECTOR)).render();
+			}
 			return this;
 		},
 

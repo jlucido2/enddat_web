@@ -8,9 +8,9 @@ define([
 
 	var appRouter = Backbone.Router.extend({
 		routes: {
-			'': 'dataDiscoveryView',
-			/* datadiscovery/#lat/xxx.xx/lon/xxx.xx/radius/x/datatset/x */
-			'datadiscovery/#lat/:lat/lon/:lon/radius/:r/datatset/:dataset' : 'dataDiscoveryView'
+			'' : 'dataDiscoveryView',
+			/* datadiscovery/#lat/xxx.xx/lon/xxx.xx/radius/x/datatset/ABC */
+			'lat/:lat/lon/:lon/radius/:r/dataset/:dataset' : 'dataDiscoveryView'
 				},
 
 		applicationContextDiv: '#main-content',

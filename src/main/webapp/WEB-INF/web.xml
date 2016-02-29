@@ -11,7 +11,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>dataDiscovery</servlet-name>
-		<url-pattern>/datadiscovery</url-pattern>
+		<url-pattern>/datadiscovery/*</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>EnddatServiceServlet</servlet-name>

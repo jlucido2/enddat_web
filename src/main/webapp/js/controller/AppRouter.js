@@ -1,9 +1,10 @@
 /*jslint browser: true */
 
 define([
+	'jquery',
 	'backbone',
 	'views/DataDiscoveryView'
-], function (Backbone, DataDiscoveryView) {
+], function ($, Backbone, DataDiscoveryView) {
 	"use strict";
 
 	var appRouter = Backbone.Router.extend({

@@ -16,7 +16,6 @@ require.config({
 
 
 	paths: {
-		'sinon': '/base/src/main/webapp/bower_components/sinon/lib/sinon',
 		'squire': '/base/src/main/webapp/bower_components/Squire.js/src/Squire',
 		'bootstrap': '/base/src/main/webapp/bower_components/bootstrap/dist/js/bootstrap',
 		'jquery': '/base/src/main/webapp/bower_components/jquery/dist/jquery',
@@ -39,9 +38,6 @@ require.config({
 		},
 		'handlebars': {
 			exports: 'Handlebars'
-		},
-		'sinon': {
-			'exports': 'sinon'
 		},
 		'text': {
 			'exports': 'text'

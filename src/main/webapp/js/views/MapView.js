@@ -8,14 +8,19 @@ define([
 ], function(_, L, leafletProviders, BaseView) {
 	var view = BaseView.extend({
 
+		/*
+		 * @param {Object} options
+		 *		@prop {Jquery element or selector} el
+		 *		@prop {String} mapDivId - id of the div where the map should be rendered
+		 */
 		initialize : function(options) {
 			BaseView.prototype.initialize.apply(this, arguments);
 			this.mapDivId = options.mapDivId;
 
 			this.baseLayers = {
+				'World Street' : L.tileLayer.provider('Esri.WorldStreetMap'),
 				'World Physical': L.tileLayer.provider('Esri.WorldPhysical'),
-				'World Imagery' : L.tileLayer.provider('Esri.WorldImagery'),
-				'World Street' : L.tileLayer.provider('Esri.WorldStreetMap')
+				'World Imagery' : L.tileLayer.provider('Esri.WorldImagery')
 			};
 			this.controls = [
 				L.control.layers(this.baseLayers, {})
@@ -23,10 +28,12 @@ define([
 		},
 
 		render : function() {
+			// We don't call the prototype render at all because we are not rendering
+			// a handlebars template, but rather rendering a leaflet map.
 			this.map = L.map(this.mapDivId, {
 				center: [41.0, -100.0],
 				zoom : 4,
-				layers : _.values(this.baseLayers)
+				layers : [this.baseLayers['World Street']]
 			});
 			_.each(this.controls, function(control) {
 				this.map.addControl(control);
@@ -36,7 +43,10 @@ define([
 		},
 
 		remove : function() {
-			this.map.remove();
+			if (_.has(this, 'map')) {
+				this.map.remove();
+			}
+			BaseView.prototype.remove.apply(this, arguments);
 		}
 	});
 

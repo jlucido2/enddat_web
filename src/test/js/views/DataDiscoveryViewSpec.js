@@ -14,6 +14,7 @@ define([
 		var testView;
 		var $testDiv;
 
+		var initializeBaseViewSpy, renderBaseViewSpy, removeBaseViewSpy;
 		var setElNavViewSpy, renderNavViewSpy, removeNavViewSpy;
 		var setElMapViewSpy, renderMapViewSpy, removeMapViewSpy;
 
@@ -22,6 +23,10 @@ define([
 		beforeEach(function(done) {
 			$('body').append('<div id="test-div"></div>');
 			$testDiv = $('#test-div');
+
+			initializeBaseViewSpy = jasmine.createSpy('initializeBaseViewSpy');
+			renderBaseViewSpy = jasmine.createSpy('renderBaseViewSpy');
+			removeBaseViewSpy = jasmine.createSpy('removeBaseViewSpy');
 
 			setElNavViewSpy = jasmine.createSpy('setElNavViewSpy');
 			renderNavViewSpy = jasmine.createSpy('renderNavViewSpy');
@@ -32,6 +37,11 @@ define([
 			removeMapViewSpy = jasmine.createSpy('removeMapViewSpy');
 
 			injector = new Squire();
+			injector.mock('views/BaseView', BaseView.extend({
+				initialize : initializeBaseViewSpy,
+				render : renderBaseViewSpy,
+				remove : removeBaseViewSpy
+			}));
 			injector.mock('views/NavView', BaseView.extend({
 				setElement : setElNavViewSpy.and.returnValue({
 					render : renderNavViewSpy
@@ -60,6 +70,13 @@ define([
 			$testDiv.remove();
 		});
 
+		it('Expects that BaseView.initialize is called', function() {
+			testView = new DataDiscoveryView({
+				el : $testDiv
+			});
+			expect(initializeBaseViewSpy).toHaveBeenCalled();
+		});
+
 		it('Expects the child views to be initialized', function() {
 			testView = new DataDiscoveryView({
 				el : $testDiv
@@ -75,6 +92,10 @@ define([
 					el : $testDiv
 				});
 				testView.render();
+			});
+
+			it('Expects that the BaseView render is called', function() {
+				expect(renderBaseViewSpy).toHaveBeenCalled();
 			});
 
 			it('Expects that the children views are rendered', function() {
@@ -93,6 +114,10 @@ define([
 				});
 				testView.remove();
 			});
+
+			it('Expects that the BaseView remove is called', function() {
+				expect(removeBaseViewSpy).toHaveBeenCalled();
+			})
 
 			it('Expects that the children views are removed', function() {
 				expect(removeNavViewSpy.calls.count()).toBe(1);

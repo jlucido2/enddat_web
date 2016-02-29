@@ -117,7 +117,7 @@ define([
 
 			it('Expects that the BaseView remove is called', function() {
 				expect(removeBaseViewSpy).toHaveBeenCalled();
-			})
+			});
 
 			it('Expects that the children views are removed', function() {
 				expect(removeNavViewSpy.calls.count()).toBe(1);

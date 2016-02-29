@@ -77,7 +77,7 @@ define([
 				testView.remove();
 				expect(BaseView.prototype.remove).toHaveBeenCalled();
 				expect(removeMapSpy).toHaveBeenCalled();
-			})
+			});
 		});
 
 	});

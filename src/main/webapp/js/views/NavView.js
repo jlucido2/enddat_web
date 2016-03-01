@@ -46,14 +46,17 @@ define([
 				step : this.model.PROJ_LOC_STEP,
 				location : {}
 			});
+			this.$('#workflow-nav-collapse').focus();
 		},
 		goToChooseDataStep : function(ev) {
 			ev.preventDefault();
 			this.model.set({step : this.model.CHOOSE_DATA_STEP});
+			this.$('nav').focus();
 		},
 		goToProcessDataStep : function(ev) {
 			ev.preventDefault();
 			this.model.set({step : this.model.PROCESS_DATA_STEP});
+			this.$('#workflow-nav-collapse').focus();
 		},
 
 		updateNavigation : function(model) {

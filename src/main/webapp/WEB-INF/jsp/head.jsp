@@ -19,6 +19,7 @@
 	String baseUrl = props.getProperty("enddat.base.url", request.getContextPath());
 	if (!baseUrl.endsWith("/")) { baseUrl += "/"; }
 	String version = props.getProperty("application.version");
+	String proxyServiceUrl = props.getProperty("enddat.proxy-service-url");
 %>
 
 <link rel="shortcut icon" type="image/ico" href="img/favicon.ico">

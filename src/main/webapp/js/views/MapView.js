@@ -27,6 +27,20 @@ define([
 				L.control.layers(this.baseLayers, {})
 			];
 
+			this.projLocationMarker = L.marker([0, 0], {
+				draggable : true,
+				title : 'Project Location'
+			});
+			this.projLocationMarker.on('dragend', function() {
+				var latlng = this.projLocationMarker.getLatLng();
+				this.model.set({
+					location : {
+						latitude : latlng.lat,
+						longitude : latlng.lng
+					}
+				});
+			}, this);
+
 			this.listenTo(this.model, 'change:location', this.updateMarker);
 		},
 
@@ -42,8 +56,7 @@ define([
 				this.map.addControl(control);
 			}, this);
 
-			this.setUpSingleClickHandlerToCreateMarker();
-
+			this.updateMarker(this.model, this.model.get('location'));
 
 			return this;
 		},
@@ -59,21 +72,8 @@ define([
 			var self = this;
 
 			var clickTimeout;
-			var clickHandler = function(ev) {
-				var clickToCreateMarker = function() {
-					self.projLocationMarker = L.marker(ev.latlng, {
-						draggable : true,
-						title : 'Project Location'
-					});
-					self.projLocationMarker.on('dragend', function() {
-						var latlng = self.projLocationMarker.getLatLng();
-						self.model.set({
-							location : {
-								latitude : latlng.lat,
-								longitude : latlng.lng
-							}
-						});
-					});
+			this.createMarkClickHandler = function(ev) {
+				var clickToAddMarkerToMap = function() {
 					self.map.addLayer(self.projLocationMarker);
 					self.model.set({
 						location : {
@@ -81,24 +81,25 @@ define([
 							longitude : ev.latlng.lng
 						}
 					});
-
-					self.map.off('click', clickHandler);
-					self.map.off('dblclick', doubleClickHandler);
 				};
 
 				if (!clickTimeout) {
-					clickTimeout = setTimeout(clickToCreateMarker, 500);
+					clickTimeout = setTimeout(clickToAddMarkerToMap, 500);
 				}
 			};
-			var doubleClickHandler = function() {
+			this.createMarkDoubleClickHandler = function() {
 				if (clickTimeout) {
 					clearTimeout(clickTimeout);
 					clickTimeout = null;
 				}
 			};
+			this.map.on('click', this.createMarkClickHandler);
+			this.map.on('dblclick', this.createMarkDoubleClickHandler);
+		},
 
-			this.map.on('click', clickHandler);
-			this.map.on('dblclick', doubleClickHandler);
+		removeSingleClickHandler : function() {
+			this.map.off('click', this.createMarkClickHandler);
+			this.map.off('dbclick', this.createMarkDoubleClickHandler);
 		},
 
 		/*
@@ -106,8 +107,21 @@ define([
 		 */
 
 		updateMarker : function(model, location) {
-			this.projLocationMarker.setLatLng([location.latitude, location.longitude]);
-			log.debug('Project Location has been updated to ' + '[' + location.latitude + ', ' + location.longitude + ']');
+			var mapHasMarker = this.map.hasLayer(this.projLocationMarker);
+			if (_.has(location, 'latitude') && _.has(location, 'longitude')) {
+				if (!mapHasMarker) {
+					this.map.addLayer(this.projLocationMarker);
+				}
+				this.projLocationMarker.setLatLng([location.latitude, location.longitude]);
+				this.removeSingleClickHandler();
+				log.debug('Project Location has been updated to ' + '[' + location.latitude + ', ' + location.longitude + ']');
+			}
+			else {
+				if (mapHasMarker) {
+					this.map.removeLayer(this.projLocationMarker);
+				}
+				this.setUpSingleClickHandlerToCreateMarker();
+			}
 		}
 	});
 

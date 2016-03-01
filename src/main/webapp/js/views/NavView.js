@@ -42,7 +42,10 @@ define([
 		goToProjectLocationStep : function(ev) {
 			ev.preventDefault();
 			this.model.clear({silent : true});
-			this.model.set({step : this.model.PROJ_LOC_STEP});
+			this.model.set({
+				step : this.model.PROJ_LOC_STEP,
+				location : {}
+			});
 		},
 		goToChooseDataStep : function(ev) {
 			ev.preventDefault();
@@ -54,15 +57,14 @@ define([
 		},
 
 		updateNavigation : function(model) {
-			var oldStep;
 			var newStep = this.model.get('step');
 
-			var $chooseDataBtn, $processDataBtn;
+			var $chooseDataBtn, $processDataBtn, currentStepSelector;
 
 			if (this.model.hasChanged('step')) {
-				oldStep = this.model.previous('step');
-				this.$(this.navSelector[oldStep] + ' a').removeClass('active');
-				this.$(this.navSelector[newStep] + ' a').addClass('active');
+				currentStepSelector = this.navSelector[newStep] + ' a';
+				this.$('.navbar-nav li a').not(currentStepSelector).removeClass('active');
+				this.$(currentStepSelector).addClass('active');
 			}
 			switch(newStep) {
 				case this.model.PROJ_LOC_STEP:

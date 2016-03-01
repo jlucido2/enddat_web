@@ -24,8 +24,10 @@ define([
 			BaseView.prototype.initialize.apply(this, arguments);
 
 			this.navView = new NavView({
-				el : this.$(NAVVIEW_SELECTOR)
+				el : this.$(NAVVIEW_SELECTOR),
+				model : this.model
 			});
+
 			this.mapView = new MapView({
 				el : this.$(MAPVIEW_SELECTOR),
 				mapDivId : 'map-div',
@@ -35,9 +37,11 @@ define([
 		},
 
 		render : function() {
+			var step = this.model.get('step');
+
 			BaseView.prototype.render.apply(this, arguments);
 			this.navView.setElement(this.$(NAVVIEW_SELECTOR)).render();
-			if (this.model.isSpecifyProjectLocationStep() || this.model.isChooseDataStep()) {
+			if ((this.model.PROJ_LOC_STEP === step) || (this.model.CHOOSE_DATA_STEP === step)) {
 				this.mapView.setElement(this.$(MAPVIEW_SELECTOR)).render();
 			}
 			return this;

@@ -42,7 +42,7 @@ define([
 				this.map.addControl(control);
 			}, this);
 
-			this.setUpSingleClickHandler();
+			this.setUpSingleClickHandlerToCreateMarker();
 
 
 			return this;
@@ -55,7 +55,7 @@ define([
 			BaseView.prototype.remove.apply(this, arguments);
 		},
 
-		setUpSingleClickHandler : function() {
+		setUpSingleClickHandlerToCreateMarker : function() {
 			var self = this;
 
 			var clickTimeout;

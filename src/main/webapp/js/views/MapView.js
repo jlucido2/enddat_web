@@ -13,6 +13,7 @@ define([
 		 * @param {Object} options
 		 *		@prop {Jquery element or selector} el
 		 *		@prop {String} mapDivId - id of the div where the map should be rendered
+		 *		@prop {WorkflowStateModel} model
 		 */
 		initialize : function(options) {
 			BaseView.prototype.initialize.apply(this, arguments);
@@ -47,6 +48,9 @@ define([
 		render : function() {
 			// We don't call the prototype render at all because we are not rendering
 			// a handlebars template, but rather rendering a leaflet map.
+			if (_.has(this, 'map')) {
+				this.map.remove();
+			}
 			this.map = L.map(this.mapDivId, {
 				center: [41.0, -100.0],
 				zoom : 4,
@@ -68,6 +72,11 @@ define([
 			BaseView.prototype.remove.apply(this, arguments);
 		},
 
+		/*
+		 * We have to add handlers for both click and double click. If the click handler creates
+		 * a timeout function that is executed if the dblclick event does not occur before it's
+		 * timeout expires.
+		 */
 		setUpSingleClickHandlerToCreateMarker : function() {
 			var self = this;
 
@@ -104,8 +113,15 @@ define([
 
 		/*
 		 * Model event handlers
-		 */
+		*/
 
+		/*
+		 * Updates or adds a marker at location if location is valid and removes the single click handler
+		 * to create the marker. Otherwise remove the marker and set up the single click handler so that
+		 * a marker can be added.
+		 * @param {WorkflowStateModel} model
+		 * @param {Object} location - has properties latitude and longitude in order to be a valid location
+		 */
 		updateMarker : function(model, location) {
 			var mapHasMarker = this.map.hasLayer(this.projLocationMarker);
 			if (_.has(location, 'latitude') && _.has(location, 'longitude')) {

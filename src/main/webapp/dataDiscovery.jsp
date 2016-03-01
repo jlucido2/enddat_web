@@ -26,7 +26,8 @@
 			var require = {
 				config: {
 					'init': {
-						'contextPath': "<%=baseUrl%>"
+						'contextPath': "<%=baseUrl%>",
+						'development' : '<%=development%>'
 					}
 				},
 				baseUrl: "<%=baseUrl%>/js/",
@@ -39,7 +40,8 @@
 					"text": '<%=baseUrl%>bower_components/text/text',
 					"hbs" : '<%=baseUrl%>bower_components/requirejs-hbs/hbs',
 					'leaflet' : '<%=baseUrl%>bower_components/leaflet/dist/leaflet',
-					'leaflet-providers' : '<%=baseUrl%>bower_components/leaflet-providers/leaflet-providers'
+					'leaflet-providers' : '<%=baseUrl%>bower_components/leaflet-providers/leaflet-providers',
+					'loglevel' : '<%=baseUrl%>bower_components/loglevel/dist/loglevel<%= development ? "" : ".min"%>'
 				},
 				shim: {
 					"bootstrap": [ "jquery" ],

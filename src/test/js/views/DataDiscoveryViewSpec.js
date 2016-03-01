@@ -4,14 +4,16 @@
 define([
 	'squire',
 	'jquery',
+	'models/WorkflowStateModel',
 	'views/BaseView'
-], function(Squire, $, BaseView) {
+], function(Squire, $, WorkflowStateModel, BaseView) {
 	"use strict";
 
 	describe("DataDiscoveryView", function() {
 
 		var DataDiscoveryView;
 		var testView;
+		var testModel;
 		var $testDiv;
 
 		var initializeBaseViewSpy, renderBaseViewSpy, removeBaseViewSpy;
@@ -35,6 +37,9 @@ define([
 			setElMapViewSpy = jasmine.createSpy('setElMapViewSpy');
 			renderMapViewSpy = jasmine.createSpy('renderMapViewSpy');
 			removeMapViewSpy = jasmine.createSpy('removeMapViewSpy');
+
+			testModel = new WorkflowStateModel();
+			testModel.set('step', testModel.PROJ_LOC_STEP);
 
 			injector = new Squire();
 			injector.mock('views/BaseView', BaseView.extend({
@@ -72,14 +77,16 @@ define([
 
 		it('Expects that BaseView.initialize is called', function() {
 			testView = new DataDiscoveryView({
-				el : $testDiv
+				el : $testDiv,
+				model : testModel
 			});
 			expect(initializeBaseViewSpy).toHaveBeenCalled();
 		});
 
 		it('Expects the child views to be initialized', function() {
 			testView = new DataDiscoveryView({
-				el : $testDiv
+				el : $testDiv,
+				model : testModel
 			});
 
 			expect(setElNavViewSpy.calls.count()).toBe(1);
@@ -89,28 +96,54 @@ define([
 		describe('Tests for render', function() {
 			beforeEach(function() {
 				testView = new DataDiscoveryView({
-					el : $testDiv
+					el : $testDiv,
+					model : testModel
 				});
-				testView.render();
 			});
 
 			it('Expects that the BaseView render is called', function() {
+				testView.render();
 				expect(renderBaseViewSpy).toHaveBeenCalled();
 			});
 
-			it('Expects that the children views are rendered', function() {
+			it('Expects that the navView is rendered regardless of workflow step', function() {
+				testView.render();
 				expect(setElNavViewSpy.calls.count()).toBe(2);
 				expect(renderNavViewSpy.calls.count()).toBe(1);
 
+				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+				testView.render();
+				expect(setElNavViewSpy.calls.count()).toBe(3);
+				expect(renderNavViewSpy.calls.count()).toBe(2);
+
+				testModel.set('step', testModel.PROCESS_DATA_STEP);
+				testView.render();
+				expect(setElNavViewSpy.calls.count()).toBe(4);
+				expect(renderNavViewSpy.calls.count()).toBe(3);
+			});
+
+			it('Expects that the mapView is rendered only if the workflow step is specify project location or choose data', function() {
+				testView.render();
 				expect(setElMapViewSpy.calls.count()).toBe(2);
 				expect(renderMapViewSpy.calls.count()).toBe(1);
+
+				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+				testView.render();
+				expect(setElMapViewSpy.calls.count()).toBe(3);
+				expect(renderMapViewSpy.calls.count()).toBe(2);
+
+				testModel.set('step', testModel.PROCESS_DATA_STEP);
+				testView.render();
+				expect(setElMapViewSpy.calls.count()).toBe(3);
+				expect(renderMapViewSpy.calls.count()).toBe(2);
 			});
 		});
 
 		describe('Tests for remove', function() {
 			beforeEach(function() {
 				testView = new DataDiscoveryView({
-					el : $testDiv
+					el : $testDiv,
+					model : testModel
 				});
 				testView.remove();
 			});

@@ -99,19 +99,43 @@ define([
 					el : $testDiv,
 					model : testModel
 				});
-				testView.render();
 			});
 
 			it('Expects that the BaseView render is called', function() {
+				testView.render();
 				expect(renderBaseViewSpy).toHaveBeenCalled();
 			});
 
-			it('Expects that the children views are rendered', function() {
+			it('Expects that the navView is rendered regardless of workflow step', function() {
+				testView.render();
 				expect(setElNavViewSpy.calls.count()).toBe(2);
 				expect(renderNavViewSpy.calls.count()).toBe(1);
 
+				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+				testView.render();
+				expect(setElNavViewSpy.calls.count()).toBe(3);
+				expect(renderNavViewSpy.calls.count()).toBe(2);
+
+				testModel.set('step', testModel.PROCESS_DATA_STEP);
+				testView.render();
+				expect(setElNavViewSpy.calls.count()).toBe(4);
+				expect(renderNavViewSpy.calls.count()).toBe(3);
+			});
+
+			it('Expects that the mapView is rendered only if the workflow step is specify project location or choose data', function() {
+				testView.render();
 				expect(setElMapViewSpy.calls.count()).toBe(2);
 				expect(renderMapViewSpy.calls.count()).toBe(1);
+
+				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+				testView.render();
+				expect(setElMapViewSpy.calls.count()).toBe(3);
+				expect(renderMapViewSpy.calls.count()).toBe(2);
+
+				testModel.set('step', testModel.PROCESS_DATA_STEP);
+				testView.render();
+				expect(setElMapViewSpy.calls.count()).toBe(3);
+				expect(renderMapViewSpy.calls.count()).toBe(2);
 			});
 		});
 

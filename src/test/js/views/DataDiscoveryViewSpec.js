@@ -4,14 +4,16 @@
 define([
 	'squire',
 	'jquery',
+	'models/WorkflowStateModel',
 	'views/BaseView'
-], function(Squire, $, BaseView) {
+], function(Squire, $, WorkflowStateModel, BaseView) {
 	"use strict";
 
-	xdescribe("DataDiscoveryView", function() {
+	describe("DataDiscoveryView", function() {
 
 		var DataDiscoveryView;
 		var testView;
+		var testModel;
 		var $testDiv;
 
 		var initializeBaseViewSpy, renderBaseViewSpy, removeBaseViewSpy;
@@ -35,6 +37,9 @@ define([
 			setElMapViewSpy = jasmine.createSpy('setElMapViewSpy');
 			renderMapViewSpy = jasmine.createSpy('renderMapViewSpy');
 			removeMapViewSpy = jasmine.createSpy('removeMapViewSpy');
+
+			testModel = new WorkflowStateModel();
+			testModel.set('step', testModel.PROJ_LOC_STEP);
 
 			injector = new Squire();
 			injector.mock('views/BaseView', BaseView.extend({
@@ -72,14 +77,16 @@ define([
 
 		it('Expects that BaseView.initialize is called', function() {
 			testView = new DataDiscoveryView({
-				el : $testDiv
+				el : $testDiv,
+				model : testModel
 			});
 			expect(initializeBaseViewSpy).toHaveBeenCalled();
 		});
 
 		it('Expects the child views to be initialized', function() {
 			testView = new DataDiscoveryView({
-				el : $testDiv
+				el : $testDiv,
+				model : testModel
 			});
 
 			expect(setElNavViewSpy.calls.count()).toBe(1);
@@ -89,7 +96,8 @@ define([
 		describe('Tests for render', function() {
 			beforeEach(function() {
 				testView = new DataDiscoveryView({
-					el : $testDiv
+					el : $testDiv,
+					model : testModel
 				});
 				testView.render();
 			});
@@ -110,7 +118,8 @@ define([
 		describe('Tests for remove', function() {
 			beforeEach(function() {
 				testView = new DataDiscoveryView({
-					el : $testDiv
+					el : $testDiv,
+					model : testModel
 				});
 				testView.remove();
 			});

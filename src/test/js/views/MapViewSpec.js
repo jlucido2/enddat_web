@@ -4,14 +4,16 @@
 define([
 	'jquery',
 	'leaflet',
+	'models/WorkflowStateModel',
 	'views/BaseView',
 	'views/MapView'
-], function($, L, BaseView, MapView) {
-	xdescribe('views/MapView', function() {
+], function($, L, WorkflowStateModel, BaseView, MapView) {
+	describe('views/MapView', function() {
 		var testView;
 		var $testDiv;
+		var testModel;
 		var fakeServer;
-		var addControlSpy, removeMapSpy;
+		var addControlSpy, hasLayerSpy, removeMapSpy;
 
 		beforeEach(function() {
 			fakeServer = sinon.fakeServer.create();
@@ -21,18 +23,26 @@ define([
 
 			addControlSpy = jasmine.createSpy('addControlSpy');
 			removeMapSpy = jasmine.createSpy('removeMapSpy');
+			hasLayerSpy = jasmine.createSpy('hasLayerSpy');
 			spyOn(L, 'map').and.returnValue({
 				addControl : addControlSpy,
-				remove : removeMapSpy
+				hasLayer : hasLayerSpy,
+				remove : removeMapSpy,
+				on : jasmine.createSpy('onSpy'),
+				off : jasmine.createSpy('offSpy')
 			});
 			spyOn(L.control, 'layers').and.callThrough();
 
 			spyOn(BaseView.prototype, 'initialize').and.callThrough();
 			spyOn(BaseView.prototype, 'remove').and.callThrough();
 
+			testModel = new WorkflowStateModel();
+			testModel.set('step', testModel.PROJ_LOC_STEP);
+
 			testView = new MapView({
 				el : '#test-div',
-				mapDivId : 'test-map-div'
+				mapDivId : 'test-map-div',
+				model : testModel
 			});
 		});
 

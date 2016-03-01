@@ -8,6 +8,9 @@ define([
 ], function(bootstrap, log, BaseView, hb_template) {
 	"use strict";
 
+	var DEFAULT_RADIUS = 2;
+	var DEFAULT_DATASETS = ['NWIS'];
+
 	var view = BaseView.extend({
 		template : hb_template,
 
@@ -46,17 +49,29 @@ define([
 				step : this.model.PROJ_LOC_STEP,
 				location : {}
 			});
-			this.$('#workflow-nav-collapse').focus();
 		},
 		goToChooseDataStep : function(ev) {
+			var location = this.model.get('location');
 			ev.preventDefault();
-			this.model.set({step : this.model.CHOOSE_DATA_STEP});
-			this.$('nav').focus();
+			this.model.set({
+				step : this.model.CHOOSE_DATA_STEP,
+				radius: DEFAULT_RADIUS,
+				datasets : DEFAULT_DATASETS
+			});
 		},
 		goToProcessDataStep : function(ev) {
 			ev.preventDefault();
 			this.model.set({step : this.model.PROCESS_DATA_STEP});
-			this.$('#workflow-nav-collapse').focus();
+		},
+
+		_getChooseDataUrl : function(model) {
+			var state = model.attributes;
+			var location = 'lat/' + state.location.latitude + '/lng/' + state.location.longitude;
+			var radius = (model.has('radius')) ? '/radius/' + state.radius : '';
+			var startDate = (model.has('startDate')) ? '/startdate/' + state.startDate : '';
+			var endDate = (model.has('endDate')) ? '/enddate/' + state.endDate : '';
+			var datasets = (model.has('datasets')) ? '/dataset/' + state.datasets.join('/') : '';
+			return location + radius + startDate + endDate + datasets;
 		},
 
 		updateNavigation : function(model) {
@@ -80,6 +95,8 @@ define([
 						$chooseDataBtn.addClass('disabled');
 					}
 					$processDataBtn.addClass('disabled');
+
+					this.router.navigate('');
 					break;
 
 				case this.model.CHOOSE_DATA_STEP:
@@ -87,6 +104,8 @@ define([
 					//TODO: We will need to add code to remove the disabled class from the process Data button
 					// when we know what will allow that step.
 					$processDataBtn.addClass('disabled');
+					this.router.navigate(this._getChooseDataUrl(this.model));
+
 					break;
 
 				case this.model.PROCESS_DATA_STEP:

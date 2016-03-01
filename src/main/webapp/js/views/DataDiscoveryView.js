@@ -25,7 +25,8 @@ define([
 
 			this.navView = new NavView({
 				el : this.$(NAVVIEW_SELECTOR),
-				model : this.model
+				model : this.model,
+				router : this.router
 			});
 
 			this.mapView = new MapView({

@@ -4,8 +4,9 @@ define([
 	'underscore',
 	'leaflet',
 	'leaflet-providers',
+	'loglevel',
 	'views/BaseView'
-], function(_, L, leafletProviders, BaseView) {
+], function(_, L, leafletProviders, log, BaseView) {
 	var view = BaseView.extend({
 
 		/*
@@ -25,6 +26,22 @@ define([
 			this.controls = [
 				L.control.layers(this.baseLayers, {})
 			];
+
+			this.projLocationMarker = L.marker([0, 0], {
+				draggable : true,
+				title : 'Project Location'
+			});
+			this.projLocationMarker.on('dragend', function() {
+				var latlng = this.projLocationMarker.getLatLng();
+				this.model.set({
+					location : {
+						latitude : latlng.lat,
+						longitude : latlng.lng
+					}
+				});
+			}, this);
+
+			this.listenTo(this.model, 'change:location', this.updateMarker);
 		},
 
 		render : function() {
@@ -39,6 +56,8 @@ define([
 				this.map.addControl(control);
 			}, this);
 
+			this.updateMarker(this.model, this.model.get('location'));
+
 			return this;
 		},
 
@@ -47,6 +66,62 @@ define([
 				this.map.remove();
 			}
 			BaseView.prototype.remove.apply(this, arguments);
+		},
+
+		setUpSingleClickHandlerToCreateMarker : function() {
+			var self = this;
+
+			var clickTimeout;
+			this.createMarkClickHandler = function(ev) {
+				var clickToAddMarkerToMap = function() {
+					self.map.addLayer(self.projLocationMarker);
+					self.model.set({
+						location : {
+							latitude : ev.latlng.lat,
+							longitude : ev.latlng.lng
+						}
+					});
+				};
+
+				if (!clickTimeout) {
+					clickTimeout = setTimeout(clickToAddMarkerToMap, 500);
+				}
+			};
+			this.createMarkDoubleClickHandler = function() {
+				if (clickTimeout) {
+					clearTimeout(clickTimeout);
+					clickTimeout = null;
+				}
+			};
+			this.map.on('click', this.createMarkClickHandler);
+			this.map.on('dblclick', this.createMarkDoubleClickHandler);
+		},
+
+		removeSingleClickHandler : function() {
+			this.map.off('click', this.createMarkClickHandler);
+			this.map.off('dbclick', this.createMarkDoubleClickHandler);
+		},
+
+		/*
+		 * Model event handlers
+		 */
+
+		updateMarker : function(model, location) {
+			var mapHasMarker = this.map.hasLayer(this.projLocationMarker);
+			if (_.has(location, 'latitude') && _.has(location, 'longitude')) {
+				if (!mapHasMarker) {
+					this.map.addLayer(this.projLocationMarker);
+				}
+				this.projLocationMarker.setLatLng([location.latitude, location.longitude]);
+				this.removeSingleClickHandler();
+				log.debug('Project Location has been updated to ' + '[' + location.latitude + ', ' + location.longitude + ']');
+			}
+			else {
+				if (mapHasMarker) {
+					this.map.removeLayer(this.projLocationMarker);
+				}
+				this.setUpSingleClickHandlerToCreateMarker();
+			}
 		}
 	});
 

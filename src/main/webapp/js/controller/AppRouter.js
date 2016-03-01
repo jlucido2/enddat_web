@@ -3,16 +3,24 @@
 define([
 	'jquery',
 	'backbone',
+	'loglevel',
+	'models/WorkflowStateModel',
 	'views/DataDiscoveryView'
-], function ($, Backbone, DataDiscoveryView) {
+], function ($, Backbone, log, WorkflowStateModel, DataDiscoveryView) {
 	"use strict";
 
 	var appRouter = Backbone.Router.extend({
 		routes: {
-			'' : 'dataDiscoveryView',
-			/* datadiscovery/#lat/xxx.xx/lon/xxx.xx/radius/x/datatset/ABC */
-			'lat/:lat/lon/:lon/radius/:r/dataset/:dataset' : 'dataDiscoveryView'
-				},
+			'': 'specifyProjectLocationState',
+			'lat/:lat/lng/:lng/(radius/:radius/dataset/*datasets)' : 'chooseDataState',
+			'lat/:lat/lng/:lng/(radius/:radius/startdate/:startDate/endDate/:endDate/dataset/*datasets)' : 'chooseDataState',
+			'lat/:lat/lng/:lng/(radius/:radius/startdate/:startDate/endDate/:endDate)' : 'chooseDataStep'
+		},
+
+		initialize : function(options) {
+			Backbone.Router.prototype.initialize.apply(this, arguments);
+			this.workflowState = new WorkflowStateModel();
+		},
 
 		applicationContextDiv: '#main-content',
 
@@ -29,7 +37,7 @@ define([
 			this.currentView = new view($.extend({
 				el: newEl,
 				router: this
-			}, opts)).render();
+			}, opts));
 
 			return this.currentView;
 		},
@@ -43,16 +51,27 @@ define([
 			}
 		},
 
-		dataDiscoveryView: function (lat, lon, r, dataset) {
-			this.createView(DataDiscoveryView,{
-				lat : lat,
-				lon : lon,
-				radius : r,
-				dataset : dataset
+		specifyProjectLocationState: function () {
+			this.workflowState.set('step', this.workflowState.PROJ_LOC_STEP);
+			this.createView(DataDiscoveryView, {
+				model : this.workflowState
+			}).render();
+		},
+
+		chooseDataState : function(lat, lng, radius, startDate, endDate, datasets) {
+			this.workflowState.set({
+				'step' :this.workflowState.CHOOSE_DATA_STEP,
+				'location' : {latitude : lat, longitude : lng},
+				'radius' : radius,
+				'startDate' : startDate,
+				'endDate' : endDate,
+				'datasets' : datasets
 			});
+			this.createView(DataDiscoveryView, {
+				model : this.workflowState
+			}).render();
 		}
 	});
 
 	return appRouter;
 });
-

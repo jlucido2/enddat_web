@@ -1,13 +1,13 @@
 define([
     	'backbone',
-    	'underscore',  //check if this needed since backbone is here
-    	'utils/ParseRDB'
-    ], function (Backbone, _, ParseRDB) {
+    	'utils/ParseRDB',
+    	'module'
+    ], function (Backbone, ParseRDB, module) {
 	"use strict";
 	var NWIS_PARAMETER_CODE_DEFINITIONS = undefined;
 
-	var ParameterCodes = Backbone.Model.extend({
-		url: ENDDAT.PROXY_URL + 'pmcodes?radio_pm_search=param_group&pm_group=Physical&format=rdb&show=parameter_nm',
+	var model = Backbone.Model.extend({
+		url: config().proxyUrl + 'pmcodes?radio_pm_search=param_group&pm_group=Physical&format=rdb&show=parameter_nm',
 
 		parse: function(data) {
 			NWIS_PARAMETER_CODE_DEFINITIONS = {};

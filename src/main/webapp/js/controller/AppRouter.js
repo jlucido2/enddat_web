@@ -12,9 +12,8 @@ define([
 	var appRouter = Backbone.Router.extend({
 		routes: {
 			'': 'specifyProjectLocationState',
-			'lat/:lat/lng/:lng/(radius/:radius/dataset/*datasets)' : 'chooseDataState',
-			'lat/:lat/lng/:lng/(radius/:radius/startdate/:startDate/endDate/:endDate/dataset/*datasets)' : 'chooseDataState',
-			'lat/:lat/lng/:lng/(radius/:radius/startdate/:startDate/endDate/:endDate)' : 'chooseDataStep'
+			'lat/:lat/lng/:lng' : 'chooseDataState',
+			'lat/:lat/lng/:lng(/radius/:radius)(/startdate/:startDate)(/enddate/:endDate)(/dataset/*datasets)' : 'chooseDataState',
 		},
 
 		initialize : function(options) {
@@ -65,7 +64,7 @@ define([
 				'radius' : radius,
 				'startDate' : startDate,
 				'endDate' : endDate,
-				'datasets' : datasets
+				'datasets' : datasets ? datasets.split('/') : null
 			});
 			this.createView(DataDiscoveryView, {
 				model : this.workflowState

@@ -24,6 +24,7 @@ define([
 		 * @param {Object} options
 		 *		@prop {Jquery element or selector string} el
 		 *		@prop {WorkflowStateModel} model
+		 *		@prop {Backbone.Router} router
 		 */
 		initialize : function(options) {
 			BaseView.prototype.initialize.apply(this, arguments);
@@ -42,26 +43,35 @@ define([
 			return this;
 		},
 
+		/*
+		 * DOM Event handlers
+		 */
 		goToProjectLocationStep : function(ev) {
 			ev.preventDefault();
-			this.model.clear({silent : true});
-			this.model.set({
-				step : this.model.PROJ_LOC_STEP,
-				location : {}
-			});
+			if (this.model.get('step') !== this.model.PROJ_LOC_STEP) {
+				this.model.clear({silent : true});
+				this.model.set({
+					step : this.model.PROJ_LOC_STEP,
+					location : {}
+				});
+			}
 		},
 		goToChooseDataStep : function(ev) {
-			var location = this.model.get('location');
 			ev.preventDefault();
-			this.model.set({
-				step : this.model.CHOOSE_DATA_STEP,
-				radius: DEFAULT_RADIUS,
-				datasets : DEFAULT_DATASETS
-			});
+			if (this.model.get('step') !== this.model.CHOOSE_DATA_STEP) {
+				this.model.set({
+					step : this.model.CHOOSE_DATA_STEP,
+					radius: DEFAULT_RADIUS,
+					datasets : DEFAULT_DATASETS
+				});
+			}
 		},
 		goToProcessDataStep : function(ev) {
+			//TODO: This will need more once we define this step better
 			ev.preventDefault();
-			this.model.set({step : this.model.PROCESS_DATA_STEP});
+			if (this.model.get('step') !== this.model.PROCESS_DATA_STEP) {
+				this.model.set({step : this.model.PROCESS_DATA_STEP});
+			}
 		},
 
 		_getChooseDataUrl : function(model) {

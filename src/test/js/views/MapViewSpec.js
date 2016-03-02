@@ -13,7 +13,7 @@ define([
 		var $testDiv;
 		var testModel;
 		var fakeServer;
-		var addControlSpy, hasLayerSpy, removeMapSpy;
+		var addLayerSpy, removeLayerSpy, addControlSpy, hasLayerSpy, removeMapSpy;
 
 		beforeEach(function() {
 			fakeServer = sinon.fakeServer.create();
@@ -21,10 +21,14 @@ define([
 			$('body').append('<div id="test-div"><div id="test-map-div"></div></div>');
 			$testDiv = $('#test-div');
 
+			addLayerSpy = jasmine.createSpy('addLayerSpy');
+			removeLayerSpy = jasmine.createSpy('removeLayerSpy');
 			addControlSpy = jasmine.createSpy('addControlSpy');
 			removeMapSpy = jasmine.createSpy('removeMapSpy');
 			hasLayerSpy = jasmine.createSpy('hasLayerSpy');
 			spyOn(L, 'map').and.returnValue({
+				addLayer : addLayerSpy,
+				removeLayer : removeLayerSpy,
 				addControl : addControlSpy,
 				hasLayer : hasLayerSpy,
 				remove : removeMapSpy,
@@ -32,6 +36,7 @@ define([
 				off : jasmine.createSpy('offSpy')
 			});
 			spyOn(L.control, 'layers').and.callThrough();
+			spyOn(L, 'marker').and.callThrough();
 
 			spyOn(BaseView.prototype, 'initialize').and.callThrough();
 			spyOn(BaseView.prototype, 'remove').and.callThrough();
@@ -49,6 +54,7 @@ define([
 		afterEach(function() {
 			fakeServer.restore();
 			$testDiv.remove();
+			testView.remove();
 		});
 
 		it('Expects that the BaseView initialize is called', function() {
@@ -58,6 +64,10 @@ define([
 		it('Expects that the layer switcher control is created', function() {
 			expect(L.control.layers).toHaveBeenCalled();
 			expect(testView.controls.length).toBe(1);
+		});
+
+		it('Expects that a project location marker is created', function() {
+			expect(L.marker).toHaveBeenCalled();
 		});
 
 		describe('Tests for render', function() {
@@ -71,6 +81,22 @@ define([
 
 			it('Expects the layer switch control to be added to the map', function() {
 				expect(addControlSpy).toHaveBeenCalledWith(testView.controls[0]);
+			});
+
+			it('Expects that the project location marker is not added to the map if location is not defined in the workflow state', function() {
+				expect(addLayerSpy).not.toHaveBeenCalled();
+			});
+
+			it('Expect that the project location marker is added to the map if the location is defined in the workflow state', function() {
+				testModel.set('location', {latitude : 43.0, longitude : -100.0});
+				testView.render();
+				expect(addLayerSpy).toHaveBeenCalledWith(testView.projLocationMarker);
+			});
+
+			it('Expects that if render is called twice, the second call removes the map before recreating it', function() {
+				testView.render();
+				expect(removeMapSpy).toHaveBeenCalled();
+				expect(L.map.calls.count()).toBe(2);
 			});
 		});
 
@@ -87,6 +113,35 @@ define([
 				testView.remove();
 				expect(BaseView.prototype.remove).toHaveBeenCalled();
 				expect(removeMapSpy).toHaveBeenCalled();
+			});
+		});
+
+		describe('Tests for workflow model event handlers', function() {
+			beforeEach(function() {
+				testView.render();
+			});
+
+			it('Expects that if location goes from unset to set the marker is added to the map and it\'s location is set', function() {
+				hasLayerSpy.and.returnValue(false);
+				testModel.set('location', {latitude : 43.0, longitude : -100.0});
+				expect(addLayerSpy).toHaveBeenCalledWith(testView.projLocationMarker);
+				expect(testView.projLocationMarker.getLatLng()).toEqual(L.latLng(43.0, -100.0));
+			});
+
+			it('Expects that if the location is changed once the marker is on the map, that its location is updated', function() {
+				hasLayerSpy.and.returnValue(false);
+				testModel.set('location', {latitude : 43.0, longitude : -100.0});
+				hasLayerSpy.and.returnValue(true);
+				testModel.set('location', {latitude: 42.0, longitude : -101.0});
+				expect(addLayerSpy.calls.count()).toBe(1);
+				expect(testView.projLocationMarker.getLatLng()).toEqual(L.latLng(42.0, -101.0));
+			});
+
+			it('Expects that if the map has the marker and the location is not set, the marker will ber removed from the map', function() {
+				hasLayerSpy.and.returnValue(true);
+				expect(removeLayerSpy).not.toHaveBeenCalled();
+				testModel.set('location', {});
+				expect(removeLayerSpy).toHaveBeenCalled();
 			});
 		});
 

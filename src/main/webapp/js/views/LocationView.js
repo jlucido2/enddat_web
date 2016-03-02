@@ -13,7 +13,8 @@ define([
 		template : hbTemplate,
 
 		events : {
-			'click .use-location-btn' : 'getMyLocation'
+			'click .use-location-btn' : 'getMyLocation',
+			'click .collapse-btn' : 'toggleIcon'
 		},
 
 		bindings : {
@@ -80,6 +81,14 @@ define([
 				timeout: 8000,
 				maximumAge: 60000
 			});
+		},
+		toggleIcon : function(ev) {
+			var $button = $(ev.currentTarget);
+			var $visibleIcon = $button.find('i:visible');
+			var $hiddenIcon = $button.find('i:hidden')
+			ev.preventDefault();
+			$visibleIcon.hide();
+			$hiddenIcon.show();
 		}
 	});
 

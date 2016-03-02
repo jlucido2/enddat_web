@@ -1,9 +1,16 @@
 .location-panel {
+	/* the two styles below disable the spin button in the number inputs */
 	input::-webkit-outer-spin-button,
 	input::-webkit-inner-spin-button {
-		/* display: none; <- Crashes Chrome on hover */
 		-webkit-appearance: none;
 		margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+	}
+	
+	.collapse-btn {
+		float: right;
+		.collapse-icon {
+			display:none;
+		}
 	}
 }
 

@@ -54,6 +54,7 @@ define([
 		afterEach(function() {
 			fakeServer.restore();
 			$testDiv.remove();
+			testView.remove();
 		});
 
 		it('Expects that the BaseView initialize is called', function() {

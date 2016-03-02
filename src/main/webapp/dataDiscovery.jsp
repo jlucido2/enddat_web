@@ -27,7 +27,8 @@
 				config: {
 					'init': {
 						'contextPath': "<%=baseUrl%>",
-						'development' : '<%=development%>'
+						'development' : '<%=development%>',
+						'proxyUrl': "<%=proxyServiceUrl%>"
 					}
 				},
 				baseUrl: "<%=baseUrl%>/js/",

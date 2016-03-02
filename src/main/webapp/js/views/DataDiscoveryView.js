@@ -21,6 +21,16 @@ define([
 		 *		@prop {models/WorkflowStateModel} model
 		 */
 		initialize: function (options) {
+			
+			if (this.model.CHOOSE_DATA_STEP) {
+				//load the site model based on the properties in this.model
+				//how to get this.model to SiteModel to use it's attributes in the url?
+				this.siteData = new SiteModel();
+				//probably need to setup promise and check at some point later 
+				this.siteData.fetch();
+				//probably need to setup listen to changes to siteData model here?
+			};
+			
 			BaseView.prototype.initialize.apply(this, arguments);
 
 			this.navView = new NavView({

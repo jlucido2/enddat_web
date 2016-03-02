@@ -1,8 +1,10 @@
+/*jslint browser: true */
+
 define([
-    	'underscore',
-    	'jquery',
-    	'module'
-    ], function (_, $, module) {
+	'underscore',
+	'jquery',
+	'module'
+], function (_, $, module) {
 	"use strict";
 
 	var parseRDB = function(lines, importantColumns, onRowCallback) {
@@ -36,6 +38,5 @@ define([
 				}
 			}
 		});
-	}	
-
+	}
 });

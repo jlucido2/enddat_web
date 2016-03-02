@@ -32,7 +32,7 @@ require.config({
 		'jquery': {
 			exports: '$'
 		},
-		'bootstrap': ['jquery', 'jquery-ui'],
+		'bootstrap': ['jquery'],
 		'backbone': {
 			deps: ['jquery', 'underscore'],
 			exports: 'Backbone'

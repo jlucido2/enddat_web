@@ -1,11 +1,12 @@
 /* jslint browser : true */
 
 define([
+	'underscore',
 	'bootstrap', // Needed by the bootstrap navbar
 	'loglevel',
 	'views/BaseView',
-	'hbs!hb_templates/workflowNav'
-], function(bootstrap, log, BaseView, hb_template) {
+	'hbs!hb_templates/workflowNav',
+], function(_, bootstrap, log, BaseView, hb_template) {
 	"use strict";
 
 	var DEFAULT_RADIUS = 2;
@@ -96,9 +97,12 @@ define([
 			}
 			switch(newStep) {
 				case this.model.PROJ_LOC_STEP:
+					var location = this.model.get('location');
 					$chooseDataBtn = this.$(this.navSelector[this.model.CHOOSE_DATA_STEP]);
 					$processDataBtn = this.$(this.navSelector[this.model.PROCESS_DATA_STEP]);
-					if (this.model.has('location')) {
+
+					if ((location) && _.has(location, 'latitude') && (location.latitude) &&
+						_.has(location, 'longitude') && (location.longitude)) {
 						$chooseDataBtn.removeClass('disabled');
 					}
 					else {

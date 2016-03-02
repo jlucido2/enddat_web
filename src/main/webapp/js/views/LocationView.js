@@ -4,12 +4,17 @@ define([
 	'underscore',
 	'backbone.stickit',
 	'views/BaseView',
-	'hbs!hb_templates/location'
-], function(_, stickit, BaseView, hbTemplate) {
+	'hbs!hb_templates/location',
+	'hbs!hb_templates/errorAlert'
+], function(_, stickit, BaseView, hbTemplate, errorAlertTemplate) {
 	"use strict";
 
 	var view = BaseView.extend({
 		template : hbTemplate,
+
+		events : {
+			'click .use-location-btn' : 'getMyLocation'
+		},
 
 		bindings : {
 			'#latitude' : {
@@ -55,6 +60,26 @@ define([
 			BaseView.prototype.render.apply(this, arguments);
 			this.stickit();
 			return this;
+		},
+
+		getMyLocation : function(ev) {
+			var self = this;
+			var updateModel = function(position) {
+				self.model.set('location', {
+					latitude : position.coords.latitude,
+					longitude : position.coords.longitude
+				});
+			};
+			var displayError = function(err) {
+				self.$('.panel-body').append(errorAlertTemplate({
+					message : 'Unable to get your location'
+				}));
+			};
+
+			navigator.geolocation.getCurrentPosition(updateModel, displayError, {
+				timeout: 8000,
+				maximumAge: 60000
+			});
 		}
 	});
 

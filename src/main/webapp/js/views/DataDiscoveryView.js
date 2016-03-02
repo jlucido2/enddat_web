@@ -4,11 +4,13 @@ define([
 	'views/BaseView',
 	'views/NavView',
 	'views/MapView',
+	'views/LocationView',
 	'hbs!hb_templates/dataDiscovery'
-], function (BaseView, NavView, MapView, hbTemplate) {
+], function (BaseView, NavView, MapView, LocationView, hbTemplate) {
 	"use strict";
 
 	var NAVVIEW_SELECTOR = '.workflow-nav';
+	var LOCATION_SELECTOR = '.location-panel';
 	var MAPVIEW_SELECTOR = '.map-container-div';
 
 	var view = BaseView.extend({
@@ -34,7 +36,10 @@ define([
 				mapDivId : 'map-div',
 				model : this.model
 			});
-
+			this.locationView  = new LocationView({
+				el : this.$(LOCATION_SELECTOR),
+				model : this.model
+			});
 		},
 
 		render : function() {
@@ -43,6 +48,7 @@ define([
 			BaseView.prototype.render.apply(this, arguments);
 			this.navView.setElement(this.$(NAVVIEW_SELECTOR)).render();
 			if ((this.model.PROJ_LOC_STEP === step) || (this.model.CHOOSE_DATA_STEP === step)) {
+				this.locationView.setElement(this.$(LOCATION_SELECTOR)).render();
 				this.mapView.setElement(this.$(MAPVIEW_SELECTOR)).render();
 			}
 			return this;

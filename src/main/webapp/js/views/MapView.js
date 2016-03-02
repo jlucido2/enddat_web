@@ -124,7 +124,7 @@ define([
 		 */
 		updateMarker : function(model, location) {
 			var mapHasMarker = this.map.hasLayer(this.projLocationMarker);
-			if (_.has(location, 'latitude') && _.has(location, 'longitude')) {
+			if (_.has(location, 'latitude') && (location.latitude) && _.has(location, 'longitude') && (location.longitude)) {
 				if (!mapHasMarker) {
 					this.map.addLayer(this.projLocationMarker);
 				}

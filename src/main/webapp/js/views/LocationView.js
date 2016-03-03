@@ -3,18 +3,20 @@
 define([
 	'underscore',
 	'backbone.stickit',
-	'views/BaseView',
+	'views/BaseCollapsiblePanelView',
 	'hbs!hb_templates/location',
 	'hbs!hb_templates/errorAlert'
-], function(_, stickit, BaseView, hbTemplate, errorAlertTemplate) {
+], function(_, stickit, BaseCollapsiblePanelView, hbTemplate, errorAlertTemplate) {
 	"use strict";
 
-	var view = BaseView.extend({
+	var view = BaseCollapsiblePanelView.extend({
 		template : hbTemplate,
 
-		events : {
-			'click .use-location-btn' : 'getMyLocation',
-			'click .collapse-btn' : 'toggleIcon'
+		panelHeading : 'Specify Project Location',
+		panelBodyId : 'specify-project-location-panel-body',
+
+		additionalEvents : {
+			'click .use-location-btn' : 'getMyLocation'
 		},
 
 		bindings : {
@@ -58,7 +60,7 @@ define([
 			}
 		},
 		render : function() {
-			BaseView.prototype.render.apply(this, arguments);
+			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
 			this.stickit();
 			return this;
 		},
@@ -81,14 +83,6 @@ define([
 				timeout: 8000,
 				maximumAge: 60000
 			});
-		},
-		toggleIcon : function(ev) {
-			var $button = $(ev.currentTarget);
-			var $visibleIcon = $button.find('i:visible');
-			var $hiddenIcon = $button.find('i:hidden')
-			ev.preventDefault();
-			$visibleIcon.hide();
-			$hiddenIcon.show();
 		}
 	});
 

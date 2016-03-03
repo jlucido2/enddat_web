@@ -9,7 +9,7 @@ define([
 ], function(Squire, $, WorkflowStateModel, BaseView) {
 	"use strict";
 
-	describe("DataDiscoveryView", function() {
+	xdescribe("DataDiscoveryView", function() {
 
 		var DataDiscoveryView;
 		var testView;

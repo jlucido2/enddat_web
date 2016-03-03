@@ -1,24 +1,13 @@
-<div class="panel panel-default">
-	<div class="panel-heading">
-		Choose Location
-		<button class="collapse-btn" data-toggle="collapse" data-target="#location-panel-body" type="button">
-			<i class="expand-icon fa fa-plus"></i>
-			<i class="collapse-icon fa fa-minus"></i>
-		</button>
+<div class="location-hint-div"><em>Create a location on the map by single clicking to create a marker. Drag the marker to update the location</em>
+</div>
+<div>
+	<div class="form-group">
+		<label for="latitude">Latitude</label>
+		<input id="latitude" class="form-control" type="number" min="-79.0" max="79.0" step="any" value="{{latitude}}"/>
 	</div>
-	<div class="panel-body collapse" id="location-panel-body">
-		<div class="location-hint-div"><em>Create a location on the map by single clicking to create a marker. Drag the marker to update the location</em>.
-		</div>
-		<div>
-			<div class="form-group">
-				<label for="latitude">Latitude</label>
-				<input id="latitude" class="form-control" type="number" min="-79.0" max="79.0" step="any" value="{{latitude}}"/>
-			</div>
-			<div class="form-group">
-				<label for="longitude">Longitude</label>
-				<input id="longitude" class="form-control" type="number" min="-180.0" max="180.0" step="any" value="{{longitude}}"/>
-			</div>
-			<button class="btn btn-default btn-sm use-location-btn" type="button">Use my location</button>
-		</div>
+	<div class="form-group">
+		<label for="longitude">Longitude</label>
+		<input id="longitude" class="form-control" type="number" min="-180.0" max="180.0" step="any" value="{{longitude}}"/>
 	</div>
+	<button class="btn btn-default btn-sm use-location-btn" type="button">Use my location</button>
 </div>

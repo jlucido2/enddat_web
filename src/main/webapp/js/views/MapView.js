@@ -5,8 +5,9 @@ define([
 	'leaflet',
 	'leaflet-providers',
 	'loglevel',
+	'utils/geoSpatialUtils',
 	'views/BaseView'
-], function(_, L, leafletProviders, log, BaseView) {
+], function(_, L, leafletProviders, log, geoSpatialUtils, BaseView) {
 	var view = BaseView.extend({
 
 		/*
@@ -43,6 +44,7 @@ define([
 			}, this);
 
 			this.listenTo(this.model, 'change:location', this.updateMarker);
+			this.listenTo(this.model, 'change:radius', this.updateExtent);
 		},
 
 		render : function() {
@@ -61,7 +63,7 @@ define([
 			}, this);
 
 			this.updateMarker(this.model, this.model.get('location'));
-
+			this.updateExtent(this.model, this.model.get('radius'));
 			return this;
 		},
 
@@ -137,6 +139,18 @@ define([
 					this.map.removeLayer(this.projLocationMarker);
 				}
 				this.setUpSingleClickHandlerToCreateMarker();
+			}
+		},
+		updateExtent : function(model, radius) {
+			if (radius) {
+				var location = model.get('location');
+				var bbox = geoSpatialUtils.getBoundingBox(location.latitude, location.longitude, radius);
+
+				var southwest = L.latLng(bbox.south, bbox.west);
+				var northeast = L.latLng(bbox.north, bbox.east);
+
+
+				this.map.fitBounds(L.latLngBounds(southwest, northeast));
 			}
 		}
 	});

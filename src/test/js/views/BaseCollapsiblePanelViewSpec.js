@@ -62,6 +62,11 @@ define([
 				expect($testDiv.find('.panel-heading').html()).toContain(testView.panelHeading);
 			});
 
+			it('Expects that the collapse button\'s data-target is set to panelBodyId and that the panel-body has this id', function() {
+				expect($testDiv.find('.collapse-btn').data('target')).toEqual('#test-panel-body');
+				expect($testDiv.find('.panel-body').attr('id')).toEqual('test-panel-body');
+			});
+
 			it('Expects that the view\'s template property is used to generate the markup for the panel body, using the context passed into the instantiation function', function() {
 				expect($testDiv.find('.panel-body').html()).toEqual('<button class="test-button">Test Button Name</button>');
 			});

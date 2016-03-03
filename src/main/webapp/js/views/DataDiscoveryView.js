@@ -25,12 +25,11 @@ define([
 			
 			if (this.model.CHOOSE_DATA_STEP) {
 				//load the site model based on the properties in this.model
-				//I get this error when in console when instantiating SiteModel:
-				//Uncaught TypeError: Cannot read property '1' of null
-				this.siteData = new SiteModel({}, this.model);
+				//how to get this.model to SiteModel to use for url variables?
+				this.siteData = new SiteModel();
 
 				//probably need to call function with this.mapView in done 
-//				this.siteData.fetch().done();
+				this.siteData.fetch().done();
 				//probably need to setup listen to changes to siteData model here or in it's init?
 			};
 			

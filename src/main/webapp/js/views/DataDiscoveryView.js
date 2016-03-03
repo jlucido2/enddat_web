@@ -23,10 +23,9 @@ define([
 		 */
 		initialize: function (options) {
 			
-			if (this.model.CHOOSE_DATA_STEP) {
+			if (this.model.attributes.step === this.model.CHOOSE_DATA_STEP) {
 				//load the site model based on the properties in this.model
-				//how to get this.model to SiteModel to use for url variables?
-				this.siteData = new SiteModel();
+				this.siteData = new SiteModel({},{projectModel: this.model});
 
 				//probably need to call function with this.mapView in done 
 				this.siteData.fetch().done();

@@ -19,6 +19,10 @@ define([
 		-105.025118 + ',' +
 		39.791079 + 
 		'&outputDataTypeCd=iv,dv&hasDataTypeCd=iv,dv&siteType=OC,LK,ST,SP,AS,AT',
+		
+		initialize: function(attributes, options) {
+			this.projectModel = options.projectModel;
+		},
 
 		parse: function(data) {
 			//maybe put this in as a default?
@@ -76,6 +80,7 @@ define([
 
 				sites[colVals["site_no"]] = site;
 			});
+			return sites;
 		}
 
 	});

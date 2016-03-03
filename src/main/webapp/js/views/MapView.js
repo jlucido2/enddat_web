@@ -5,7 +5,7 @@ define([
 	'leaflet',
 	'leaflet-providers',
 	'loglevel',
-	'utils/geoSpatialUtils',
+	'util/geoSpatialUtils',
 	'views/BaseView'
 ], function(_, L, leafletProviders, log, geoSpatialUtils, BaseView) {
 	var view = BaseView.extend({

@@ -1,23 +1,27 @@
 /* jslint browser: true */
 
-define([
+define([        
 	'jquery',
 	'backbone',
 	'utils/ParseRDB',
 	'models/ParameterCodes',
 	'models/StatisticCodes',
 	'module'
-], function ($, Backbone, ParseRDB, ParameterCodes, module) {
+], function ($, Backbone, ParseRDB, ParameterCodes, StatisticCodes, module) {
 	"use strict";
 
 	//does this need to be a collection?
 	var model = Backbone.Model.extend({
-		//need to figure out changes to service call for radius rather than bounding box
-		//need to figure out how to reference incoming parameters from stateflow model
-		//need to figure out how to get bounding box values from radius
-		url: config().proxyUrl + 'waterService/?format=rdb&bBox=-105.213267,39.646356,-105.025118,39.791079&outputDataTypeCd=iv,dv&hasDataTypeCd=iv,dv&siteType=OC,LK,ST,SP,AS,AT',
+		url: 'waterService/?format=rdb&bBox=' +
+		//still need to bring over code to get these values from passed in lat, lon, rad
+		-105.213267 + ',' +
+		39.646356 + ',' +
+		-105.025118 + ',' +
+		39.791079 + 
+		'&outputDataTypeCd=iv,dv&hasDataTypeCd=iv,dv&siteType=OC,LK,ST,SP,AS,AT',
 
 		parse: function(data) {
+			//maybe put this in as a default?
 			var sites = {};
 
 			var importantColumns = {
@@ -32,9 +36,10 @@ define([
 				"end_date" : null,
 				"count_nu" : null
 			};
+			
 			var lines = data.split("\n");
 			parseRDB(lines, importantColumns, function(colVals) {
-				var site
+				var site;
 				//Add the info to the sites
 				if (!sites.hasOwnProperty(colVals["site_no"])) {
 					site = {};

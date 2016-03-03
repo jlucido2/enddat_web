@@ -4,8 +4,9 @@ define([
 	'views/BaseView',
 	'views/NavView',
 	'views/MapView',
+	'models/SiteModel',
 	'hbs!hb_templates/dataDiscovery'
-], function (BaseView, NavView, MapView, hbTemplate) {
+], function (BaseView, NavView, MapView, SiteModel, hbTemplate) {
 	"use strict";
 
 	var NAVVIEW_SELECTOR = '.workflow-nav';
@@ -24,11 +25,13 @@ define([
 			
 			if (this.model.CHOOSE_DATA_STEP) {
 				//load the site model based on the properties in this.model
-				//how to get this.model to SiteModel to use it's attributes in the url?
-				this.siteData = new SiteModel();
-				//probably need to setup promise and check at some point later 
-				this.siteData.fetch();
-				//probably need to setup listen to changes to siteData model here?
+				//I get this error when in console when instantiating SiteModel:
+				//Uncaught TypeError: Cannot read property '1' of null
+				this.siteData = new SiteModel({}, this.model);
+
+				//probably need to call function with this.mapView in done 
+//				this.siteData.fetch().done();
+				//probably need to setup listen to changes to siteData model here or in it's init?
 			};
 			
 			BaseView.prototype.initialize.apply(this, arguments);
@@ -39,6 +42,7 @@ define([
 				router : this.router
 			});
 
+			//put this in a separate function to be called with SiteModel if available?
 			this.mapView = new MapView({
 				el : this.$(MAPVIEW_SELECTOR),
 				mapDivId : 'map-div',

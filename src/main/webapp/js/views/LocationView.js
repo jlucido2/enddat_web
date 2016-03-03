@@ -9,6 +9,12 @@ define([
 ], function(_, stickit, BaseCollapsiblePanelView, hbTemplate, errorAlertTemplate) {
 	"use strict";
 
+	/*
+	 * @constructs
+	 * @param {Object} options
+	 *		@prop {WorkflowStateModel} model
+	 *		@prop {Jquery el or selector} el
+	 */
 	var view = BaseCollapsiblePanelView.extend({
 		template : hbTemplate,
 
@@ -32,11 +38,20 @@ define([
 				},
 				events : ['change'],
 				onSet : function(value) {
-					var oldLocation = this.model.get('location');
-					return {
-						latitude : value,
-						longitude : oldLocation.longitude
-					};
+					var result;
+					if (this.model.has('location')) {
+						result = {
+							latitude : value,
+							longitude : this.model.get('location').longitude
+						};
+					}
+					else {
+						result = {
+							latitude : value,
+							longitude : ''
+						};
+					}
+					return result;
 				}
 			},
 			'#longitude' : {
@@ -51,20 +66,33 @@ define([
 					}
 				},
 				onSet : function(value) {
-					var oldLocation = this.model.get('location');
-					return {
-						latitude : oldLocation.latitude,
-						longitude : value
-					};
+					var result;
+					if (this.model.has('location')) {
+						result = {
+							latitude : this.model.get('location').latitude,
+							longitude : value,
+						};
+					}
+					else {
+						result = {
+							latitude : '',
+							longitude : value
+						};
+					}
+					return result;
 				}
 			}
 		},
+
 		render : function() {
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
 			this.stickit();
 			return this;
 		},
 
+		/*
+		 * Uses the browsers navigator object to try to grab the browsers current location.
+		 */
 		getMyLocation : function(ev) {
 			var self = this;
 			var updateModel = function(position) {

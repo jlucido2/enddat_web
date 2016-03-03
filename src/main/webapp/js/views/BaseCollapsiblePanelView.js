@@ -7,6 +7,10 @@ define([
 ], function(_, BaseView, panelTemplate) {
 	"use strict";
 
+	/*
+	 * Abstract view that should be extended to add the panel body as the template property, adding
+	 * the panelHeading, panelBodyId, and additionalEvents properties.
+	 */
 	var view = BaseView.extend({
 		panelCollapseEvents : {
 			'click .collapse-btn' : 'toggleIcon'
@@ -15,6 +19,12 @@ define([
 
 		events : function() {
 			return _.extend({}, this.panelCollapseEvents, this.additionalEvents);
+		},
+
+		template : function() {
+			return function(context) {
+				'Replace with the template function for the panel body';
+			};
 		},
 
 		panelHeading : '', // When extending this view, give the panel a heading

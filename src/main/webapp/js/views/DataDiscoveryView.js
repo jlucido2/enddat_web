@@ -57,6 +57,7 @@ define([
 		remove: function () {
 			this.navView.remove();
 			this.mapView.remove();
+			this.locationView.remove();
 			BaseView.prototype.remove.apply(this, arguments);
 			return this;
 		}

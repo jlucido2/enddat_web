@@ -9,7 +9,7 @@ define([
 ], function(Squire, $, WorkflowStateModel, BaseView) {
 	"use strict";
 
-	xdescribe("DataDiscoveryView", function() {
+	describe("DataDiscoveryView", function() {
 
 		var DataDiscoveryView;
 		var testView;
@@ -19,6 +19,7 @@ define([
 		var initializeBaseViewSpy, renderBaseViewSpy, removeBaseViewSpy;
 		var setElNavViewSpy, renderNavViewSpy, removeNavViewSpy;
 		var setElMapViewSpy, renderMapViewSpy, removeMapViewSpy;
+		var setElLocationViewSpy, renderLocationViewSpy, removeLocationViewSpy;
 
 		var injector;
 
@@ -37,6 +38,10 @@ define([
 			setElMapViewSpy = jasmine.createSpy('setElMapViewSpy');
 			renderMapViewSpy = jasmine.createSpy('renderMapViewSpy');
 			removeMapViewSpy = jasmine.createSpy('removeMapViewSpy');
+
+			setElLocationViewSpy = jasmine.createSpy('setElLocationViewSpy');
+			renderLocationViewSpy = jasmine.createSpy('renderLocationViewSpy');
+			removeLocationViewSpy = jasmine.createSpy('removeLocationViewSpy');
 
 			testModel = new WorkflowStateModel();
 			testModel.set('step', testModel.PROJ_LOC_STEP);
@@ -60,6 +65,13 @@ define([
 				}),
 				render : renderMapViewSpy,
 				remove : removeMapViewSpy
+			}));
+			injector.mock('views/LocationView', BaseView.extend({
+				setElement : setElLocationViewSpy.and.returnValue({
+					render : renderLocationViewSpy
+				}),
+				render : renderLocationViewSpy,
+				remove : removeLocationViewSpy
 			}));
 			injector.require(['views/DataDiscoveryView'], function(view) {
 				DataDiscoveryView = view;
@@ -91,6 +103,7 @@ define([
 
 			expect(setElNavViewSpy.calls.count()).toBe(1);
 			expect(setElMapViewSpy.calls.count()).toBe(1);
+			expect(setElLocationViewSpy.calls.count()).toBe(1);
 		});
 
 		describe('Tests for render', function() {
@@ -137,6 +150,22 @@ define([
 				expect(setElMapViewSpy.calls.count()).toBe(3);
 				expect(renderMapViewSpy.calls.count()).toBe(2);
 			});
+
+			it('Expects that the locationView is rendered only if the workflow step is specify project location or choose data', function() {
+				testView.render();
+				expect(setElLocationViewSpy.calls.count()).toBe(2);
+				expect(renderLocationViewSpy.calls.count()).toBe(1);
+
+				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+				testView.render();
+				expect(setElLocationViewSpy.calls.count()).toBe(3);
+				expect(renderLocationViewSpy.calls.count()).toBe(2);
+
+				testModel.set('step', testModel.PROCESS_DATA_STEP);
+				testView.render();
+				expect(setElLocationViewSpy.calls.count()).toBe(3);
+				expect(renderLocationViewSpy.calls.count()).toBe(2);
+			});
 		});
 
 		describe('Tests for remove', function() {
@@ -155,6 +184,7 @@ define([
 			it('Expects that the children views are removed', function() {
 				expect(removeNavViewSpy.calls.count()).toBe(1);
 				expect(removeMapViewSpy.calls.count()).toBe(1);
+				expect(removeLocationViewSpy.calls.count()).toBe(1);
 			});
 		});
 	});

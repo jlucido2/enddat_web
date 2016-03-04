@@ -41,7 +41,8 @@
 					"hbs" : '<%=baseUrl%>bower_components/requirejs-hbs/hbs',
 					'leaflet' : '<%=baseUrl%>bower_components/leaflet/dist/leaflet',
 					'leaflet-providers' : '<%=baseUrl%>bower_components/leaflet-providers/leaflet-providers',
-					'loglevel' : '<%=baseUrl%>bower_components/loglevel/dist/loglevel<%= development ? "" : ".min"%>'
+					'loglevel' : '<%=baseUrl%>bower_components/loglevel/dist/loglevel<%= development ? "" : ".min"%>',
+					'backbone.stickit' : '<%=baseUrl%>bower_components/backbone.stickit/backbone.stickit'
 				},
 				shim: {
 					"bootstrap": [ "jquery" ],

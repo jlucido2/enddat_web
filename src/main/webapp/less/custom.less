@@ -12,9 +12,21 @@ header {
 }
 #main-content {
 	.make-row();
+	
+	.collapsible-panel {
+		.collapse-btn {
+			float: right;
+			border: none;
+			background-color : @panel-default-heading-bg;
+			.collapse-icon {
+				display:none;
+			}
+		}
+	}
 }
 footer {
 	.make-row();
 }
 @import "dataDiscovery.less";
 @import "workflowNav.less";
+@import "location.less";

@@ -5,7 +5,7 @@ define([
 	'bootstrap', // Needed by the bootstrap navbar
 	'loglevel',
 	'views/BaseView',
-	'hbs!hb_templates/workflowNav',
+	'hbs!hb_templates/workflowNav'
 ], function(_, bootstrap, log, BaseView, hb_template) {
 	"use strict";
 

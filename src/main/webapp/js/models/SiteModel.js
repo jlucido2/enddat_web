@@ -3,11 +3,14 @@
 define([        
 	'jquery',
 	'backbone',
-	'utils/utils',
+	'util/utils',
+	'util/geoSpatialUtils',
 	'models/ParameterCodes',
 	'models/StatisticCodes'
-], function ($, Backbone, utils, ParameterCodes, StatisticCodes) {
+], function ($, Backbone, utils, geoSpatialUtils, ParameterCodes, StatisticCodes) {
 	"use strict";
+
+	DEFAULT_RADIUS : 5;
 
 	var model = Backbone.Model.extend({});
 
@@ -15,18 +18,25 @@ define([
 		
 		model: model,
 		
-		url: 'waterService/?format=rdb&bBox=' +
-		//still need to bring over code to get these values from passed in lat, lon, rad
-		-105.213267 + ',' +
-		39.646356 + ',' +
-		-105.025118 + ',' +
-		39.791079 + 
-		'&outputDataTypeCd=iv,dv&hasDataTypeCd=iv,dv&siteType=OC,LK,ST,SP,AS,AT',
+		url: '',
 		
 		initialize: function(attributes, options) {
-			this.projectModel = options.projectModel;
+			var projectModel = options.projectModel;
+			if(projectModel.attributes.radius === null) {
+				projectModel.attributes.radius = DEFAULT_RADIUS
+			}
+			var bbox = geoSpatialUtils.getBoundingBox(
+					projectModel.attributes.location.latitude, 
+					projectModel.attributes.location.longitude, 
+					projectModel.attributes.radius);
+			this.url = 'waterService/?format=rdb&bBox=' +
+				bbox.west.toFixed(6) + ',' +
+				bbox.south.toFixed(6) + ',' +
+				bbox.east.toFixed(6) + ',' +
+				bbox.north.toFixed(6) + 
+				'&outputDataTypeCd=iv,dv&hasDataTypeCd=iv,dv&siteType=OC,LK,ST,SP,AS,AT';
 		},
-		
+
 		fetch: function() {
 			var self = this;
 			$.ajax({

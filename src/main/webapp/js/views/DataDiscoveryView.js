@@ -29,16 +29,10 @@ define([
 				//load the site model based on the properties in this.model
 				this.siteData = new SiteModel({},{projectModel: this.model});
 
-				//probably need to call function with this.mapView in done 
-				this.siteData.fetch({
-			        success: function () {
-			            console.log("good");
-			        },
-			        error: function (siteData) {
-			            console.log("bad");
-			        	}
-				});
-				//probably need to setup listen to changes to siteData model here or in it's init?
+				//pass in siteData to mapView and then have mapView listen to events
+				//on the siteData model. Specifically, there is a 'sync' event that is
+				//fired after successful fetching of the data.
+				this.siteData.fetch();
 			};
 			
 			BaseView.prototype.initialize.apply(this, arguments);
@@ -49,7 +43,6 @@ define([
 				router : this.router
 			});
 
-			//put this in a separate function to be called with SiteModel if available?
 			this.mapView = new MapView({
 				el : this.$(MAPVIEW_SELECTOR),
 				mapDivId : 'map-div',

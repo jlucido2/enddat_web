@@ -3,7 +3,7 @@
 define([
 	'jquery',
 	'backbone',
-	'utils/utils'
+	'util/utils'
 ], function ($, Backbone, utils) {
 	"use strict";
 

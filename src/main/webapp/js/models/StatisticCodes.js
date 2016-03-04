@@ -3,22 +3,34 @@
 define([
 	'jquery',
 	'backbone',
-	'utils/ParseRDB',
-	'module'
-], function ($, Backbone, ParseRDB, module) {
+	'utils/utils'
+], function ($, Backbone, utils) {
 	"use strict";
+
+	var model = Backbone.Model.extend({});
 	
-	//should this be a collection rather than a model?
-	var model = Backbone.Model.extend({
+	var collection = Backbone.Collection.extend({
+		model: model,
+
 		url: 'stcodes?read_file=stat&format=rdb',
-		
-		//still not sure if there should be an init with fetch() or do fetch in router?
-		initialize: function() {
-			this.fetch();
+
+		fetch: function(data) {
+			var self = this;
+			$.ajax({
+				type : "GET",
+				url : self.url,
+				dataType: 'text',
+				success: function(data) {
+					self.parse(data);
+				},
+				error : function(jqXHR, textStatus, error) {
+					$('#errorMessage').html("Error in loading NWIS stat definitions: " + textStatus); 
+				}
+			});
+			
 		},
 
 		parse: function(data) {
-			//maybe put this in as a default?
 			var NWIS_STAT_CODE_DEFINITIONS = {};
 
 			var lines = data.split("\n");
@@ -28,14 +40,14 @@ define([
 				stat_DS : null
 			};
 
-			parseRDB(lines, columns, function(colVals) {
-				NWIS_STAT_CODE_DEFINITIONS[colVals["stat_CD"]] = toTitleCase(colVals["stat_NM"]);
+			utils.parseRDB(lines, columns, function(colVals) {
+				NWIS_STAT_CODE_DEFINITIONS[colVals["stat_CD"]] = utils.toTitleCase(colVals["stat_NM"]);
 			});
 			
-			return this.NWIS_PARAMETER_CODE_DEFINITIONS;
+			return NWIS_STAT_CODE_DEFINITIONS;
 		}
 
 	});
 
-	return new model;	
+	return collection;	
 });

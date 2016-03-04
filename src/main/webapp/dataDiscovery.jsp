@@ -28,12 +28,7 @@
 					'init': {
 						'contextPath': "<%=baseUrl%>",
 						'development': '<%=development%>'
-					},
-					//this doesn't seem to work, not sure how else to get jndi variables in
-					'SiteModel' : {'proxyUrl': "<%=proxyServiceUrl%>"},
-					'ParameterCodes' : {'proxyUrl': "<%=proxyServiceUrl%>"},
-					'StatisticCodes' : {'proxyUrl': "<%=proxyServiceUrl%>"},
-					
+					}
 				},
 				baseUrl: "<%=baseUrl%>/js/",
 				paths: {

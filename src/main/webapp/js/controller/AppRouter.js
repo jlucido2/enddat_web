@@ -5,8 +5,10 @@ define([
 	'backbone',
 	'loglevel',
 	'models/WorkflowStateModel',
+	'models/ParameterCodes',
+	'models/StatisticCodes',
 	'views/DataDiscoveryView'
-], function ($, Backbone, log, WorkflowStateModel, DataDiscoveryView) {
+], function ($, Backbone, log, WorkflowStateModel, ParameterCodes, StatisticCodes, DataDiscoveryView) {
 	"use strict";
 
 	var appRouter = Backbone.Router.extend({
@@ -19,6 +21,10 @@ define([
 		initialize : function(options) {
 			Backbone.Router.prototype.initialize.apply(this, arguments);
 			this.workflowState = new WorkflowStateModel();
+			this.parameterCodes = new ParameterCodes();
+			this.parameterCodes.fetch();
+			this.statisticCodes = new StatisticCodes();
+			this.statisticCodes.fetch();
 		},
 
 		applicationContextDiv: '#main-content',

@@ -28,7 +28,14 @@ define([
 				this.siteData = new SiteModel({},{projectModel: this.model});
 
 				//probably need to call function with this.mapView in done 
-				this.siteData.fetch().done();
+//				this.siteData.fetch({
+//			        success: function () {
+//			            console.log("good");
+//			        },
+//			        error: function (siteData) {
+//			            console.log("bad");
+//			        	}
+//				});
 				//probably need to setup listen to changes to siteData model here or in it's init?
 			};
 			

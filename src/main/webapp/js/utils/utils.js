@@ -2,12 +2,13 @@
 
 define([
 	'underscore',
-	'jquery',
-	'module'
-], function (_, $, module) {
+	'jquery'
+], function (_, $) {
 	"use strict";
+	
+	var self = {};
 
-	var parseRDB = function(lines, importantColumns, onRowCallback) {
+	self.parseRDB = function(lines, importantColumns, onRowCallback) {
 		var columnIndexes = $.extend({}, importantColumns);
 		var isIndexesFound = false;
 		var isIntoData = false;
@@ -38,5 +39,14 @@ define([
 				}
 			}
 		});
+	};
+
+	self.toTitleCase = function (str) {
+		var lowerCase = str.toLowerCase();
+	    return lowerCase.replace(/(?:^|\s)\w/g, function(match) {
+	        return match.toUpperCase();
+	    });
 	}
+
+	return self;
 });

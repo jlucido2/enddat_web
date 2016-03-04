@@ -3,22 +3,33 @@
 define([
 	'jquery',
 	'backbone',
-	'utils/ParseRDB',
-	'module'
-], function ($, Backbone, ParseRDB, module) {
+	'utils/utils'
+], function ($, Backbone, utils) {
 	"use strict";
+
+	var model = Backbone.Model.extend({});
 	
-	//should this be a collection rather than a model?
-	var model = Backbone.Model.extend({
+	var collection = Backbone.Collection.extend({
+		model: model,
+
 		url: 'pmcodes?radio_pm_search=param_group&pm_group=Physical&format=rdb&show=parameter_nm',
 		
-		//still not sure if there should be an init with fetch() or do fetch in router?
-		initialize: function() {
-			this.fetch();
+		fetch: function() {
+			var self = this;
+			$.ajax({
+				type : "GET",
+				url : self.url,
+				dataType: 'text',
+				success: function(data) {
+					self.parse(data);
+				},
+				error : function(jqXHR, textStatus, error) {
+					$('#errorMessage').html("Error in loading NWIS Parameter definitions: " + textStatus); 
+				}
+			});
 		},
 
 		parse: function(data) {
-			//maybe put this in as a default?
 			var NWIS_PARAMETER_CODE_DEFINITIONS = {};
 
 			var lines = data.split("\n");
@@ -27,14 +38,14 @@ define([
 				"parameter_nm" : null
 			};
 
-			parseRDB(lines, columns, function(colVals) {
+			utils.parseRDB(lines, columns, function(colVals) {
 				NWIS_PARAMETER_CODE_DEFINITIONS[colVals["parameter_cd"]] = colVals["parameter_nm"];
 			});
 			
-			return this.NWIS_PARAMETER_CODE_DEFINITIONS;
+			return NWIS_PARAMETER_CODE_DEFINITIONS;
 		}
 
 	});
 
-	return new model;	
+	return collection;	
 });

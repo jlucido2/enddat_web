@@ -5,9 +5,9 @@ define([
 	'views/NavView',
 	'views/MapView',
 	'views/LocationView',
-	'models/SiteModel',
+	'models/SiteCollection',
 	'hbs!hb_templates/dataDiscovery'
-], function (BaseView, NavView, MapView, LocationView, SiteModel, hbTemplate) {
+], function (BaseView, NavView, MapView, LocationView, SiteCollection, hbTemplate) {
 	"use strict";
 
 	var NAVVIEW_SELECTOR = '.workflow-nav';
@@ -27,7 +27,7 @@ define([
 			
 			if (this.model.attributes.step === this.model.CHOOSE_DATA_STEP) {
 				//load the site model based on the properties in this.model
-				this.siteData = new SiteModel({},{projectModel: this.model});
+				this.siteData = new SiteCollection({},{projectModel: this.model});
 
 				//pass in siteData to mapView and then have mapView listen to events
 				//on the siteData model. Specifically, there is a 'sync' event that is

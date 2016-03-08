@@ -25,8 +25,6 @@ define([
 				bbox.east.toFixed(6) + ',' +
 				bbox.north.toFixed(6) + 
 				'&outputDataTypeCd=iv,dv&hasDataTypeCd=iv,dv&siteType=OC,LK,ST,SP,AS,AT';
-//			this.parameterCodes = options.parameterCodes;
-//			this.statisticCodes = options.statisticCodes;
 		},
 
 		fetch: function(options) {
@@ -118,7 +116,7 @@ define([
 						siteElement[colVals["site_no"]] = site;
 						
 					});
-					//need to add last unique site_no model to collection
+					//add last unique site_no model to collection
 					siteCollection.push(new Backbone.Model(siteElement));							
 					self.set(siteCollection)
 				},

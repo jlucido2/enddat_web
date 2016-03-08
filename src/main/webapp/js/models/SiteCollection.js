@@ -130,65 +130,6 @@ define([
 					}
 				}
 			});			
-		},
-
-		parse: function(data) {
-			var sites = {};
-
-			var importantColumns = {
-				"site_no" : null,
-				"station_nm" : null,
-				"dec_lat_va" : null,
-				"dec_long_va" : null,
-				"parm_cd" : null,
-				"stat_cd" : null,
-				"loc_web_ds" : null,
-				"begin_date" : null,
-				"end_date" : null,
-				"count_nu" : null
-			};
-			
-			var lines = data.split("\n");
-			utils.parseRDB(lines, importantColumns, function(colVals) {
-				var site;
-				//Add the info to the sites
-//				if (!sites.hasOwnProperty(colVals["site_no"])) {
-				if (!_.has(sites, (colVals["site_no"]))) {
-					site = {};
-					site.name = colVals["station_nm"];
-					site.lat = colVals["dec_lat_va"];
-					site.lon = colVals["dec_long_va"];
-					site.parameters = [];
-				} else {
-					site = sites[colVals["site_no"]];
-				}
-
-				var name = "Unknown parameter " + colVals["parm_cd"] + " " + colVals["stat_cd"];
-				if (this.parameterCodes && this.statisticCodes) {
-					if (colVals["parm_cd"]) {
-						name = ((this.parameterCodes[colVals["parm_cd"]])?this.parameterCodes[colVals["parm_cd"]]:"PCode " + colVals["parm_cd"]);
-						name += ((colVals["loc_web_ds"])?" (" + colVals["loc_web_ds"] + ")":"");
-					}
-					if (colVals["stat_cd"]) {
-						name += " Daily " + ((this.statisticCodes[colVals["stat_cd"]])?this.statisticCodes[colVals["stat_cd"]]:colVals["stat_cd"]);
-					} else {
-						name += " Instantaneous";
-						colVals["stat_cd"] = "00000";
-					}
-				}
-
-				site.parameters.push({
-					name : name,
-					parameterCd : colVals["parm_cd"],
-					statCd : colVals["stat_cd"],
-					startDate : colVals["begin_date"],
-					endDate : colVals["end_date"],
-					count : colVals["count_nu"]
-				});
-
-				sites[colVals["site_no"]] = site;
-			});
-			return sites;
 		}
 
 	});

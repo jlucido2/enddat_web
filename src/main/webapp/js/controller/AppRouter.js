@@ -19,12 +19,18 @@ define([
 		},
 
 		initialize : function(options) {
+			var self = this;
 			Backbone.Router.prototype.initialize.apply(this, arguments);
 			this.workflowState = new WorkflowStateModel();
+
 			this.parameterCodes = new ParameterCodes();
-			this.parameterCodes.fetch();
+			this.pCodesPromise = this.parameterCodes.fetch().done(function() {
+				log.debug('Fetched parameter codes ' + self.parameterCodes.length);
+			});
 			this.statisticCodes = new StatisticCodes();
-			this.statisticCodes.fetch();
+			this.sCodesPromise = this.statisticCodes.fetch().done(function() {
+				log.debug('Fetched statistic codes ' + self.statisticCodes.length);
+			});
 		},
 
 		applicationContextDiv: '#main-content',
@@ -73,8 +79,12 @@ define([
 				'datasets' : datasets ? datasets.split('/') : null
 			});
 			this.createView(DataDiscoveryView, {
-				model : this.workflowState
-			}).render();
+				model : this.workflowState,
+				pCodesPromise : this.pCodesPromise,
+				sCodesPromise : this.sCodesPromise,
+				parameterCodes : this.parameterCodes,
+				statisticCodes : this.statisticCodes
+			}).render();				
 		}
 	});
 

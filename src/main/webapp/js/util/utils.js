@@ -1,26 +1,25 @@
 /*jslint browser: true */
 
 define([
-	'underscore',
-	'jquery'
-], function (_, $) {
+	'underscore'
+], function (_) {
 	"use strict";
 	
 	var self = {};
 
 	self.parseRDB = function(lines, importantColumns, onRowCallback) {
-		var columnIndexes = $.extend({}, importantColumns);
+		var columnIndexes = _.extend({}, importantColumns);
 		var isIndexesFound = false;
 		var isIntoData = false;
-		$.each(lines, function(lineIndex, el) {
+		_.each(lines, function(el, lineIndex) {
 			if (el && 0 < el.length && '#' !== el.charAt(0)) {
 				var row = el.split('\t');
 
 				if (!isIndexesFound) {
 					isIndexesFound = true;
 					//at beginning, get data indexes
-					$.each(row, function(colIndex, colName) {
-						if (columnIndexes.hasOwnProperty(colName)) {
+					_.each(row, function(colName, colIndex) {
+						if (_.has(columnIndexes,colName)) {
 							columnIndexes[colName] = colIndex;
 						}
 					});
@@ -28,10 +27,10 @@ define([
 					isIntoData = true;
 					//skip line after column Headers
 				} else {
-					var columnValues = $.extend({}, importantColumns);
+					var columnValues = _.extend({}, importantColumns);
 
 					//Load up the values
-					$.each(columnIndexes, function(name, colIndex) {
+					_.each(columnIndexes, function(colIndex, name) {
 						columnValues[name] = row[colIndex];
 					});
 

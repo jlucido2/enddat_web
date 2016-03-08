@@ -3,50 +3,43 @@
 define([
 	'jquery',
 	'backbone',
+	'loglevel',
 	'util/utils'
-], function ($, Backbone, utils) {
+], function ($, Backbone, log, utils) {
 	"use strict";
 
-	var model = Backbone.Model.extend({});
-	
 	var collection = Backbone.Collection.extend({
-		model: model,
 
 		url: 'stcodes?read_file=stat&format=rdb',
 
 		fetch: function(data) {
 			var self = this;
-			$.ajax({
+			return $.ajax({
 				type : "GET",
 				url : self.url,
 				dataType: 'text',
 				success: function(data) {
-					self.parse(data);
+					var statCode;
+					var statCodeCollection = [];
+					var lines = data.split("\n");
+					var columns = {
+						stat_CD : null,
+						stat_NM : null,
+						stat_DS : null
+					};
+
+					utils.parseRDB(lines, columns, function(colVals) {
+						statCode = {};
+						statCode[colVals["stat_CD"]] = utils.toTitleCase(colVals["stat_NM"]);
+						statCodeCollection.push(new Backbone.Model(statCode));
+					});	
+					self.set(statCodeCollection)
 				},
 				error : function(jqXHR, textStatus, error) {
-					$('#errorMessage').html("Error in loading NWIS stat definitions: " + textStatus); 
+					log.debug('Error in loading NWIS stat definitions: ' + textStatus);
 				}
-			});
-			
-		},
-
-		parse: function(data) {
-			var NWIS_STAT_CODE_DEFINITIONS = {};
-
-			var lines = data.split("\n");
-			var columns = {
-				stat_CD : null,
-				stat_NM : null,
-				stat_DS : null
-			};
-
-			utils.parseRDB(lines, columns, function(colVals) {
-				NWIS_STAT_CODE_DEFINITIONS[colVals["stat_CD"]] = utils.toTitleCase(colVals["stat_NM"]);
-			});
-			
-			return NWIS_STAT_CODE_DEFINITIONS;
+			});	
 		}
-
 	});
 
 	return collection;	

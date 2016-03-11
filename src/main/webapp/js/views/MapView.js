@@ -5,9 +5,10 @@ define([
 	'leaflet',
 	'leaflet-providers',
 	'loglevel',
-	'util/geoSpatialUtils',
+	'utils/geoSpatialUtils',
+	'utils/mapUtils',
 	'views/BaseView'
-], function(_, L, leafletProviders, log, geoSpatialUtils, BaseView) {
+], function(_, L, leafletProviders, log, geoSpatialUtils, mapUtils, BaseView) {
 	var view = BaseView.extend({
 
 		/*
@@ -15,10 +16,14 @@ define([
 		 *		@prop {Jquery element or selector} el
 		 *		@prop {String} mapDivId - id of the div where the map should be rendered
 		 *		@prop {WorkflowStateModel} model
+		 *		@prop {Promise} siteModelPromise
+		 *		@prop {SiteModel} sites
 		 */
 		initialize : function(options) {
 			BaseView.prototype.initialize.apply(this, arguments);
 			this.mapDivId = options.mapDivId;
+			this.siteModelPromise = options.siteModelPromise;
+			this.sites = options.sites;
 
 			this.baseLayers = {
 				'World Street' : L.tileLayer.provider('Esri.WorldStreetMap'),
@@ -45,6 +50,7 @@ define([
 
 			this.listenTo(this.model, 'change:location', this.updateMarker);
 			this.listenTo(this.model, 'change:radius', this.updateExtent);
+//			this.listenTo(this.sites, 'sync', this.updateSiteMarker);
 		},
 
 		render : function() {
@@ -64,6 +70,7 @@ define([
 
 			this.updateMarker(this.model, this.model.get('location'));
 			this.updateExtent(this.model, this.model.get('radius'));
+			this.updateSiteMarker(this.siteModelPromise);
 			return this;
 		},
 
@@ -141,6 +148,7 @@ define([
 				this.setUpSingleClickHandlerToCreateMarker();
 			}
 		},
+
 		updateExtent : function(model, radius) {
 			if (radius) {
 				var location = model.get('location');
@@ -152,6 +160,27 @@ define([
 
 				this.map.fitBounds(L.latLngBounds(southwest, northeast));
 			}
+		},
+
+		/*
+		 * Updates or adds a marker for each site
+		 * @param {Object} sites - has one or more site objects, each with properties
+		 *							latitude and longitude in order to be a valid location
+		 */
+		updateSiteMarker : function(promise) {
+			var self = this;
+			var siteIcon = mapUtils.createIcon("img/time-series.png");
+			promise.done(function() {
+				var sites = self.sites.get('sites');
+				//I think will need to remove existing sites if handling a mouse event
+				_.each(sites, function(el) {
+					var marker = new L.marker([el['lat'], el['lon']], {icon: siteIcon, title: el['name']}).addTo(self.map);
+//					self.map.addLayer(L.marker([el['lat'], el['lon']], {
+//						title : el['name'],
+//						icon : siteIcon
+//					}));
+				});
+			});
 		}
 	});
 

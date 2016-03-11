@@ -1,14 +1,13 @@
 /* jslint browser: true */
 
 define([
-    'loglevel',
 	'views/BaseView',
 	'views/NavView',
 	'views/MapView',
 	'views/LocationView',
-	'models/SiteCollection',
+	'models/SiteModel',
 	'hbs!hb_templates/dataDiscovery'
-], function (log, BaseView, NavView, MapView, LocationView, SiteCollection, hbTemplate) {
+], function (BaseView, NavView, MapView, LocationView, SiteModel, hbTemplate) {
 	"use strict";
 
 	var NAVVIEW_SELECTOR = '.workflow-nav';
@@ -24,40 +23,36 @@ define([
 		 * @param {Object} options
 		 *		@prop {Jquery element} el
 		 *		@prop {models/WorkflowStateModel} model
-		 *		@prop {models/parameterCodes} model
-		 *		@prop {models/statisticCodes} model
 		 */
-		initialize: function (options) {
-			self = this;
-			
-			if (this.model.attributes.step === this.model.CHOOSE_DATA_STEP &&
-				this.model.attributes.radius &&
-				this.model.attributes.datasets &&
-				_.each(this.model.attributes.datasets, function(el) {
+		initialize: function (options) {			
+			/* 
+			 * Check to see if the url contains the parameters needed
+			 * to fetch data for the project.  Currently only checking
+			 * for the NWIS data type but will add others in the future.
+			 */
+			if (this.model.get('step') === this.model.CHOOSE_DATA_STEP &&
+				this.model.get('radius') &&
+				this.model.get('datasets') &&  //should we check for one and only one?
+				_.each(this.model.get('datasets'), function(el) {
 					if(el === DATATYPE_NWIS) {
 						return true;
 					}
 				})) {
 				
-				//create site model using attributes in this.model
-				this.siteData = new SiteCollection({},
-						{workflowModel: this.model});
-
-				//load the site model after codes have been fetched
-				$.when(options.pCodesPromise, options.sCodesPromise).done(function() {
-					self.siteData.fetch(
-						{parameterCodes: options.parameterCodes,
-						statisticCodes: options.statisticCodes}).done(function() {
-						log.debug('Fetched sites ' + self.siteData.length);
-					});
-				}).fail(function() {
-					self.goHome();
+				this.siteModel = new SiteModel();				
+				this.siteModelPromise = this.siteModel.fetch(this.model);
+				this.siteModelPromise.fail(function() {
+					this.goHome();
 				});
-				
-			} else if (this.siteData) {
-				this.siteData.clear();
+			/* Check if a siteModel was already created but clear the sites
+			 * attribute since the url does not have all the parameters to
+			 * fetch data.  This will preserve the parameter and statistic code
+			 * attributes in the siteModel.
+			 */
+			} else if (this.siteModel) {
+				this.siteModel.set({sites: ''});
 			};
-			
+	
 			BaseView.prototype.initialize.apply(this, arguments);
 
 			this.navView = new NavView({
@@ -73,7 +68,8 @@ define([
 				el : this.$(MAPVIEW_SELECTOR),
 				mapDivId : 'map-div',
 				model : this.model,
-				sites : this.siteData
+				siteModelPromise : this.siteModelPromise,
+				sites : this.siteModel
 			});
 			
 			this.locationView  = new LocationView({

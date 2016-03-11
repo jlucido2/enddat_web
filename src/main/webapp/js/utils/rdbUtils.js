@@ -7,10 +7,16 @@ define([
 	
 	var self = {};
 
-	self.parseRDB = function(lines, importantColumns, onRowCallback) {
+	/* @param	[Array] lines - array containing each line from an rdb file
+	 * @param	{Object} importantColumns - object of tab-delimited columns found in lines
+	 * returns	[Array} columnsArray - array of objects where each object holds key/value(s)
+	 *					corresponding to the parsed column(s) from a line
+	 */
+	self.parseRDB = function(lines, importantColumns) {
 		var columnIndexes = _.extend({}, importantColumns);
 		var isIndexesFound = false;
 		var isIntoData = false;
+		var columnsArray = [];
 		_.each(lines, function(el, lineIndex) {
 			if (el && 0 < el.length && '#' !== el.charAt(0)) {
 				var row = el.split('\t');
@@ -34,10 +40,11 @@ define([
 						columnValues[name] = row[colIndex];
 					});
 
-					onRowCallback(columnValues);
+					columnsArray.push(columnValues);
 				}
 			}
 		});
+		return columnsArray;
 	};
 
 	self.toTitleCase = function (str) {

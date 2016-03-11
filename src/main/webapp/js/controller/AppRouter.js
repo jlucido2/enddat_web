@@ -5,10 +5,8 @@ define([
 	'backbone',
 	'loglevel',
 	'models/WorkflowStateModel',
-	'models/ParameterCodes',
-	'models/StatisticCodes',
 	'views/DataDiscoveryView'
-], function ($, Backbone, log, WorkflowStateModel, ParameterCodes, StatisticCodes, DataDiscoveryView) {
+], function ($, Backbone, log, WorkflowStateModel, DataDiscoveryView) {
 	"use strict";
 
 	var appRouter = Backbone.Router.extend({
@@ -22,15 +20,6 @@ define([
 			var self = this;
 			Backbone.Router.prototype.initialize.apply(this, arguments);
 			this.workflowState = new WorkflowStateModel();
-
-			this.parameterCodes = new ParameterCodes();
-			this.pCodesPromise = this.parameterCodes.fetch().done(function() {
-				log.debug('Fetched parameter codes ' + self.parameterCodes.length);
-			});
-			this.statisticCodes = new StatisticCodes();
-			this.sCodesPromise = this.statisticCodes.fetch().done(function() {
-				log.debug('Fetched statistic codes ' + self.statisticCodes.length);
-			});
 		},
 
 		applicationContextDiv: '#main-content',
@@ -79,11 +68,7 @@ define([
 				'datasets' : datasets ? datasets.split('/') : null
 			});
 			this.createView(DataDiscoveryView, {
-				model : this.workflowState,
-				pCodesPromise : this.pCodesPromise,
-				sCodesPromise : this.sCodesPromise,
-				parameterCodes : this.parameterCodes,
-				statisticCodes : this.statisticCodes
+				model : this.workflowState
 			}).render();				
 		}
 	});

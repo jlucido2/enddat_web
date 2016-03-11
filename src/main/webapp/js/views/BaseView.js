@@ -53,8 +53,8 @@ define([
 		},
 
 		/** COMMON navigation functions that might be used for many views */
-		goHome: function() {
-			this.router.navigate('', {trigger: true});
+		goHome: function(options) {
+			this.router.navigate();
 		}
 	});
 

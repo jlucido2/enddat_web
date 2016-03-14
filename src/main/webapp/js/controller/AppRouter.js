@@ -17,7 +17,6 @@ define([
 		},
 
 		initialize : function(options) {
-			var self = this;
 			Backbone.Router.prototype.initialize.apply(this, arguments);
 			this.workflowState = new WorkflowStateModel();
 		},

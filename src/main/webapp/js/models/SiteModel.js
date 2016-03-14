@@ -23,9 +23,6 @@ define([
 					location.latitude,
 					location.longitude,
 					radius);
-//					workflowModel.get('location')['latitude'], 
-//					workflowModel.get('location')['longitude'], 
-//					workflowModel.get('radius'));
 			this.url = 'waterService/?format=rdb&bBox=' +
 				bbox.west.toFixed(6) + ',' +
 				bbox.south.toFixed(6) + ',' +

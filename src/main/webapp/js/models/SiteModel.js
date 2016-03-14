@@ -18,12 +18,14 @@ define([
 			this.sCodePromise = this.getStatisticCodes();			
 		},
 
-		fetch: function(model) {
-			var workflowModel = model;
+		fetch: function(location, radius) {
 			var bbox = geoSpatialUtils.getBoundingBox(
-					workflowModel.get('location')['latitude'], 
-					workflowModel.get('location')['longitude'], 
-					workflowModel.get('radius'));
+					location.latitude,
+					location.longitude,
+					radius);
+//					workflowModel.get('location')['latitude'], 
+//					workflowModel.get('location')['longitude'], 
+//					workflowModel.get('radius'));
 			this.url = 'waterService/?format=rdb&bBox=' +
 				bbox.west.toFixed(6) + ',' +
 				bbox.south.toFixed(6) + ',' +
@@ -101,10 +103,12 @@ define([
 						self.set({sites: siteData});
 						log.debug('Fetched sites ' + _.size(siteData));
 						sitesDeferred.resolve();
+						self.trigger('sync');
 					},
 					error: function(jqXHR, textStatus, errorThrown) {
 						if (404 === jqXHR.status) {
 							log.debug('No NWIS data available: ' + textStatus);
+							sitesDeferred.resolve();
 						} else {
 							log.debug('Error in loading NWIS data: ' + textStatus);
 							sitesDeferred.reject();

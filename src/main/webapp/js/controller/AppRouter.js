@@ -69,7 +69,7 @@ define([
 			});
 			this.createView(DataDiscoveryView, {
 				model : this.workflowState
-			}).render();				
+			}).render();
 		}
 	});
 

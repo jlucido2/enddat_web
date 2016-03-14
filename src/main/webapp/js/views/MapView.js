@@ -16,13 +16,11 @@ define([
 		 *		@prop {Jquery element or selector} el
 		 *		@prop {String} mapDivId - id of the div where the map should be rendered
 		 *		@prop {WorkflowStateModel} model
-		 *		@prop {Promise} siteModelPromise
 		 *		@prop {SiteModel} sites
 		 */
 		initialize : function(options) {
 			BaseView.prototype.initialize.apply(this, arguments);
 			this.mapDivId = options.mapDivId;
-			this.siteModelPromise = options.siteModelPromise;
 			this.sites = options.sites;
 
 			this.baseLayers = {
@@ -50,7 +48,7 @@ define([
 
 			this.listenTo(this.model, 'change:location', this.updateMarker);
 			this.listenTo(this.model, 'change:radius', this.updateExtent);
-//			this.listenTo(this.sites, 'sync', this.updateSiteMarker);
+			this.listenTo(this.sites, 'sync', this.updateSiteMarker);
 		},
 
 		render : function() {
@@ -70,7 +68,7 @@ define([
 
 			this.updateMarker(this.model, this.model.get('location'));
 			this.updateExtent(this.model, this.model.get('radius'));
-			this.updateSiteMarker(this.siteModelPromise);
+			this.updateSiteMarker(this.sites);
 			return this;
 		},
 
@@ -164,23 +162,24 @@ define([
 
 		/*
 		 * Updates or adds a marker for each site
-		 * @param {Object} sites - has one or more site objects, each with properties
+		 * @param {WorkflowStateModel} model
+		 * @param {SiteModel} sites - has one or more site objects, each with properties
 		 *							latitude and longitude in order to be a valid location
 		 */
-		updateSiteMarker : function(promise) {
+		updateSiteMarker : function(sites) {
 			var self = this;
+			var siteObjects = this.sites.get('sites');
 			var siteIcon = mapUtils.createIcon("img/time-series.png");
-			promise.done(function() {
-				var sites = self.sites.get('sites');
-				//I think will need to remove existing sites if handling a mouse event
-				_.each(sites, function(el) {
-					var marker = new L.marker([el['lat'], el['lon']], {icon: siteIcon, title: el['name']}).addTo(self.map);
-//					self.map.addLayer(L.marker([el['lat'], el['lon']], {
-//						title : el['name'],
-//						icon : siteIcon
-//					}));
-				});
+			var mapHasSiteMarker = this.map.hasLayer(this.siteLayerGroup);
+			if (mapHasSiteMarker) {
+				this.map.removeLayer(this.siteLayerGroup);
+			}
+			this.siteLayerGroup = L.layerGroup();
+			_.each(siteObjects, function(el) {
+				var marker = L.marker([el['lat'], el['lon']], {icon: siteIcon, title: el['name']});
+				self.siteLayerGroup.addLayer(marker);
 			});
+			this.siteLayerGroup.addTo(this.map);
 		}
 	});
 

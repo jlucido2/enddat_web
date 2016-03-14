@@ -24,35 +24,13 @@ define([
 		 *		@prop {Jquery element} el
 		 *		@prop {models/WorkflowStateModel} model
 		 */
-		initialize: function (options) {			
-			/* 
-			 * Check to see if the url contains the parameters needed
-			 * to fetch data for the project.  Currently only checking
-			 * for the NWIS data type but will add others in the future.
-			 */
-			if (this.model.get('step') === this.model.CHOOSE_DATA_STEP &&
-				this.model.get('radius') &&
-				this.model.get('datasets') &&  //should we check for one and only one?
-				_.each(this.model.get('datasets'), function(el) {
-					if(el === DATATYPE_NWIS) {
-						return true;
-					}
-				})) {
-				
-				this.siteModel = new SiteModel();				
-				this.siteModelPromise = this.siteModel.fetch(this.model);
-				this.siteModelPromise.fail(function() {
-					this.goHome();
-				});
-			/* Check if a siteModel was already created but clear the sites
-			 * attribute since the url does not have all the parameters to
-			 * fetch data.  This will preserve the parameter and statistic code
-			 * attributes in the siteModel.
-			 */
-			} else if (this.siteModel) {
-				this.siteModel.set({sites: ''});
-			};
-	
+		initialize: function (options) {
+			this.siteModel = new SiteModel();
+			this.updateSiteModel();
+
+			this.listenTo(this.model, 'change:location', this.updateSiteModel);
+			this.listenTo(this.model, 'change:radius', this.updateSiteModel);			
+
 			BaseView.prototype.initialize.apply(this, arguments);
 
 			this.navView = new NavView({
@@ -68,10 +46,9 @@ define([
 				el : this.$(MAPVIEW_SELECTOR),
 				mapDivId : 'map-div',
 				model : this.model,
-				siteModelPromise : this.siteModelPromise,
 				sites : this.siteModel
 			});
-			
+
 			this.locationView  = new LocationView({
 				el : this.$(LOCATION_SELECTOR),
 				model : this.model
@@ -96,6 +73,26 @@ define([
 			this.locationView.remove();
 			BaseView.prototype.remove.apply(this, arguments);
 			return this;
+		},
+
+		/* 
+		 * Check to see if the WorkflowStateModel contains the parameters needed
+		 * to fetch data for the project.  Currently only checking
+		 * for the NWIS data type but will add others in the future.
+		 */
+		updateSiteModel: function () {
+			if (this.model.get('step') === this.model.CHOOSE_DATA_STEP &&
+				this.model.get('radius') &&
+				this.model.get('datasets') &&
+				_.contains(this.model.get('datasets'), DATATYPE_NWIS)) {
+
+				this.siteModel.fetch(this.model.get('location'), this.model.get('radius')).fail(function() {
+					this.goHome();
+				});
+			}
+			else {
+				this.siteModel.clear();
+			}
 		}
 	});
 

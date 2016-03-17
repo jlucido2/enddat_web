@@ -168,7 +168,7 @@ define([
 		 */
 		updateSiteMarker : function(sites) {
 			var self = this;
-			var siteObjects = this.sites.get('sites');
+			var siteObjects = sites.get('sites');
 			var siteIcon = mapUtils.createIcon("img/time-series.png");
 			var mapHasSiteMarker = this.map.hasLayer(this.siteLayerGroup);
 			if (mapHasSiteMarker) {
@@ -185,5 +185,4 @@ define([
 
 	return view;
 });
-
 

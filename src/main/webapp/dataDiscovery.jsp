@@ -26,7 +26,7 @@
 			var require = {
 				config: {
 					'init': {
-						'contextPath': "<%=baseUrl%>",
+						'contextPath': '<%=baseUrl%>',
 						'development': '<%=development%>'
 					}
 				},

@@ -4,9 +4,10 @@ define([
 	'jquery',
 	'backbone',
 	'loglevel',
+	'module',
 	'utils/rdbUtils',
 	'utils/geoSpatialUtils'
-], function ($, Backbone, log, rdbUtils, geoSpatialUtils) {
+], function ($, Backbone, log, module, rdbUtils, geoSpatialUtils) {
 	"use strict";
 
 	var model = Backbone.Model.extend({
@@ -100,7 +101,7 @@ define([
 						self.set({sites: siteData});
 						log.debug('Fetched sites ' + _.size(siteData));
 						sitesDeferred.resolve();
-						self.trigger('sync');
+						self.trigger('sync', self);
 					},
 					error: function(jqXHR, textStatus, errorThrown) {
 						if (404 === jqXHR.status) {

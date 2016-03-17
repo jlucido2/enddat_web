@@ -10,6 +10,9 @@ define([
 ], function ($, Backbone, log, module, rdbUtils, geoSpatialUtils) {
 	"use strict";
 
+	var config = module.config();
+	var pcodes = config.parameterCodesPath;
+	
 	var model = Backbone.Model.extend({
 
 		url: '',
@@ -121,7 +124,7 @@ define([
 			var self = this;
 			return $.ajax({
 				type : "GET",
-				url : 'pmcodes?radio_pm_search=param_group&pm_group=Physical&format=rdb&show=parameter_nm',
+				url : pcodes + 'pmcodes?radio_pm_search=param_group&pm_group=Physical&format=rdb&show=parameter_nm',
 				dataType: 'text',
 				success: function(data) {
 					var parsedParams = [];

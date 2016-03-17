@@ -18,6 +18,7 @@
 	Boolean development = Boolean.parseBoolean(props.getProperty("enddat.development"));
 	String baseUrl = props.getProperty("enddat.base.url", request.getContextPath());
 	if (!baseUrl.endsWith("/")) { baseUrl += "/"; }
+	String parameterCodesUrl = props.getProperty("enddat.pmcodes.url");
 	String version = props.getProperty("application.version");
 %>
 

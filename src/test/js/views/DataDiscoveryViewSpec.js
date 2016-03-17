@@ -5,8 +5,9 @@ define([
 	'squire',
 	'jquery',
 	'models/WorkflowStateModel',
+	'models/SiteModel',
 	'views/BaseView'
-], function(Squire, $, WorkflowStateModel, BaseView) {
+], function(Squire, $, WorkflowStateModel, SiteModel, BaseView) {
 	"use strict";
 
 	describe("DataDiscoveryView", function() {

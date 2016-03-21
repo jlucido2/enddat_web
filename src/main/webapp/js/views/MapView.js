@@ -163,7 +163,7 @@ define([
 		/*
 		 * Updates or adds a marker for each site
 		 * @param {SiteModel} sites - has one or more site objects, each with properties
-		 *							latitude and longitude in order to be a valid location
+		 *	latitude and longitude in order to be a valid location
 		 */
 		updateSiteMarker : function(sites) {
 			var self = this;

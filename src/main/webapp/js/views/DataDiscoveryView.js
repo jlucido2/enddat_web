@@ -39,9 +39,6 @@ define([
 				router : this.router
 			});
 
-			//pass in siteData to mapView where mapView listen to events
-			//on the siteData model. Specifically, there is a 'sync' event that is
-			//fired after successful fetching of the data.
 			this.mapView = new MapView({
 				el : this.$(MAPVIEW_SELECTOR),
 				mapDivId : 'map-div',

@@ -162,7 +162,6 @@ define([
 
 		/*
 		 * Updates or adds a marker for each site
-		 * @param {WorkflowStateModel} model
 		 * @param {SiteModel} sites - has one or more site objects, each with properties
 		 *							latitude and longitude in order to be a valid location
 		 */
@@ -175,11 +174,13 @@ define([
 				this.map.removeLayer(this.siteLayerGroup);
 			}
 			this.siteLayerGroup = L.layerGroup();
-			_.each(siteObjects, function(el) {
-				var marker = L.marker([el['lat'], el['lon']], {icon: siteIcon, title: el['name']});
-				self.siteLayerGroup.addLayer(marker);
-			});
-			this.siteLayerGroup.addTo(this.map);
+			if(!_.isEmpty(siteObjects)) {
+				_.each(siteObjects, function(el) {
+					var marker = L.marker([el['lat'], el['lon']], {icon: siteIcon, title: el['name']});
+					self.siteLayerGroup.addLayer(marker);
+				});
+				this.siteLayerGroup.addTo(this.map);				
+			}
 		}
 	});
 

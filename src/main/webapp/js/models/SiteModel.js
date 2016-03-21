@@ -16,10 +16,11 @@ define([
 	var model = Backbone.Model.extend({
 
 		url: '',
-		
+
 		initialize: function() {
 			this.pCodePromise = this.getParameterCodes();
-			this.sCodePromise = this.getStatisticCodes();			
+			this.sCodePromise = this.getStatisticCodes();
+			this.set({sites: {}});	
 		},
 
 		fetch: function(location, radius) {

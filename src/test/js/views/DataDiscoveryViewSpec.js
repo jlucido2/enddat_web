@@ -17,6 +17,7 @@ define([
 		var testModel;
 		var $testDiv;
 
+		var initializeSiteModelSpy, fetchSiteModelSpy;
 		var initializeBaseViewSpy, renderBaseViewSpy, removeBaseViewSpy;
 		var setElNavViewSpy, renderNavViewSpy, removeNavViewSpy;
 		var setElMapViewSpy, renderMapViewSpy, removeMapViewSpy;
@@ -28,6 +29,9 @@ define([
 			$('body').append('<div id="test-div"></div>');
 			$testDiv = $('#test-div');
 
+			initializeSiteModelSpy = jasmine.createSpy('initializeSiteModelSpy');
+			fetchSiteModelSpy = jasmine.createSpy('fetchSiteModelSpy');
+			
 			initializeBaseViewSpy = jasmine.createSpy('initializeBaseViewSpy');
 			renderBaseViewSpy = jasmine.createSpy('renderBaseViewSpy');
 			removeBaseViewSpy = jasmine.createSpy('removeBaseViewSpy');
@@ -48,6 +52,11 @@ define([
 			testModel.set('step', testModel.PROJ_LOC_STEP);
 
 			injector = new Squire();
+			injector.mock('models/SiteModel', Backbone.Model.extend({
+				initialize: initializeSiteModelSpy,
+				fetch: fetchSiteModelSpy
+
+			}));
 			injector.mock('views/BaseView', BaseView.extend({
 				initialize : initializeBaseViewSpy,
 				render : renderBaseViewSpy,
@@ -94,6 +103,14 @@ define([
 				model : testModel
 			});
 			expect(initializeBaseViewSpy).toHaveBeenCalled();
+		});
+
+		it('Expects that SiteModel.initialize is called', function() {
+			testView = new DataDiscoveryView({
+				el : $testDiv,
+				model : testModel
+			});
+			expect(initializeSiteModelSpy).toHaveBeenCalled();
 		});
 
 		it('Expects the child views to be initialized', function() {

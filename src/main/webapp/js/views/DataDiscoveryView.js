@@ -84,7 +84,6 @@ define([
 			self = this;
 			if (this.model.get('step') === this.model.CHOOSE_DATA_STEP &&
 				this.model.get('radius') &&
-				this.model.get('datasets') &&
 				_.contains(this.model.get('datasets'), DATATYPE_NWIS)) {
 
 				this.siteModel.fetch(this.model.get('location'), this.model.get('radius')).fail(function() {

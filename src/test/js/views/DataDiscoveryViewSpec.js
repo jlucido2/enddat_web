@@ -17,7 +17,7 @@ define([
 		var testModel;
 		var $testDiv;
 
-		var initializeSiteModelSpy, fetchSiteModelSpy;
+		var initializeSiteModelSpy, fetchSiteModelDoneSpy, fetchSiteModelFailSpy;
 		var initializeBaseViewSpy, renderBaseViewSpy, removeBaseViewSpy;
 		var setElNavViewSpy, renderNavViewSpy, removeNavViewSpy;
 		var setElMapViewSpy, renderMapViewSpy, removeMapViewSpy;
@@ -30,7 +30,16 @@ define([
 			$testDiv = $('#test-div');
 
 			initializeSiteModelSpy = jasmine.createSpy('initializeSiteModelSpy');
-			fetchSiteModelSpy = jasmine.createSpy('fetchSiteModelSpy');
+			fetchSiteModelDoneSpy = jasmine.createSpy('fetchSiteModelDoneSpy').and.callFake(function(){
+				var d = $.Deferred();
+				d.resolve();
+				return d.promise();
+			});
+			fetchSiteModelFailSpy = jasmine.createSpy('fetchSiteModelFailSpy').and.callFake(function(){
+				var d = $.Deferred();
+				d.reject();
+				return d.promise();
+			});
 			
 			initializeBaseViewSpy = jasmine.createSpy('initializeBaseViewSpy');
 			renderBaseViewSpy = jasmine.createSpy('renderBaseViewSpy');
@@ -49,12 +58,13 @@ define([
 			removeLocationViewSpy = jasmine.createSpy('removeLocationViewSpy');
 
 			testModel = new WorkflowStateModel();
-			testModel.set('step', testModel.PROJ_LOC_STEP);
+			testModel.set('step', testModel.PROJ_LOC_STEP);			
 
 			injector = new Squire();
+
 			injector.mock('models/SiteModel', Backbone.Model.extend({
 				initialize: initializeSiteModelSpy,
-				fetch: fetchSiteModelSpy
+				fetch: fetchSiteModelDoneSpy
 
 			}));
 			injector.mock('views/BaseView', BaseView.extend({
@@ -111,6 +121,32 @@ define([
 				model : testModel
 			});
 			expect(initializeSiteModelSpy).toHaveBeenCalled();
+		});
+
+		it('Expects that updateSiteModel is called', function() {
+			testModel.set('step', testModel.CHOOSE_DATA_STEP);
+			testModel.set('radius', 5);
+			testModel.set('location', {latitude : 43.0, longitude : -100.0});
+			testModel.set('datasets', ['NWIS']);			
+			testView = new DataDiscoveryView({
+				el : $testDiv,
+				model : testModel
+			});
+			expect(fetchSiteModelDoneSpy).toHaveBeenCalled();
+		});
+
+		it('Expects that updateSiteModel is called when change to WorkflowModel', function() {
+			testModel.set('step', testModel.CHOOSE_DATA_STEP);
+			testModel.set('radius', 5);
+			testModel.set('location', {latitude : 43.0, longitude : -100.0});
+			testModel.set('datasets', ['NWIS']);
+			
+			testView = new DataDiscoveryView({
+				el : $testDiv,
+				model : testModel
+			});
+			testView.model.set('location', {latitude : 42.0, longitude : -101.0});	
+			expect(fetchSiteModelDoneSpy.calls.count()).toBe(2);
 		});
 
 		it('Expects the child views to be initialized', function() {

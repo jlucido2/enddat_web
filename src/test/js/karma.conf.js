@@ -25,7 +25,8 @@ module.exports = function (config) {
 			{pattern: 'src/main/webapp/bower_components/backbone.stickit/backbone.stickit.js', included : false},
 			{pattern: 'src/main/webapp/js/*/*.js', included: false},
 			{pattern: 'src/main/webapp/js/hb_templates/*.hbs', included: false},
-			{pattern: 'src/test/js/views/*.js', included: false}
+			{pattern: 'src/test/js/views/*.js', included: false},
+			{pattern: 'src/test/js/models/*.js', included: false}
 		],
 		// list of files to exclude
 		exclude: [

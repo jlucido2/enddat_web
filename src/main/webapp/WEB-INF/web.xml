@@ -18,11 +18,7 @@
 		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
 		<init-param>
 			<param-name>forward-url-param</param-name>
-			<param-value>enddat.service-url</param-value>
-		</init-param>
-		<init-param>
-			<param-name>forward-url</param-name>
-			<param-value>http://localhost:8080/enddat-services/</param-value>
+			<param-value>enddat.service.url</param-value>
 		</init-param>
 		<init-param>
 			<param-name>readTimeout</param-name>
@@ -40,28 +36,11 @@
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>DebugProxyServlet</servlet-name>
-		<servlet-class>gov.usgs.cida.proxy.PathPreservingProxyServlet</servlet-class>
-		<init-param>
-			<param-name>forward-url</param-name>
-			<param-value>http://internal.cida.usgs.gov/glri/glos_portal_dev/debug/</param-value>
-		</init-param>
-		<init-param>
-			<param-name>readTimeout</param-name>
-			<param-value>300000</param-value>
-		</init-param>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>DebugProxyServlet</servlet-name>
-		<url-pattern>/debug/proxy/*</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
 		<servlet-name>NWISSiteServlet</servlet-name>
 		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
 		<init-param>
-			<param-name>forward-url</param-name>
-			<param-value>http://waterservices.usgs.gov/nwis/site/</param-value>
+			<param-name>forward-url-param</param-name>
+			<param-value>enddat.waterservice.url</param-value>
 		</init-param>
 		<init-param>
 			<param-name>readTimeout</param-name>
@@ -72,24 +51,6 @@
 	<servlet-mapping>
 		<servlet-name>NWISSiteServlet</servlet-name>
 		<url-pattern>/waterService/*</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
-		<servlet-name>PMCodesServlet</servlet-name>
-		<servlet-class>gov.usgs.cida.proxy.AuthIgnoringProxyServlet</servlet-class>
-		<init-param>
-			<param-name>forward-url</param-name>
-			<param-value>http://nwis.waterdata.usgs.gov/nwis/pmcodes/pmcodes</param-value>
-		</init-param>
-		<init-param>
-			<param-name>readTimeout</param-name>
-			<param-value>300000</param-value>
-		</init-param>
-	</servlet>
-
-	<servlet-mapping>
-		<servlet-name>PMCodesServlet</servlet-name>
-		<url-pattern>/pmcodes</url-pattern>
 	</servlet-mapping>
 
 	<servlet>

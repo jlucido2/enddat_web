@@ -26,9 +26,12 @@
 			var require = {
 				config: {
 					'init': {
-						'contextPath': "<%=baseUrl%>",
-						'development' : '<%=development%>'
-					}
+						'contextPath': '<%=baseUrl%>',
+						'development': '<%=development%>'
+					},
+					'models/SiteModel': {
+						'parameterCodesPath': '<%=parameterCodesUrl%>'
+				 	}
 				},
 				baseUrl: "<%=baseUrl%>/js/",
 				paths: {

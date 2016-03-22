@@ -5,9 +5,10 @@ define([
 	'leaflet',
 	'leaflet-providers',
 	'loglevel',
-	'util/geoSpatialUtils',
+	'utils/geoSpatialUtils',
+	'utils/mapUtils',
 	'views/BaseView'
-], function(_, L, leafletProviders, log, geoSpatialUtils, BaseView) {
+], function(_, L, leafletProviders, log, geoSpatialUtils, mapUtils, BaseView) {
 	var view = BaseView.extend({
 
 		/*
@@ -15,10 +16,12 @@ define([
 		 *		@prop {Jquery element or selector} el
 		 *		@prop {String} mapDivId - id of the div where the map should be rendered
 		 *		@prop {WorkflowStateModel} model
+		 *		@prop {SiteModel} sites
 		 */
 		initialize : function(options) {
 			BaseView.prototype.initialize.apply(this, arguments);
 			this.mapDivId = options.mapDivId;
+			this.sites = options.sites;
 
 			this.baseLayers = {
 				'World Street' : L.tileLayer.provider('Esri.WorldStreetMap'),
@@ -45,6 +48,7 @@ define([
 
 			this.listenTo(this.model, 'change:location', this.updateMarker);
 			this.listenTo(this.model, 'change:radius', this.updateExtent);
+			this.listenTo(this.sites, 'sync', this.updateSiteMarker);
 		},
 
 		render : function() {
@@ -64,6 +68,7 @@ define([
 
 			this.updateMarker(this.model, this.model.get('location'));
 			this.updateExtent(this.model, this.model.get('radius'));
+			this.updateSiteMarker(this.sites);
 			return this;
 		},
 
@@ -141,6 +146,7 @@ define([
 				this.setUpSingleClickHandlerToCreateMarker();
 			}
 		},
+
 		updateExtent : function(model, radius) {
 			if (radius) {
 				var location = model.get('location');
@@ -152,10 +158,32 @@ define([
 
 				this.map.fitBounds(L.latLngBounds(southwest, northeast));
 			}
+		},
+
+		/*
+		 * Updates or adds a marker for each site
+		 * @param {SiteModel} sites - has one or more site objects, each with properties
+		 *	latitude and longitude in order to be a valid location
+		 */
+		updateSiteMarker : function(sites) {
+			var self = this;
+			var siteObjects = sites.get('sites');
+			var siteIcon = mapUtils.createIcon("img/time-series.png");
+			var mapHasSiteMarker = this.map.hasLayer(this.siteLayerGroup);
+			if (mapHasSiteMarker) {
+				this.map.removeLayer(this.siteLayerGroup);
+			}
+			this.siteLayerGroup = L.layerGroup();
+			if(!_.isEmpty(siteObjects)) {
+				_.each(siteObjects, function(el) {
+					var marker = L.marker([el['lat'], el['lon']], {icon: siteIcon, title: el['name']});
+					self.siteLayerGroup.addLayer(marker);
+				});
+				this.siteLayerGroup.addTo(this.map);				
+			}
 		}
 	});
 
 	return view;
 });
-
 

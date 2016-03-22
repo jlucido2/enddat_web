@@ -18,11 +18,12 @@
 	Boolean development = Boolean.parseBoolean(props.getProperty("enddat.development"));
 	String baseUrl = props.getProperty("enddat.base.url", request.getContextPath());
 	if (!baseUrl.endsWith("/")) { baseUrl += "/"; }
+	String parameterCodesUrl = props.getProperty("enddat.pmcodes.url");
 	String version = props.getProperty("application.version");
 %>
 
 <link rel="shortcut icon" type="image/ico" href="img/favicon.ico">
-<jsp:include page="template/USGSHead.jsp">
+<jsp:include page="/template/USGSHead.jsp">
 	<jsp:param name="shortName" value="Environmental Data Discovery and Transformation Service"/>
 	<jsp:param name="relPath" value="<%= baseUrl %>" />
 	<jsp:param name="title" value="EnDDaT" />

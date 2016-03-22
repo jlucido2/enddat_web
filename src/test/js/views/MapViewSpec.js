@@ -5,13 +5,15 @@ define([
 	'jquery',
 	'leaflet',
 	'models/WorkflowStateModel',
+	'models/SiteModel',
 	'views/BaseView',
 	'views/MapView'
-], function($, L, WorkflowStateModel, BaseView, MapView) {
+], function($, L, WorkflowStateModel, SiteModel, BaseView, MapView) {
 	describe('views/MapView', function() {
 		var testView;
 		var $testDiv;
 		var testModel;
+		var testSiteModel;
 		var fakeServer;
 		var addLayerSpy, removeLayerSpy, addControlSpy, hasLayerSpy, removeMapSpy;
 
@@ -37,6 +39,12 @@ define([
 			});
 			spyOn(L.control, 'layers').and.callThrough();
 			spyOn(L, 'marker').and.callThrough();
+			addLayerGroupSpy = jasmine.createSpy('addLayerGroupSpy');
+			addToGroupSpy = jasmine.createSpy('addToGroupSpy');
+			spyOn(L, 'layerGroup').and.returnValue({
+				addLayer: addLayerGroupSpy,
+				addTo: addToGroupSpy
+			});
 
 			spyOn(BaseView.prototype, 'initialize').and.callThrough();
 			spyOn(BaseView.prototype, 'remove').and.callThrough();
@@ -44,10 +52,13 @@ define([
 			testModel = new WorkflowStateModel();
 			testModel.set('step', testModel.PROJ_LOC_STEP);
 
+			testSiteModel = new SiteModel();
+
 			testView = new MapView({
 				el : '#test-div',
 				mapDivId : 'test-map-div',
-				model : testModel
+				model : testModel,
+				sites : testSiteModel
 			});
 		});
 
@@ -98,6 +109,13 @@ define([
 				expect(removeMapSpy).toHaveBeenCalled();
 				expect(L.map.calls.count()).toBe(2);
 			});
+
+			it('Expect that the site location marker is added to the map if there are sites in the site model', function() {
+//				addLayerSpy.calls.reset();
+				testSiteModel.set({'sites': {'05464220': {'name': 'test', 'lat': '42.25152778', 'lon': '-92.2988889'}}});
+				testView.render();
+				expect(addLayerGroupSpy).toHaveBeenCalled();
+			});
 		});
 
 		describe('Tests for remove', function() {
@@ -137,11 +155,18 @@ define([
 				expect(testView.projLocationMarker.getLatLng()).toEqual(L.latLng(42.0, -101.0));
 			});
 
-			it('Expects that if the map has the marker and the location is not set, the marker will ber removed from the map', function() {
+			it('Expects that if the map has the marker and the location is not set, the marker will be removed from the map', function() {
 				hasLayerSpy.and.returnValue(true);
 				expect(removeLayerSpy).not.toHaveBeenCalled();
 				testModel.set('location', {});
 				expect(removeLayerSpy).toHaveBeenCalled();
+			});
+
+			it('Expects that if the site model is updated, an updated site marker is added to the map', function() {
+//				addLayerSpy.calls.reset();
+				testSiteModel.set({'sites': {'05464220': {'name': 'test', 'lat': '42.25152778', 'lon': '-92.2988889'}}});
+				testSiteModel.trigger('sync', testSiteModel);
+				expect(addLayerGroupSpy).toHaveBeenCalled();
 			});
 		});
 

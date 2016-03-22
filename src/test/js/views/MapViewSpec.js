@@ -39,6 +39,12 @@ define([
 			});
 			spyOn(L.control, 'layers').and.callThrough();
 			spyOn(L, 'marker').and.callThrough();
+			addLayerGroupSpy = jasmine.createSpy('addLayerGroupSpy');
+			addToGroupSpy = jasmine.createSpy('addToGroupSpy');
+			spyOn(L, 'layerGroup').and.returnValue({
+				addLayer: addLayerGroupSpy,
+				addTo: addToGroupSpy
+			});
 
 			spyOn(BaseView.prototype, 'initialize').and.callThrough();
 			spyOn(BaseView.prototype, 'remove').and.callThrough();
@@ -104,10 +110,11 @@ define([
 				expect(L.map.calls.count()).toBe(2);
 			});
 
-			it('Expect that the map location marker is added to the map if there are sites in the site model', function() {
+			it('Expect that the site location marker is added to the map if there are sites in the site model', function() {
+//				addLayerSpy.calls.reset();
 				testSiteModel.set({'sites': {'05464220': {'name': 'test', 'lat': '42.25152778', 'lon': '-92.2988889'}}});
 				testView.render();
-				expect(addLayerSpy).toHaveBeenCalled();
+				expect(addLayerGroupSpy).toHaveBeenCalled();
 			});
 		});
 
@@ -156,9 +163,10 @@ define([
 			});
 
 			it('Expects that if the site model is updated, an updated site marker is added to the map', function() {
+//				addLayerSpy.calls.reset();
 				testSiteModel.set({'sites': {'05464220': {'name': 'test', 'lat': '42.25152778', 'lon': '-92.2988889'}}});
 				testSiteModel.trigger('sync', testSiteModel);
-				expect(addLayerSpy).toHaveBeenCalled();
+				expect(addLayerGroupSpy).toHaveBeenCalled();
 			});
 		});
 

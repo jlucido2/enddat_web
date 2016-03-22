@@ -11,7 +11,9 @@ define([
 	"use strict";
 
 	var config = module.config();
-	var pcodes = config.parameterCodesPath;
+	var parameterCodesPath = config.parameterCodesPath;
+	var parameterCodes = {};
+	var statisticCodes = {};
 	
 	var model = Backbone.Model.extend({
 
@@ -62,7 +64,14 @@ define([
 						parsedSites = rdbUtils.parseRDB(lines, importantColumns);
 						_.each(parsedSites, function(el, index) {
 							var site;
-							//Add the info to the sites
+							/* The parsedSites array contains elements that correspond
+							 * to rows from an rdb file, which represents one or more
+							 * parameter codes available for a site.  So multiple rows
+							 * may have the same site_no but different parm_cd.  These
+							 * rows are being merged here into an object where key is the
+							 * site_no and the value is an object with all of the data
+							 * for the site, including an array of one or more parameters.
+							 */
 							if (!_.has(siteData, (el["site_no"]))) {
 								site = {};
 								site.name = el["station_nm"];
@@ -74,14 +83,14 @@ define([
 							}
 
 							var name = "Unknown parameter " + el["parm_cd"] + " " + el["stat_cd"];
-							if (self.has("parameterCodes") && self.has("statisticCodes")) {
+							if (parameterCodes && statisticCodes) {
 								if (el["parm_cd"]) {
-									var pName = self.get("parameterCodes")[el["parm_cd"]];
+									var pName = parameterCodes[el["parm_cd"]];
 									name = (pName?pName:"PCode " + el["parm_cd"]);
 									name += ((el["loc_web_ds"])?" (" + el["loc_web_ds"] + ")":"");
 								}
 								if (el["stat_cd"]) {
-									var sName = self.get("statisticCodes")[el["stat_cd"]];
+									var sName = statisticCodes[el["stat_cd"]];
 									name += " Daily " + (sName?sName:el["stat_cd"]);
 								} else {
 									name += " Instantaneous";
@@ -103,18 +112,19 @@ define([
 						});
 						
 						self.set({sites: siteData});
+						self.trigger('sync', self);
 						log.debug('Fetched sites ' + _.size(siteData));
 						sitesDeferred.resolve();
-						self.trigger('sync', self);
 					},
 					error: function(jqXHR, textStatus, errorThrown) {
 						if (404 === jqXHR.status) {
 							log.debug('No NWIS data available: ' + textStatus);
-							sitesDeferred.resolve();
 						} else {
 							log.debug('Error in loading NWIS data: ' + textStatus);
-							sitesDeferred.reject();
 						}
+						self.clear();
+						self.trigger('sync', self);
+						sitesDeferred.reject();
 					}
 				});			
 			});
@@ -125,11 +135,10 @@ define([
 			var self = this;
 			return $.ajax({
 				type : "GET",
-				url : pcodes + 'pmcodes?radio_pm_search=param_group&pm_group=Physical&format=rdb&show=parameter_nm',
+				url : parameterCodesPath + 'pmcodes?radio_pm_search=param_group&pm_group=Physical&format=rdb&show=parameter_nm',
 				dataType: 'text',
 				success: function(data) {
 					var parsedParams = [];
-					var paramCodes = {};
 					var lines = data.split("\n");
 					var columns = {
 						"parameter_cd" : null,
@@ -138,10 +147,9 @@ define([
 
 					parsedParams = rdbUtils.parseRDB(lines, columns);
 					_.each(parsedParams, function(el, index) {
-						paramCodes[el["parameter_cd"]] = el["parameter_nm"];
+						parameterCodes[el["parameter_cd"]] = el["parameter_nm"];
 					});
-					self.set({parameterCodes: paramCodes});
-					log.debug('Fetched parameter codes ' + _.size(paramCodes));
+					log.debug('Fetched parameter codes ' + _.size(parameterCodes));
 				},
 				error : function(jqXHR, textStatus, error) {
 					log.debug('Error in loading NWIS Parameter definitions: ' + textStatus);
@@ -157,7 +165,6 @@ define([
 				dataType: 'text',
 				success: function(data) {
 					var parsedStats = [];
-					var statCodes = {};
 					var lines = data.split("\n");
 					var columns = {
 						stat_CD : null,
@@ -167,10 +174,9 @@ define([
 
 					parsedStats = rdbUtils.parseRDB(lines, columns);
 					_.each(parsedStats, function(el, index) {
-						statCodes[el["stat_CD"]] = el["stat_NM"];
+						statisticCodes[el["stat_CD"]] = rdbUtils.toTitleCase(el["stat_NM"]);
 					});
-					self.set({statisticCodes: statCodes});
-					log.debug('Fetched statistic codes ' + _.size(statCodes));
+					log.debug('Fetched statistic codes ' + _.size(statisticCodes));
 				},
 				error : function(jqXHR, textStatus, error) {
 					log.debug('Error in loading NWIS stat definitions: ' + textStatus);

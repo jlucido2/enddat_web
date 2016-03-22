@@ -9,7 +9,7 @@ define([
 
 	/* @param	[Array] lines - array containing each line from an rdb file
 	 * @param	{Object} importantColumns - object of tab-delimited columns found in lines
-	 * returns	[Array} columnsArray - array of objects where each object holds key/value(s)
+	 * returns	[Array] columnsArray - array of objects where each object holds key/value(s)
 	 *					corresponding to the parsed column(s) from a line
 	 */
 	self.parseRDB = function(lines, importantColumns) {
@@ -47,6 +47,9 @@ define([
 		return columnsArray;
 	};
 
+	/* @param	{Object} string
+	 * returns	{Object} string - converted string to upper case and remove special characters
+	 */
 	self.toTitleCase = function (str) {
 		var lowerCase = str.toLowerCase();
 	    return lowerCase.replace(/(?:^|\s)\w/g, function(match) {

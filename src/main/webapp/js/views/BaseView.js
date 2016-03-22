@@ -54,7 +54,7 @@ define([
 
 		/* COMMON navigation functions that might be used for many views */
 		goHome: function(options) {
-			this.router.navigate();
+			this.router.navigate('', options);
 		}
 	});
 

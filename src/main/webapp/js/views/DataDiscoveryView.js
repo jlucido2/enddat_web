@@ -80,7 +80,11 @@ define([
 		updateSiteModel: function () {
 			self = this;
 			if (this.model.get('step') === this.model.CHOOSE_DATA_STEP &&
+				this.model.get('location') &&
+				null != this.model.get('location').latitude &&
+				null != this.model.get('location').longitude &&
 				this.model.get('radius') &&
+				null != this.model.get('radius') &&
 				_.contains(this.model.get('datasets'), DATATYPE_NWIS)) {
 
 				this.siteModel.fetch(this.model.get('location'), this.model.get('radius')).fail(function() {

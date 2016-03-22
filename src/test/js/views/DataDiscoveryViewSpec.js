@@ -17,7 +17,7 @@ define([
 		var testModel;
 		var $testDiv;
 
-		var initializeSiteModelSpy, fetchSiteModelDoneSpy, fetchSiteModelFailSpy;
+		var initializeSiteModelSpy, fetchSiteModelSpy;
 		var initializeBaseViewSpy, renderBaseViewSpy, removeBaseViewSpy;
 		var setElNavViewSpy, renderNavViewSpy, removeNavViewSpy;
 		var setElMapViewSpy, renderMapViewSpy, removeMapViewSpy;
@@ -30,14 +30,9 @@ define([
 			$testDiv = $('#test-div');
 
 			initializeSiteModelSpy = jasmine.createSpy('initializeSiteModelSpy');
-			fetchSiteModelDoneSpy = jasmine.createSpy('fetchSiteModelDoneSpy').and.callFake(function(){
+			fetchSiteModelSpy = jasmine.createSpy('fetchSiteModelSpy').and.callFake(function(){
 				var d = $.Deferred();
 				d.resolve();
-				return d.promise();
-			});
-			fetchSiteModelFailSpy = jasmine.createSpy('fetchSiteModelFailSpy').and.callFake(function(){
-				var d = $.Deferred();
-				d.reject();
 				return d.promise();
 			});
 			
@@ -64,7 +59,7 @@ define([
 
 			injector.mock('models/SiteModel', Backbone.Model.extend({
 				initialize: initializeSiteModelSpy,
-				fetch: fetchSiteModelDoneSpy
+				fetch: fetchSiteModelSpy
 
 			}));
 			injector.mock('views/BaseView', BaseView.extend({
@@ -132,7 +127,7 @@ define([
 				el : $testDiv,
 				model : testModel
 			});
-			expect(fetchSiteModelDoneSpy).toHaveBeenCalled();
+			expect(fetchSiteModelSpy).toHaveBeenCalled();
 		});
 
 		it('Expects that updateSiteModel is called when change to WorkflowModel', function() {
@@ -146,7 +141,7 @@ define([
 				model : testModel
 			});
 			testView.model.set('location', {latitude : 42.0, longitude : -101.0});	
-			expect(fetchSiteModelDoneSpy.calls.count()).toBe(2);
+			expect(fetchSiteModelSpy.calls.count()).toBe(2);
 		});
 
 		it('Expects the child views to be initialized', function() {

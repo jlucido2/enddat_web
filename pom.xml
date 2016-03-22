@@ -121,6 +121,12 @@
 			<version>1.0.12</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>gov.usgs.cida</groupId>
+			<artifactId>tomcat-filters</artifactId>
+			<version>1.0</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<build>

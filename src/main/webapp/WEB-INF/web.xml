@@ -76,9 +76,4 @@
 		<servlet-name>STCodesServlet</servlet-name>
 		<url-pattern>/stcodes</url-pattern>
 	</servlet-mapping>
-
-    <error-page>
-    	<error-code>500</error-code>
-    	<location>/error.html</location>
-    </error-page>
 </web-app>

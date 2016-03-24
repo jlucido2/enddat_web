@@ -89,7 +89,7 @@ define([
 				_.contains(this.model.get('datasets'), DATATYPE_NWIS)) {
 
 				this.siteModel.fetch(this.model.get('location'), this.model.get('radius')).fail(function() {
-					self.goHome();
+					log.debug('Fetch failed');
 				});
 			}
 			else {

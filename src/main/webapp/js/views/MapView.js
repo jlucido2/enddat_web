@@ -69,6 +69,7 @@ define([
 			this.updateMarker(this.model, this.model.get('location'));
 			this.updateExtent(this.model, this.model.get('radius'));
 			this.updateSiteMarker(this.sites);
+
 			return this;
 		},
 
@@ -90,7 +91,6 @@ define([
 			var clickTimeout;
 			this.createMarkClickHandler = function(ev) {
 				var clickToAddMarkerToMap = function() {
-					self.map.addLayer(self.projLocationMarker);
 					self.model.set({
 						location : {
 							latitude : ev.latlng.lat,
@@ -131,18 +131,21 @@ define([
 		 */
 		updateMarker : function(model, location) {
 			var mapHasMarker = this.map.hasLayer(this.projLocationMarker);
+			var $tiles = this.$('.leaflet-tile');
 			if (_.has(location, 'latitude') && (location.latitude) && _.has(location, 'longitude') && (location.longitude)) {
 				if (!mapHasMarker) {
 					this.map.addLayer(this.projLocationMarker);
 				}
 				this.projLocationMarker.setLatLng([location.latitude, location.longitude]);
 				this.removeSingleClickHandler();
-				log.debug('Project Location has been updated to ' + '[' + location.latitude + ', ' + location.longitude + ']');
+				$tiles.removeClass('leaflet-clickable');
+				this.updateExtent(model, model.get('radius'));
 			}
 			else {
 				if (mapHasMarker) {
 					this.map.removeLayer(this.projLocationMarker);
 				}
+				$tiles.addClass('leaflet-clickable');
 				this.setUpSingleClickHandlerToCreateMarker();
 			}
 		},
@@ -179,7 +182,7 @@ define([
 					var marker = L.marker([el['lat'], el['lon']], {icon: siteIcon, title: el['name']});
 					self.siteLayerGroup.addLayer(marker);
 				});
-				this.siteLayerGroup.addTo(this.map);				
+				this.siteLayerGroup.addTo(this.map);
 			}
 		}
 	});

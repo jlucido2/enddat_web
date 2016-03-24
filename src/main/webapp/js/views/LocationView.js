@@ -14,6 +14,7 @@ define([
 	 * @param {Object} options
 	 *		@prop {WorkflowStateModel} model
 	 *		@prop {Jquery el or selector} el
+	 *		@prop {Boolean} opened - Set to true if the panel should initially be open.
 	 */
 	var view = BaseCollapsiblePanelView.extend({
 		template : hbTemplate,

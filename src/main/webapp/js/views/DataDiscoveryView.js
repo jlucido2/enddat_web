@@ -29,7 +29,7 @@ define([
 			this.updateSiteModel();
 
 			this.listenTo(this.model, 'change:location', this.updateSiteModel);
-			this.listenTo(this.model, 'change:radius', this.updateSiteModel);			
+			this.listenTo(this.model, 'change:radius', this.updateSiteModel);
 
 			BaseView.prototype.initialize.apply(this, arguments);
 
@@ -48,7 +48,8 @@ define([
 
 			this.locationView  = new LocationView({
 				el : this.$(LOCATION_SELECTOR),
-				model : this.model
+				model : this.model,
+				opened : true
 			});
 		},
 
@@ -72,7 +73,7 @@ define([
 			return this;
 		},
 
-		/* 
+		/*
 		 * Check to see if the WorkflowStateModel contains the parameters needed
 		 * to fetch data for the project.  Currently only checking
 		 * for the NWIS data type but will add others in the future.

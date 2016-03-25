@@ -46,7 +46,7 @@ define([
 				});
 			}, this);
 
-			this.listenTo(this.model, 'change:location', this.updateMarker);
+			this.listenTo(this.model, 'change:location', this.updateLocationMarkerAndExtent);
 			this.listenTo(this.model, 'change:radius', this.updateExtent);
 			this.listenTo(this.sites, 'sync', this.updateSiteMarker);
 		},
@@ -66,9 +66,9 @@ define([
 				this.map.addControl(control);
 			}, this);
 
-			this.updateMarker(this.model, this.model.get('location'));
-			this.updateExtent(this.model, this.model.get('radius'));
+			this.updateLocationMarkerAndExtent(this.model, this.model.get('location'));
 			this.updateSiteMarker(this.sites);
+
 			return this;
 		},
 
@@ -90,7 +90,6 @@ define([
 			var clickTimeout;
 			this.createMarkClickHandler = function(ev) {
 				var clickToAddMarkerToMap = function() {
-					self.map.addLayer(self.projLocationMarker);
 					self.model.set({
 						location : {
 							latitude : ev.latlng.lat,
@@ -129,34 +128,37 @@ define([
 		 * @param {WorkflowStateModel} model
 		 * @param {Object} location - has properties latitude and longitude in order to be a valid location
 		 */
-		updateMarker : function(model, location) {
+		updateLocationMarkerAndExtent : function(model, location) {
 			var mapHasMarker = this.map.hasLayer(this.projLocationMarker);
+			var $tiles = this.$('.leaflet-tile');
 			if (_.has(location, 'latitude') && (location.latitude) && _.has(location, 'longitude') && (location.longitude)) {
 				if (!mapHasMarker) {
 					this.map.addLayer(this.projLocationMarker);
 				}
 				this.projLocationMarker.setLatLng([location.latitude, location.longitude]);
 				this.removeSingleClickHandler();
-				log.debug('Project Location has been updated to ' + '[' + location.latitude + ', ' + location.longitude + ']');
+				$tiles.removeClass('leaflet-clickable');
+				this.updateExtent(model, model.get('radius'));
 			}
 			else {
 				if (mapHasMarker) {
 					this.map.removeLayer(this.projLocationMarker);
 				}
+				$tiles.addClass('leaflet-clickable');
 				this.setUpSingleClickHandlerToCreateMarker();
 			}
 		},
 
 		updateExtent : function(model, radius) {
-			if (radius) {
+			if (radius && model.has('location')) {
 				var location = model.get('location');
-				var bbox = geoSpatialUtils.getBoundingBox(location.latitude, location.longitude, radius);
+				if ((location.latitude) && (location.longitude)) {
+					var bbox = geoSpatialUtils.getBoundingBox(location.latitude, location.longitude, radius);
 
-				var southwest = L.latLng(bbox.south, bbox.west);
-				var northeast = L.latLng(bbox.north, bbox.east);
-
-
-				this.map.fitBounds(L.latLngBounds(southwest, northeast));
+					var southwest = L.latLng(bbox.south, bbox.west);
+					var northeast = L.latLng(bbox.north, bbox.east);
+					this.map.fitBounds(L.latLngBounds(southwest, northeast));
+				}
 			}
 		},
 
@@ -179,7 +181,7 @@ define([
 					var marker = L.marker([el['lat'], el['lon']], {icon: siteIcon, title: el['name']});
 					self.siteLayerGroup.addLayer(marker);
 				});
-				this.siteLayerGroup.addTo(this.map);				
+				this.siteLayerGroup.addTo(this.map);
 			}
 		}
 	});

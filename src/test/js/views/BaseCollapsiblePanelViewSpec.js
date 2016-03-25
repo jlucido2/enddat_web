@@ -31,12 +31,6 @@ define([
 				testButtonClick : testButtonClickSpy
 			});
 
-			testView = new TestPanelView({
-				el : $testDiv,
-				context : {
-					buttonName : 'Test Button Name'
-				}
-			});
 		});
 
 		afterEach(function() {
@@ -48,6 +42,12 @@ define([
 
 		describe('Tests for render', function() {
 			beforeEach(function() {
+				testView = new TestPanelView({
+					el : $testDiv,
+					context : {
+						buttonName : 'Test Button Name'
+					}
+				});
 				testView.render();
 			});
 
@@ -72,9 +72,47 @@ define([
 			});
 		});
 
+		describe('Tests for render when opened options is used at view instantiation', function() {
+			it('Expects that if opened is set to false that the panel is initially rendered with the panel body hidden', function() {
+				testView = new TestPanelView({
+					el : $testDiv,
+					context : {
+						buttonName : 'Test Button Name'
+					},
+					opened : false
+				});
+				testView.render();
+
+				expect($testDiv.find('.collapse-icon').is(':visible')).toBe(false);
+				expect($testDiv.find('.expand-icon').is(':visible')).toBe(true);
+				expect($testDiv.find('.panel-body').hasClass('in')).toBe(false);
+			});
+
+			it('Expects that if opened is set to false that the panel is initially rendered with the panel body hidden', function() {
+				testView = new TestPanelView({
+					el : $testDiv,
+					context : {
+						buttonName : 'Test Button Name'
+					},
+					opened : true
+				});
+				testView.render();
+
+				expect($testDiv.find('.collapse-icon').is(':visible')).toBe(true);
+				expect($testDiv.find('.expand-icon').is(':visible')).toBe(false);
+				expect($testDiv.find('.panel-body').hasClass('in')).toBe(true);
+			});
+		});
+
 		describe('Tests for toggling the collapse icon', function() {
 			var $toggle, $collapseBtn, $expandBtn;
 			beforeEach(function() {
+				testView = new TestPanelView({
+					el : $testDiv,
+					context : {
+						buttonName : 'Test Button Name'
+					}
+				});
 				testView.render();
 				$toggle = $testDiv.find('.collapse-btn');
 				$collapseBtn = $testDiv.find('.collapse-icon');
@@ -94,6 +132,12 @@ define([
 
 		describe('Tests for adding additionalEvents to the view', function() {
 			it('Expects that if the button is clicked that its event handler is called', function() {
+				testView = new TestPanelView({
+					el : $testDiv,
+					context : {
+						buttonName : 'Test Button Name'
+					}
+				});
 				testView.render();
 				$testDiv.find('.test-button').trigger('click');
 				expect(testButtonClickSpy).toHaveBeenCalled();

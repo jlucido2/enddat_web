@@ -1,13 +1,14 @@
 /* jslint browser: true */
 
 define([
+	'loglevel',
 	'views/BaseView',
 	'views/NavView',
 	'views/MapView',
 	'views/LocationView',
 	'models/SiteModel',
 	'hbs!hb_templates/dataDiscovery'
-], function (BaseView, NavView, MapView, LocationView, SiteModel, hbTemplate) {
+], function (log, BaseView, NavView, MapView, LocationView, SiteModel, hbTemplate) {
 	"use strict";
 
 	var NAVVIEW_SELECTOR = '.workflow-nav';
@@ -29,7 +30,7 @@ define([
 			this.updateSiteModel();
 
 			this.listenTo(this.model, 'change:location', this.updateSiteModel);
-			this.listenTo(this.model, 'change:radius', this.updateSiteModel);			
+			this.listenTo(this.model, 'change:radius', this.updateSiteModel);
 
 			BaseView.prototype.initialize.apply(this, arguments);
 
@@ -48,7 +49,8 @@ define([
 
 			this.locationView  = new LocationView({
 				el : this.$(LOCATION_SELECTOR),
-				model : this.model
+				model : this.model,
+				opened : true
 			});
 		},
 
@@ -72,7 +74,7 @@ define([
 			return this;
 		},
 
-		/* 
+		/*
 		 * Check to see if the WorkflowStateModel contains the parameters needed
 		 * to fetch data for the project.  Currently only checking
 		 * for the NWIS data type but will add others in the future.
@@ -88,7 +90,7 @@ define([
 				_.contains(this.model.get('datasets'), DATATYPE_NWIS)) {
 
 				this.siteModel.fetch(this.model.get('location'), this.model.get('radius')).fail(function() {
-					self.goHome();
+					log.debug('Fetch failed');
 				});
 			}
 			else {

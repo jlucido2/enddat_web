@@ -15,7 +15,7 @@ define([
 		var testModel;
 		var testSiteModel;
 		var fakeServer;
-		var addLayerSpy, removeLayerSpy, addControlSpy, hasLayerSpy, removeMapSpy;
+		var addLayerSpy, removeLayerSpy, addControlSpy, hasLayerSpy, removeMapSpy, fitBoundsSpy;
 
 		beforeEach(function() {
 			fakeServer = sinon.fakeServer.create();
@@ -28,12 +28,14 @@ define([
 			addControlSpy = jasmine.createSpy('addControlSpy');
 			removeMapSpy = jasmine.createSpy('removeMapSpy');
 			hasLayerSpy = jasmine.createSpy('hasLayerSpy');
+			fitBoundsSpy = jasmine.createSpy('fitBoundsSpy');
 			spyOn(L, 'map').and.returnValue({
 				addLayer : addLayerSpy,
 				removeLayer : removeLayerSpy,
 				addControl : addControlSpy,
 				hasLayer : hasLayerSpy,
 				remove : removeMapSpy,
+				fitBounds : fitBoundsSpy,
 				on : jasmine.createSpy('onSpy'),
 				off : jasmine.createSpy('offSpy')
 			});
@@ -104,6 +106,44 @@ define([
 				expect(addLayerSpy).toHaveBeenCalledWith(testView.projLocationMarker);
 			});
 
+			it('Expects that the map extent is updated if both location and radius are defined', function() {
+				testModel.set({
+					location :  {latitude : 43.0, longitude : -100.0},
+					radius : '2'
+				});
+				testView.render();
+				expect(fitBoundsSpy).toHaveBeenCalled();
+			});
+
+			it('Expects that the map extent is not updated if location is not defined', function() {
+				testModel.set('radius', '2');
+				testView.render();
+				expect(fitBoundsSpy).not.toHaveBeenCalled();
+			});
+
+			it('Expect that the map extent is not updated if the radius is not defined', function() {
+				testModel.set('location', {latitude : 43.0, longitude : -100.0});
+				expect(fitBoundsSpy).not.toHaveBeenCalled();
+			});
+
+			it('Expects that the map extent is not updated if latitude is not defined in location', function() {
+				testModel.set({
+					location :  {latitude : '', longitude : -100.0},
+					radius : '2'
+				});
+				testView.render();
+				expect(fitBoundsSpy).not.toHaveBeenCalled();
+			});
+
+			it('Expects that the map extent is not updated if longitude is not defined in location', function() {
+				testModel.set({
+					location :  {latitude : 43.0, longitude : ''},
+					radius : '2'
+				});
+				testView.render();
+				expect(fitBoundsSpy).not.toHaveBeenCalled();
+			});
+
 			it('Expects that if render is called twice, the second call removes the map before recreating it', function() {
 				testView.render();
 				expect(removeMapSpy).toHaveBeenCalled();
@@ -111,7 +151,6 @@ define([
 			});
 
 			it('Expect that the site location marker is added to the map if there are sites in the site model', function() {
-//				addLayerSpy.calls.reset();
 				testSiteModel.set({'sites': {'05464220': {'name': 'test', 'lat': '42.25152778', 'lon': '-92.2988889'}}});
 				testView.render();
 				expect(addLayerGroupSpy).toHaveBeenCalled();
@@ -160,6 +199,24 @@ define([
 				expect(removeLayerSpy).not.toHaveBeenCalled();
 				testModel.set('location', {});
 				expect(removeLayerSpy).toHaveBeenCalled();
+			});
+
+			it('Expect that the extent will only be updated when location and radius are defined', function() {
+				fitBoundsSpy.calls.reset();
+				testModel.set('location', {});
+				expect(fitBoundsSpy).not.toHaveBeenCalled();
+
+				testModel.set('location', {
+					latitude : '',
+					longitude : '-100.0'
+				});
+				expect(fitBoundsSpy).not.toHaveBeenCalled();
+
+				testModel.set('radius', '2');
+				expect(fitBoundsSpy).not.toHaveBeenCalled();
+
+				testModel.set('location', {latitude : '43.0', longitude : '-100.0'});
+				expect(fitBoundsSpy).toHaveBeenCalled();
 			});
 
 			it('Expects that if the site model is updated, an updated site marker is added to the map', function() {

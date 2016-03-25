@@ -1,13 +1,14 @@
 /* jslint browser: true */
 
 define([
+	'loglevel',
 	'views/BaseView',
 	'views/NavView',
 	'views/MapView',
 	'views/LocationView',
 	'models/SiteModel',
 	'hbs!hb_templates/dataDiscovery'
-], function (BaseView, NavView, MapView, LocationView, SiteModel, hbTemplate) {
+], function (log, BaseView, NavView, MapView, LocationView, SiteModel, hbTemplate) {
 	"use strict";
 
 	var NAVVIEW_SELECTOR = '.workflow-nav';

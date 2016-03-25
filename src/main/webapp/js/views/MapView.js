@@ -9,6 +9,16 @@ define([
 	'utils/mapUtils',
 	'views/BaseView'
 ], function(_, L, leafletProviders, log, geoSpatialUtils, mapUtils, BaseView) {
+
+	var siteIcon = new L.icon({
+		iconUrl : 'img/time-series.png',
+		iconSize : [10, 10]
+	});
+	var precipIcon = L.icon({
+		iconUrl : 'img/national-precipitation.png',
+		iconSize : [14, 14]
+	});
+
 	var view = BaseView.extend({
 
 		/*
@@ -16,12 +26,12 @@ define([
 		 *		@prop {Jquery element or selector} el
 		 *		@prop {String} mapDivId - id of the div where the map should be rendered
 		 *		@prop {WorkflowStateModel} model
-		 *		@prop {SiteModel} sites
+		 *		@prop {Array of Collection/Models} datasetModels
 		 */
 		initialize : function(options) {
 			BaseView.prototype.initialize.apply(this, arguments);
 			this.mapDivId = options.mapDivId;
-			this.sites = options.sites;
+			this.datasetModels = options.datasetModels;
 
 			this.baseLayers = {
 				'World Street' : L.tileLayer.provider('Esri.WorldStreetMap'),
@@ -46,9 +56,12 @@ define([
 				});
 			}, this);
 
+			this.precipLayerGroup = L.layerGroup();
+
 			this.listenTo(this.model, 'change:location', this.updateLocationMarkerAndExtent);
 			this.listenTo(this.model, 'change:radius', this.updateExtent);
-			this.listenTo(this.sites, 'sync', this.updateSiteMarker);
+			this.listenTo(this.datasetModels.NWIS, 'sync', this.updateSiteMarker);
+			this.listenTo(this.datasetModels.PRECIP, 'reset', this.updatePrecipGridPoints);
 		},
 
 		render : function() {
@@ -65,9 +78,11 @@ define([
 			_.each(this.controls, function(control) {
 				this.map.addControl(control);
 			}, this);
+			this.map.addLayer(this.precipLayerGroup);
 
 			this.updateLocationMarkerAndExtent(this.model, this.model.get('location'));
-			this.updateSiteMarker(this.sites);
+			this.updateSiteMarker(this.datasetModels.NWIS);
+			this.updatePrecipGridPoints(this.datasetModels.PRECIP);
 
 			return this;
 		},
@@ -170,7 +185,7 @@ define([
 		updateSiteMarker : function(sites) {
 			var self = this;
 			var siteObjects = sites.get('sites');
-			var siteIcon = mapUtils.createIcon("img/time-series.png");
+
 			var mapHasSiteMarker = this.map.hasLayer(this.siteLayerGroup);
 			if (mapHasSiteMarker) {
 				this.map.removeLayer(this.siteLayerGroup);
@@ -183,6 +198,22 @@ define([
 				});
 				this.siteLayerGroup.addTo(this.map);
 			}
+		},
+
+		updatePrecipGridPoints : function(precipCollection) {
+			var self = this;
+			this.precipLayerGroup.clearLayers();
+
+			precipCollection.each(function(precipModel) {
+				var marker = L.marker(
+					[precipModel.attributes.lat, precipModel.attributes.lon],
+					{
+						icon : precipIcon,
+						title : precipModel.attributes.y + ':' + precipModel.attributes.x
+					}
+				);
+				self.precipLayerGroup.addLayer(marker);
+			});
 		}
 	});
 

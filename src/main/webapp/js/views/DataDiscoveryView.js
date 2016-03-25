@@ -54,7 +54,7 @@ define([
 				el : this.$(MAPVIEW_SELECTOR),
 				mapDivId : 'map-div',
 				model : this.model,
-				sites : this.datasetModels[DATATYPE_NWIS]
+				datasetModels : this.datasetModels
 			});
 
 			this.locationView  = new LocationView({

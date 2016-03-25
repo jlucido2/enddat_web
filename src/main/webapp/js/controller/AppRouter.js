@@ -64,7 +64,7 @@ define([
 				'radius' : radius,
 				'startDate' : startDate,
 				'endDate' : endDate,
-				'datasets' : datasets ? datasets.split('/') : null
+				'datasets' : datasets ? datasets.split('/') : []
 			});
 			this.createView(DataDiscoveryView, {
 				model : this.workflowState

@@ -1,20 +1,19 @@
 /* jslint browser: true */
 
-define([        
+define([
 	'jquery',
 	'backbone',
 	'loglevel',
 	'module',
-	'utils/rdbUtils',
-	'utils/geoSpatialUtils'
-], function ($, Backbone, log, module, rdbUtils, geoSpatialUtils) {
+	'utils/rdbUtils'
+], function ($, Backbone, log, module, rdbUtils) {
 	"use strict";
 
 	var config = module.config();
 	var parameterCodesPath = config.parameterCodesPath;
 	var parameterCodes = {};
 	var statisticCodes = {};
-	
+
 	var model = Backbone.Model.extend({
 
 		url: '',
@@ -22,19 +21,15 @@ define([
 		initialize: function() {
 			this.pCodePromise = this.getParameterCodes();
 			this.sCodePromise = this.getStatisticCodes();
-			this.set({sites: {}});	
+			this.set({sites: {}});
 		},
 
-		fetch: function(location, radius) {
-			var bbox = geoSpatialUtils.getBoundingBox(
-					location.latitude,
-					location.longitude,
-					radius);
+		fetch: function(boundingBox) {
 			this.url = 'waterService/?format=rdb&bBox=' +
-				bbox.west.toFixed(6) + ',' +
-				bbox.south.toFixed(6) + ',' +
-				bbox.east.toFixed(6) + ',' +
-				bbox.north.toFixed(6) +
+				boundingBox.west.toFixed(6) + ',' +
+				boundingBox.south.toFixed(6) + ',' +
+				boundingBox.east.toFixed(6) + ',' +
+				boundingBox.north.toFixed(6) +
 				'&outputDataTypeCd=iv,dv&hasDataTypeCd=iv,dv&siteType=OC,LK,ST,SP,AS,AT';
 
 			var self = this;
@@ -110,7 +105,7 @@ define([
 							siteData[el["site_no"]] = site;
 
 						});
-						
+
 						self.set({sites: siteData});
 						self.trigger('sync', self);
 						log.debug('Fetched sites ' + _.size(siteData));
@@ -126,7 +121,7 @@ define([
 						self.trigger('sync', self);
 						sitesDeferred.reject();
 					}
-				});			
+				});
 			});
 			return sitesDeferred.promise();
 		},
@@ -153,7 +148,7 @@ define([
 				},
 				error : function(jqXHR, textStatus, error) {
 					log.debug('Error in loading NWIS Parameter definitions: ' + textStatus);
-				}			
+				}
 			});
 		},
 
@@ -181,7 +176,7 @@ define([
 				error : function(jqXHR, textStatus, error) {
 					log.debug('Error in loading NWIS stat definitions: ' + textStatus);
 				}
-			});				
+			});
 		}
 
 	});

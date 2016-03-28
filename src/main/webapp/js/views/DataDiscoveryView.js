@@ -109,6 +109,7 @@ define([
 			}
 			else {
 				this.siteModel.clear();
+				this.siteModel.trigger('sync', this.siteModel);
 			}
 			
 			return this;

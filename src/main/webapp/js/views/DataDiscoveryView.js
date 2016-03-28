@@ -6,13 +6,14 @@ define([
 	'views/NavView',
 	'views/MapView',
 	'views/LocationView',
-	'models/SiteModel',
+	'views/ChooseView',
 	'hbs!hb_templates/dataDiscovery'
-], function (log, BaseView, NavView, MapView, LocationView, SiteModel, hbTemplate) {
+], function (log, BaseView, NavView, MapView, LocationView, ChooseView, hbTemplate) {
 	"use strict";
 
 	var NAVVIEW_SELECTOR = '.workflow-nav';
 	var LOCATION_SELECTOR = '.location-panel';
+	var CHOOSE_SELECTOR = '.choose-panel';
 	var MAPVIEW_SELECTOR = '.map-container-div';
 	var DATATYPE_NWIS = 'NWIS';
 
@@ -24,11 +25,12 @@ define([
 		 * @param {Object} options
 		 *		@prop {Jquery element} el
 		 *		@prop {models/WorkflowStateModel} model
+		 *		@prop {models/SiteModel} model
 		 */
 		initialize: function (options) {
-			this.siteModel = new SiteModel();
-			this.updateSiteModel();
+			this.siteModel = options.siteModel;
 
+			this.listenTo(this.model, 'change:step', this.showChooseView);
 			this.listenTo(this.model, 'change:location', this.updateSiteModel);
 			this.listenTo(this.model, 'change:radius', this.updateSiteModel);
 
@@ -52,6 +54,12 @@ define([
 				model : this.model,
 				opened : true
 			});
+
+			this.chooseView  = new ChooseView({
+				el : this.$(CHOOSE_SELECTOR),
+				model : this.model,
+				opened : true
+			});
 		},
 
 		render : function() {
@@ -63,6 +71,8 @@ define([
 				this.locationView.setElement(this.$(LOCATION_SELECTOR)).render();
 				this.mapView.setElement(this.$(MAPVIEW_SELECTOR)).render();
 			}
+			this.updateSiteModel();
+			this.showChooseView();
 			return this;
 		},
 
@@ -70,17 +80,18 @@ define([
 			this.navView.remove();
 			this.mapView.remove();
 			this.locationView.remove();
+			this.chooseView.remove();
 			BaseView.prototype.remove.apply(this, arguments);
 			return this;
 		},
 
-		/*
-		 * Check to see if the WorkflowStateModel contains the parameters needed
-		 * to fetch data for the project.  Currently only checking
-		 * for the NWIS data type but will add others in the future.
-		 */
 		updateSiteModel: function () {
 			self = this;
+			/*
+			 * Check to see if the WorkflowStateModel contains the parameters needed
+			 * to fetch data for the project.  Currently only checking
+			 * for the NWIS data type but will add others in the future.
+			 */
 			if (this.model.get('step') === this.model.CHOOSE_DATA_STEP &&
 				this.model.get('location') &&
 				null != this.model.get('location').latitude &&
@@ -88,15 +99,29 @@ define([
 				this.model.get('radius') &&
 				null != this.model.get('radius') &&
 				_.contains(this.model.get('datasets'), DATATYPE_NWIS)) {
-
+				
+				//start loading indicator
 				this.siteModel.fetch(this.model.get('location'), this.model.get('radius')).fail(function() {
+					//notify user about problem here rather than log message...
 					log.debug('Fetch failed');
 				});
+				//stop loading indicator
 			}
 			else {
 				this.siteModel.clear();
 			}
+			
+			return this;
+		},
+
+		showChooseView: function () {
+			var step = this.model.get('step');
+			if (this.model.CHOOSE_DATA_STEP === step) {
+				this.chooseView.setElement(this.$(CHOOSE_SELECTOR)).render();
+			}
+			return this;
 		}
+
 	});
 
 	return view;

@@ -1,5 +1,5 @@
 /* jslint browser: true */
-/* global jasmine, expect */
+/* global jasmine, expect, sinon */
 
 define([
 	'squire',
@@ -17,11 +17,15 @@ define([
 		var testModel;
 		var $testDiv;
 
-		var initializeSiteModelSpy, fetchSiteModelSpy;
+		var testSiteModel;
+		var opDeferred;
+		var ajaxStub;
+
 		var initializeBaseViewSpy, renderBaseViewSpy, removeBaseViewSpy;
 		var setElNavViewSpy, renderNavViewSpy, removeNavViewSpy;
 		var setElMapViewSpy, renderMapViewSpy, removeMapViewSpy;
 		var setElLocationViewSpy, renderLocationViewSpy, removeLocationViewSpy;
+		var setElChooseViewSpy, renderChooseViewSpy, removeChooseViewSpy;
 
 		var injector;
 
@@ -29,13 +33,6 @@ define([
 			$('body').append('<div id="test-div"></div>');
 			$testDiv = $('#test-div');
 
-			initializeSiteModelSpy = jasmine.createSpy('initializeSiteModelSpy');
-			fetchSiteModelSpy = jasmine.createSpy('fetchSiteModelSpy').and.callFake(function(){
-				var d = $.Deferred();
-				d.resolve();
-				return d.promise();
-			});
-			
 			initializeBaseViewSpy = jasmine.createSpy('initializeBaseViewSpy');
 			renderBaseViewSpy = jasmine.createSpy('renderBaseViewSpy');
 			removeBaseViewSpy = jasmine.createSpy('removeBaseViewSpy');
@@ -52,16 +49,20 @@ define([
 			renderLocationViewSpy = jasmine.createSpy('renderLocationViewSpy');
 			removeLocationViewSpy = jasmine.createSpy('removeLocationViewSpy');
 
+			setElChooseViewSpy = jasmine.createSpy('setElChooseViewSpy');
+			renderChooseViewSpy = jasmine.createSpy('renderChooseViewSpy');
+			removeChooseViewSpy = jasmine.createSpy('removeChooseViewSpy');
+
 			testModel = new WorkflowStateModel();
 			testModel.set('step', testModel.PROJ_LOC_STEP);			
 
+			opDeferred = $.Deferred();
+			ajaxStub = sinon.stub($, "ajax");
+			testSiteModel = new SiteModel();
+			spyOn(testSiteModel, 'fetch').and.returnValue(opDeferred.promise());
+
 			injector = new Squire();
 
-			injector.mock('models/SiteModel', Backbone.Model.extend({
-				initialize: initializeSiteModelSpy,
-				fetch: fetchSiteModelSpy
-
-			}));
 			injector.mock('views/BaseView', BaseView.extend({
 				initialize : initializeBaseViewSpy,
 				render : renderBaseViewSpy,
@@ -88,6 +89,13 @@ define([
 				render : renderLocationViewSpy,
 				remove : removeLocationViewSpy
 			}));
+			injector.mock('views/ChooseView', BaseView.extend({
+				setElement : setElChooseViewSpy.and.returnValue({
+					render : renderChooseViewSpy
+				}),
+				render : renderChooseViewSpy,
+				remove : removeChooseViewSpy
+			}));
 			injector.require(['views/DataDiscoveryView'], function(view) {
 				DataDiscoveryView = view;
 				done();
@@ -95,6 +103,7 @@ define([
 		});
 
 		afterEach(function() {
+			$.ajax.restore();
 			injector.remove();
 			if (testView.remove) {
 				testView.remove();
@@ -110,40 +119,6 @@ define([
 			expect(initializeBaseViewSpy).toHaveBeenCalled();
 		});
 
-		it('Expects that SiteModel.initialize is called', function() {
-			testView = new DataDiscoveryView({
-				el : $testDiv,
-				model : testModel
-			});
-			expect(initializeSiteModelSpy).toHaveBeenCalled();
-		});
-
-		it('Expects that updateSiteModel is called', function() {
-			testModel.set('step', testModel.CHOOSE_DATA_STEP);
-			testModel.set('radius', 5);
-			testModel.set('location', {latitude : 43.0, longitude : -100.0});
-			testModel.set('datasets', ['NWIS']);			
-			testView = new DataDiscoveryView({
-				el : $testDiv,
-				model : testModel
-			});
-			expect(fetchSiteModelSpy).toHaveBeenCalled();
-		});
-
-		it('Expects that updateSiteModel is called when change to WorkflowModel', function() {
-			testModel.set('step', testModel.CHOOSE_DATA_STEP);
-			testModel.set('radius', 5);
-			testModel.set('location', {latitude : 43.0, longitude : -100.0});
-			testModel.set('datasets', ['NWIS']);
-			
-			testView = new DataDiscoveryView({
-				el : $testDiv,
-				model : testModel
-			});
-			testView.model.set('location', {latitude : 42.0, longitude : -101.0});	
-			expect(fetchSiteModelSpy.calls.count()).toBe(2);
-		});
-
 		it('Expects the child views to be initialized', function() {
 			testView = new DataDiscoveryView({
 				el : $testDiv,
@@ -153,13 +128,15 @@ define([
 			expect(setElNavViewSpy.calls.count()).toBe(1);
 			expect(setElMapViewSpy.calls.count()).toBe(1);
 			expect(setElLocationViewSpy.calls.count()).toBe(1);
+			expect(setElChooseViewSpy.calls.count()).toBe(1);
 		});
 
 		describe('Tests for render', function() {
 			beforeEach(function() {
 				testView = new DataDiscoveryView({
 					el : $testDiv,
-					model : testModel
+					model : testModel,
+					siteModel : testSiteModel
 				});
 			});
 
@@ -215,6 +192,36 @@ define([
 				expect(setElLocationViewSpy.calls.count()).toBe(3);
 				expect(renderLocationViewSpy.calls.count()).toBe(2);
 			});
+
+			it('Expects that the chooseView is rendered only if the workflow step is choose data', function() {
+				testView.render();
+				expect(setElChooseViewSpy.calls.count()).toBe(1);
+				expect(renderChooseViewSpy.calls.count()).toBe(0);
+
+				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+				testView.render();
+				expect(setElChooseViewSpy.calls.count()).toBe(3);
+				expect(renderChooseViewSpy.calls.count()).toBe(2);
+
+				testModel.set('step', testModel.PROCESS_DATA_STEP);
+				testView.render();
+				expect(setElChooseViewSpy.calls.count()).toBe(3);
+				expect(renderChooseViewSpy.calls.count()).toBe(2);
+			});
+
+			it('Expects that when rendering a view without location, radius and dataset, the site model fetch is not called', function() {
+				testView.render();
+				expect(testSiteModel.fetch).not.toHaveBeenCalled();
+			});
+
+			it('Expects that when rendering a view with location, radius and dataset, the site model fetch is called', function() {
+				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+				testModel.set('radius', 5);
+				testModel.set('location', {latitude : 43.0, longitude : -100.0});
+				testModel.set('datasets', ['NWIS']);		
+				testView.render();
+				expect(testSiteModel.fetch).toHaveBeenCalled();
+			});
 		});
 
 		describe('Tests for remove', function() {
@@ -234,6 +241,7 @@ define([
 				expect(removeNavViewSpy.calls.count()).toBe(1);
 				expect(removeMapViewSpy.calls.count()).toBe(1);
 				expect(removeLocationViewSpy.calls.count()).toBe(1);
+				expect(removeChooseViewSpy.calls.count()).toBe(1);
 			});
 		});
 	});

@@ -5,8 +5,9 @@ define([
 	'backbone',
 	'loglevel',
 	'models/WorkflowStateModel',
+	'models/SiteModel',
 	'views/DataDiscoveryView'
-], function ($, Backbone, log, WorkflowStateModel, DataDiscoveryView) {
+], function ($, Backbone, log, WorkflowStateModel, SiteModel, DataDiscoveryView) {
 	"use strict";
 
 	var appRouter = Backbone.Router.extend({
@@ -19,6 +20,7 @@ define([
 		initialize : function(options) {
 			Backbone.Router.prototype.initialize.apply(this, arguments);
 			this.workflowState = new WorkflowStateModel();
+			this.siteModel = new SiteModel();
 		},
 
 		applicationContextDiv: '#main-content',
@@ -53,7 +55,8 @@ define([
 		specifyProjectLocationState: function () {
 			this.workflowState.set('step', this.workflowState.PROJ_LOC_STEP);
 			this.createView(DataDiscoveryView, {
-				model : this.workflowState
+				model : this.workflowState,
+				siteModel : this.siteModel
 			}).render();
 		},
 
@@ -67,7 +70,8 @@ define([
 				'datasets' : datasets ? datasets.split('/') : null
 			});
 			this.createView(DataDiscoveryView, {
-				model : this.workflowState
+				model : this.workflowState,
+				siteModel : this.siteModel
 			}).render();
 		}
 	});

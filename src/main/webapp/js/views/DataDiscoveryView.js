@@ -30,7 +30,7 @@ define([
 		initialize: function (options) {
 			this.siteModel = options.siteModel;
 
-			this.listenTo(this.model, 'change:step', this.showChooseView);
+			this.listenTo(this.model, 'change:step', this.updateChooseView);
 			this.listenTo(this.model, 'change:location', this.updateSiteModel);
 			this.listenTo(this.model, 'change:radius', this.updateSiteModel);
 
@@ -72,7 +72,7 @@ define([
 				this.mapView.setElement(this.$(MAPVIEW_SELECTOR)).render();
 			}
 			this.updateSiteModel();
-			this.showChooseView();
+			this.updateChooseView();
 			return this;
 		},
 
@@ -115,10 +115,14 @@ define([
 			return this;
 		},
 
-		showChooseView: function () {
+		updateChooseView: function () {
 			var step = this.model.get('step');
 			if (this.model.CHOOSE_DATA_STEP === step) {
 				this.chooseView.setElement(this.$(CHOOSE_SELECTOR)).render();
+				this.$(CHOOSE_SELECTOR).show();
+			}
+			else if (this.model.PROJ_LOC_STEP === step ) {
+				this.$(CHOOSE_SELECTOR).hide();
 			}
 			return this;
 		}

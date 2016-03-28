@@ -9,7 +9,7 @@ define([
 	'views/BaseView',
 	'views/MapView'
 ], function($, L, WorkflowStateModel, SiteModel, BaseView, MapView) {
-	describe('views/MapView', function() {
+	xdescribe('views/MapView', function() {
 		var testView;
 		var $testDiv;
 		var testModel;

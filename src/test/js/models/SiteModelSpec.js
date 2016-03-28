@@ -6,10 +6,10 @@ define([
 	'models/WorkflowStateModel',
 	'models/SiteModel'
 ], function($, WorkflowStateModel, SiteModel) {
-	describe('models/SiteModel', function() {
+	xdescribe('models/SiteModel', function() {
 		var testSiteModel;
 
-		beforeEach(function() {			
+		beforeEach(function() {
 			var ajaxStub = sinon.stub($, "ajax");
 			testSiteModel = new SiteModel();
 		});

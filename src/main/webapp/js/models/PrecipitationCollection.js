@@ -39,10 +39,14 @@ define([
 					srsName : 'EPSG:4269',
 					bbox : [boundingBox.south, boundingBox.west, boundingBox.north, boundingBox.east].join(',')
 				},
-				success : function(xml) {
+				success : function(xml, textStatus, jqXHR) {
+					if ($utils.xmlFind($(xml), 'ows', 'ExceptionReport').length > 0) {
+						log.debug('Precipitation fetch failed with Exception from service');
+						fetchDeferred.reject(jqXHR);
+					}
 					self.reset(self.parse(xml));
 					log.debug('Precipitation fetch succeeded, fetched ' + self.size() + ' grid');
-					fetchDeferred.resolve();
+					fetchDeferred.resolve(jqXHR);
 				},
 				error : function(jqXHR) {
 					log.debug('Precipitation fetch failed');

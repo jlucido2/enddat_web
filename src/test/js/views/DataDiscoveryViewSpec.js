@@ -232,6 +232,27 @@ define([
 				testModel.trigger('dataset:updateStart');
 				expect($loadingIndicator.is(':visible')).toBe(true);
 			});
+
+			it('Expects the loading indicator to be hidden when the dataset:updateFinished event is triggered on the model', function() {
+				testModel.set('datasets', ['NWIS', 'PRECIP']);
+				testModel.trigger('dataset:updateStart');
+				testModel.trigger('dataset:updateFinished', []);
+				expect($testDiv.find('.loading-indicator').is(':visible')).toBe(false);
+			});
+
+			it('Expects that if there are no error types the success alert is shown', function() {
+				testModel.set('datasets', ['NWIS', 'PRECIP']);
+				testModel.trigger('dataset:updateStart');
+				testModel.trigger('dataset:updateFinished', []);
+				expect(showSuccessAlertSpy).toHaveBeenCalled();
+			});
+
+			it('Expects that if there are error types the danger alert is shown', function() {
+				testModel.set('datasets', ['NWIS', 'PRECIP']);
+				testModel.trigger('dataset:updateStart');
+				testModel.trigger('dataset:updateFinished', ['NWIS']);
+				expect(showDangerAlertSpy).toHaveBeenCalled();
+			});
 		});
 	});
 });

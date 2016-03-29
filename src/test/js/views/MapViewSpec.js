@@ -3,19 +3,21 @@
 
 define([
 	'jquery',
+	'underscore',
 	'leaflet',
 	'models/WorkflowStateModel',
 	'models/SiteModel',
 	'views/BaseView',
 	'views/MapView'
-], function($, L, WorkflowStateModel, SiteModel, BaseView, MapView) {
-	xdescribe('views/MapView', function() {
+], function($, _, L, WorkflowStateModel, SiteModel, BaseView, MapView) {
+	describe('views/MapView', function() {
 		var testView;
 		var $testDiv;
 		var testModel;
-		var testSiteModel;
+		var testSiteModel, testPrecipModel;
 		var fakeServer;
 		var addLayerSpy, removeLayerSpy, addControlSpy, hasLayerSpy, removeMapSpy, fitBoundsSpy;
+		var hasLayerValue = false;
 
 		beforeEach(function() {
 			fakeServer = sinon.fakeServer.create();
@@ -43,24 +45,22 @@ define([
 			spyOn(L, 'marker').and.callThrough();
 			addLayerGroupSpy = jasmine.createSpy('addLayerGroupSpy');
 			addToGroupSpy = jasmine.createSpy('addToGroupSpy');
-			spyOn(L, 'layerGroup').and.returnValue({
-				addLayer: addLayerGroupSpy,
-				addTo: addToGroupSpy
-			});
+			spyOn(L, 'layerGroup').and.callThrough();
 
 			spyOn(BaseView.prototype, 'initialize').and.callThrough();
 			spyOn(BaseView.prototype, 'remove').and.callThrough();
 
-			testModel = new WorkflowStateModel();
+			testModel = new WorkflowStateModel({}, {
+				createDatasetModels : true
+			});
 			testModel.set('step', testModel.PROJ_LOC_STEP);
-
-			testSiteModel = new SiteModel();
+			testSiteModel = testModel.get('datasetModels').NWIS;
+			testPrecipModel = testModel.get('datasetModels').PRECIP;
 
 			testView = new MapView({
 				el : '#test-div',
 				mapDivId : 'test-map-div',
-				model : testModel,
-				sites : testSiteModel
+				model : testModel
 			});
 		});
 
@@ -80,30 +80,52 @@ define([
 		});
 
 		it('Expects that a project location marker is created', function() {
-			expect(L.marker).toHaveBeenCalled();
+			expect(testView.projLocationMarker).toBeDefined();
+		});
+
+		it('Expects that the dataset model\'s layer group\'s are created', function() {
+			expect(testView.siteLayerGroup).toBeDefined();
+			expect(testView.precipLayerGroup).toBeDefined();
 		});
 
 		describe('Tests for render', function() {
-			beforeEach(function() {
-				testView.render();
-			});
-
 			it('Expects that the map is created in the mapDiv with a single base layer', function() {
+				testView.render();
 				expect(L.map).toHaveBeenCalled();
 			});
 
 			it('Expects the layer switch control to be added to the map', function() {
+				testView.render();
 				expect(addControlSpy).toHaveBeenCalledWith(testView.controls[0]);
 			});
 
+			it('Expects that the siteLayerGroup and precipLayerGroup are added to the map', function() {
+				var layersAdded;
+				testView.render();
+				layersAdded = _.map(addLayerSpy.calls.allArgs(), function(args) {
+					return args[0];
+				});
+				expect(_.contains(layersAdded, testView.siteLayerGroup)).toBe(true);
+				expect(_.contains(layersAdded, testView.precipLayerGroup)).toBe(true);
+			});
+
 			it('Expects that the project location marker is not added to the map if location is not defined in the workflow state', function() {
-				expect(addLayerSpy).not.toHaveBeenCalled();
+				var layersAdded;
+				testView.render();
+				layersAdded = _.map(addLayerSpy.calls.allArgs(), function(args) {
+					return args[0];
+				});
+				expect(_.contains(layersAdded, testView.projLocationMarker)).toBe(false);
 			});
 
 			it('Expect that the project location marker is added to the map if the location is defined in the workflow state', function() {
+				var layersAdded;
 				testModel.set('location', {latitude : 43.0, longitude : -100.0});
 				testView.render();
-				expect(addLayerSpy).toHaveBeenCalledWith(testView.projLocationMarker);
+				layersAdded = _.map(addLayerSpy.calls.allArgs(), function(args) {
+					return args[0];
+				});
+				expect(_.contains(layersAdded, testView.projLocationMarker)).toBe(true);
 			});
 
 			it('Expects that the map extent is updated if both location and radius are defined', function() {
@@ -123,6 +145,7 @@ define([
 
 			it('Expect that the map extent is not updated if the radius is not defined', function() {
 				testModel.set('location', {latitude : 43.0, longitude : -100.0});
+				testView.render();
 				expect(fitBoundsSpy).not.toHaveBeenCalled();
 			});
 
@@ -146,14 +169,26 @@ define([
 
 			it('Expects that if render is called twice, the second call removes the map before recreating it', function() {
 				testView.render();
+				testView.render();
 				expect(removeMapSpy).toHaveBeenCalled();
 				expect(L.map.calls.count()).toBe(2);
 			});
 
 			it('Expect that the site location marker is added to the map if there are sites in the site model', function() {
 				testSiteModel.set({'sites': {'05464220': {'name': 'test', 'lat': '42.25152778', 'lon': '-92.2988889'}}});
+				spyOn(testView.siteLayerGroup, 'addLayer').and.callThrough();
 				testView.render();
-				expect(addLayerGroupSpy).toHaveBeenCalled();
+				expect(testView.siteLayerGroup.addLayer.calls.count()).toBe(1);
+			});
+
+			it('Expects that the precipitation layer group contains markers for each grid', function() {
+				testPrecipModel.reset([
+					{x : '1', y: '2', lon : '-100', lat : '43.0'},
+					{x : '1', y: '3', lon : '-100', lat : '44.0'}
+				]);
+				spyOn(testView.precipLayerGroup, 'addLayer').and.callThrough();
+				testView.render();
+				expect(testView.precipLayerGroup.addLayer.calls.count()).toBe(2);
 			});
 		});
 
@@ -181,11 +216,12 @@ define([
 			it('Expects that if location goes from unset to set the marker is added to the map and it\'s location is set', function() {
 				hasLayerSpy.and.returnValue(false);
 				testModel.set('location', {latitude : 43.0, longitude : -100.0});
-				expect(addLayerSpy).toHaveBeenCalledWith(testView.projLocationMarker);
+				expect(addLayerSpy.calls.mostRecent().args[0]).toEqual(testView.projLocationMarker);
 				expect(testView.projLocationMarker.getLatLng()).toEqual(L.latLng(43.0, -100.0));
 			});
 
 			it('Expects that if the location is changed once the marker is on the map, that its location is updated', function() {
+				addLayerSpy.calls.reset();
 				hasLayerSpy.and.returnValue(false);
 				testModel.set('location', {latitude : 43.0, longitude : -100.0});
 				hasLayerSpy.and.returnValue(true);
@@ -220,10 +256,34 @@ define([
 			});
 
 			it('Expects that if the site model is updated, an updated site marker is added to the map', function() {
-//				addLayerSpy.calls.reset();
 				testSiteModel.set({'sites': {'05464220': {'name': 'test', 'lat': '42.25152778', 'lon': '-92.2988889'}}});
 				testSiteModel.trigger('sync', testSiteModel);
-				expect(addLayerGroupSpy).toHaveBeenCalled();
+				expect(testView.siteLayerGroup.getLayers().length).toBe(1);
+			});
+
+			it('Expects that if the site model is updated and then cleared, no site markers will be on the map', function() {
+				testSiteModel.set({'sites': {'05464220': {'name': 'test', 'lat': '42.25152778', 'lon': '-92.2988889'}}});
+				testSiteModel.trigger('sync', testSiteModel);
+				testSiteModel.set({'sites' : {}});
+				testSiteModel.trigger('sync', testSiteModel);
+				expect(testView.siteLayerGroup.getLayers().length).toBe(0);
+			});
+
+			it('Expects that if the precipitation collection is updated, precipitation grid points will be on the map', function() {
+				testPrecipModel.reset([
+					{x : '1', y: '2', lon : '-100', lat : '43.0'},
+					{x : '1', y: '3', lon : '-100', lat : '44.0'}
+				]);
+				expect(testView.precipLayerGroup.getLayers().length).toBe(2);
+			});
+
+			it('Expects that if the precipitation collection is updated then cleared, no precipitation grid points will be on the map', function() {
+				testPrecipModel.reset([
+					{x : '1', y: '2', lon : '-100', lat : '43.0'},
+					{x : '1', y: '3', lon : '-100', lat : '44.0'}
+				]);
+				testPrecipModel.reset([]);
+				expect(testView.precipLayerGroup.getLayers().length).toBe(0);
 			});
 		});
 

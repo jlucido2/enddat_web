@@ -54,12 +54,8 @@ define([
 				});
 			}, this);
 
+			this.siteLayerGroup = L.layerGroup();
 			this.precipLayerGroup = L.layerGroup();
-
-			this.listenTo(this.model, 'change:location', this.updateLocationMarkerAndExtent);
-			this.listenTo(this.model, 'change:radius', this.updateExtent);
-			this.listenTo(this.model.attributes.datasetModels[this.model.NWIS_DATASET], 'sync', this.updateSiteMarker);
-			this.listenTo(this.model.attributes.datasetModels[this.model.PRECIP_DATASET], 'reset', this.updatePrecipGridPoints);
 		},
 
 		render : function() {
@@ -76,11 +72,18 @@ define([
 			_.each(this.controls, function(control) {
 				this.map.addControl(control);
 			}, this);
+			this.map.addLayer(this.siteLayerGroup);
 			this.map.addLayer(this.precipLayerGroup);
 
 			this.updateLocationMarkerAndExtent(this.model, this.model.get('location'));
 			this.updateSiteMarker(this.model.attributes.datasetModels[this.model.NWIS_DATASET]);
 			this.updatePrecipGridPoints(this.model.attributes.datasetModels[this.model.PRECIP_DATASET]);
+
+			// Wait to set up model listeners until the view has been rendered
+			this.listenTo(this.model, 'change:location', this.updateLocationMarkerAndExtent);
+			this.listenTo(this.model, 'change:radius', this.updateExtent);
+			this.listenTo(this.model.attributes.datasetModels[this.model.NWIS_DATASET], 'sync', this.updateSiteMarker);
+			this.listenTo(this.model.attributes.datasetModels[this.model.PRECIP_DATASET], 'reset', this.updatePrecipGridPoints);
 
 			return this;
 		},
@@ -184,18 +187,12 @@ define([
 			var self = this;
 			var siteObjects = sites.get('sites');
 
-			var mapHasSiteMarker = this.map.hasLayer(this.siteLayerGroup);
-			if (mapHasSiteMarker) {
-				this.map.removeLayer(this.siteLayerGroup);
-			}
-			this.siteLayerGroup = L.layerGroup();
-			if(!_.isEmpty(siteObjects)) {
-				_.each(siteObjects, function(el) {
-					var marker = L.marker([el['lat'], el['lon']], {icon: siteIcon, title: el['name']});
-					self.siteLayerGroup.addLayer(marker);
-				});
-				this.siteLayerGroup.addTo(this.map);
-			}
+			this.siteLayerGroup.clearLayers();
+
+			_.each(siteObjects, function(site) {
+				var marker = L.marker([site['lat'], site['lon']], {icon: siteIcon, title: site['name']});
+				self.siteLayerGroup.addLayer(marker);
+			});
 		},
 
 		updatePrecipGridPoints : function(precipCollection) {

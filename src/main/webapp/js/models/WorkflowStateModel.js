@@ -36,14 +36,14 @@ define([
 		 * @returns {undefined}
 		 */
 		initialize : function(attributes, options) {
-			var createDatasetModels = _.has(options, 'createDatasetModels') ? options.createDataSetModels : false;
+			var createDatasetModels = _.has(options, 'createDatasetModels') ? options.createDatasetModels : false;
 			Backbone.Model.prototype.initialize.apply(this, arguments);
 
 			if (createDatasetModels) {
 				this.initializeDatasetModels();
 			}
 
-			// Set up event listeners to update te dataset models
+			// Set up event listeners to update the dataset models
 			this.on('change:location', this.updateDatasetModels, this);
 			this.on('change:radius', this.updateDatasetModels, this);
 		},

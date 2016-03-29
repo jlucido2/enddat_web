@@ -1,5 +1,5 @@
 /* jslint browser: true */
-/* global jasmine, expect */
+/* global jasmine, expect, sinon */
 
 define([
 	'jquery',
@@ -12,12 +12,16 @@ define([
 		var testView;
 		var testModel;
 		var $testDiv;
+		var fakeServer;
 
 		beforeEach(function() {
+			fakeServer = sinon.fakeServer.create();
 			$('body').append('<div id="test-div"></div>');
 			$testDiv = $('#test-div');
 
-			testModel = new WorkflowStateModel();
+			testModel = new WorkflowStateModel({}, {
+				createDatasetModels : true
+			});
 			testModel.set('step', testModel.PROJ_LOC_STEP);
 
 			testView = new LocationView({
@@ -27,6 +31,10 @@ define([
 		});
 
 		afterEach(function() {
+			fakeServer.restore();
+			if (testView) {
+				testView.remove();
+			}
 			$testDiv.remove();
 		});
 

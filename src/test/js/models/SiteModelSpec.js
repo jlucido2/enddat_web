@@ -6,7 +6,7 @@ define([
 	'models/WorkflowStateModel',
 	'models/SiteModel'
 ], function($, WorkflowStateModel, SiteModel) {
-	xdescribe('models/SiteModel', function() {
+	describe('models/SiteModel', function() {
 		var testSiteModel;
 
 		beforeEach(function() {
@@ -27,7 +27,7 @@ define([
 		});
 
 		it('Expects that an ajax call is made for waterService with the correct url', function() {
-			testSiteModel.fetch({'location': {latitude : 43.0, longitude : -100.0}}, 5);
+			testSiteModel.fetch({north : 42.26833, west : -92.426775, south : 42.123607, east : -92.231428});
 			expect($.ajax.calledWithMatch({url: "waterService/?format=rdb&bBox=-92.426775,42.123607,-92.231428,42.268330&outputDataTypeCd=iv,dv&hasDataTypeCd=iv,dv&siteType=OC,LK,ST,SP,AS,AT"}));
 		});
 

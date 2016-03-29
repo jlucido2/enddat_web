@@ -18,7 +18,9 @@ define([
 
 		initialize : function(options) {
 			Backbone.Router.prototype.initialize.apply(this, arguments);
-			this.workflowState = new WorkflowStateModel();
+			this.workflowState = new WorkflowStateModel({}, {
+				createDatasetModels : true
+			});
 		},
 
 		applicationContextDiv: '#main-content',

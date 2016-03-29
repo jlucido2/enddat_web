@@ -26,12 +26,10 @@ define([
 		 *		@prop {Jquery element or selector} el
 		 *		@prop {String} mapDivId - id of the div where the map should be rendered
 		 *		@prop {WorkflowStateModel} model
-		 *		@prop {Array of Collection/Models} datasetModels
 		 */
 		initialize : function(options) {
 			BaseView.prototype.initialize.apply(this, arguments);
 			this.mapDivId = options.mapDivId;
-			this.datasetModels = options.datasetModels;
 
 			this.baseLayers = {
 				'World Street' : L.tileLayer.provider('Esri.WorldStreetMap'),
@@ -60,8 +58,8 @@ define([
 
 			this.listenTo(this.model, 'change:location', this.updateLocationMarkerAndExtent);
 			this.listenTo(this.model, 'change:radius', this.updateExtent);
-			this.listenTo(this.datasetModels.NWIS, 'sync', this.updateSiteMarker);
-			this.listenTo(this.datasetModels.PRECIP, 'reset', this.updatePrecipGridPoints);
+			this.listenTo(this.model.attributes.datasetModels[this.model.NWIS_DATASET], 'sync', this.updateSiteMarker);
+			this.listenTo(this.model.attributes.datasetModels[this.model.PRECIP_DATASET], 'reset', this.updatePrecipGridPoints);
 		},
 
 		render : function() {
@@ -81,8 +79,8 @@ define([
 			this.map.addLayer(this.precipLayerGroup);
 
 			this.updateLocationMarkerAndExtent(this.model, this.model.get('location'));
-			this.updateSiteMarker(this.datasetModels.NWIS);
-			this.updatePrecipGridPoints(this.datasetModels.PRECIP);
+			this.updateSiteMarker(this.model.attributes.datasetModels[this.model.NWIS_DATASET]);
+			this.updatePrecipGridPoints(this.model.attributes.datasetModels[this.model.PRECIP_DATASET]);
 
 			return this;
 		},

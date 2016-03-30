@@ -5,9 +5,8 @@ define([
 	'backbone',
 	'loglevel',
 	'models/WorkflowStateModel',
-	'models/SiteModel',
 	'views/DataDiscoveryView'
-], function ($, Backbone, log, WorkflowStateModel, SiteModel, DataDiscoveryView) {
+], function ($, Backbone, log, WorkflowStateModel, DataDiscoveryView) {
 	"use strict";
 
 	var appRouter = Backbone.Router.extend({

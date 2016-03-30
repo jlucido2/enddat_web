@@ -20,6 +20,7 @@
 	if (!baseUrl.endsWith("/")) { baseUrl += "/"; }
 	String parameterCodesUrl = props.getProperty("enddat.pmcodes.url");
 	String version = props.getProperty("application.version");
+	String precipWFSGetFeatureUrl = props.getProperty("enddat.precip-wfs-getfeature.url");
 %>
 
 <link rel="shortcut icon" type="image/ico" href="img/favicon.ico">

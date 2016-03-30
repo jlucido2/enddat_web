@@ -31,7 +31,10 @@
 					},
 					'models/SiteModel': {
 						'parameterCodesPath': '<%=parameterCodesUrl%>'
-				 	}
+				 	},
+					'models/PrecipitationCollection' : {
+						'precipWFSGetFeatureUrl' : '<%=precipWFSGetFeatureUrl%>',
+					}
 				},
 				baseUrl: "<%=baseUrl%>/js/",
 				paths: {

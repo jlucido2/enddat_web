@@ -50,9 +50,8 @@ define([
 			spyOn(BaseView.prototype, 'initialize').and.callThrough();
 			spyOn(BaseView.prototype, 'remove').and.callThrough();
 
-			testModel = new WorkflowStateModel({}, {
-				createDatasetModels : true
-			});
+			testModel = new WorkflowStateModel();
+			testModel.initializeDatasetModels();
 			testModel.set('step', testModel.PROJ_LOC_STEP);
 			testSiteModel = testModel.get('datasetModels').NWIS;
 			testPrecipModel = testModel.get('datasetModels').PRECIP;

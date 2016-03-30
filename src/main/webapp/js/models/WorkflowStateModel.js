@@ -15,7 +15,7 @@ define([
 			return {
 				step : 'unknown',
 				datasetModels : _.object([
-					[this.NWIS_DATSET, this.PRECIP_DATASET],
+					[this.NWIS_DATASET, this.PRECIP_DATASET],
 					[undefined, undefined]
 				])
 			};
@@ -28,32 +28,16 @@ define([
 		CHOOSE_DATA_STEP : 'chooseData',
 		PROCESS_DATA_STEP :'processData',
 
-		/*
-		 *
-		 * @param {Object} attributes
-		 * @param {Object} options
-		 *		@prop {Boolean} createDatasetModels - If true the datasetModels are created during initialization
-		 * @returns {undefined}
-		 */
-		initialize : function(attributes, options) {
-			var createDatasetModels = _.has(options, 'createDatasetModels') ? options.createDatasetModels : false;
-			Backbone.Model.prototype.initialize.apply(this, arguments);
-
-			if (createDatasetModels) {
-				this.initializeDatasetModels();
-			}
-
-			// Set up event listeners to update the dataset models
-			this.on('change:location', this.updateDatasetModels, this);
-			this.on('change:radius', this.updateDatasetModels, this);
-		},
-
 		initializeDatasetModels : function() {
 			var datasetModels = _.object([
 				[this.NWIS_DATASET, new SiteModel()],
 				[this.PRECIP_DATASET, new PrecipitationCollection()]
 			]);
 			this.set('datasetModels', datasetModels);
+
+			// Set up event listeners to update the dataset models
+			this.on('change:location', this.updateDatasetModels, this);
+			this.on('change:radius', this.updateDatasetModels, this);
 		},
 
 		updateDatasetModels : function() {

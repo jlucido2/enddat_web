@@ -8,6 +8,10 @@ define([
 ], function(Handlebars, bootstrap, BaseView, hbTemplate) {
 	"use strict";
 
+	/*
+	 * @constructs
+	 * @param {String} el - jquery selector or element where to render the alert view
+	 */
 	var view = BaseView.extend({
 
 		ALERT_KINDS : {

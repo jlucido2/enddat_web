@@ -5,7 +5,7 @@
 define([
 	'models/PrecipitationCollection'
 ], function(PrecipitationCollection) {
-	fdescribe('models/PrecipitationCollection', function() {
+	describe('models/PrecipitationCollection', function() {
 		var fakeServer;
 		var testCollection;
 

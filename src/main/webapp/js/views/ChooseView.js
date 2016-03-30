@@ -22,23 +22,7 @@ define([
 		panelBodyId : 'choose-data-panel-body',
 
 		bindings : {
-			'#radius' : {
-				observe : 'radius',
-				onGet : function(value) {
-					if (value) {
-						return value;
-					}
-					else {
-						return '';
-					}
-				},
-				events : ['change'],
-				onSet : function(value) {
-					var result;
-					result = value;
-					return result;
-				}
-			},
+			'#radius' : 'radius'
 		},
 
 		render : function() {

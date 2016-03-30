@@ -1,5 +1,5 @@
 /* jslint browser: true */
-/* global spyOn, jasmine, expect */
+/* global spyOn, jasmine, expect, sinon */
 define([
 	'jquery',
 	'loglevel',
@@ -12,22 +12,27 @@ define([
 		var testModel;
 		var mockRouter;
 		var $testDiv;
+		var fakeServer;
 
 		var projLocSel = '.nav-project-loc';
 		var chooseDataSel = '.nav-choose-data';
 		var processDataSel = '.nav-process-data';
 
 		beforeEach(function() {
+			fakeServer = sinon.fakeServer.create();
 			$('body').append('<div id="test-div"></div>');
 			$testDiv = $('#test-div');
 
-			testModel = new WorkflowStateModel();
+			testModel = new WorkflowStateModel({}, {
+				createDatasetModels : true
+			});
 			testModel.set('step', testModel.PROJ_LOC_STEP);
 			mockRouter = jasmine.createSpyObj('mockRouter', ['navigate']);
 			log.setLevel('silent');
 		});
 
 		afterEach(function() {
+			fakeServer.restore();
 			if (testView) {
 				testView.remove();
 			}

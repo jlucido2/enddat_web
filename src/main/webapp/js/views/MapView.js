@@ -9,6 +9,16 @@ define([
 	'utils/mapUtils',
 	'views/BaseView'
 ], function(_, L, leafletProviders, log, geoSpatialUtils, mapUtils, BaseView) {
+
+	var siteIcon = new L.icon({
+		iconUrl : 'img/time-series.png',
+		iconSize : [10, 10]
+	});
+	var precipIcon = L.icon({
+		iconUrl : 'img/national-precipitation.png',
+		iconSize : [14, 14]
+	});
+
 	var view = BaseView.extend({
 
 		/*
@@ -16,12 +26,10 @@ define([
 		 *		@prop {Jquery element or selector} el
 		 *		@prop {String} mapDivId - id of the div where the map should be rendered
 		 *		@prop {WorkflowStateModel} model
-		 *		@prop {SiteModel} sites
 		 */
 		initialize : function(options) {
 			BaseView.prototype.initialize.apply(this, arguments);
 			this.mapDivId = options.mapDivId;
-			this.sites = options.sites;
 
 			this.baseLayers = {
 				'World Street' : L.tileLayer.provider('Esri.WorldStreetMap'),
@@ -46,9 +54,8 @@ define([
 				});
 			}, this);
 
-			this.listenTo(this.model, 'change:location', this.updateLocationMarkerAndExtent);
-			this.listenTo(this.model, 'change:radius', this.updateExtent);
-			this.listenTo(this.sites, 'sync', this.updateSiteMarker);
+			this.siteLayerGroup = L.layerGroup();
+			this.precipLayerGroup = L.layerGroup();
 		},
 
 		render : function() {
@@ -65,9 +72,18 @@ define([
 			_.each(this.controls, function(control) {
 				this.map.addControl(control);
 			}, this);
+			this.map.addLayer(this.siteLayerGroup);
+			this.map.addLayer(this.precipLayerGroup);
 
 			this.updateLocationMarkerAndExtent(this.model, this.model.get('location'));
-			this.updateSiteMarker(this.sites);
+			this.updateSiteMarker(this.model.attributes.datasetModels[this.model.NWIS_DATASET]);
+			this.updatePrecipGridPoints(this.model.attributes.datasetModels[this.model.PRECIP_DATASET]);
+
+			// Wait to set up model listeners until the view has been rendered
+			this.listenTo(this.model, 'change:location', this.updateLocationMarkerAndExtent);
+			this.listenTo(this.model, 'change:radius', this.updateExtent);
+			this.listenTo(this.model.attributes.datasetModels[this.model.NWIS_DATASET], 'sync', this.updateSiteMarker);
+			this.listenTo(this.model.attributes.datasetModels[this.model.PRECIP_DATASET], 'reset', this.updatePrecipGridPoints);
 
 			return this;
 		},
@@ -170,19 +186,29 @@ define([
 		updateSiteMarker : function(sites) {
 			var self = this;
 			var siteObjects = sites.get('sites');
-			var siteIcon = mapUtils.createIcon("img/time-series.png");
-			var mapHasSiteMarker = this.map.hasLayer(this.siteLayerGroup);
-			if (mapHasSiteMarker) {
-				this.map.removeLayer(this.siteLayerGroup);
-			}
-			this.siteLayerGroup = L.layerGroup();
-			if(!_.isEmpty(siteObjects)) {
-				_.each(siteObjects, function(el) {
-					var marker = L.marker([el['lat'], el['lon']], {icon: siteIcon, title: el['name']});
-					self.siteLayerGroup.addLayer(marker);
-				});
-				this.siteLayerGroup.addTo(this.map);
-			}
+
+			this.siteLayerGroup.clearLayers();
+
+			_.each(siteObjects, function(site) {
+				var marker = L.marker([site['lat'], site['lon']], {icon: siteIcon, title: site['name']});
+				self.siteLayerGroup.addLayer(marker);
+			});
+		},
+
+		updatePrecipGridPoints : function(precipCollection) {
+			var self = this;
+			this.precipLayerGroup.clearLayers();
+
+			precipCollection.each(function(precipModel) {
+				var marker = L.marker(
+					[precipModel.attributes.lat, precipModel.attributes.lon],
+					{
+						icon : precipIcon,
+						title : precipModel.attributes.y + ':' + precipModel.attributes.x
+					}
+				);
+				self.precipLayerGroup.addLayer(marker);
+			});
 		}
 	});
 

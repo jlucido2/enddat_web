@@ -19,8 +19,9 @@ define([
 
 		initialize : function(options) {
 			Backbone.Router.prototype.initialize.apply(this, arguments);
-			this.workflowState = new WorkflowStateModel();
-			this.siteModel = new SiteModel();
+			this.workflowState = new WorkflowStateModel({}, {
+				createDatasetModels : true
+			});
 		},
 
 		applicationContextDiv: '#main-content',
@@ -55,8 +56,7 @@ define([
 		specifyProjectLocationState: function () {
 			this.workflowState.set('step', this.workflowState.PROJ_LOC_STEP);
 			this.createView(DataDiscoveryView, {
-				model : this.workflowState,
-				siteModel : this.siteModel
+				model : this.workflowState
 			}).render();
 		},
 
@@ -67,11 +67,10 @@ define([
 				'radius' : radius,
 				'startDate' : startDate,
 				'endDate' : endDate,
-				'datasets' : datasets ? datasets.split('/') : null
+				'datasets' : datasets ? datasets.split('/') : []
 			});
 			this.createView(DataDiscoveryView, {
-				model : this.workflowState,
-				siteModel : this.siteModel
+				model : this.workflowState
 			}).render();
 		}
 	});

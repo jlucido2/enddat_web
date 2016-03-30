@@ -1,13 +1,12 @@
 /* jslint browser: true */
-/* global jasmine, expect, sinon */
+/* global jasmine, spyOn, expect, sinon */
 
 define([
 	'squire',
 	'jquery',
 	'models/WorkflowStateModel',
-	'models/SiteModel',
 	'views/BaseView'
-], function(Squire, $, WorkflowStateModel, SiteModel, BaseView) {
+], function(Squire, $, WorkflowStateModel, BaseView) {
 	"use strict";
 
 	describe("DataDiscoveryView", function() {
@@ -17,15 +16,12 @@ define([
 		var testModel;
 		var $testDiv;
 
-		var testSiteModel;
-		var opDeferred;
-		var ajaxStub;
-
 		var initializeBaseViewSpy, renderBaseViewSpy, removeBaseViewSpy;
 		var setElNavViewSpy, renderNavViewSpy, removeNavViewSpy;
 		var setElMapViewSpy, renderMapViewSpy, removeMapViewSpy;
 		var setElLocationViewSpy, renderLocationViewSpy, removeLocationViewSpy;
 		var setElChooseViewSpy, renderChooseViewSpy, removeChooseViewSpy;
+		var setElAlertViewSpy, renderAlertViewSpy, removeAlertViewSpy, showSuccessAlertSpy, showDangerAlertSpy;
 
 		var injector;
 
@@ -53,21 +49,19 @@ define([
 			renderChooseViewSpy = jasmine.createSpy('renderChooseViewSpy');
 			removeChooseViewSpy = jasmine.createSpy('removeChooseViewSpy');
 
-			testModel = new WorkflowStateModel();
-			testModel.set('step', testModel.PROJ_LOC_STEP);			
-
-			opDeferred = $.Deferred();
-			ajaxStub = sinon.stub($, "ajax");
-			testSiteModel = new SiteModel();
-			spyOn(testSiteModel, 'fetch').and.returnValue(opDeferred.promise());
+			setElAlertViewSpy = jasmine.createSpy('setElAlertViewSpy');
+			renderAlertViewSpy = jasmine.createSpy('renderAlertViewSpy');
+			removeAlertViewSpy = jasmine.createSpy('removeAlertViewSpy');
+			showSuccessAlertSpy = jasmine.createSpy('showSuccessAlertSpy');
+			showDangerAlertSpy = jasmine.createSpy('showDangerAlertSpy');
 
 			injector = new Squire();
 
-			injector.mock('views/BaseView', BaseView.extend({
-				initialize : initializeBaseViewSpy,
-				render : renderBaseViewSpy,
-				remove : removeBaseViewSpy
-			}));
+			injector.mock('views/BaseView', BaseView);
+			spyOn(BaseView.prototype, 'initialize').and.callThrough();
+			spyOn(BaseView.prototype, 'render').and.callThrough();
+			spyOn(BaseView.prototype, 'remove').and.callThrough();
+
 			injector.mock('views/NavView', BaseView.extend({
 				setElement : setElNavViewSpy.and.returnValue({
 					render : renderNavViewSpy
@@ -89,6 +83,7 @@ define([
 				render : renderLocationViewSpy,
 				remove : removeLocationViewSpy
 			}));
+
 			injector.mock('views/ChooseView', BaseView.extend({
 				setElement : setElChooseViewSpy.and.returnValue({
 					render : renderChooseViewSpy
@@ -96,8 +91,22 @@ define([
 				render : renderChooseViewSpy,
 				remove : removeChooseViewSpy
 			}));
+
+			injector.mock('views/AlertView', BaseView.extend({
+				setElement : setElAlertViewSpy,
+				render : renderAlertViewSpy,
+				showSuccessAlert : showSuccessAlertSpy,
+				showDangerAlert : showDangerAlertSpy,
+				remove : removeAlertViewSpy
+			}));
+
 			injector.require(['views/DataDiscoveryView'], function(view) {
 				DataDiscoveryView = view;
+
+				testModel = new WorkflowStateModel();
+				spyOn(testModel, 'updateDatasetModels');
+				testModel.set('step', testModel.PROJ_LOC_STEP);
+
 				done();
 			});
 		});
@@ -116,7 +125,7 @@ define([
 				el : $testDiv,
 				model : testModel
 			});
-			expect(initializeBaseViewSpy).toHaveBeenCalled();
+			expect(BaseView.prototype.initialize).toHaveBeenCalled();
 		});
 
 		it('Expects the child views to be initialized', function() {
@@ -129,20 +138,31 @@ define([
 			expect(setElMapViewSpy.calls.count()).toBe(1);
 			expect(setElLocationViewSpy.calls.count()).toBe(1);
 			expect(setElChooseViewSpy.calls.count()).toBe(1);
+			expect(setElAlertViewSpy.calls.count()).toBe(1);
 		});
 
 		describe('Tests for render', function() {
 			beforeEach(function() {
 				testView = new DataDiscoveryView({
 					el : $testDiv,
-					model : testModel,
-					siteModel : testSiteModel
+					model : testModel
 				});
 			});
 
 			it('Expects that the BaseView render is called', function() {
 				testView.render();
-				expect(renderBaseViewSpy).toHaveBeenCalled();
+				expect(BaseView.prototype.render).toHaveBeenCalled();
+			});
+
+			it('Expects that the dataset models in the workflow model are initially fetched', function() {
+				testView.render();
+				expect(testModel.updateDatasetModels).toHaveBeenCalled();
+			});
+
+			it('Expects that the el should be set for the alert view but not rendered', function() {
+				testView.render();
+				expect(setElAlertViewSpy.calls.count()).toBe(2);
+				expect(renderAlertViewSpy).not.toHaveBeenCalled();
 			});
 
 			it('Expects that the navView is rendered regardless of workflow step', function() {
@@ -208,20 +228,6 @@ define([
 				expect(setElChooseViewSpy.calls.count()).toBe(3);
 				expect(renderChooseViewSpy.calls.count()).toBe(2);
 			});
-
-			it('Expects that when rendering a view without location, radius and dataset, the site model fetch is not called', function() {
-				testView.render();
-				expect(testSiteModel.fetch).not.toHaveBeenCalled();
-			});
-
-			it('Expects that when rendering a view with location, radius and dataset, the site model fetch is called', function() {
-				testModel.set('step', testModel.CHOOSE_DATA_STEP);
-				testModel.set('radius', 5);
-				testModel.set('location', {latitude : 43.0, longitude : -100.0});
-				testModel.set('datasets', ['NWIS']);		
-				testView.render();
-				expect(testSiteModel.fetch).toHaveBeenCalled();
-			});
 		});
 
 		describe('Tests for remove', function() {
@@ -234,7 +240,7 @@ define([
 			});
 
 			it('Expects that the BaseView remove is called', function() {
-				expect(removeBaseViewSpy).toHaveBeenCalled();
+				expect(BaseView.prototype.remove).toHaveBeenCalled();
 			});
 
 			it('Expects that the children views are removed', function() {
@@ -242,6 +248,44 @@ define([
 				expect(removeMapViewSpy.calls.count()).toBe(1);
 				expect(removeLocationViewSpy.calls.count()).toBe(1);
 				expect(removeChooseViewSpy.calls.count()).toBe(1);
+				expect(removeAlertViewSpy.calls.count()).toBe(1);
+			});
+		});
+
+		describe('Model event listener tests', function() {
+			beforeEach(function() {
+				testView = new DataDiscoveryView({
+					el : $testDiv,
+					model : testModel
+				});
+				testView.render();
+			});
+			it('Expects the loading indicator to be shown when the dataset:updateStart event is triggered on the model', function() {
+				var $loadingIndicator = $testDiv.find('.loading-indicator');
+				expect($loadingIndicator.is(':visible')).toBe(false);
+				testModel.trigger('dataset:updateStart');
+				expect($loadingIndicator.is(':visible')).toBe(true);
+			});
+
+			it('Expects the loading indicator to be hidden when the dataset:updateFinished event is triggered on the model', function() {
+				testModel.set('datasets', ['NWIS', 'PRECIP']);
+				testModel.trigger('dataset:updateStart');
+				testModel.trigger('dataset:updateFinished', []);
+				expect($testDiv.find('.loading-indicator').is(':visible')).toBe(false);
+			});
+
+			it('Expects that if there are no error types the success alert is shown', function() {
+				testModel.set('datasets', ['NWIS', 'PRECIP']);
+				testModel.trigger('dataset:updateStart');
+				testModel.trigger('dataset:updateFinished', []);
+				expect(showSuccessAlertSpy).toHaveBeenCalled();
+			});
+
+			it('Expects that if there are error types the danger alert is shown', function() {
+				testModel.set('datasets', ['NWIS', 'PRECIP']);
+				testModel.trigger('dataset:updateStart');
+				testModel.trigger('dataset:updateFinished', ['NWIS']);
+				expect(showDangerAlertSpy).toHaveBeenCalled();
 			});
 		});
 	});

@@ -1,3 +1,5 @@
+/* jslint browser: true */
+
 define([
 	'loglevel',
 	'module',
@@ -42,14 +44,18 @@ define([
 				success : function(xml, textStatus, jqXHR) {
 					if ($utils.xmlFind($(xml), 'ows', 'ExceptionReport').length > 0) {
 						log.debug('Precipitation fetch failed with Exception from service');
+						self.reset([]);
 						fetchDeferred.reject(jqXHR);
 					}
-					self.reset(self.parse(xml));
-					log.debug('Precipitation fetch succeeded, fetched ' + self.size() + ' grid');
-					fetchDeferred.resolve(jqXHR);
+					else {
+						self.reset(self.parse(xml));
+						log.debug('Precipitation fetch succeeded, fetched ' + self.size() + ' grid');
+						fetchDeferred.resolve(jqXHR);
+					}
 				},
 				error : function(jqXHR) {
 					log.debug('Precipitation fetch failed');
+					self.reset([]);
 					fetchDeferred.reject(jqXHR);
 				}
 			});

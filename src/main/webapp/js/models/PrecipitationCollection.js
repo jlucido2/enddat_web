@@ -17,6 +17,11 @@ define([
 
 		url : module.config().precipWFSGetFeatureUrl,
 
+		/*
+		 * Parse the {Document} and returns a json object which can be used to create the collection.
+		 * @param {Document} xml
+		 * @returns {Array of Objects}
+		 */
 		parse : function(xml) {
 			var result = [];
 			$utils.xmlFind($(xml), 'wfs', 'member').each(function() {
@@ -31,6 +36,12 @@ define([
 			return result;
 		},
 
+		/*
+		 * Fetches the precipitation grid data for the specified bounding box and updates the collection contents.
+		 * If the fetch fails the collection is reset
+		 * @param {Object} boundingBox - west, east, north, and south properties
+		 * @returns a promise. Both rejected and resolved return the original jqXHR
+		 */
 		fetch : function (boundingBox) {
 			var self = this;
 			var fetchDeferred = $.Deferred();

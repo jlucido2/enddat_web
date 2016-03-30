@@ -6,9 +6,8 @@ define([
 	'leaflet-providers',
 	'loglevel',
 	'utils/geoSpatialUtils',
-	'utils/mapUtils',
 	'views/BaseView'
-], function(_, L, leafletProviders, log, geoSpatialUtils, mapUtils, BaseView) {
+], function(_, L, leafletProviders, log, geoSpatialUtils, BaseView) {
 
 	var siteIcon = new L.icon({
 		iconUrl : 'img/time-series.png',
@@ -179,7 +178,7 @@ define([
 		},
 
 		/*
-		 * Updates or adds a marker for each site
+		 * Updates the siteLayerGroup to reflect the sites in the model
 		 * @param {SiteModel} sites - has one or more site objects, each with properties
 		 *	latitude and longitude in order to be a valid location
 		 */
@@ -195,6 +194,10 @@ define([
 			});
 		},
 
+		/*
+		 * Updates the precipitation layer group to reflect the grid points in precipCollection
+		 * @param {models/PrecipitationCollection} precipCollection
+		 */
 		updatePrecipGridPoints : function(precipCollection) {
 			var self = this;
 			this.precipLayerGroup.clearLayers();

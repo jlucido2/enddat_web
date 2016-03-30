@@ -11,6 +11,13 @@ define([
 	"use strict";
 
 	var model = Backbone.Model.extend({
+		NWIS_DATASET : 'NWIS',
+		PRECIP_DATASET : 'PRECIP',
+
+		PROJ_LOC_STEP : 'specifyProjectLocation',
+		CHOOSE_DATA_STEP : 'chooseData',
+		PROCESS_DATA_STEP :'processData',
+
 		defaults : function() {
 			return {
 				step : 'unknown',
@@ -21,13 +28,10 @@ define([
 			};
 		},
 
-		NWIS_DATASET : 'NWIS',
-		PRECIP_DATASET : 'PRECIP',
-
-		PROJ_LOC_STEP : 'specifyProjectLocation',
-		CHOOSE_DATA_STEP : 'chooseData',
-		PROCESS_DATA_STEP :'processData',
-
+		/*
+		 * Instantiates the datasetModels and sets up the model event listeners which will fetch new
+		 * dataset model information.
+		 */
 		initializeDatasetModels : function() {
 			var datasetModels = _.object([
 				[this.NWIS_DATASET, new SiteModel()],
@@ -40,6 +44,13 @@ define([
 			this.on('change:radius', this.updateDatasetModels, this);
 		},
 
+		/*
+		 * Model event handlers
+		 */
+
+		 /*
+		  *  Fetches the chosen datasets if the bounding box is valid. Otherwise it clears the datasets
+		  */
 		updateDatasetModels : function() {
 			var self = this;
 
@@ -49,32 +60,32 @@ define([
 			var fetchDonePromises = [];
 			var fetchErrors = [];
 
-			if (boundingBox && (chosenDatasets.length > 0)) {
-				this.trigger('dataset:updateStart');
-				_.each(datasetModels, function(datasetModel, datasetKind) {
-					if (_.contains(chosenDatasets, datasetKind)) {
-						var donePromise = $.Deferred();
-						fetchDonePromises.push(donePromise);
+			var updateDataset = function(datasetModel, datasetKind) {
+				if (_.contains(chosenDatasets, datasetKind)) {
+					var donePromise = $.Deferred();
+					fetchDonePromises.push(donePromise);
 
-						datasetModel.fetch(boundingBox)
-							.fail(function() {
-								fetchErrors.push(datasetKind);
-							})
-							.always(function() {
-								donePromise.resolve();
-							});
+					datasetModel.fetch(boundingBox)
+						.fail(function() {
+							fetchErrors.push(datasetKind);
+						})
+						.always(function() {
+							donePromise.resolve();
+						});
+				}
+				else {
+					if (datasetModel.models) {
+					// Then must be a collection so reset
+						datasetModel.reset();
 					}
 					else {
-						if (datasetModel.models) {
-						// Then must be a collection so reset
-							datasetModel.reset();
-						}
-						else {
-							datasetModel.clear();
-						}
+						datasetModel.clear();
 					}
-				});
-
+				}
+			};
+			if (boundingBox && (chosenDatasets.length > 0)) {
+				this.trigger('dataset:updateStart');
+				_.each(datasetModels, updateDataset);
 				$.when.apply(this, fetchDonePromises).done(function() {
 					self.trigger('dataset:updateFinished', fetchErrors);
 				});
@@ -94,9 +105,9 @@ define([
 		},
 
 		/*
-		 * @return {Object}
 		 * Returns the bounding box as an object with west, east, north, and south properties.
 		 * Return undefined if the model's properties do not contain a valid bounding box
+		 * @return {Object} - has west, east, north, south properties or undefined
 		 */
 		getBoundingBox : function() {
 			var result = undefined;

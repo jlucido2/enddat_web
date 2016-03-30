@@ -30,6 +30,7 @@ define([
 		 * @param {Object} options
 		 *		@prop {Jquery element} el
 		 *		@prop {models/WorkflowStateModel} model
+		 *		@prop {Backbone.Router} router
 		 */
 		initialize: function (options) {
 			BaseView.prototype.initialize.apply(this, arguments);
@@ -69,7 +70,7 @@ define([
 			this.$(LOADING_SELECTOR).hide();
 			this.alertView.setElement(this.$(ALERTVIEW_SELECTOR));
 
-			//Don't fetch data until the view has been rendered
+			//Don't fetch datasets until the view has been rendered
 			this.model.updateDatasetModels();
 
 			this.navView.setElement(this.$(NAVVIEW_SELECTOR)).render();
@@ -92,6 +93,7 @@ define([
 		/*
 		 * Model event handlers
 		 */
+
 		showLoadingIndicator : function() {
 			this.$(LOADING_SELECTOR).show();
 		},

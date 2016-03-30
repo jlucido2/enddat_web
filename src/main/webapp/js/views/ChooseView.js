@@ -4,9 +4,8 @@ define([
 	'underscore',
 	'backbone.stickit',
 	'views/BaseCollapsiblePanelView',
-	'hbs!hb_templates/choose',
-	'hbs!hb_templates/errorAlert'
-], function(_, stickit, BaseCollapsiblePanelView, hbTemplate, errorAlertTemplate) {
+	'hbs!hb_templates/choose'
+], function(_, stickit, BaseCollapsiblePanelView, hbTemplate) {
 	"use strict";
 
 	/*

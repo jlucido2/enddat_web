@@ -112,7 +112,6 @@ define([
 		});
 
 		afterEach(function() {
-			$.ajax.restore();
 			injector.remove();
 			if (testView.remove) {
 				testView.remove();

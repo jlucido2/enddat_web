@@ -32,7 +32,6 @@ define([
 		 * @param {Object} options
 		 *		@prop {Jquery element} el
 		 *		@prop {models/WorkflowStateModel} model
-		 *		@prop {models/SiteModel} model
 		 */
 		initialize: function (options) {
 			BaseView.prototype.initialize.apply(this, arguments);
@@ -67,6 +66,7 @@ define([
 			// Set up event listeners on the workflow model
 			this.listenTo(this.model, 'dataset:updateStart', this.showLoadingIndicator);
 			this.listenTo(this.model, 'dataset:updateFinished', this.hideLoadingIndicator);
+			this.listenTo(this.model, 'change:step', this.updateChooseView);
 
 		},
 
@@ -118,6 +118,7 @@ define([
 			else {
 				this.alertView.showDangerAlert('Unable to fetch the following data types: ' + fetchErrorTypes.join(', '));
 			}
+			this.$(ALERTVIEW_SELECTOR).show();
 		},
 
 		updateChooseView: function () {
@@ -128,6 +129,7 @@ define([
 			}
 			else if (this.model.PROJ_LOC_STEP === step ) {
 				this.$(CHOOSE_SELECTOR).hide();
+				this.$(ALERTVIEW_SELECTOR).hide();
 			}
 			return this;
 		}

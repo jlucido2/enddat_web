@@ -20,6 +20,7 @@ define([
 		var setElNavViewSpy, renderNavViewSpy, removeNavViewSpy;
 		var setElMapViewSpy, renderMapViewSpy, removeMapViewSpy;
 		var setElLocationViewSpy, renderLocationViewSpy, removeLocationViewSpy;
+		var setElChooseViewSpy, renderChooseViewSpy, removeChooseViewSpy;
 		var setElAlertViewSpy, renderAlertViewSpy, removeAlertViewSpy, showSuccessAlertSpy, showDangerAlertSpy;
 
 		var injector;
@@ -43,6 +44,10 @@ define([
 			setElLocationViewSpy = jasmine.createSpy('setElLocationViewSpy');
 			renderLocationViewSpy = jasmine.createSpy('renderLocationViewSpy');
 			removeLocationViewSpy = jasmine.createSpy('removeLocationViewSpy');
+
+			setElChooseViewSpy = jasmine.createSpy('setElChooseViewSpy');
+			renderChooseViewSpy = jasmine.createSpy('renderChooseViewSpy');
+			removeChooseViewSpy = jasmine.createSpy('removeChooseViewSpy');
 
 			setElAlertViewSpy = jasmine.createSpy('setElAlertViewSpy');
 			renderAlertViewSpy = jasmine.createSpy('renderAlertViewSpy');
@@ -78,6 +83,15 @@ define([
 				render : renderLocationViewSpy,
 				remove : removeLocationViewSpy
 			}));
+
+			injector.mock('views/ChooseView', BaseView.extend({
+				setElement : setElChooseViewSpy.and.returnValue({
+					render : renderChooseViewSpy
+				}),
+				render : renderChooseViewSpy,
+				remove : removeChooseViewSpy
+			}));
+
 			injector.mock('views/AlertView', BaseView.extend({
 				setElement : setElAlertViewSpy,
 				render : renderAlertViewSpy,
@@ -85,6 +99,7 @@ define([
 				showDangerAlert : showDangerAlertSpy,
 				remove : removeAlertViewSpy
 			}));
+
 			injector.require(['views/DataDiscoveryView'], function(view) {
 				DataDiscoveryView = view;
 
@@ -121,6 +136,7 @@ define([
 			expect(setElNavViewSpy.calls.count()).toBe(1);
 			expect(setElMapViewSpy.calls.count()).toBe(1);
 			expect(setElLocationViewSpy.calls.count()).toBe(1);
+			expect(setElChooseViewSpy.calls.count()).toBe(1);
 			expect(setElAlertViewSpy.calls.count()).toBe(1);
 		});
 
@@ -195,6 +211,22 @@ define([
 				expect(setElLocationViewSpy.calls.count()).toBe(3);
 				expect(renderLocationViewSpy.calls.count()).toBe(2);
 			});
+
+			it('Expects that the chooseView is rendered only if the workflow step is choose data', function() {
+				testView.render();
+				expect(setElChooseViewSpy.calls.count()).toBe(1);
+				expect(renderChooseViewSpy.calls.count()).toBe(0);
+
+				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+				testView.render();
+				expect(setElChooseViewSpy.calls.count()).toBe(3);
+				expect(renderChooseViewSpy.calls.count()).toBe(2);
+
+				testModel.set('step', testModel.PROCESS_DATA_STEP);
+				testView.render();
+				expect(setElChooseViewSpy.calls.count()).toBe(3);
+				expect(renderChooseViewSpy.calls.count()).toBe(2);
+			});
 		});
 
 		describe('Tests for remove', function() {
@@ -214,6 +246,7 @@ define([
 				expect(removeNavViewSpy.calls.count()).toBe(1);
 				expect(removeMapViewSpy.calls.count()).toBe(1);
 				expect(removeLocationViewSpy.calls.count()).toBe(1);
+				expect(removeChooseViewSpy.calls.count()).toBe(1);
 				expect(removeAlertViewSpy.calls.count()).toBe(1);
 			});
 		});

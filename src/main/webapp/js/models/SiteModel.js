@@ -114,12 +114,15 @@ define([
 					error: function(jqXHR, textStatus, errorThrown) {
 						if (404 === jqXHR.status) {
 							log.debug('No NWIS data available: ' + textStatus);
+							self.clear();
+							self.trigger('sync', self);
+							sitesDeferred.resolve();
 						} else {
 							log.debug('Error in loading NWIS data: ' + textStatus);
+							self.clear();
+							self.trigger('sync', self);  //to clear the map of sites
+							sitesDeferred.reject();
 						}
-						self.clear();
-						self.trigger('sync', self);
-						sitesDeferred.reject();
 					}
 				});
 			});

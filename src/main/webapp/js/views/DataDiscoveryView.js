@@ -20,10 +20,6 @@ define([
 	var ALERTVIEW_SELECTOR = '.alert-container';
 	var LOADING_SELECTOR = '.loading-indicator';
 
-	var DATATYPE_NWIS = 'NWIS';
-	var DATATYPE_PRECIP = 'PRECIP';
-	var DATASETS = [DATATYPE_NWIS, DATATYPE_PRECIP];
-
 	var view = BaseView.extend({
 		template: hbTemplate,
 
@@ -46,58 +42,36 @@ define([
 			this.alertView = new AlertView({
 				el : this.$(ALERTVIEW_SELECTOR)
 			});
+		},
 
-			this.mapView = new MapView({
-				el : this.$(MAPVIEW_SELECTOR),
-				mapDivId : 'map-div',
-				model : this.model			});
+		render : function() {
+			BaseView.prototype.render.apply(this, arguments);
+			this.$(LOADING_SELECTOR).hide();
 
-			this.locationView  = new LocationView({
-				el : this.$(LOCATION_SELECTOR),
-				model : this.model,
-				opened : true
-			});
-
-			this.chooseView  = new ChooseView({
-				el : this.$(CHOOSE_SELECTOR),
-				model : this.model,
-				opened : true
-			});
+			this.alertView.setElement(this.$(ALERTVIEW_SELECTOR));
+			this.navView.setElement(this.$(NAVVIEW_SELECTOR)).render();
+			this.updateSubViews(this.model, this.model.get('step'));
 
 			// Set up event listeners on the workflow model
 			this.listenTo(this.model, 'dataset:updateStart', this.showLoadingIndicator);
 			this.listenTo(this.model, 'dataset:updateFinished', this.hideLoadingIndicator);
-			this.listenTo(this.model, 'change:step', this.updateChooseView);
+			this.listenTo(this.model, 'change:step', this.updateSubViews);
 
-		},
-
-		render : function() {
-			var step = this.model.get('step');
-
-			BaseView.prototype.render.apply(this, arguments);
-
-			this.$(LOADING_SELECTOR).hide();
-			this.alertView.setElement(this.$(ALERTVIEW_SELECTOR));
-
-			//Don't fetch datasets until the view has been rendered
-			this.model.updateDatasetModels();
-
-			this.navView.setElement(this.$(NAVVIEW_SELECTOR)).render();
-			if ((this.model.PROJ_LOC_STEP === step) || (this.model.CHOOSE_DATA_STEP === step)) {
-				this.locationView.setElement(this.$(LOCATION_SELECTOR)).render();
-				this.mapView.setElement(this.$(MAPVIEW_SELECTOR)).render();
-			}
-
-			this.updateChooseView();
 			return this;
 		},
 
 		remove: function () {
 			this.navView.remove();
 			this.alertView.remove();
-			this.mapView.remove();
-			this.locationView.remove();
-			this.chooseView.remove();
+			if (this.mapView) {
+				this.mapView.remove();
+			}
+			if (this.locationView) {
+				this.locationView.remove();
+			}
+			if (this.chooseView) {
+				this.chooseView.remove();
+			}
 			BaseView.prototype.remove.apply(this, arguments);
 			return this;
 		},
@@ -105,6 +79,59 @@ define([
 		/*
 		 * Model event handlers
 		 */
+
+		updateSubViews : function(model, step) {
+			switch(step) {
+				case model.PROJ_LOC_STEP:
+					if (!this.locationView) {
+						this.locationView = new LocationView({
+							el : this.$(LOCATION_SELECTOR),
+							model : model,
+							opened : true
+						});
+						this.locationView.render();
+					}
+					if (!this.mapView) {
+						this.mapView = new MapView({
+							el : this.$(MAPVIEW_SELECTOR),
+							mapDivId : 'map-div',
+							model : model
+						});
+						this.mapView.render();
+					}
+					if (this.chooseView) {
+						this.chooseView.remove();
+						this.chooseView = undefined;
+					}
+					break;
+				case model.CHOOSE_DATA_STEP:
+					if (!this.locationView) {
+						this.locationView = new LocationView({
+							el : this.$(LOCATION_SELECTOR),
+							model : model,
+							opened : true
+						});
+						this.locationView.render();
+					}
+					if (!this.mapView) {
+						this.mapView = new MapView({
+							el : this.$(MAPVIEW_SELECTOR),
+							mapDivId : 'map-div',
+							model : model
+						});
+						this.mapView.render();
+					}
+					if (!this.chooseView) {
+						this.chooseView = new ChooseView({
+							el : this.$(CHOOSE_SELECTOR),
+							model : model,
+							opened : true
+						});
+						this.chooseView.render();
+					}
+					break;
+			}
+		},
 
 		showLoadingIndicator : function() {
 			this.$(LOADING_SELECTOR).show();
@@ -121,24 +148,7 @@ define([
 				this.alertView.showDangerAlert('Unable to fetch the following data types: ' + fetchErrorTypes.join(', '));
 			}
 			this.$(ALERTVIEW_SELECTOR).show();
-		},
-
-		updateChooseView: function () {
-			var step = this.model.get('step');
-			var location = this.model.get('location');
-			if (this.model.CHOOSE_DATA_STEP === step && 
-					(location) && _.has(location, 'latitude') && (location.latitude) &&
-					_.has(location, 'longitude') && (location.longitude)) {
-				this.chooseView.setElement(this.$(CHOOSE_SELECTOR)).render();
-				this.$(CHOOSE_SELECTOR).show();
-			}
-			else if (this.model.PROJ_LOC_STEP === step ) {
-				this.$(CHOOSE_SELECTOR).hide();
-				this.$(ALERTVIEW_SELECTOR).hide();
-			}
-			return this;
 		}
-
 	});
 
 	return view;

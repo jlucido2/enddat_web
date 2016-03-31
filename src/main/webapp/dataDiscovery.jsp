@@ -29,7 +29,7 @@
 						'contextPath': '<%=baseUrl%>',
 						'development': '<%=development%>'
 					},
-					'models/SiteModel': {
+					'models/SiteCollection': {
 						'parameterCodesPath': '<%=parameterCodesUrl%>'
 				 	},
 					'models/PrecipitationCollection' : {

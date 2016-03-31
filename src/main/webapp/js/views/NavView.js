@@ -48,36 +48,18 @@ define([
 		 * DOM Event handlers
 		 */
 		goToProjectLocationStep : function(ev) {
-			var workflowAttributes = {};
-
 			ev.preventDefault();
 			if (this.model.get('step') !== this.model.PROJ_LOC_STEP) {
-				this.model.clear({silent : true});
-				workflowAttributes = this.model.defaults();
-				workflowAttributes.step = this.model.PROJ_LOC_STEP;
-				this.model.set(workflowAttributes);
+				this.model.set('step', this.model.PROJ_LOC_STEP);
 			}
 		},
 		goToChooseDataStep : function(ev) {
-			var currentStep = this.model.get('step');
 			ev.preventDefault();
-			if (currentStep !== this.model.CHOOSE_DATA_STEP) {
-				if (currentStep === this.model.PROJ_LOC_STEP) {
-					this.model.initializeDatasetModels();
-					this.model.set({
-						step : this.model.CHOOSE_DATA_STEP,
-						radius: DEFAULT_RADIUS,
-						datasets : DEFAULT_DATASETS
-					});
-				}
-				else {
-					this.model.set('step', this.model.CHOOSE_DATA_STEP);
-				}
-
+			if (this.model.get('step') !== this.model.CHOOSE_DATA_STEP) {
+				this.model.set('step', this.model.CHOOSE_DATA_STEP);
 			}
 		},
 		goToProcessDataStep : function(ev) {
-			//TODO: This will need more once we define this step better
 			ev.preventDefault();
 			if (this.model.get('step') !== this.model.PROCESS_DATA_STEP) {
 				this.model.set({step : this.model.PROCESS_DATA_STEP});
@@ -135,9 +117,6 @@ define([
 				case model.PROCESS_DATA_STEP:
 					//TODO: probably will need to add things here as we figure out this step.
 					break;
-
-				default:
-					log.error('Unknown workflow step');
 			}
 		}
 

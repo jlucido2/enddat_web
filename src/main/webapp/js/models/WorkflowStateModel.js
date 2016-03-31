@@ -13,6 +13,7 @@ define([
 	var model = Backbone.Model.extend({
 		NWIS_DATASET : 'NWIS',
 		PRECIP_DATASET : 'PRECIP',
+		DATASET_KINDS : [NWIS_DATASET, PRECIP_DATASET],
 
 		PROJ_LOC_STEP : 'specifyProjectLocation',
 		CHOOSE_DATA_STEP : 'chooseData',
@@ -22,8 +23,8 @@ define([
 			return {
 				step : 'unknown',
 				datasetModels : _.object([
-					[this.NWIS_DATASET, this.PRECIP_DATASET],
-					[undefined, undefined]
+					[this.NWIS_DATASET, undefined],
+					[this.PRECIP_DATASET, undefined]
 				])
 			};
 		},
@@ -92,13 +93,15 @@ define([
 			}
 			else {
 				// Clear the dataset models if bounding box invalid or no chosen datasets
-				_.each(datasetModels, function(datasetModel) {
-					if (datasetModel.models) {
-						// Then must be a collection so reset
-						datasetModel.reset();
-					}
-					else {
-						datasetModel.clear();
+				_.each(datasetModels, function(datasetModel, datasetKind) {
+					if (datasetModel) {
+						if (datasetModel.models) {
+							// Then must be a collection so reset
+							datasetModel.reset();
+						}
+						else {
+							datasetModel.clear();
+						}
 					}
 				});
 			}

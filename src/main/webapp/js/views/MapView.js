@@ -184,7 +184,7 @@ define([
 		 */
 		updateSiteMarker : function(sites) {
 			var self = this;
-			var siteObjects = sites.get('sites');
+			var siteObjects = (sites) ? sites.get('sites') : [];
 
 			this.siteLayerGroup.clearLayers();
 
@@ -202,16 +202,18 @@ define([
 			var self = this;
 			this.precipLayerGroup.clearLayers();
 
-			precipCollection.each(function(precipModel) {
-				var marker = L.marker(
-					[precipModel.attributes.lat, precipModel.attributes.lon],
-					{
-						icon : precipIcon,
-						title : precipModel.attributes.y + ':' + precipModel.attributes.x
-					}
-				);
-				self.precipLayerGroup.addLayer(marker);
-			});
+			if (precipCollection) {
+				precipCollection.each(function(precipModel) {
+					var marker = L.marker(
+						[precipModel.attributes.lat, precipModel.attributes.lon],
+						{
+							icon : precipIcon,
+							title : precipModel.attributes.y + ':' + precipModel.attributes.x
+						}
+					);
+					self.precipLayerGroup.addLayer(marker);
+				});
+			}
 		}
 	});
 

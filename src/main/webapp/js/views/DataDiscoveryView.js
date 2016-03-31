@@ -81,6 +81,7 @@ define([
 		 */
 
 		updateSubViews : function(model, step) {
+			this.alertView.closeAlert();
 			switch(step) {
 				case model.PROJ_LOC_STEP:
 					if (!this.locationView) {

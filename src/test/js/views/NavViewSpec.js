@@ -7,7 +7,7 @@ define([
 	'views/BaseView',
 	'views/NavView'
 ], function($, log, WorkflowStateModel, BaseView, NavView) {
-	describe('views/NavView', function() {
+	fdescribe('views/NavView', function() {
 		var testView;
 		var testModel;
 		var mockRouter;
@@ -116,24 +116,19 @@ define([
 				});
 				testView.render();
 				$(chooseDataSel + ' a').trigger('click');
+
 				expect(testModel.get('step')).toEqual(testModel.CHOOSE_DATA_STEP);
 			});
 
-			it('Expects that if the specify project location button is clicked when the current step is choose data clears the model properties and sets the step to project location', function() {
+			it('Expects that clicking the project location button changes the step to proj loc', function() {
 				testModel.set({
 					step : testModel.CHOOSE_DATA_STEP,
-					location : {latitude : 43.0, longitude : -100.0},
-					radius : 4,
-					startDate : '23Jan2000',
-					endDate : '1Jan2010',
-					datasets : ['NWIS']
+					location : {latitude : 43.0, longitude : -100.0}
 				});
 				testView.render();
 				$(projLocSel + ' a').trigger('click');
-				expect(testModel.attributes).toEqual({
-					step : testModel.PROJ_LOC_STEP,
-					location : {}
-				});
+
+				expect(testModel.get('step')).toEqual(testModel.PROJ_LOC_STEP);
 			});
 		});
 
@@ -166,9 +161,29 @@ define([
 			});
 
 			it('Expects that if the step is changed to CHOOSE_DATA, then the router will navigate to the url with the lat and lon in it', function() {
-				testModel.set('location', {latitude: 43.0, longitude : -100.0});
 				testModel.set('step', testModel.CHOOSE_DATA_STEP);
-				expect(mockRouter.navigate.calls.mostRecent().args).toEqual(['lat/43/lng/-100']);
+				testModel.set({
+					location : {latitude: 42.0, longitude : -101.0},
+					radius : '',
+					datasets : []
+				});
+				expect(mockRouter.navigate.calls.mostRecent().args).toEqual(['lat/42/lng/-101/radius//dataset/']);
+			});
+
+			it('Expects that if the step is CHOOSE_DATA and the location becomes invalid that the url is not updated', function() {
+				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+				testModel.set({
+					location : {latitude: 42.0, longitude : -101.0},
+					radius : '',
+					datasets : []
+				});
+
+				expect(mockRouter.navigate.calls.mostRecent().args).toEqual(['lat/42/lng/-101/radius//dataset/']);
+
+				mockRouter.navigate.calls.reset();
+				testModel.set('location', {latitude : '', longitude : -101.0});
+
+				expect(mockRouter.navigate).not.toHaveBeenCalled();
 			});
 
 			it('Expects that if the step is CHOOSE_DATA and radius, location, start/endDate, and datasets change the router will navigate to the appropriate url', function() {

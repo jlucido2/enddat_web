@@ -68,7 +68,10 @@ define([
 
 		_getChooseDataUrl : function(model) {
 			var state = model.attributes;
-			var location = 'lat/' + state.location.latitude + '/lng/' + state.location.longitude;
+			var latitude = (_.has(state, 'location') && _.has(state.location, 'latitude')) ? state.location.latitude : '';
+			var longitude = (_.has(state, 'location') && _.has(state.location, 'longitude')) ? state.location.longitude : '';
+
+			var location = 'lat/' + latitude + '/lng/' + longitude;
 			var radius = (model.has('radius')) ? '/radius/' + state.radius : '';
 			var startDate = (model.has('startDate')) ? '/startdate/' + state.startDate : '';
 			var endDate = (model.has('endDate')) ? '/enddate/' + state.endDate : '';
@@ -110,8 +113,11 @@ define([
 					//TODO: We will need to add code to remove the disabled class from the process Data button
 					// when we know what will allow that step.
 					$processDataBtn.addClass('disabled');
-					this.router.navigate(this._getChooseDataUrl(model));
-
+					if (model.has('location') &&
+						_.has(model.attributes.location, 'latitude') && (model.attributes.location.latitude) &&
+						_.has(model.attributes.location, 'longitude') && (model.attributes.location.longitude)) {
+						this.router.navigate(this._getChooseDataUrl(model));
+					}
 					break;
 
 				case model.PROCESS_DATA_STEP:

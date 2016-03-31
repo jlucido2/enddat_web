@@ -9,9 +9,11 @@ define([
 		var AlertView;
 		var testView;
 		var injector;
+		var $testDiv;
 
 		beforeEach(function(done) {
 			$('body').append('<div id="test-div"><div>');
+			$testDiv = $('#test-div');
 			injector = new Squire();
 
 			injector.mock('text!hb_templates/alert.hbs',
@@ -30,7 +32,7 @@ define([
 		afterEach(function() {
 			injector.remove();
 			testView.remove();
-			$('#test-div').remove();
+			$testDiv.remove();
 		});
 
 		it('Expects initialize to set the context variables to null strings', function() {
@@ -62,6 +64,17 @@ define([
 			expect($alert.hasClass('alert-warning')).toBe(false);
 			expect($alert.hasClass('alert-danger')).toBe(true);
 			expect($message.html()).toEqual('Danger alert');
+		});
+
+		it('Expects closeAlert to remove the rendered alert if any', function() {
+			testView.showSuccessAlert('Success alert');
+			expect($testDiv.find('.alert').length).not.toBe(0);
+
+			testView.closeAlert();
+			expect($testDiv.find('.alert').length).toBe(0);
+
+			testView.closeAlert();
+			expect($testDiv.find('.alert').length).toBe(0);
 		});
 	});
 });

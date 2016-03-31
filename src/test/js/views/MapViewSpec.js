@@ -6,10 +6,10 @@ define([
 	'underscore',
 	'leaflet',
 	'models/WorkflowStateModel',
-	'models/SiteModel',
+	'models/SiteCollection',
 	'views/BaseView',
 	'views/MapView'
-], function($, _, L, WorkflowStateModel, SiteModel, BaseView, MapView) {
+], function($, _, L, WorkflowStateModel, SiteCollection, BaseView, MapView) {
 	describe('views/MapView', function() {
 		var testView;
 		var $testDiv;

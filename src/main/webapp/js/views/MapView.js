@@ -79,8 +79,6 @@ define([
 			this.listenTo(this.model, 'change:radius', this.updateExtent);
 
 			if (this.model.has('datasetCollections')) {
-				this.updateSiteMarker(this.model.attributes.datasetCollections[this.model.NWIS_DATASET]);
-				this.updatePrecipGridPoints(this.model.attributes.datasetCollections[this.model.PRECIP_DATASET]);
 				this.setupDatasetListeners(this.model, this.model.attributes.datasetCollections);
 			}
 			else {

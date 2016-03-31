@@ -5,7 +5,7 @@ define([
 	'jquery',
 	'models/SiteCollection'
 ], function($, SiteCollection) {
-	fdescribe('models/SiteCollection', function() {
+	describe('models/SiteCollection', function() {
 		var testSiteModel;
 
 		beforeEach(function() {

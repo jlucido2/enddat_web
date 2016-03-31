@@ -14,10 +14,9 @@ define([
 		var testView;
 		var $testDiv;
 		var testModel;
-		var testSiteModel, testPrecipModel;
+		var testSiteCollection, testPrecipCollection;
 		var fakeServer;
 		var addLayerSpy, removeLayerSpy, addControlSpy, hasLayerSpy, removeMapSpy, fitBoundsSpy;
-		var hasLayerValue = false;
 
 		beforeEach(function() {
 			fakeServer = sinon.fakeServer.create();
@@ -51,10 +50,9 @@ define([
 			spyOn(BaseView.prototype, 'remove').and.callThrough();
 
 			testModel = new WorkflowStateModel();
-			testModel.initializeDatasetModels();
-			testModel.set('step', testModel.PROJ_LOC_STEP);
-			testSiteModel = testModel.get('datasetModels').NWIS;
-			testPrecipModel = testModel.get('datasetModels').PRECIP;
+			testModel.set('step', testModel.CHOOSE_DATA_STEP);
+			testSiteCollection = testModel.get('datasetCollections').NWIS;
+			testPrecipCollection = testModel.get('datasetCollections').PRECIP;
 
 			testView = new MapView({
 				el : '#test-div',
@@ -174,14 +172,14 @@ define([
 			});
 
 			it('Expect that the site location marker is added to the map if there are sites in the site model', function() {
-				testSiteModel.set({'sites': {'05464220': {'name': 'test', 'lat': '42.25152778', 'lon': '-92.2988889'}}});
+				testSiteCollection.reset([{siteNo : '05464220','name': 'test', 'lat': '42.25152778', 'lon': '-92.2988889'}]);
 				spyOn(testView.siteLayerGroup, 'addLayer').and.callThrough();
 				testView.render();
 				expect(testView.siteLayerGroup.addLayer.calls.count()).toBe(1);
 			});
 
 			it('Expects that the precipitation layer group contains markers for each grid', function() {
-				testPrecipModel.reset([
+				testPrecipCollection.reset([
 					{x : '1', y: '2', lon : '-100', lat : '43.0'},
 					{x : '1', y: '3', lon : '-100', lat : '44.0'}
 				]);
@@ -255,21 +253,20 @@ define([
 			});
 
 			it('Expects that if the site model is updated, an updated site marker is added to the map', function() {
-				testSiteModel.set({'sites': {'05464220': {'name': 'test', 'lat': '42.25152778', 'lon': '-92.2988889'}}});
-				testSiteModel.trigger('sync', testSiteModel);
+				testSiteCollection.reset([{siteNo : '05464220','name': 'test', 'lat': '42.25152778', 'lon': '-92.2988889'}]);
+
 				expect(testView.siteLayerGroup.getLayers().length).toBe(1);
 			});
 
 			it('Expects that if the site model is updated and then cleared, no site markers will be on the map', function() {
-				testSiteModel.set({'sites': {'05464220': {'name': 'test', 'lat': '42.25152778', 'lon': '-92.2988889'}}});
-				testSiteModel.trigger('sync', testSiteModel);
-				testSiteModel.set({'sites' : {}});
-				testSiteModel.trigger('sync', testSiteModel);
+				testSiteCollection.reset([{siteNo : '05464220','name': 'test', 'lat': '42.25152778', 'lon': '-92.2988889'}]);
+				testSiteCollection.reset();
+
 				expect(testView.siteLayerGroup.getLayers().length).toBe(0);
 			});
 
 			it('Expects that if the precipitation collection is updated, precipitation grid points will be on the map', function() {
-				testPrecipModel.reset([
+				testPrecipCollection.reset([
 					{x : '1', y: '2', lon : '-100', lat : '43.0'},
 					{x : '1', y: '3', lon : '-100', lat : '44.0'}
 				]);
@@ -277,11 +274,11 @@ define([
 			});
 
 			it('Expects that if the precipitation collection is updated then cleared, no precipitation grid points will be on the map', function() {
-				testPrecipModel.reset([
+				testPrecipCollection.reset([
 					{x : '1', y: '2', lon : '-100', lat : '43.0'},
 					{x : '1', y: '3', lon : '-100', lat : '44.0'}
 				]);
-				testPrecipModel.reset([]);
+				testPrecipCollection.reset([]);
 				expect(testView.precipLayerGroup.getLayers().length).toBe(0);
 			});
 		});

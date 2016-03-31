@@ -125,7 +125,10 @@ define([
 
 		updateChooseView: function () {
 			var step = this.model.get('step');
-			if (this.model.CHOOSE_DATA_STEP === step) {
+			var location = this.model.get('location');
+			if (this.model.CHOOSE_DATA_STEP === step && 
+					(location) && _.has(location, 'latitude') && (location.latitude) &&
+					_.has(location, 'longitude') && (location.longitude)) {
 				this.chooseView.setElement(this.$(CHOOSE_SELECTOR)).render();
 				this.$(CHOOSE_SELECTOR).show();
 			}

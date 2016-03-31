@@ -148,7 +148,7 @@ define([
 						});
 					}
 					model.initializeDatasetCollections();
-					this.updateDatasetCollections(model, model.get('datasetCollections'));
+					model.updateDatasetCollections(model, model.get('datasetCollections'));
 					break;
 			}
 		}

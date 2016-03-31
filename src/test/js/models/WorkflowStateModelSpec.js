@@ -13,7 +13,7 @@ define([
 		var WorkflowStateModel, testModel;
 
 		var fetchPrecipSpy, resetPrecipSpy ;
-		var fetchSiteSpy, clearSiteSpy;
+		var fetchSiteSpy, resetSiteSpy;
 		var fetchPrecipDeferred, fetchSiteDeferred;
 
 		beforeEach(function(done) {
@@ -21,7 +21,7 @@ define([
 			resetPrecipSpy = jasmine.createSpy('resetPrecipSpy');
 
 			fetchSiteSpy = jasmine.createSpy('fetchSiteSpy');
-			clearSiteSpy = jasmine.createSpy('clearSiteSpy');
+			resetSiteSpy = jasmine.createSpy('resetSiteSpy');
 
 			fetchPrecipDeferred = $.Deferred();
 			fetchSiteDeferred = $.Deferred();
@@ -32,9 +32,9 @@ define([
 				fetch : fetchPrecipSpy.and.returnValue(fetchPrecipDeferred.promise()),
 				reset : resetPrecipSpy
 			}));
-			injector.mock('models/SiteModel', Backbone.Model.extend({
+			injector.mock('models/SiteCollection', Backbone.Collection.extend({
 				fetch : fetchSiteSpy.and.returnValue(fetchSiteDeferred.promise()),
-				clear : clearSiteSpy
+				reset : resetSiteSpy
 			}));
 			injector.mock('utils/geoSpatialUtils', geoSpatialUtils);
 			spyOn(geoSpatialUtils, 'getBoundingBox').and.returnValue({
@@ -56,11 +56,11 @@ define([
 			injector.remove();
 		});
 
-		it('Expects that calling initializeDatasetModels initializes the datasetModels property', function() {
-			testModel.initializeDatasetModels();
+		it('Expects that calling initializeDatasetCollectionss initializes the datasetCollections property', function() {
+			testModel.initializeDatasetCollections();
 
-			expect(testModel.attributes.datasetModels[testModel.NWIS_DATASET]).toBeDefined();
-			expect(testModel.attributes.datasetModels[testModel.PRECIP_DATASET]).toBeDefined();
+			expect(testModel.attributes.datasetCollections[testModel.NWIS_DATASET]).toBeDefined();
+			expect(testModel.attributes.datasetCollections[testModel.PRECIP_DATASET]).toBeDefined();
 		});
 
 		describe('Tests for event handlers to update the datasets', function() {
@@ -69,7 +69,7 @@ define([
 				updateStartSpy = jasmine.createSpy('updateStartSpy');
 				updateFinishedSpy = jasmine.createSpy('updateFinishedSpy');
 
-				testModel.initializeDatasetModels();
+				testModel.initializeDatasetCollections();
 
 				testModel.on('dataset:updateStart', updateStartSpy);
 				testModel.on('dataset:updateFinished', updateFinishedSpy);
@@ -88,7 +88,7 @@ define([
 
 				expect(fetchSiteSpy).not.toHaveBeenCalled();
 				expect(fetchPrecipSpy).not.toHaveBeenCalled();
-				expect(clearSiteSpy).toHaveBeenCalled();
+				expect(resetSiteSpy).toHaveBeenCalled();
 				expect(resetPrecipSpy).toHaveBeenCalled();
 			});
 
@@ -101,7 +101,7 @@ define([
 
 				expect(fetchSiteSpy).not.toHaveBeenCalled();
 				expect(fetchPrecipSpy).not.toHaveBeenCalled();
-				expect(clearSiteSpy).toHaveBeenCalled();
+				expect(resetSiteSpy).toHaveBeenCalled();
 				expect(resetPrecipSpy).toHaveBeenCalled();
 			});
 
@@ -114,7 +114,7 @@ define([
 
 				expect(fetchSiteSpy).toHaveBeenCalled();
 				expect(fetchPrecipSpy).not.toHaveBeenCalled();
-				expect(clearSiteSpy).not.toHaveBeenCalled();
+				expect(resetSiteSpy).not.toHaveBeenCalled();
 				expect(resetPrecipSpy).toHaveBeenCalled();
 
 				fetchSiteSpy.calls.reset();
@@ -127,11 +127,11 @@ define([
 
 				expect(fetchSiteSpy).not.toHaveBeenCalled();
 				expect(fetchPrecipSpy).toHaveBeenCalled();
-				expect(clearSiteSpy).toHaveBeenCalled();
+				expect(resetSiteSpy).toHaveBeenCalled();
 				expect(resetPrecipSpy).not.toHaveBeenCalled();
 
 				fetchPrecipSpy.calls.reset();
-				clearSiteSpy.calls.reset();
+				resetSiteSpy.calls.reset();
 				testModel.set({
 					location : {latitude : '42.0', longitude : '-100.0'},
 					radius : '6',
@@ -140,7 +140,7 @@ define([
 
 				expect(fetchSiteSpy).toHaveBeenCalled();
 				expect(fetchPrecipSpy).toHaveBeenCalled();
-				expect(clearSiteSpy).not.toHaveBeenCalled();
+				expect(resetSiteSpy).not.toHaveBeenCalled();
 				expect(resetPrecipSpy).not.toHaveBeenCalled();
 			});
 
@@ -201,6 +201,56 @@ define([
 			});
 		});
 
+		describe('Tests for event handlers for updating the workflow step', function() {
+			it('Expects that if the step changes to PROJ_LOC_STEP the location, radius, and datasets properties are unset', function() {
+				testModel.set({
+					location : {latitude : '43.0', longitude : '-100.0'},
+					radius : '6',
+					datasets : [testModel.NWIS_DATASET, testModel.PRECIP_DATASET]
+				});
+				testModel.set('step', testModel.PROJ_LOC_STEP);
+
+				expect(testModel.has('location')).toBe(false);
+				expect(testModel.has('radius')).toBe(false);
+				expect(testModel.has('datasets')).toBe(false);
+			});
+
+			it('Expects that if the step changes to PROJ_LOC_STEP the datasetCollections will be cleared', function() {
+				testModel.initializeDatasetCollections();
+				resetSiteSpy.calls.reset();
+				resetPrecipSpy.calls.reset();
+				testModel.set('step', testModel.PROJ_LOC_STEP);
+
+				expect(resetSiteSpy).toHaveBeenCalled();
+				expect(resetPrecipSpy).toHaveBeenCalled();
+			});
+
+			it('Expects that if the step changes to CHOOSE_DATA_STEP and the previous step was PROJ_LOC_STEP that the default radius and chosen datasets are set', function() {
+				testModel.set({
+					step : testModel.PROJ_LOC_STEP,
+					location : {latitude : '43.0', longitude : '-100.0'}
+				});
+				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+
+				expect(testModel.get('radius')).toEqual(testModel.DEFAULT_CHOOSE_DATA_RADIUS);
+				expect(testModel.get('datasets')).toEqual(testModel.DEFAULT_CHOSEN_DATASETS);
+			});
+
+			it('Expects that if the step changes to CHOOSE_DATA_STEP, the chosen datasets are fetched', function() {
+				testModel.set({
+					location : {latitude : '43.0', longitude : '-100.0'},
+					radius : '6',
+					datasets : [testModel.NWIS_DATASET, testModel.PRECIP_DATASET]
+				});
+				fetchPrecipSpy.calls.reset();
+				fetchSiteSpy.calls.reset();
+				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+
+				expect(fetchPrecipSpy).toHaveBeenCalled();
+				expect(fetchSiteSpy).toHaveBeenCalled();
+			});
+		});
+
 		describe('Tests for getBoundingBox', function() {
 			it('Expects that if the model does not contain a valid bounding box, this function returns undefined', function() {
 				testModel.set({
@@ -233,7 +283,7 @@ define([
 					north : 44.0
 				});
 				expect(geoSpatialUtils.getBoundingBox).toHaveBeenCalled();
-			})
+			});
 		});
 	});
 });

@@ -7,7 +7,7 @@ define([
 	'views/BaseView',
 	'views/NavView'
 ], function($, log, WorkflowStateModel, BaseView, NavView) {
-	fdescribe('views/NavView', function() {
+	describe('views/NavView', function() {
 		var testView;
 		var testModel;
 		var mockRouter;

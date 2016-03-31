@@ -212,20 +212,26 @@ define([
 				expect(renderLocationViewSpy.calls.count()).toBe(2);
 			});
 
-			it('Expects that the chooseView is rendered only if the workflow step is choose data', function() {
+			it('Expects that the chooseView is rendered only if the workflow step is choose data and there is a location', function() {
 				testView.render();
 				expect(setElChooseViewSpy.calls.count()).toBe(1);
 				expect(renderChooseViewSpy.calls.count()).toBe(0);
 
 				testModel.set('step', testModel.CHOOSE_DATA_STEP);
 				testView.render();
-				expect(setElChooseViewSpy.calls.count()).toBe(3);
-				expect(renderChooseViewSpy.calls.count()).toBe(2);
+				expect(setElChooseViewSpy.calls.count()).toBe(1);
+				expect(renderChooseViewSpy.calls.count()).toBe(0);
 
 				testModel.set('step', testModel.PROCESS_DATA_STEP);
 				testView.render();
-				expect(setElChooseViewSpy.calls.count()).toBe(3);
-				expect(renderChooseViewSpy.calls.count()).toBe(2);
+				expect(setElChooseViewSpy.calls.count()).toBe(1);
+				expect(renderChooseViewSpy.calls.count()).toBe(0);
+
+				//TODO add test with location
+//				testModel.set('location', {
+//					latitude : '43.0',
+//					longitude : '-100.0'
+//				});
 			});
 		});
 

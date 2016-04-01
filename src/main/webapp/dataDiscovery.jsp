@@ -56,7 +56,16 @@
 					'leaflet' : {
 						exports: 'L'
 					},
-					'leaflet-providers' : ['leaflet']
+					'leaflet-providers' : ['leaflet'],
+					'backbone' : {
+						deps : ['jquery', 'underscore'],
+						exports : 'Backbone'
+					},
+					'backgrid': {
+						deps: ['jquery', 'underscore', 'backbone'],
+						exports: 'Backgrid'
+					},
+					'backbone.stickit' : ['backbone', 'underscore']
 				},
 				packages : [
 					{
@@ -64,7 +73,7 @@
 						location: "<%=baseUrl%>bower_components/requirejs-hbs",
 						main : 'hbs'
 					}
-				],
+				]
 			};
 		</script>
 		<script data-main="init" src="<%=baseUrl%>bower_components/requirejs/require.js"></script>

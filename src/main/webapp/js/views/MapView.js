@@ -6,8 +6,9 @@ define([
 	'leaflet-providers',
 	'loglevel',
 	'utils/geoSpatialUtils',
-	'views/BaseView'
-], function(_, L, leafletProviders, log, geoSpatialUtils, BaseView) {
+	'views/BaseView',
+	'views/PrecipDataView'
+], function(_, L, leafletProviders, log, geoSpatialUtils, BaseView, PrecipDataView) {
 
 	var siteIcon = new L.icon({
 		iconUrl : 'img/time-series.png',
@@ -17,6 +18,11 @@ define([
 		iconUrl : 'img/national-precipitation.png',
 		iconSize : [14, 14]
 	});
+
+	var MAP_WIDTH_CLASS = 'col-md-6';
+	var DATA_VIEW_WIDTH_CLASS = 'col-md-6';
+
+	var VARIABLE_CONTAINER_SEL = '.dataset-variable-container';
 
 	var view = BaseView.extend({
 
@@ -216,6 +222,22 @@ define([
 					var marker = L.marker([precipModel.attributes.lat, precipModel.attributes.lon], {
 						icon : precipIcon,
 						title : precipModel.attributes.y + ':' + precipModel.attributes.x
+					});
+					marker.on('click', function(ev) {
+						var $newContainer = $('<div />');
+
+						if (self.precipDataView) {
+							self.precipDataView.remove();
+						}
+						self.$(VARIABLE_CONTAINER_SEL).append($newContainer);
+						self.precipDataView = new PrecipDataView({
+							el : $newContainer,
+							model : precipModel,
+							opened : true
+						});
+						self.$('#' + self.mapDivId).addClass(MAP_WIDTH_CLASS);
+						self.$(VARIABLE_CONTAINER_SEL).addClass(DATA_VIEW_WIDTH_CLASS);
+						self.precipDataView.render();
 					});
 					self.precipLayerGroup.addLayer(marker);
 				});

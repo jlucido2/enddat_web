@@ -30,6 +30,7 @@ define([
 			var today = moment().format('YYYY-MM-DD');
 			$utils.xmlFind($(xml), 'wfs', 'member').each(function() {
 				var $this = $(this);
+
 				result.push({
 					x : getInteger($utils.xmlFind($this, 'sb', 'x').text()),
 					y : getInteger($utils.xmlFind($this, 'sb', 'y').text()),

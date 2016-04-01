@@ -34,20 +34,20 @@ require.config({
 		'moment' : '/base/src/main/webapp/bower_components/moment/moment'
 	},
 	shim: {
-		'jquery': {
-			exports: '$'
-		},
 		'bootstrap': ['jquery'],
+		'leaflet' : {
+			exports: 'L'
+		},
+		'leaflet-providers' : ['leaflet'],
 		'backbone': {
 			deps: ['jquery', 'underscore'],
 			exports: 'Backbone'
 		},
-		'handlebars': {
-			exports: 'Handlebars'
+		'backgrid': {
+			deps: ['jquery', 'underscore', 'backbone'],
+			exports: 'Backgrid'
 		},
-		'text': {
-			'exports': 'text'
-		}
+		'backbone.stickit' : ['backbone', 'underscore']
 	}
 });
 require(allTestFiles, window.__karma__.start);

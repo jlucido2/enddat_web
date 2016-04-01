@@ -5,13 +5,16 @@ define([
 	'module',
 	'jquery',
 	'backbone',
+	'moment',
 	'utils/jqueryUtils'
-], function(log, module, $, Backbone, $utils) {
+], function(log, module, $, Backbone, moment, $utils) {
 	"use strict";
 
 	var getInteger = function(str) {
 		return str.split('.')[0];
 	};
+
+	var START_DATE = '2002-01-01';
 
 	var collection = Backbone.Collection.extend({
 
@@ -24,13 +27,16 @@ define([
 		 */
 		parse : function(xml) {
 			var result = [];
+			var today = moment().format('YYYY-MM-DD');
 			$utils.xmlFind($(xml), 'wfs', 'member').each(function() {
 				var $this = $(this);
 				result.push({
 					x : getInteger($utils.xmlFind($this, 'sb', 'x').text()),
 					y : getInteger($utils.xmlFind($this, 'sb', 'y').text()),
 					lon : $utils.xmlFind($this, 'sb', 'X1').text(),
-					lat : $utils.xmlFind($this, 'sb', 'X2').text()
+					lat : $utils.xmlFind($this, 'sb', 'X2').text(),
+					startDate : START_DATE,
+					endDate : today
 				});
 			});
 			return result;

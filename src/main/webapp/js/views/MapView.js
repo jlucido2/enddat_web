@@ -66,6 +66,8 @@ define([
 		render : function() {
 			// We don't call the prototype render at all because we are not rendering
 			// a handlebars template, but rather rendering a leaflet map.
+			var self = this;
+
 			if (_.has(this, 'map')) {
 				this.map.remove();
 			}
@@ -79,6 +81,12 @@ define([
 			}, this);
 			this.map.addLayer(this.siteLayerGroup);
 			this.map.addLayer(this.precipLayerGroup);
+
+			this.map.on('click', function(ev) {
+				if (this.circleMarker && this.map.hasLayer(this.circleMarker)) {
+					this.map.removeLayer(this.circleMarker);
+				}
+			}, this);
 
 			this.updateLocationMarkerAndExtent(this.model, this.model.get('location'));
 			this.listenTo(this.model, 'change:location', this.updateLocationMarkerAndExtent);
@@ -219,13 +227,31 @@ define([
 
 			if (precipCollection) {
 				precipCollection.each(function(precipModel) {
-					var marker = L.marker([precipModel.attributes.lat, precipModel.attributes.lon], {
+					var latLng = new L.latLng(precipModel.attributes.lat, precipModel.attributes.lon);
+					var marker = L.marker(latLng, {
 						icon : precipIcon,
 						title : precipModel.attributes.y + ':' + precipModel.attributes.x
 					});
+
+					self.precipLayerGroup.addLayer(marker);
 					marker.on('click', function(ev) {
 						var $newContainer = $('<div />');
 
+						// Update the highlight circle marker
+						if (self.circleMarker) {
+							self.circleMarker.setLatLng(latLng);
+							self.map.addLayer(self.circleMarker);
+						}
+						else {
+							self.circleMarker = new L.circleMarker(latLng,{
+								radius : 15
+							});
+							if (!self.map.hasLayer(self.circleMarker)) {
+								self.map.addLayer(self.circleMarker);
+							}
+						}
+
+						//Update the precipDataView
 						if (self.precipDataView) {
 							self.precipDataView.remove();
 						}
@@ -239,7 +265,6 @@ define([
 						self.$(VARIABLE_CONTAINER_SEL).addClass(DATA_VIEW_WIDTH_CLASS);
 						self.precipDataView.render();
 					});
-					self.precipLayerGroup.addLayer(marker);
 				});
 			}
 		}

@@ -19,6 +19,7 @@ require.config({
 		'squire': '/base/src/main/webapp/bower_components/Squire.js/src/Squire',
 		'bootstrap': '/base/src/main/webapp/bower_components/bootstrap/dist/js/bootstrap',
 		'jquery': '/base/src/main/webapp/bower_components/jquery/dist/jquery',
+		'select2': '/base/src/main/webapp/bower_components/select2/dist/js/select2.full',
 		'underscore': '/base/src/main/webapp/bower_components/underscore/underscore',
 		'backbone': '/base/src/main/webapp/bower_components/backbone/backbone',
 		'handlebars': '/base/src/main/webapp/bower_components/handlebars/handlebars.amd',

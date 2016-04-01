@@ -13,6 +13,7 @@ module.exports = function (config) {
 			'src/test/js/test-main.js',
 			{pattern: 'src/main/webapp/bower_components/Squire.js/src/Squire.js', included: false},
 			{pattern: 'src/main/webapp/bower_components/jquery/dist/jquery.js', included: false},
+			{pattern: 'src/main/webapp/bower_components/select2/dist/js/select2.full.js', included: false},
 			{pattern: 'src/main/webapp/bower_components/underscore/underscore.js', included: false},
 			{pattern: 'src/main/webapp/bower_components/backbone/backbone.js', included: false},
 			{pattern: 'src/main/webapp/bower_components/bootstrap/dist/js/bootstrap.js', included: false},

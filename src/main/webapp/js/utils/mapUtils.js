@@ -1,9 +1,8 @@
 /* jslint browser: true */
 
 define([
-	'underscore',
 	'leaflet'
-], function(_, L) {
+], function(L) {
 	"use strict";
 
 	var utils = (function() {

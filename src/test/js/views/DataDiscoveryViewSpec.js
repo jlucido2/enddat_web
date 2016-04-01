@@ -21,7 +21,7 @@ define([
 		var setElMapViewSpy, renderMapViewSpy, removeMapViewSpy;
 		var setElLocationViewSpy, renderLocationViewSpy, removeLocationViewSpy;
 		var setElChooseViewSpy, renderChooseViewSpy, removeChooseViewSpy;
-		var setElAlertViewSpy, renderAlertViewSpy, removeAlertViewSpy, showSuccessAlertSpy, showDangerAlertSpy;
+		var setElAlertViewSpy, renderAlertViewSpy, removeAlertViewSpy, showSuccessAlertSpy, showDangerAlertSpy, closeAlertSpy;
 
 		var injector;
 
@@ -54,6 +54,7 @@ define([
 			removeAlertViewSpy = jasmine.createSpy('removeAlertViewSpy');
 			showSuccessAlertSpy = jasmine.createSpy('showSuccessAlertSpy');
 			showDangerAlertSpy = jasmine.createSpy('showDangerAlertSpy');
+			closeAlertSpy = jasmine.createSpy('closeAlertSpy');
 
 			injector = new Squire();
 
@@ -97,14 +98,15 @@ define([
 				render : renderAlertViewSpy,
 				showSuccessAlert : showSuccessAlertSpy,
 				showDangerAlert : showDangerAlertSpy,
-				remove : removeAlertViewSpy
+				remove : removeAlertViewSpy,
+				closeAlert : closeAlertSpy
 			}));
 
 			injector.require(['views/DataDiscoveryView'], function(view) {
 				DataDiscoveryView = view;
 
 				testModel = new WorkflowStateModel();
-				spyOn(testModel, 'updateDatasetModels');
+				spyOn(testModel, 'updateDatasetCollections');
 				testModel.set('step', testModel.PROJ_LOC_STEP);
 
 				done();
@@ -127,16 +129,16 @@ define([
 			expect(BaseView.prototype.initialize).toHaveBeenCalled();
 		});
 
-		it('Expects the child views to be initialized', function() {
+		it('Expects the nav and alert views to be initialized', function() {
 			testView = new DataDiscoveryView({
 				el : $testDiv,
 				model : testModel
 			});
 
 			expect(setElNavViewSpy.calls.count()).toBe(1);
-			expect(setElMapViewSpy.calls.count()).toBe(1);
-			expect(setElLocationViewSpy.calls.count()).toBe(1);
-			expect(setElChooseViewSpy.calls.count()).toBe(1);
+			expect(setElMapViewSpy.calls.count()).toBe(0);
+			expect(setElLocationViewSpy.calls.count()).toBe(0);
+			expect(setElChooseViewSpy.calls.count()).toBe(0);
 			expect(setElAlertViewSpy.calls.count()).toBe(1);
 		});
 
@@ -151,11 +153,6 @@ define([
 			it('Expects that the BaseView render is called', function() {
 				testView.render();
 				expect(BaseView.prototype.render).toHaveBeenCalled();
-			});
-
-			it('Expects that the dataset models in the workflow model are initially fetched', function() {
-				testView.render();
-				expect(testModel.updateDatasetModels).toHaveBeenCalled();
 			});
 
 			it('Expects that the el should be set for the alert view but not rendered', function() {
@@ -180,58 +177,27 @@ define([
 				expect(renderNavViewSpy.calls.count()).toBe(3);
 			});
 
-			it('Expects that the mapView is rendered only if the workflow step is specify project location or choose data', function() {
+			it('Expects that if the workflow step is PROJ_LOC_STEP, the location and map views are created and rendered but not the choose data view', function() {
+				testModel.set('step', testModel.PROJ_LOC_STEP);
 				testView.render();
-				expect(setElMapViewSpy.calls.count()).toBe(2);
-				expect(renderMapViewSpy.calls.count()).toBe(1);
 
-				testModel.set('step', testModel.CHOOSE_DATA_STEP);
-				testView.render();
-				expect(setElMapViewSpy.calls.count()).toBe(3);
-				expect(renderMapViewSpy.calls.count()).toBe(2);
-
-				testModel.set('step', testModel.PROCESS_DATA_STEP);
-				testView.render();
-				expect(setElMapViewSpy.calls.count()).toBe(3);
-				expect(renderMapViewSpy.calls.count()).toBe(2);
+				expect(setElMapViewSpy).toHaveBeenCalled();
+				expect(renderMapViewSpy).toHaveBeenCalled();
+				expect(setElLocationViewSpy).toHaveBeenCalled();
+				expect(renderLocationViewSpy).toHaveBeenCalled();
+				expect(setElChooseViewSpy).not.toHaveBeenCalled();
 			});
 
-			it('Expects that the locationView is rendered only if the workflow step is specify project location or choose data', function() {
-				testView.render();
-				expect(setElLocationViewSpy.calls.count()).toBe(2);
-				expect(renderLocationViewSpy.calls.count()).toBe(1);
-
+			it('Expects that if the workflow step is CHOOSE_DATA_STEP, the location, map, and choose data views are created and rendered', function() {
 				testModel.set('step', testModel.CHOOSE_DATA_STEP);
 				testView.render();
-				expect(setElLocationViewSpy.calls.count()).toBe(3);
-				expect(renderLocationViewSpy.calls.count()).toBe(2);
 
-				testModel.set('step', testModel.PROCESS_DATA_STEP);
-				testView.render();
-				expect(setElLocationViewSpy.calls.count()).toBe(3);
-				expect(renderLocationViewSpy.calls.count()).toBe(2);
-			});
-
-			it('Expects that the chooseView is rendered only if the workflow step is choose data and there is a location', function() {
-				testView.render();
-				expect(setElChooseViewSpy.calls.count()).toBe(1);
-				expect(renderChooseViewSpy.calls.count()).toBe(0);
-
-				testModel.set('step', testModel.CHOOSE_DATA_STEP);
-				testView.render();
-				expect(setElChooseViewSpy.calls.count()).toBe(1);
-				expect(renderChooseViewSpy.calls.count()).toBe(0);
-
-				testModel.set('step', testModel.PROCESS_DATA_STEP);
-				testView.render();
-				expect(setElChooseViewSpy.calls.count()).toBe(1);
-				expect(renderChooseViewSpy.calls.count()).toBe(0);
-
-				//TODO add test with location
-//				testModel.set('location', {
-//					latitude : '43.0',
-//					longitude : '-100.0'
-//				});
+				expect(setElMapViewSpy).toHaveBeenCalled();
+				expect(renderMapViewSpy).toHaveBeenCalled();
+				expect(setElLocationViewSpy).toHaveBeenCalled();
+				expect(renderLocationViewSpy).toHaveBeenCalled();
+				expect(setElChooseViewSpy).toHaveBeenCalled();
+				expect(renderChooseViewSpy).toHaveBeenCalled();
 			});
 		});
 
@@ -241,19 +207,40 @@ define([
 					el : $testDiv,
 					model : testModel
 				});
-				testView.remove();
 			});
 
 			it('Expects that the BaseView remove is called', function() {
+				testView.remove();
 				expect(BaseView.prototype.remove).toHaveBeenCalled();
 			});
 
-			it('Expects that the children views are removed', function() {
-				expect(removeNavViewSpy.calls.count()).toBe(1);
-				expect(removeMapViewSpy.calls.count()).toBe(1);
-				expect(removeLocationViewSpy.calls.count()).toBe(1);
-				expect(removeChooseViewSpy.calls.count()).toBe(1);
-				expect(removeAlertViewSpy.calls.count()).toBe(1);
+			it('Expects that the nav and alert views are removed', function() {
+				testView.remove();
+				expect(removeNavViewSpy).toHaveBeenCalled();
+				expect(removeAlertViewSpy).toHaveBeenCalled();
+				expect(removeLocationViewSpy).not.toHaveBeenCalled();
+				expect(removeChooseViewSpy).not.toHaveBeenCalled();
+				expect(removeMapViewSpy).not.toHaveBeenCalled();
+			});
+
+			it('Expects that the location and map subviews are removed if they have been created', function() {
+				testModel.set('step', testModel.PROJ_LOC_STEP);
+				testView.render();
+				testView.remove();
+
+				expect(removeLocationViewSpy).toHaveBeenCalled();
+				expect(removeChooseViewSpy).not.toHaveBeenCalled();
+				expect(removeMapViewSpy).toHaveBeenCalled();
+			});
+
+			it('Expects that the location,map, and choose data subviews are removed if they have been created', function() {
+				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+				testView.render();
+				testView.remove();
+
+				expect(removeLocationViewSpy).toHaveBeenCalled();
+				expect(removeChooseViewSpy).toHaveBeenCalled();
+				expect(removeMapViewSpy).toHaveBeenCalled();
 			});
 		});
 
@@ -292,6 +279,32 @@ define([
 				testModel.trigger('dataset:updateFinished', ['NWIS']);
 				expect(showDangerAlertSpy).toHaveBeenCalled();
 			});
+
+
+			it('Expects that if the step changes from CHOOSE_DATA_STEP to PROJ_LOC_STEP, the choose view is removed', function() {
+				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+				removeChooseViewSpy.calls.reset();
+				testModel.set('step', testModel.PROJ_LOC_STEP);
+
+				expect(removeChooseViewSpy).toHaveBeenCalled();
+			});
+
+			it('Expects that if the step changes from PROJ_LOC_STEP to CHOOSE_DATA_STEP, the choose view is created and rendered', function() {
+				testModel.set('step', testModel.PROJ_LOC_STEP);
+				setElChooseViewSpy.calls.reset();
+				renderChooseViewSpy.calls.reset();
+				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+
+				expect(setElChooseViewSpy).toHaveBeenCalled();
+				expect(renderChooseViewSpy).toHaveBeenCalled();
+			});
+
+			it('Expects that if the step changes, the alert view is closed', function() {
+				closeAlertSpy.calls.reset();
+				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+
+				expect(closeAlertSpy).toHaveBeenCalled();
+			})
 		});
 	});
 });

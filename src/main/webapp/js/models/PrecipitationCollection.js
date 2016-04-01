@@ -1,3 +1,5 @@
+/* jslint browser: true */
+
 define([
 	'loglevel',
 	'module',
@@ -15,6 +17,11 @@ define([
 
 		url : module.config().precipWFSGetFeatureUrl,
 
+		/*
+		 * Parse the {Document} and returns a json object which can be used to create the collection.
+		 * @param {Document} xml
+		 * @returns {Array of Objects}
+		 */
 		parse : function(xml) {
 			var result = [];
 			$utils.xmlFind($(xml), 'wfs', 'member').each(function() {
@@ -29,6 +36,12 @@ define([
 			return result;
 		},
 
+		/*
+		 * Fetches the precipitation grid data for the specified bounding box and updates the collection contents.
+		 * If the fetch fails the collection is reset
+		 * @param {Object} boundingBox - west, east, north, and south properties
+		 * @returns a promise. Both rejected and resolved return the original jqXHR
+		 */
 		fetch : function (boundingBox) {
 			var self = this;
 			var fetchDeferred = $.Deferred();
@@ -42,14 +55,18 @@ define([
 				success : function(xml, textStatus, jqXHR) {
 					if ($utils.xmlFind($(xml), 'ows', 'ExceptionReport').length > 0) {
 						log.debug('Precipitation fetch failed with Exception from service');
+						self.reset([]);
 						fetchDeferred.reject(jqXHR);
 					}
-					self.reset(self.parse(xml));
-					log.debug('Precipitation fetch succeeded, fetched ' + self.size() + ' grid');
-					fetchDeferred.resolve(jqXHR);
+					else {
+						self.reset(self.parse(xml));
+						log.debug('Precipitation fetch succeeded, fetched ' + self.size() + ' grid');
+						fetchDeferred.resolve(jqXHR);
+					}
 				},
 				error : function(jqXHR) {
 					log.debug('Precipitation fetch failed');
+					self.reset([]);
 					fetchDeferred.reject(jqXHR);
 				}
 			});

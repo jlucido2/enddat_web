@@ -6,9 +6,8 @@ define([
 	'leaflet-providers',
 	'loglevel',
 	'utils/geoSpatialUtils',
-	'utils/mapUtils',
 	'views/BaseView'
-], function(_, L, leafletProviders, log, geoSpatialUtils, mapUtils, BaseView) {
+], function(_, L, leafletProviders, log, geoSpatialUtils, BaseView) {
 
 	var siteIcon = new L.icon({
 		iconUrl : 'img/time-series.png',
@@ -76,14 +75,15 @@ define([
 			this.map.addLayer(this.precipLayerGroup);
 
 			this.updateLocationMarkerAndExtent(this.model, this.model.get('location'));
-			this.updateSiteMarker(this.model.attributes.datasetModels[this.model.NWIS_DATASET]);
-			this.updatePrecipGridPoints(this.model.attributes.datasetModels[this.model.PRECIP_DATASET]);
-
-			// Wait to set up model listeners until the view has been rendered
 			this.listenTo(this.model, 'change:location', this.updateLocationMarkerAndExtent);
 			this.listenTo(this.model, 'change:radius', this.updateExtent);
-			this.listenTo(this.model.attributes.datasetModels[this.model.NWIS_DATASET], 'sync', this.updateSiteMarker);
-			this.listenTo(this.model.attributes.datasetModels[this.model.PRECIP_DATASET], 'reset', this.updatePrecipGridPoints);
+
+			if (this.model.has('datasetCollections')) {
+				this.setupDatasetListeners(this.model, this.model.attributes.datasetCollections);
+			}
+			else {
+				this.listenTo(this.model, 'change:datasetCollections', this.setupDatasetListeners);
+			}
 
 			return this;
 		},
@@ -178,37 +178,48 @@ define([
 			}
 		},
 
+		setupDatasetListeners : function(model, datasetCollections) {
+			this.updateSiteMarker(datasetCollections[model.NWIS_DATASET]);
+			this.updatePrecipGridPoints(datasetCollections[model.PRECIP_DATASET]);
+
+			this.listenTo(datasetCollections[model.NWIS_DATASET], 'reset', this.updateSiteMarker);
+			this.listenTo(datasetCollections[model.PRECIP_DATASET], 'reset', this.updatePrecipGridPoints);
+		},
 		/*
-		 * Updates or adds a marker for each site
+		 * Updates the siteLayerGroup to reflect the sites in the model
 		 * @param {SiteModel} sites - has one or more site objects, each with properties
 		 *	latitude and longitude in order to be a valid location
 		 */
-		updateSiteMarker : function(sites) {
+		updateSiteMarker : function(siteCollection) {
 			var self = this;
-			var siteObjects = sites.get('sites');
-
 			this.siteLayerGroup.clearLayers();
 
-			_.each(siteObjects, function(site) {
-				var marker = L.marker([site['lat'], site['lon']], {icon: siteIcon, title: site['name']});
+			siteCollection.each(function(siteModel) {
+				var marker = L.marker([siteModel.attributes.lat, siteModel.attributes.lon], {
+					icon: siteIcon,
+					title: siteModel.attributes.name
+				});
 				self.siteLayerGroup.addLayer(marker);
 			});
 		},
 
+		/*
+		 * Updates the precipitation layer group to reflect the grid points in precipCollection
+		 * @param {models/PrecipitationCollection} precipCollection
+		 */
 		updatePrecipGridPoints : function(precipCollection) {
 			var self = this;
 			this.precipLayerGroup.clearLayers();
 
-			precipCollection.each(function(precipModel) {
-				var marker = L.marker(
-					[precipModel.attributes.lat, precipModel.attributes.lon],
-					{
+			if (precipCollection) {
+				precipCollection.each(function(precipModel) {
+					var marker = L.marker([precipModel.attributes.lat, precipModel.attributes.lon], {
 						icon : precipIcon,
 						title : precipModel.attributes.y + ':' + precipModel.attributes.x
-					}
-				);
-				self.precipLayerGroup.addLayer(marker);
-			});
+					});
+					self.precipLayerGroup.addLayer(marker);
+				});
+			}
 		}
 	});
 

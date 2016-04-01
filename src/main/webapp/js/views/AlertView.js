@@ -8,6 +8,10 @@ define([
 ], function(Handlebars, bootstrap, BaseView, hbTemplate) {
 	"use strict";
 
+	/*
+	 * @constructs
+	 * @param {String} el - jquery selector or element where to render the alert view
+	 */
 	var view = BaseView.extend({
 
 		ALERT_KINDS : {
@@ -58,6 +62,12 @@ define([
 		},
 		showDangerAlert : function(message) {
 			this.showAlert(this.ALERT_KINDS.danger, message);
+		},
+
+		closeAlert : function() {
+			if (this.$('.alert').length > 0) {
+				this.$el.html('');
+			}
 		}
 	});
 

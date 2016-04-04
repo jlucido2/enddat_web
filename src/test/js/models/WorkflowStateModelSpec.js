@@ -64,20 +64,23 @@ define([
 		});
 
 		describe('Tests for event handlers to update the datasets', function() {
-			var updateStartSpy, updateFinishedSpy;
+			var updateStartSpy, updateFinishedSpy, resetSpy;
 			beforeEach(function() {
 				updateStartSpy = jasmine.createSpy('updateStartSpy');
 				updateFinishedSpy = jasmine.createSpy('updateFinishedSpy');
+				resetSpy = jasmine.createSpy('resetSpy');
 
 				testModel.initializeDatasetCollections();
 
 				testModel.on('dataset:updateStart', updateStartSpy);
 				testModel.on('dataset:updateFinished', updateFinishedSpy);
+				testModel.on('datasetCollections:reset', resetSpy);
 			});
 
 			afterEach(function() {
 				testModel.off('dataset:updateStart');
 				testModel.off('dataset:updateFinished');
+				testModel.off('datasetCollections:reset');
 			});
 
 			it('Expects the dataset models to be cleared and not fetched if there is not a valid bounding box', function() {
@@ -144,29 +147,29 @@ define([
 				expect(resetPrecipSpy).not.toHaveBeenCalled();
 			});
 
-			it('Expects that a dataset:updateStart event will be triggered if there is a valid bounding box and a dataset chosen.', function() {
+			it('Expects that a datasetCollections:reset event will be not triggered if there is a valid bounding box and a dataset chosen.', function() {
 				testModel.set({
 					location : {latitude : '43.0', longitude : '-100.0'},
 					datasets : [testModel.NWIS_DATASET]
 				});
-				expect(updateStartSpy).toHaveBeenCalled();
+				expect(resetSpy).not.toHaveBeenCalled();
 
 				testModel.set({
 					location : {latitude : '43.0', longitude : '-100.0'},
 					radius : '5',
 					datasets : []
 				});
-				expect(updateStartSpy).toHaveBeenCalled();
+				expect(resetSpy).not.toHaveBeenCalled();
 
 				testModel.set({
 					location : {latitude : '43.0', longitude : '-100.0'},
 					radius : '6',
 					datasets : [testModel.NWIS_DATASET]
 				});
-				expect(updateStartSpy).toHaveBeenCalled();
+				expect(resetSpy).not.toHaveBeenCalled();
 			});
 
-			it('Expects an dataset:updateFinished event will be triggered once all of the chosen datasets have been fetched', function() {
+			it('Expects an dataset:updateFinished event handler will be called with an empty array once all of the chosen datasets have been fetched', function() {
 				testModel.set({
 					location : {latitude : '43.0', longitude : '-100.0'},
 					radius : '6',
@@ -186,7 +189,7 @@ define([
 				fetchSiteDeferred.resolve();
 				expect(updateFinishedSpy).not.toHaveBeenCalled();
 				fetchPrecipDeferred.resolve();
-				expect(updateFinishedSpy).toHaveBeenCalled();
+				expect(updateFinishedSpy).toHaveBeenCalledWith([]);
 			});
 
 			it('Expects that if any of the dataset fetches failed, the event handler will be called with the array of failed datasets', function() {

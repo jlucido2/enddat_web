@@ -4,6 +4,8 @@
 	<head>
 		<%@include file="/WEB-INF/jsp/head.jsp"%>
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<link rel="stylesheet" type="text/css" href="<%=baseUrl%>bower_components/select2/dist/css/select2.min.css" />
+		<link rel="stylesheet" type="text/css" href="<%=baseUrl%>bower_components/select2-boostrap-theme/dist/select2-bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="<%=baseUrl%>bower_components/leaflet/dist/leaflet.css" />
 		<link rel="stylesheet" type="text/css" href="css/custom.css" />
 	</head>

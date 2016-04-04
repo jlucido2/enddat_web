@@ -142,7 +142,10 @@ define([
 			var chosenDatasets = this.model.get('datasets');
 
 			this.$(LOADING_SELECTOR).hide();
-			if (fetchErrorTypes.length === 0) {
+			if (fetchErrorTypes === undefined) {
+				this.alertView.closeAlert();
+			}
+			else if (fetchErrorTypes.length === 0) {
 				this.alertView.showSuccessAlert('Successfully fetch data of type(s): ' + chosenDatasets.join(', '));
 			}
 			else {

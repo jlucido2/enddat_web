@@ -149,14 +149,14 @@ define([
 					location : {latitude : '43.0', longitude : '-100.0'},
 					datasets : [testModel.NWIS_DATASET]
 				});
-				expect(updateStartSpy).not.toHaveBeenCalled();
+				expect(updateStartSpy).toHaveBeenCalled();
 
 				testModel.set({
 					location : {latitude : '43.0', longitude : '-100.0'},
 					radius : '5',
 					datasets : []
 				});
-				expect(updateStartSpy).not.toHaveBeenCalled();
+				expect(updateStartSpy).toHaveBeenCalled();
 
 				testModel.set({
 					location : {latitude : '43.0', longitude : '-100.0'},

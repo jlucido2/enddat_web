@@ -55,6 +55,7 @@ define([
 				// Set up event listeners to update the dataset models
 				this.on('change:location', this.updateDatasetCollections, this);
 				this.on('change:radius', this.updateDatasetCollections, this);
+				this.on('change:datasets', this.updateDatasetCollections, this);
 			}
 		},
 
@@ -118,10 +119,12 @@ define([
 				});
 			}
 			else {
+				this.trigger('dataset:updateStart');  //to show load indicator
 				// Clear the dataset collections if bounding box invalid or no chosen datasets
 				_.each(datasetCollections, function(datasetCollection) {
-					datasetCollection.reset();
+					datasetCollection.reset(); //to hide load indicator and clear alert
 				});
+				self.trigger('dataset:updateFinished', undefined);
 			}
 		},
 

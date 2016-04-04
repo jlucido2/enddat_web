@@ -79,7 +79,6 @@ define([
 			afterEach(function() {
 				testModel.off('dataset:updateStart');
 				testModel.off('dataset:updateFinished');
-				testModel.off('datasetCollections:reset');
 			});
 
 			it('Expects the dataset models to be cleared and not fetched if there is not a valid bounding box', function() {

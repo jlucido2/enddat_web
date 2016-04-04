@@ -111,19 +111,19 @@ define([
 				}
 			};
 
+			this.trigger('dataset:updateStart');
 			if (boundingBox && (chosenDatasets.length > 0)) {
-				this.trigger('dataset:updateStart');
 				_.each(datasetCollections, updateDataset);
 				$.when.apply(this, fetchDonePromises).done(function() {
 					self.trigger('dataset:updateFinished', fetchErrors);
 				});
 			}
 			else {
-				this.trigger('dataset:updateStart');  //to show load indicator
 				// Clear the dataset collections if bounding box invalid or no chosen datasets
 				_.each(datasetCollections, function(datasetCollection) {
-					datasetCollection.reset(); //to hide load indicator and clear alert
+					datasetCollection.reset();
 				});
+				//if clearing datasets through UI, this will clear alert from previous fetch
 				self.trigger('dataset:updateFinished', undefined);
 			}
 		},

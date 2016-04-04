@@ -64,7 +64,7 @@ define([
 		});
 
 		describe('Tests for event handlers to update the datasets', function() {
-			var updateStartSpy, updateFinishedSpy, resetSpy;
+			var updateStartSpy, updateFinishedSpy;
 			beforeEach(function() {
 				updateStartSpy = jasmine.createSpy('updateStartSpy');
 				updateFinishedSpy = jasmine.createSpy('updateFinishedSpy');
@@ -74,7 +74,6 @@ define([
 
 				testModel.on('dataset:updateStart', updateStartSpy);
 				testModel.on('dataset:updateFinished', updateFinishedSpy);
-				testModel.on('datasetCollections:reset', resetSpy);
 			});
 
 			afterEach(function() {
@@ -147,26 +146,26 @@ define([
 				expect(resetPrecipSpy).not.toHaveBeenCalled();
 			});
 
-			it('Expects that a datasetCollections:reset event will be not triggered if there is a valid bounding box and a dataset chosen.', function() {
+			it('Expects that a dataset:updateStart event will be triggered if there is a valid bounding box and a dataset chosen.', function() {
 				testModel.set({
 					location : {latitude : '43.0', longitude : '-100.0'},
 					datasets : [testModel.NWIS_DATASET]
 				});
-				expect(resetSpy).not.toHaveBeenCalled();
+				expect(updateStartSpy).not.toHaveBeenCalled();
 
 				testModel.set({
 					location : {latitude : '43.0', longitude : '-100.0'},
 					radius : '5',
 					datasets : []
 				});
-				expect(resetSpy).not.toHaveBeenCalled();
+				expect(updateStartSpy).not.toHaveBeenCalled();
 
 				testModel.set({
 					location : {latitude : '43.0', longitude : '-100.0'},
 					radius : '6',
 					datasets : [testModel.NWIS_DATASET]
 				});
-				expect(resetSpy).not.toHaveBeenCalled();
+				expect(updateStartSpy).toHaveBeenCalled();
 			});
 
 			it('Expects an dataset:updateFinished event handler will be called with an empty array once all of the chosen datasets have been fetched', function() {

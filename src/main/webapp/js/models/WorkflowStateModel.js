@@ -111,8 +111,8 @@ define([
 				}
 			};
 
-			this.trigger('dataset:updateStart');
 			if (boundingBox && (chosenDatasets.length > 0)) {
+				this.trigger('dataset:updateStart');
 				_.each(datasetCollections, updateDataset);
 				$.when.apply(this, fetchDonePromises).done(function() {
 					self.trigger('dataset:updateFinished', fetchErrors);

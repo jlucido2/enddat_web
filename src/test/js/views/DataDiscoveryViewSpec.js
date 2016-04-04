@@ -26,6 +26,7 @@ define([
 		var injector;
 
 		beforeEach(function(done) {
+			sinon.stub($, "ajax");
 			$('body').append('<div id="test-div"></div>');
 			$testDiv = $('#test-div');
 
@@ -114,6 +115,7 @@ define([
 		});
 
 		afterEach(function() {
+			$.ajax.restore();
 			injector.remove();
 			if (testView.remove) {
 				testView.remove();
@@ -166,15 +168,15 @@ define([
 				expect(setElNavViewSpy.calls.count()).toBe(2);
 				expect(renderNavViewSpy.calls.count()).toBe(1);
 
-//				testModel.set('step', testModel.CHOOSE_DATA_STEP);
-//				testView.render();
-//				expect(setElNavViewSpy.calls.count()).toBe(3);
-//				expect(renderNavViewSpy.calls.count()).toBe(2);
-//
-//				testModel.set('step', testModel.PROCESS_DATA_STEP);
-//				testView.render();
-//				expect(setElNavViewSpy.calls.count()).toBe(4);
-//				expect(renderNavViewSpy.calls.count()).toBe(3);
+				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+				testView.render();
+				expect(setElNavViewSpy.calls.count()).toBe(3);
+				expect(renderNavViewSpy.calls.count()).toBe(2);
+
+				testModel.set('step', testModel.PROCESS_DATA_STEP);
+				testView.render();
+				expect(setElNavViewSpy.calls.count()).toBe(4);
+				expect(renderNavViewSpy.calls.count()).toBe(3);
 			});
 
 			it('Expects that if the workflow step is PROJ_LOC_STEP, the location and map views are created and rendered but not the choose data view', function() {

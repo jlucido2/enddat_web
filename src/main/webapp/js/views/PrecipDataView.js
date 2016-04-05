@@ -19,7 +19,7 @@ define([
 			this.context = this.model.attributes;
 			this.context.lat = (parseFloat(this.context.lat)).toFixed(3);
 			this.context.lon = (parseFloat(this.context.lon)).toFixed(3);
-		},
+		}
 	});
 
 	return view;

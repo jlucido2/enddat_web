@@ -82,11 +82,10 @@ define([
 			this.map.addLayer(this.siteLayerGroup);
 			this.map.addLayer(this.precipLayerGroup);
 
-			this.map.on('click', function(ev) {
-				if (this.circleMarker && this.map.hasLayer(this.circleMarker)) {
-					this.map.removeLayer(this.circleMarker);
-				}
-			}, this);
+
+			this.$('#' + this.mapDivId).resize(function(ev) {
+				self.map.invalidateSize();
+			});
 
 			this.updateLocationMarkerAndExtent(this.model, this.model.get('location'));
 			this.listenTo(this.model, 'change:location', this.updateLocationMarkerAndExtent);
@@ -261,8 +260,11 @@ define([
 							model : precipModel,
 							opened : true
 						});
-						self.$('#' + self.mapDivId).addClass(MAP_WIDTH_CLASS);
-						self.$(VARIABLE_CONTAINER_SEL).addClass(DATA_VIEW_WIDTH_CLASS);
+						if (!self.$('#' + self.mapDivId).hasClass(MAP_WIDTH_CLASS)) {
+							self.$('#' + self.mapDivId).addClass(MAP_WIDTH_CLASS);
+							self.map.invalidateSize();
+							self.$(VARIABLE_CONTAINER_SEL).addClass(DATA_VIEW_WIDTH_CLASS);
+						}
 						self.precipDataView.render();
 					});
 				});

@@ -3,9 +3,10 @@
 
 define([
 	'jquery',
+	'select2',
 	'models/WorkflowStateModel',
 	'views/ChooseView'
-], function($, WorkflowStateModel, ChooseView) {
+], function($, select2, WorkflowStateModel, ChooseView) {
 	"use strict";
 
 	describe('views/ChooseView', function() {
@@ -51,10 +52,11 @@ define([
 		});
 
 		describe('DOM event handler tests', function() {
-			var $rad;
+			var $rad, $datasets;
 			beforeEach(function() {
 				testView.render();
 				$rad = $testDiv.find('#radius');
+				$datasets = $testDiv.find('#datasets-select');
 
 			});
 
@@ -62,18 +64,30 @@ define([
 				$rad.val('5').trigger('change');
 				expect(testModel.get('radius')).toEqual('5');
 			});
+
+			it('Expects that changing the datasets updates the model\'s datasets property', function() {
+				$datasets.select2({data : [{'id':'NWIS', 'selected': 'selected'}]}).trigger('change');
+				expect(testModel.get('datasets')).toEqual(['NWIS']);
+			});
 		});
 
 		describe('Model event handlers', function() {
-			var $rad;
+			var $rad, $datasets;
 			beforeEach(function() {
 				testView.render();
 				$rad = $testDiv.find('#radius');
+				$datasets = $testDiv.find('#datasets-select');
 			});
 
 			it('Expects that if the model\'s radius property is updated the radius field is updated', function() {
 				testModel.set('radius', '5');
 				expect($rad.val()).toEqual('5');
+			});
+
+			it('Expects that if the model\'s datasets property is updated the datasets field is updated', function() {
+				testModel.set('datasetCollections', {'NWIS': {}});
+				testModel.set('datasets', ['NWIS']);
+				expect($datasets.val()).toEqual(['NWIS']);
 			});
 		});
 	});

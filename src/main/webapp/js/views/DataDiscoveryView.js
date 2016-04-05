@@ -56,6 +56,7 @@ define([
 			this.listenTo(this.model, 'dataset:updateStart', this.showLoadingIndicator);
 			this.listenTo(this.model, 'dataset:updateFinished', this.hideLoadingIndicator);
 			this.listenTo(this.model, 'change:step', this.updateSubViews);
+			this.listenTo(this.model, 'change:datasets', this.closeAlert);
 
 			return this;
 		},
@@ -149,6 +150,12 @@ define([
 				this.alertView.showDangerAlert('Unable to fetch the following data types: ' + fetchErrorTypes.join(', '));
 			}
 			this.$(ALERTVIEW_SELECTOR).show();
+		},
+
+		closeAlert : function() {
+			if (null === this.model.get('datasets')) {				
+				this.alertView.closeAlert();
+			}
 		}
 	});
 

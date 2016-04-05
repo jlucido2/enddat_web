@@ -56,7 +56,7 @@ define([
 			injector.remove();
 		});
 
-		it('Expects that calling initializeDatasetCollectionss initializes the datasetCollections property', function() {
+		it('Expects that calling initializeDatasetCollections initializes the datasetCollections property', function() {
 			testModel.initializeDatasetCollections();
 
 			expect(testModel.attributes.datasetCollections[testModel.NWIS_DATASET]).toBeDefined();
@@ -68,6 +68,7 @@ define([
 			beforeEach(function() {
 				updateStartSpy = jasmine.createSpy('updateStartSpy');
 				updateFinishedSpy = jasmine.createSpy('updateFinishedSpy');
+				resetSpy = jasmine.createSpy('resetSpy');
 
 				testModel.initializeDatasetCollections();
 
@@ -166,7 +167,7 @@ define([
 				expect(updateStartSpy).toHaveBeenCalled();
 			});
 
-			it('Expects an dataset:updateFinished event will be triggered once all of the chosen datasets have been fetched', function() {
+			it('Expects an dataset:updateFinished event handler will be called with an empty array once all of the chosen datasets have been fetched', function() {
 				testModel.set({
 					location : {latitude : '43.0', longitude : '-100.0'},
 					radius : '6',
@@ -186,7 +187,7 @@ define([
 				fetchSiteDeferred.resolve();
 				expect(updateFinishedSpy).not.toHaveBeenCalled();
 				fetchPrecipDeferred.resolve();
-				expect(updateFinishedSpy).toHaveBeenCalled();
+				expect(updateFinishedSpy).toHaveBeenCalledWith([]);
 			});
 
 			it('Expects that if any of the dataset fetches failed, the event handler will be called with the array of failed datasets', function() {

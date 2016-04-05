@@ -10,7 +10,7 @@ define([
 ], function(_, $, Backbone, geoSpatialUtils, SiteCollection, PrecipitationCollection) {
 	"use strict";
 
-	var collection = Backbone.Model.extend({
+	var model = Backbone.Model.extend({
 		NWIS_DATASET : 'NWIS',
 		PRECIP_DATASET : 'PRECIP',
 
@@ -154,7 +154,7 @@ define([
 		}
 	});
 
-	return collection;
+	return model;
 });
 
 

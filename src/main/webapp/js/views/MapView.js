@@ -82,11 +82,6 @@ define([
 			this.map.addLayer(this.siteLayerGroup);
 			this.map.addLayer(this.precipLayerGroup);
 
-
-			this.$('#' + this.mapDivId).resize(function(ev) {
-				self.map.invalidateSize();
-			});
-
 			this.updateLocationMarkerAndExtent(this.model, this.model.get('location'));
 			this.listenTo(this.model, 'change:location', this.updateLocationMarkerAndExtent);
 			this.listenTo(this.model, 'change:radius', this.updateExtent);

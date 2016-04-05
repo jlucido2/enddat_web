@@ -306,7 +306,14 @@ define([
 				testModel.set('step', testModel.CHOOSE_DATA_STEP);
 
 				expect(closeAlertSpy).toHaveBeenCalled();
-			})
+			});
+
+			it('Expects that if there are no datasets, the alert view is closed', function() {
+				closeAlertSpy.calls.reset();
+				testModel.set('datasets', null);
+
+				expect(closeAlertSpy).toHaveBeenCalled();
+			});
 		});
 	});
 });

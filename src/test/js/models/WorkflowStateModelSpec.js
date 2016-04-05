@@ -56,7 +56,7 @@ define([
 			injector.remove();
 		});
 
-		it('Expects that calling initializeDatasetCollectionss initializes the datasetCollections property', function() {
+		it('Expects that calling initializeDatasetCollections initializes the datasetCollections property', function() {
 			testModel.initializeDatasetCollections();
 
 			expect(testModel.attributes.datasetCollections[testModel.NWIS_DATASET]).toBeDefined();

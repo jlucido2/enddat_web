@@ -123,8 +123,6 @@ define([
 				_.each(datasetCollections, function(datasetCollection) {
 					datasetCollection.reset();
 				});
-				//if clearing datasets through UI, this will clear alert from previous fetch
-				self.trigger('dataset:updateFinished', undefined);
 			}
 		},
 

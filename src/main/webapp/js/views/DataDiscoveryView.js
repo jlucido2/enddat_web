@@ -25,7 +25,7 @@ define([
 		$el.append($newContainer);
 
 		return $newContainer;
-	}
+	};
 
 	var view = BaseView.extend({
 		template: hbTemplate,

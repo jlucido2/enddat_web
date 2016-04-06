@@ -7,8 +7,9 @@ define([
 	'loglevel',
 	'utils/geoSpatialUtils',
 	'views/BaseView',
-	'views/PrecipDataView'
-], function(_, L, leafletProviders, log, geoSpatialUtils, BaseView, PrecipDataView) {
+	'views/PrecipDataView',
+	'hbs!hb_templates/mapOps'
+], function(_, L, leafletProviders, log, geoSpatialUtils, BaseView, PrecipDataView, hbTemplate) {
 
 	var siteIcon = new L.icon({
 		iconUrl : 'img/time-series.png',
@@ -25,6 +26,8 @@ define([
 	var VARIABLE_CONTAINER_SEL = '.dataset-variable-container';
 
 	var view = BaseView.extend({
+
+		template : hbTemplate,
 
 		/*
 		 * @param {Object} options
@@ -64,8 +67,7 @@ define([
 		},
 
 		render : function() {
-			// We don't call the prototype render at all because we are not rendering
-			// a handlebars template, but rather rendering a leaflet map.
+			BaseView.prototype.render.apply(this, arguments);
 			var self = this;
 
 			if (_.has(this, 'map')) {

@@ -108,6 +108,7 @@ define([
 						});
 						this.mapView.render();
 					}
+
 					if (this.chooseView) {
 						this.chooseView.remove();
 						this.chooseView = undefined;

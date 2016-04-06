@@ -59,6 +59,12 @@ define([
 			}
 		},
 
+		hasValidLocation : function() {
+			return this.has('location') &&
+				(this.attributes.location.latitude) &&
+				(this.attributes.location.longitude);
+		},
+
 		/*
 		 * Returns the bounding box as an object with west, east, north, and south properties.
 		 * Return undefined if the model's properties do not contain a valid bounding box

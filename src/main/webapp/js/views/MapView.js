@@ -36,6 +36,8 @@ define([
 		 *		@prop {WorkflowStateModel} model
 		 */
 		initialize : function(options) {
+			var self = this;
+
 			BaseView.prototype.initialize.apply(this, arguments);
 			this.mapDivId = options.mapDivId;
 
@@ -44,6 +46,7 @@ define([
 				'World Physical': L.tileLayer.provider('Esri.WorldPhysical'),
 				'World Imagery' : L.tileLayer.provider('Esri.WorldImagery')
 			};
+
 			this.controls = [
 				L.control.layers(this.baseLayers, {})
 			];
@@ -106,6 +109,9 @@ define([
 			if (_.has(this, 'map')) {
 				this.map.remove();
 			}
+			if (this.precipDataView) {
+				this.precipDataView.remove();
+			}
 			BaseView.prototype.remove.apply(this, arguments);
 		},
 
@@ -149,9 +155,14 @@ define([
 
 		/*
 		 * Model event handlers
-		*/
+		 */
 
-	   updateWorkflowStep : function(model, newStep) {
+		/*
+		 * Updates the view to initialize the state to the new workflow step.
+		 * @param {WorkflowStateModel} model
+		 * @param {String} newStep
+		 */
+	    updateWorkflowStep : function(model, newStep) {
 		   var $map = this.$('#' + this.mapDivId);
 		   switch(newStep) {
 			   case this.model.PROJ_LOC_STEP:
@@ -167,10 +178,6 @@ define([
 					   $map.removeClass(MAP_WIDTH_CLASS);
 					   this.map.invalidateSize();
 				   }
-
-				   if (this.precipDataView) {
-					   this.precipDataView.remove();
-				   }
 				   break;
 		   }
 	   },
@@ -181,25 +188,25 @@ define([
 		 * a marker can be added.
 		 * @param {WorkflowStateModel} model
 		 * @param {Object} location - has properties latitude and longitude in order to be a valid location
+		 *
 		 */
 		updateLocationMarkerAndExtent : function(model, location) {
 			var mapHasMarker = this.map.hasLayer(this.projLocationMarker);
-			var $tiles = this.$('.leaflet-tile');
-			if (_.has(location, 'latitude') && (location.latitude) && _.has(location, 'longitude') && (location.longitude)) {
+			if (model.hasValidLocation()) {
 				if (!mapHasMarker) {
 					this.map.addLayer(this.projLocationMarker);
 				}
 				this.projLocationMarker.setLatLng([location.latitude, location.longitude]);
 				this.removeSingleClickHandler();
-				$tiles.removeClass('leaflet-clickable');
 				this.updateExtent(model, model.get('radius'));
+				this.$('#' + this.mapDivId).css('cursor', '');
 			}
 			else {
 				if (mapHasMarker) {
 					this.map.removeLayer(this.projLocationMarker);
 				}
-				$tiles.addClass('leaflet-clickable');
 				this.setUpSingleClickHandlerToCreateMarker();
+				this.$('#' + this.mapDivId).css('cursor', 'pointer');
 			}
 		},
 

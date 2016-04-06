@@ -7,7 +7,7 @@ define([
 	'views/PrecipDataView'
 ], function($, Backbone, PrecipDataView) {
 
-	fdescribe('views/PrecipDataView', function() {
+	describe('views/PrecipDataView', function() {
 		var testView;
 		var testModel;
 		var $testDiv;
@@ -20,7 +20,7 @@ define([
 				lon : '-100.2',
 				x : '514',
 				y : '720'
-			})
+			});
 		});
 
 		afterEach(function() {
@@ -55,7 +55,7 @@ define([
 			});
 			testView.render();
 			testView.$('input:checkbox').trigger('click');
-			
+
 			expect(testModel.get('selected')).toBe(true);
 		});
 

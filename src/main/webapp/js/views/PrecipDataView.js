@@ -9,6 +9,12 @@ define([
 ], function(log, _, BaseCollapsiblePanelView, hbTemplate) {
 	"use strict";
 
+	/* @construct
+	 * @param {Object} options
+	 *		@prop {String jquer selector or jquery element} $el
+	 *		@prop {Backbone.Model representing precipitation grid data} model
+	 *
+	 */
 	var view = BaseCollapsiblePanelView.extend({
 		template : hbTemplate,
 

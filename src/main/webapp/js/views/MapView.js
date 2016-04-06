@@ -84,10 +84,14 @@ define([
 			this.map.addLayer(this.siteLayerGroup);
 			this.map.addLayer(this.precipLayerGroup);
 
+			this.listenTo(this.model, 'change:step', this.updateWorkflowStep);
+
 			this.updateLocationMarkerAndExtent(this.model, this.model.get('location'));
 			this.listenTo(this.model, 'change:location', this.updateLocationMarkerAndExtent);
 			this.listenTo(this.model, 'change:radius', this.updateExtent);
 
+			// If the dataset collection models have already been created, then setup their listeners. Otherwise
+			// wait until they have been created.
 			if (this.model.has('datasetCollections')) {
 				this.setupDatasetListeners(this.model, this.model.attributes.datasetCollections);
 			}
@@ -146,6 +150,30 @@ define([
 		/*
 		 * Model event handlers
 		*/
+
+	   updateWorkflowStep : function(model, newStep) {
+		   var $map = this.$('#' + this.mapDivId);
+		   switch(newStep) {
+			   case this.model.PROJ_LOC_STEP:
+				   if (this.precipDataView) {
+					   this.precipDataView.remove();
+					   this.precipDataView = undefined;
+				   }
+				   if (this.map.hasLayer(this.circleMarker)) {
+					   this.map.removeLayer(this.circleMarker);
+				   }
+
+				   if ($map.hasClass(MAP_WIDTH_CLASS)) {
+					   $map.removeClass(MAP_WIDTH_CLASS);
+					   this.map.invalidateSize();
+				   }
+
+				   if (this.precipDataView) {
+					   this.precipDataView.remove();
+				   }
+				   break;
+		   }
+	   },
 
 		/*
 		 * Updates or adds a marker at location if location is valid and removes the single click handler

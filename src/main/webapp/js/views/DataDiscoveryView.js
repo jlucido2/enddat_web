@@ -20,6 +20,13 @@ define([
 	var ALERTVIEW_SELECTOR = '.alert-container';
 	var LOADING_SELECTOR = '.loading-indicator';
 
+	var createViewContainer = function($el) {
+		var $newContainer = $('<div />');
+		$el.append($newContainer);
+
+		return $newContainer;
+	}
+
 	var view = BaseView.extend({
 		template: hbTemplate,
 
@@ -87,7 +94,7 @@ define([
 				case model.PROJ_LOC_STEP:
 					if (!this.locationView) {
 						this.locationView = new LocationView({
-							el : this.$(LOCATION_SELECTOR),
+							el : createViewContainer(this.$(LOCATION_SELECTOR)),
 							model : model,
 							opened : true
 						});
@@ -95,7 +102,7 @@ define([
 					}
 					if (!this.mapView) {
 						this.mapView = new MapView({
-							el : this.$(MAPVIEW_SELECTOR),
+							el : createViewContainer(this.$(MAPVIEW_SELECTOR)),
 							mapDivId : 'map-div',
 							model : model
 						});
@@ -109,7 +116,7 @@ define([
 				case model.CHOOSE_DATA_STEP:
 					if (!this.locationView) {
 						this.locationView = new LocationView({
-							el : this.$(LOCATION_SELECTOR),
+							el : createViewContainer(this.$(LOCATION_SELECTOR)),
 							model : model,
 							opened : true
 						});
@@ -117,7 +124,7 @@ define([
 					}
 					if (!this.mapView) {
 						this.mapView = new MapView({
-							el : this.$(MAPVIEW_SELECTOR),
+							el : createViewContainer(this.$(MAPVIEW_SELECTOR)),
 							mapDivId : 'map-div',
 							model : model
 						});
@@ -125,7 +132,7 @@ define([
 					}
 					if (!this.chooseView) {
 						this.chooseView = new ChooseView({
-							el : this.$(CHOOSE_SELECTOR),
+							el : createViewContainer(this.$(CHOOSE_SELECTOR)),
 							model : model,
 							opened : true
 						});
@@ -153,7 +160,7 @@ define([
 		},
 
 		closeAlert : function() {
-			if (null === this.model.get('datasets')) {				
+			if (null === this.model.get('datasets')) {
 				this.alertView.closeAlert();
 			}
 		}

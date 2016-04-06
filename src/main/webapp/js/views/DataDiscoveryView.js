@@ -3,6 +3,7 @@
 define([
 	'loglevel',
 	'underscore',
+	'utils/jqueryUtils',
 	'views/BaseView',
 	'views/NavView',
 	'views/AlertView',
@@ -10,7 +11,7 @@ define([
 	'views/LocationView',
 	'views/ChooseView',
 	'hbs!hb_templates/dataDiscovery'
-], function (log, _, BaseView, NavView, AlertView, MapView, LocationView, ChooseView, hbTemplate) {
+], function (log, _, $utils, BaseView, NavView, AlertView, MapView, LocationView, ChooseView, hbTemplate) {
 	"use strict";
 
 	var NAVVIEW_SELECTOR = '.workflow-nav';
@@ -19,13 +20,6 @@ define([
 	var MAPVIEW_SELECTOR = '.map-container-div';
 	var ALERTVIEW_SELECTOR = '.alert-container';
 	var LOADING_SELECTOR = '.loading-indicator';
-
-	var createViewContainer = function($el) {
-		var $newContainer = $('<div />');
-		$el.append($newContainer);
-
-		return $newContainer;
-	};
 
 	var view = BaseView.extend({
 		template: hbTemplate,
@@ -94,7 +88,7 @@ define([
 				case model.PROJ_LOC_STEP:
 					if (!this.locationView) {
 						this.locationView = new LocationView({
-							el : createViewContainer(this.$(LOCATION_SELECTOR)),
+							el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
 							model : model,
 							opened : true
 						});
@@ -102,7 +96,7 @@ define([
 					}
 					if (!this.mapView) {
 						this.mapView = new MapView({
-							el : createViewContainer(this.$(MAPVIEW_SELECTOR)),
+							el : $utils.createDivInContainer(this.$(MAPVIEW_SELECTOR)),
 							mapDivId : 'map-div',
 							model : model
 						});
@@ -117,7 +111,7 @@ define([
 				case model.CHOOSE_DATA_STEP:
 					if (!this.locationView) {
 						this.locationView = new LocationView({
-							el : createViewContainer(this.$(LOCATION_SELECTOR)),
+							el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
 							model : model,
 							opened : true
 						});
@@ -125,7 +119,7 @@ define([
 					}
 					if (!this.mapView) {
 						this.mapView = new MapView({
-							el : createViewContainer(this.$(MAPVIEW_SELECTOR)),
+							el : $utils.createDivInContainer(this.$(MAPVIEW_SELECTOR)),
 							mapDivId : 'map-div',
 							model : model
 						});
@@ -133,7 +127,7 @@ define([
 					}
 					if (!this.chooseView) {
 						this.chooseView = new ChooseView({
-							el : createViewContainer(this.$(CHOOSE_SELECTOR)),
+							el : $utils.createDivInContainer(this.$(CHOOSE_SELECTOR)),
 							model : model,
 							opened : true
 						});

@@ -36,8 +36,6 @@ define([
 		 *		@prop {WorkflowStateModel} model
 		 */
 		initialize : function(options) {
-			var self = this;
-
 			BaseView.prototype.initialize.apply(this, arguments);
 			this.mapDivId = options.mapDivId;
 
@@ -71,7 +69,6 @@ define([
 
 		render : function() {
 			BaseView.prototype.render.apply(this, arguments);
-			var self = this;
 
 			if (_.has(this, 'map')) {
 				this.map.remove();
@@ -263,10 +260,11 @@ define([
 						icon : precipIcon,
 						title : precipModel.attributes.y + ':' + precipModel.attributes.x
 					});
-
 					self.precipLayerGroup.addLayer(marker);
+					
 					marker.on('click', function(ev) {
 						var $newContainer = $('<div />');
+						var $mapDiv = self.$('#' + self.mapDivId);
 
 						// Update the highlight circle marker
 						if (self.circleMarker) {
@@ -292,8 +290,8 @@ define([
 							model : precipModel,
 							opened : true
 						});
-						if (!self.$('#' + self.mapDivId).hasClass(MAP_WIDTH_CLASS)) {
-							self.$('#' + self.mapDivId).addClass(MAP_WIDTH_CLASS);
+						if (!$mapDiv.hasClass(MAP_WIDTH_CLASS)) {
+							$mapDiv.addClass(MAP_WIDTH_CLASS);
 							self.map.invalidateSize();
 							self.$(VARIABLE_CONTAINER_SEL).addClass(DATA_VIEW_WIDTH_CLASS);
 						}

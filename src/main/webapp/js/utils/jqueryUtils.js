@@ -12,6 +12,13 @@ define([
 			return $el.find(namespace + '\\:' + tag + ', ' + tag);
 		};
 
+		self.createDivInContainer = function($container) {
+			var $newDiv = $('<div />');
+			$container.append($newDiv);
+
+			return $newDiv;
+		};
+
 		return self;
 	})();
 

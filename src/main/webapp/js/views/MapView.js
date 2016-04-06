@@ -5,11 +5,12 @@ define([
 	'leaflet',
 	'leaflet-providers',
 	'loglevel',
+	'utils/jqueryUtils',
 	'utils/geoSpatialUtils',
 	'views/BaseView',
 	'views/PrecipDataView',
 	'hbs!hb_templates/mapOps'
-], function(_, L, leafletProviders, log, geoSpatialUtils, BaseView, PrecipDataView, hbTemplate) {
+], function(_, L, leafletProviders, log, $utils, geoSpatialUtils, BaseView, PrecipDataView, hbTemplate) {
 
 	var siteIcon = new L.icon({
 		iconUrl : 'img/time-series.png',
@@ -251,6 +252,41 @@ define([
 		 */
 		updatePrecipGridPoints : function(precipCollection) {
 			var self = this;
+
+			var moveCircleMarker = function(latLng) {
+				if (self.circleMarker) {
+					self.circleMarker.setLatLng(latLng);
+					self.map.addLayer(self.circleMarker);
+				}
+				else {
+					self.circleMarker = new L.circleMarker(latLng,{
+						radius : 15
+					});
+					if (!self.map.hasLayer(self.circleMarker)) {
+						self.map.addLayer(self.circleMarker);
+					}
+				}
+			};
+
+			var updatePrecipDataView = function(precipModel) {
+				var $mapDiv = self.$('#' + self.mapDivId);
+
+				if (self.precipDataView) {
+					self.precipDataView.remove();
+				}
+				self.precipDataView = new PrecipDataView({
+					el : $utils.createDivInContainer(self.$(VARIABLE_CONTAINER_SEL)),
+					model : precipModel,
+					opened : true
+				});
+				if (!$mapDiv.hasClass(MAP_WIDTH_CLASS)) {
+					$mapDiv.addClass(MAP_WIDTH_CLASS);
+					self.map.invalidateSize();
+					self.$(VARIABLE_CONTAINER_SEL).addClass(DATA_VIEW_WIDTH_CLASS);
+				}
+				self.precipDataView.render();
+			};
+
 			this.precipLayerGroup.clearLayers();
 
 			if (precipCollection) {
@@ -261,41 +297,10 @@ define([
 						title : precipModel.attributes.y + ':' + precipModel.attributes.x
 					});
 					self.precipLayerGroup.addLayer(marker);
-					
+
 					marker.on('click', function(ev) {
-						var $newContainer = $('<div />');
-						var $mapDiv = self.$('#' + self.mapDivId);
-
-						// Update the highlight circle marker
-						if (self.circleMarker) {
-							self.circleMarker.setLatLng(latLng);
-							self.map.addLayer(self.circleMarker);
-						}
-						else {
-							self.circleMarker = new L.circleMarker(latLng,{
-								radius : 15
-							});
-							if (!self.map.hasLayer(self.circleMarker)) {
-								self.map.addLayer(self.circleMarker);
-							}
-						}
-
-						//Update the precipDataView
-						if (self.precipDataView) {
-							self.precipDataView.remove();
-						}
-						self.$(VARIABLE_CONTAINER_SEL).append($newContainer);
-						self.precipDataView = new PrecipDataView({
-							el : $newContainer,
-							model : precipModel,
-							opened : true
-						});
-						if (!$mapDiv.hasClass(MAP_WIDTH_CLASS)) {
-							$mapDiv.addClass(MAP_WIDTH_CLASS);
-							self.map.invalidateSize();
-							self.$(VARIABLE_CONTAINER_SEL).addClass(DATA_VIEW_WIDTH_CLASS);
-						}
-						self.precipDataView.render();
+						moveCircleMarker(latLng);
+						updatePrecipDataView(precipModel);
 					});
 				});
 			}

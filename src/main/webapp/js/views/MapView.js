@@ -160,25 +160,25 @@ define([
 		 * @param {WorkflowStateModel} model
 		 * @param {String} newStep
 		 */
-	    updateWorkflowStep : function(model, newStep) {
-		   var $map = this.$('#' + this.mapDivId);
-		   switch(newStep) {
-			   case this.model.PROJ_LOC_STEP:
-				   if (this.precipDataView) {
-					   this.precipDataView.remove();
-					   this.precipDataView = undefined;
-				   }
-				   if (this.map.hasLayer(this.circleMarker)) {
-					   this.map.removeLayer(this.circleMarker);
-				   }
+		updateWorkflowStep: function (model, newStep) {
+			var $map = this.$('#' + this.mapDivId);
+			switch (newStep) {
+				case this.model.PROJ_LOC_STEP:
+					if (this.precipDataView) {
+						this.precipDataView.remove();
+						this.precipDataView = undefined;
+					}
+					if (this.map.hasLayer(this.circleMarker)) {
+						this.map.removeLayer(this.circleMarker);
+					}
 
-				   if ($map.hasClass(MAP_WIDTH_CLASS)) {
-					   $map.removeClass(MAP_WIDTH_CLASS);
-					   this.map.invalidateSize();
-				   }
-				   break;
-		   }
-	   },
+					if ($map.hasClass(MAP_WIDTH_CLASS)) {
+						$map.removeClass(MAP_WIDTH_CLASS);
+						this.map.invalidateSize();
+					}
+					break;
+			}
+		},
 
 		/*
 		 * Updates or adds a marker at location if location is valid and removes the single click handler

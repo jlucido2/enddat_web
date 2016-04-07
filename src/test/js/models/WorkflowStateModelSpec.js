@@ -8,7 +8,7 @@ define([
 	'utils/geoSpatialUtils'
 ], function(Squire, $, Backbone, geoSpatialUtils) {
 
-	fdescribe('models/WorkflowStateModel', function() {
+	describe('models/WorkflowStateModel', function() {
 		var injector;
 		var WorkflowStateModel, testModel;
 

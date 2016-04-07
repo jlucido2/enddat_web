@@ -50,24 +50,26 @@ define([
 		},
 
 		specifyProjectLocationState: function () {
+			this.workflowState.set('step', this.workflowState.PROJ_LOC_STEP);
 			this.createView(DataDiscoveryView, {
 				model : this.workflowState
 			}).render();
-			this.workflowState.set('step', this.workflowState.PROJ_LOC_STEP);
 		},
 
 		chooseDataState : function(lat, lng, radius, startDate, endDate, datasets) {
-			this.createView(DataDiscoveryView, {
-				model : this.workflowState
-			}).render();
+			this.workflowState.initializeDatasetCollections();
 			this.workflowState.set({
 				'location' : {latitude : lat, longitude : lng},
 				'radius' : radius,
 				'startDate' : startDate,
-				'endDate' : endDate,
-				'datasets' : datasets ? datasets.split('/') : []
+				'endDate' : endDate
 			});
 			this.workflowState.set('step', this.workflowState.CHOOSE_DATA_STEP);
+			this.createView(DataDiscoveryView, {
+				model : this.workflowState
+			}).render();
+			this.workflowState.set('datasets', datasets ? datasets.split('/') : []);
+
 		}
 	});
 

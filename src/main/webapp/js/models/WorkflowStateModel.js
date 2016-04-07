@@ -60,9 +60,10 @@ define([
 		},
 
 		hasValidLocation : function() {
-			return this.has('location') &&
-				(this.attributes.location.latitude) &&
-				(this.attributes.location.longitude);
+			return (this.has('location') &&
+				((this.attributes.location.latitude) ? true : false) &&
+				((this.attributes.location.longitude) ? true : false));
+				
 		},
 
 		/*
@@ -72,8 +73,7 @@ define([
 		 */
 		getBoundingBox : function() {
 			var result = undefined;
-			if ((this.attributes.radius) && (this.attributes.location) &&
-				(this.attributes.location.latitude) && (this.attributes.location.longitude)) {
+			if ((this.attributes.radius) && this.hasValidLocation()) {
 				result = geoSpatialUtils.getBoundingBox(
 					this.attributes.location.latitude,
 					this.attributes.location.longitude,

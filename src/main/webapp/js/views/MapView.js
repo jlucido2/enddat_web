@@ -256,15 +256,15 @@ define([
 			var moveCircleMarker = function(latLng) {
 				if (self.circleMarker) {
 					self.circleMarker.setLatLng(latLng);
-					self.map.addLayer(self.circleMarker);
+					if (!self.map.hasLayer(self.circleMarker)) {
+						self.map.addLayer(self.circleMarker);
+					}
 				}
 				else {
 					self.circleMarker = new L.circleMarker(latLng,{
 						radius : 15
 					});
-					if (!self.map.hasLayer(self.circleMarker)) {
-						self.map.addLayer(self.circleMarker);
-					}
+					self.map.addLayer(self.circleMarker);
 				}
 			};
 

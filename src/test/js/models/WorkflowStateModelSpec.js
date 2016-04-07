@@ -8,7 +8,7 @@ define([
 	'utils/geoSpatialUtils'
 ], function(Squire, $, Backbone, geoSpatialUtils) {
 
-	describe('models/WorkflowStateModel', function() {
+	fdescribe('models/WorkflowStateModel', function() {
 		var injector;
 		var WorkflowStateModel, testModel;
 
@@ -227,27 +227,22 @@ define([
 			});
 
 			it('Expects that if the step changes to CHOOSE_DATA_STEP and the previous step was PROJ_LOC_STEP that the default radius and chosen datasets are set', function() {
-				testModel.set({
-					step : testModel.PROJ_LOC_STEP,
-					location : {latitude : '43.0', longitude : '-100.0'}
-				});
+				testModel.set('step', testModel.PROJ_LOC_STEP);
+				testModel.set('location', {latitude : '43.0', longitude : '-100.0'});
 				testModel.set('step', testModel.CHOOSE_DATA_STEP);
 
 				expect(testModel.get('radius')).toEqual(testModel.DEFAULT_CHOOSE_DATA_RADIUS);
 				expect(testModel.get('datasets')).toEqual(testModel.DEFAULT_CHOSEN_DATASETS);
 			});
 
-			it('Expects that if the step changes to CHOOSE_DATA_STEP, the chosen datasets are fetched', function() {
-				testModel.set({
-					location : {latitude : '43.0', longitude : '-100.0'},
-					radius : '6',
-					datasets : [testModel.NWIS_DATASET, testModel.PRECIP_DATASET]
-				});
+			it('Expects that if the step changes to CHOOSE_DATA_STEP and the previous step was PROJ_LOC_STEP, the chosen datasets are fetched', function() {
+				testModel.set('step', testModel.PROJ_LOC_STEP);
+				testModel.set('location', {latitude : '43.0', longitude : '-100.0'});
 				fetchPrecipSpy.calls.reset();
 				fetchSiteSpy.calls.reset();
 				testModel.set('step', testModel.CHOOSE_DATA_STEP);
 
-				expect(fetchPrecipSpy).toHaveBeenCalled();
+				expect(fetchPrecipSpy).not.toHaveBeenCalled();
 				expect(fetchSiteSpy).toHaveBeenCalled();
 			});
 		});

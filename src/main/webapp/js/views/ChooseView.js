@@ -23,35 +23,52 @@ define([
 		panelHeading : 'Choose Data',
 		panelBodyId : 'choose-data-panel-body',
 
-		bindings : {
-			'#radius' : 'radius',
-			'#datasets-select' : {
-				observe : 'datasets',
-				update : function($el, value, model) {
-					var data = _.map(this.model.get('datasetCollections'), function(val, key, list) {
-						return _.object([
-							['id', key],
-							['text', key],
-							['selected', _.contains(value, key) ? 'selected' : ''],
-						]);						
-					});
-					this.$('#datasets-select').select2({
-						data : data
-					});
-				},
-				events : ['change'],
-				getVal : function($el, event, options) {
-					return $el.val();
-				},
-				allowClear : true,
-				theme : 'bootstrap'
-			},
+		additionalEvents : {
+			'select2:select #datasets-select' : 'selectDataset',
+			'select2:unselect #datasets-select' : 'resetDataset'
 		},
 
+		bindings : {
+			'#radius' : 'radius'
+		},
+
+
 		render : function() {
+			var datasetOptions = _.map(this.model.ALL_DATASETS, function(kind) {
+				return {
+					id : kind,
+					text : kind
+				};
+			});
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
 			this.stickit();
+
+			this.$('#datasets-select').select2({
+				data : datasetOptions
+			});
+			this.updateDatasets();
+
+			this.listenTo(this.model, 'change:datasets', this.updateDatasets);
 			return this;
+		},
+
+		updateDatasets : function() {
+			var chosenDatasets = (this.model.has('datasets')) ? this.model.get('datasets') : [];
+			this.$('#datasets-select').val(chosenDatasets).trigger('change');
+		},
+
+		selectDataset : function(ev) {
+			var datasets = _.clone((this.model.has('datasets')) ? this.model.get('datasets') : []);
+			datasets.push(ev.params.data.id);
+			this.model.set('datasets', datasets);
+		},
+
+		resetDataset : function(ev) {
+			var datasets = (this.model.has('datasets')) ? this.model.get('datasets') : [];
+			datasets = _.reject(datasets, function(datasetKind) {
+				return (ev.params.data.id === datasetKind);
+			});
+			this.model.set('datasets', datasets);
 		}
 
 	});

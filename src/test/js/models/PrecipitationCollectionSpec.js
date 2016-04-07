@@ -93,18 +93,10 @@ define([
 				expect(successSpy).toHaveBeenCalled();
 				expect(failSpy).not.toHaveBeenCalled();
 				expect(testCollection.length).toBe(2);
-				expect(testCollection.at(0).attributes).toEqual({
-					lat : '43.10',
-					lon : '-89.53',
-					x : '689',
-					y : '557'
-				});
-				expect(testCollection.at(1).attributes).toEqual({
-					lat : '43.09',
-					lon : '-89.48',
-					x : '690',
-					y : '557'
-				});
+				expect(testCollection.at(0).attributes.lat).toEqual('43.10');
+				expect(testCollection.at(0).attributes.lon).toEqual('-89.53');
+				expect(testCollection.at(0).attributes.x).toEqual('689');
+				expect(testCollection.at(0).attributes.y).toEqual('557');
 			});
 		});
 	});

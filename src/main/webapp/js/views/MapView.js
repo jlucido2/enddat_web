@@ -5,9 +5,12 @@ define([
 	'leaflet',
 	'leaflet-providers',
 	'loglevel',
+	'utils/jqueryUtils',
 	'utils/geoSpatialUtils',
-	'views/BaseView'
-], function(_, L, leafletProviders, log, geoSpatialUtils, BaseView) {
+	'views/BaseView',
+	'views/PrecipDataView',
+	'hbs!hb_templates/mapOps'
+], function(_, L, leafletProviders, log, $utils, geoSpatialUtils, BaseView, PrecipDataView, hbTemplate) {
 
 	var siteIcon = new L.icon({
 		iconUrl : 'img/time-series.png',
@@ -18,7 +21,14 @@ define([
 		iconSize : [14, 14]
 	});
 
+	var MAP_WIDTH_CLASS = 'col-md-6';
+	var DATA_VIEW_WIDTH_CLASS = 'col-md-6';
+
+	var VARIABLE_CONTAINER_SEL = '.dataset-variable-container';
+
 	var view = BaseView.extend({
+
+		template : hbTemplate,
 
 		/*
 		 * @param {Object} options
@@ -35,6 +45,7 @@ define([
 				'World Physical': L.tileLayer.provider('Esri.WorldPhysical'),
 				'World Imagery' : L.tileLayer.provider('Esri.WorldImagery')
 			};
+
 			this.controls = [
 				L.control.layers(this.baseLayers, {})
 			];
@@ -58,8 +69,8 @@ define([
 		},
 
 		render : function() {
-			// We don't call the prototype render at all because we are not rendering
-			// a handlebars template, but rather rendering a leaflet map.
+			BaseView.prototype.render.apply(this, arguments);
+
 			if (_.has(this, 'map')) {
 				this.map.remove();
 			}
@@ -74,10 +85,14 @@ define([
 			this.map.addLayer(this.siteLayerGroup);
 			this.map.addLayer(this.precipLayerGroup);
 
+			this.listenTo(this.model, 'change:step', this.updateWorkflowStep);
+
 			this.updateLocationMarkerAndExtent(this.model, this.model.get('location'));
 			this.listenTo(this.model, 'change:location', this.updateLocationMarkerAndExtent);
 			this.listenTo(this.model, 'change:radius', this.updateExtent);
 
+			// If the dataset collection models have already been created, then setup their listeners. Otherwise
+			// wait until they have been created.
 			if (this.model.has('datasetCollections')) {
 				this.setupDatasetListeners(this.model, this.model.attributes.datasetCollections);
 			}
@@ -91,6 +106,9 @@ define([
 		remove : function() {
 			if (_.has(this, 'map')) {
 				this.map.remove();
+			}
+			if (this.precipDataView) {
+				this.precipDataView.remove();
 			}
 			BaseView.prototype.remove.apply(this, arguments);
 		},
@@ -135,7 +153,32 @@ define([
 
 		/*
 		 * Model event handlers
-		*/
+		 */
+
+		/*
+		 * Updates the view to initialize the state to the new workflow step.
+		 * @param {WorkflowStateModel} model
+		 * @param {String} newStep
+		 */
+		updateWorkflowStep: function (model, newStep) {
+			var $map = this.$('#' + this.mapDivId);
+			switch (newStep) {
+				case this.model.PROJ_LOC_STEP:
+					if (this.precipDataView) {
+						this.precipDataView.remove();
+						this.precipDataView = undefined;
+					}
+					if (this.map.hasLayer(this.circleMarker)) {
+						this.map.removeLayer(this.circleMarker);
+					}
+
+					if ($map.hasClass(MAP_WIDTH_CLASS)) {
+						$map.removeClass(MAP_WIDTH_CLASS);
+						this.map.invalidateSize();
+					}
+					break;
+			}
+		},
 
 		/*
 		 * Updates or adds a marker at location if location is valid and removes the single click handler
@@ -143,25 +186,25 @@ define([
 		 * a marker can be added.
 		 * @param {WorkflowStateModel} model
 		 * @param {Object} location - has properties latitude and longitude in order to be a valid location
+		 *
 		 */
 		updateLocationMarkerAndExtent : function(model, location) {
 			var mapHasMarker = this.map.hasLayer(this.projLocationMarker);
-			var $tiles = this.$('.leaflet-tile');
-			if (_.has(location, 'latitude') && (location.latitude) && _.has(location, 'longitude') && (location.longitude)) {
+			if (model.hasValidLocation()) {
 				if (!mapHasMarker) {
 					this.map.addLayer(this.projLocationMarker);
 				}
 				this.projLocationMarker.setLatLng([location.latitude, location.longitude]);
 				this.removeSingleClickHandler();
-				$tiles.removeClass('leaflet-clickable');
 				this.updateExtent(model, model.get('radius'));
+				this.$('#' + this.mapDivId).css('cursor', '');
 			}
 			else {
 				if (mapHasMarker) {
 					this.map.removeLayer(this.projLocationMarker);
 				}
-				$tiles.addClass('leaflet-clickable');
 				this.setUpSingleClickHandlerToCreateMarker();
+				this.$('#' + this.mapDivId).css('cursor', 'pointer');
 			}
 		},
 
@@ -209,15 +252,56 @@ define([
 		 */
 		updatePrecipGridPoints : function(precipCollection) {
 			var self = this;
+
+			var moveCircleMarker = function(latLng) {
+				if (self.circleMarker) {
+					self.circleMarker.setLatLng(latLng);
+					if (!self.map.hasLayer(self.circleMarker)) {
+						self.map.addLayer(self.circleMarker);
+					}
+				}
+				else {
+					self.circleMarker = new L.circleMarker(latLng,{
+						radius : 15
+					});
+					self.map.addLayer(self.circleMarker);
+				}
+			};
+
+			var updatePrecipDataView = function(precipModel) {
+				var $mapDiv = self.$('#' + self.mapDivId);
+
+				if (self.precipDataView) {
+					self.precipDataView.remove();
+				}
+				self.precipDataView = new PrecipDataView({
+					el : $utils.createDivInContainer(self.$(VARIABLE_CONTAINER_SEL)),
+					model : precipModel,
+					opened : true
+				});
+				if (!$mapDiv.hasClass(MAP_WIDTH_CLASS)) {
+					$mapDiv.addClass(MAP_WIDTH_CLASS);
+					self.map.invalidateSize();
+					self.$(VARIABLE_CONTAINER_SEL).addClass(DATA_VIEW_WIDTH_CLASS);
+				}
+				self.precipDataView.render();
+			};
+
 			this.precipLayerGroup.clearLayers();
 
 			if (precipCollection) {
 				precipCollection.each(function(precipModel) {
-					var marker = L.marker([precipModel.attributes.lat, precipModel.attributes.lon], {
+					var latLng = new L.latLng(precipModel.attributes.lat, precipModel.attributes.lon);
+					var marker = L.marker(latLng, {
 						icon : precipIcon,
 						title : precipModel.attributes.y + ':' + precipModel.attributes.x
 					});
 					self.precipLayerGroup.addLayer(marker);
+
+					marker.on('click', function(ev) {
+						moveCircleMarker(latLng);
+						updatePrecipDataView(precipModel);
+					});
 				});
 			}
 		}

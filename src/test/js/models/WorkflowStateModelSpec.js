@@ -252,6 +252,37 @@ define([
 			});
 		});
 
+		describe('Tests for hasValidLocation', function() {
+			it('Expects that if the model has location defined with a latitude and longitude property, true is returned', function() {
+				testModel.set('location', {latitude : '43.0', longitude : '-100.0'});
+
+				expect(testModel.hasValidLocation()).toBe(true);
+			});
+
+			it('Expects that if the model has location defined but latitude is missing or empty, false is returned', function() {
+				testModel.set('location', {longitude : '-100.0'});
+				expect(testModel.hasValidLocation()).toBe(false);
+
+				testModel.set('location', {latitude : '', longitude : '-100.0'});
+				expect(testModel.hasValidLocation()).toBe(false);
+			});
+
+			it('Expects that if the model has location defined, but longitude is missing or empty, false is returned', function() {
+				testModel.set('location', {latitude : '43.0'});
+				expect(testModel.hasValidLocation()).toBe(false);
+
+				testModel.set('location', {latitude : '43.0', longitude : ''});
+				expect(testModel.hasValidLocation()).toBe(false);
+			});
+
+			it('Expects that if the location property is missing or empty, false is returned', function() {
+				expect(testModel.hasValidLocation()).toBe(false);
+
+				testModel.set('location', {});
+				expect(testModel.hasValidLocation()).toBe(false);
+			});
+		});
+
 		describe('Tests for getBoundingBox', function() {
 			it('Expects that if the model does not contain a valid bounding box, this function returns undefined', function() {
 				testModel.set({

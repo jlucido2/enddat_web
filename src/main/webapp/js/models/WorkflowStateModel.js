@@ -10,7 +10,7 @@ define([
 ], function(_, $, Backbone, geoSpatialUtils, SiteCollection, PrecipitationCollection) {
 	"use strict";
 
-	var collection = Backbone.Model.extend({
+	var model = Backbone.Model.extend({
 		NWIS_DATASET : 'NWIS',
 		PRECIP_DATASET : 'PRECIP',
 
@@ -59,6 +59,13 @@ define([
 			}
 		},
 
+		hasValidLocation : function() {
+			return (this.has('location') &&
+				((this.attributes.location.latitude) ? true : false) &&
+				((this.attributes.location.longitude) ? true : false));
+				
+		},
+
 		/*
 		 * Returns the bounding box as an object with west, east, north, and south properties.
 		 * Return undefined if the model's properties do not contain a valid bounding box
@@ -66,8 +73,7 @@ define([
 		 */
 		getBoundingBox : function() {
 			var result = undefined;
-			if ((this.attributes.radius) && (this.attributes.location) &&
-				(this.attributes.location.latitude) && (this.attributes.location.longitude)) {
+			if ((this.attributes.radius) && this.hasValidLocation()) {
 				result = geoSpatialUtils.getBoundingBox(
 					this.attributes.location.latitude,
 					this.attributes.location.longitude,
@@ -155,7 +161,7 @@ define([
 		}
 	});
 
-	return collection;
+	return model;
 });
 
 

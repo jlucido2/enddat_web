@@ -51,14 +51,24 @@
 					'leaflet' : '<%=baseUrl%>bower_components/leaflet/dist/leaflet',
 					'leaflet-providers' : '<%=baseUrl%>bower_components/leaflet-providers/leaflet-providers',
 					'loglevel' : '<%=baseUrl%>bower_components/loglevel/dist/loglevel<%= development ? "" : ".min"%>',
-					'backbone.stickit' : '<%=baseUrl%>bower_components/backbone.stickit/backbone.stickit'
+					'backbone.stickit' : '<%=baseUrl%>bower_components/backbone.stickit/backbone.stickit',
+					'moment' : '<%=baseUrl%>bower_components/moment/<%=development ? "" : "min/"%>moment<%=development ? "" : ".min"%>'
 				},
 				shim: {
 					"bootstrap": [ "jquery" ],
 					'leaflet' : {
 						exports: 'L'
 					},
-					'leaflet-providers' : ['leaflet']
+					'leaflet-providers' : ['leaflet'],
+					'backbone' : {
+						deps : ['jquery', 'underscore'],
+						exports : 'Backbone'
+					},
+					'backgrid': {
+						deps: ['jquery', 'underscore', 'backbone'],
+						exports: 'Backgrid'
+					},
+					'backbone.stickit' : ['backbone', 'underscore']
 				},
 				packages : [
 					{
@@ -66,7 +76,7 @@
 						location: "<%=baseUrl%>bower_components/requirejs-hbs",
 						main : 'hbs'
 					}
-				],
+				]
 			};
 		</script>
 		<script data-main="init" src="<%=baseUrl%>bower_components/requirejs/require.js"></script>

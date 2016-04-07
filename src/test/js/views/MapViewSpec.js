@@ -203,11 +203,30 @@ define([
 				expect(BaseView.prototype.remove).toHaveBeenCalled();
 				expect(removeMapSpy).toHaveBeenCalled();
 			});
+
+			it('Expects precipDataView to be removed if it is defined', function() {
+				testView.precipDataView = jasmine.createSpyObj('precipDataView', ['remove']);
+				testView.render();
+				testView.remove();
+
+				expect(testView.precipDataView.remove).toHaveBeenCalled();
+			});
 		});
 
 		describe('Tests for workflow model event handlers', function() {
 			beforeEach(function() {
 				testView.render();
+			});
+
+			it('Expects that if the testModel changes the step to PROJ_LOC_STEP, that the precipDataView is removed and assigned undefined', function() {
+				var removeSpy = jasmine.createSpy('removeSpy');
+				testView.precipDataView = {
+					remove : removeSpy
+				};
+				testModel.set('step', testModel.PROJ_LOC_STEP);
+
+				expect(removeSpy).toHaveBeenCalled();
+				expect(testView.precipDataView).toBeUndefined();
 			});
 
 			it('Expects that if location goes from unset to set the marker is added to the map and it\'s location is set', function() {

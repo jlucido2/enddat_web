@@ -138,13 +138,8 @@ define([
 				case this.CHOOSE_DATA_STEP:
 					if (previousStep === this.PROJ_LOC_STEP) {
 						this.initializeDatasetCollections();
-						this.set({
-							radius : this.DEFAULT_CHOOSE_DATA_RADIUS,
-							datasets : this.DEFAULT_CHOSEN_DATASETS
-						}, {
-							silent: true
-						});
-						this.fetchDatasets(this.DEFAULT_CHOSEN_DATASETS);
+						this.set('datasets', this.DEFAULT_CHOSEN_DATASETS, {silent: true});
+						this.set('radius', this.DEFAULT_CHOOSE_DATA_RADIUS);
 					}
 					break;
 			}

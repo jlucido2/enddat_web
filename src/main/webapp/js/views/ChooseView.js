@@ -34,17 +34,12 @@ define([
 
 
 		render : function() {
-			var datasetOptions = _.map(this.model.ALL_DATASETS, function(kind) {
-				return {
-					id : kind,
-					text : kind
-				};
-			});
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
 			this.stickit();
 
 			this.$('#datasets-select').select2({
-				data : datasetOptions
+				allowClear : true,
+				theme : 'bootstrap'
 			});
 			this.updateDatasets();
 

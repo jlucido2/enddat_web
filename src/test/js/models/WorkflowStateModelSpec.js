@@ -72,8 +72,19 @@ define([
 
 				testModel.initializeDatasetCollections();
 
+				testModel.set({
+					location : {latitude : '43.0', longitude : '-100.0'},
+					radius : '5',
+					datasets : ['NWIS']
+				});
+
 				testModel.on('dataset:updateStart', updateStartSpy);
 				testModel.on('dataset:updateFinished', updateFinishedSpy);
+
+				fetchSiteSpy.calls.reset();
+				fetchPrecipSpy.calls.reset();
+				resetSiteSpy.calls.reset();
+				resetPrecipSpy.calls.reset();
 			});
 
 			afterEach(function() {
@@ -82,10 +93,7 @@ define([
 			});
 
 			it('Expects the dataset models to be cleared and not fetched if there is not a valid bounding box', function() {
-				testModel.set({
-					location : {latitude : '43.0', longitude : '-100.0'},
-					datasets : ['NWIS']
-				});
+				testModel.set('radius', '');
 
 				expect(fetchSiteSpy).not.toHaveBeenCalled();
 				expect(fetchPrecipSpy).not.toHaveBeenCalled();
@@ -93,111 +101,65 @@ define([
 				expect(resetPrecipSpy).toHaveBeenCalled();
 			});
 
-			it('Expects the dataset models to be cleared and not fetched if there aree no datasets chosen', function() {
-				testModel.set({
-					location : {latitude : '43.0', longitude : '-100.0'},
-					radius : '5',
-					datasets : []
-				});
+			it('Expects the dataset model to be cleared and not fetched if there are no datasets chosen', function() {
+				testModel.set('datasets', []);
 
 				expect(fetchSiteSpy).not.toHaveBeenCalled();
 				expect(fetchPrecipSpy).not.toHaveBeenCalled();
 				expect(resetSiteSpy).toHaveBeenCalled();
-				expect(resetPrecipSpy).toHaveBeenCalled();
+				expect(resetPrecipSpy).not.toHaveBeenCalled();
 			});
 
-			it('Expects if there is a valid boundingBox the chosen dataset(s) are fetched, but the rest are cleared', function() {
-				testModel.set({
-					location : {latitude : '43.0', longitude : '-100.0'},
-					radius : '5',
-					datasets : [testModel.NWIS_DATASET]
-				});
-
-				expect(fetchSiteSpy).toHaveBeenCalled();
-				expect(fetchPrecipSpy).not.toHaveBeenCalled();
-				expect(resetSiteSpy).not.toHaveBeenCalled();
-				expect(resetPrecipSpy).toHaveBeenCalled();
-
-				fetchSiteSpy.calls.reset();
-				resetPrecipSpy.calls.reset();
-				testModel.set({
-					location : {latitude : '43.0', longitude : '-100.0'},
-					radius : '6',
-					datasets : [testModel.PRECIP_DATASET]
-				});
+			it('Expects if there is a valid boundingBox and a dataset is added that dataset is fetched', function() {
+				testModel.set('datasets', ['NWIS', 'PRECIP']);
 
 				expect(fetchSiteSpy).not.toHaveBeenCalled();
 				expect(fetchPrecipSpy).toHaveBeenCalled();
-				expect(resetSiteSpy).toHaveBeenCalled();
+				expect(resetSiteSpy).not.toHaveBeenCalled();
 				expect(resetPrecipSpy).not.toHaveBeenCalled();
+			});
 
+			it('Expects that if a dataset is removed from the chosen datasets, that dataset is cleared', function() {
+				testModel.set('datasets', ['NWIS', 'PRECIP']);
+				fetchSiteSpy.calls.reset();
 				fetchPrecipSpy.calls.reset();
 				resetSiteSpy.calls.reset();
-				testModel.set({
-					location : {latitude : '42.0', longitude : '-100.0'},
-					radius : '6',
-					datasets : [testModel.NWIS_DATASET, testModel.PRECIP_DATASET]
-				});
+				resetPrecipSpy.calls.reset();
+				testModel.set('datasets', ['NWIS']);
 
-				expect(fetchSiteSpy).toHaveBeenCalled();
-				expect(fetchPrecipSpy).toHaveBeenCalled();
+				expect(fetchSiteSpy).not.toHaveBeenCalled();
+				expect(fetchPrecipSpy).not.toHaveBeenCalled();
 				expect(resetSiteSpy).not.toHaveBeenCalled();
-				expect(resetPrecipSpy).not.toHaveBeenCalled();
+				expect(resetPrecipSpy).toHaveBeenCalled();
 			});
 
 			it('Expects that a dataset:updateStart event will be triggered if there is a valid bounding box and a dataset chosen.', function() {
+				updateStartSpy.calls.reset();
 				testModel.set({
-					location : {latitude : '43.0', longitude : '-100.0'},
-					datasets : [testModel.NWIS_DATASET]
+					datasets : [testModel.NWIS_DATASET, testModel.PRECIP_DATASET]
 				});
-				expect(updateStartSpy).not.toHaveBeenCalled();
+				expect(updateStartSpy).toHaveBeenCalled();
 
+				updateStartSpy.calls.reset();
 				testModel.set({
-					location : {latitude : '43.0', longitude : '-100.0'},
-					radius : '5',
 					datasets : []
 				});
 				expect(updateStartSpy).not.toHaveBeenCalled();
 
 				testModel.set({
-					location : {latitude : '43.0', longitude : '-100.0'},
-					radius : '6',
 					datasets : [testModel.NWIS_DATASET]
 				});
 				expect(updateStartSpy).toHaveBeenCalled();
 			});
 
 			it('Expects an dataset:updateFinished event handler will be called with an empty array once all of the chosen datasets have been fetched', function() {
-				testModel.set({
-					location : {latitude : '43.0', longitude : '-100.0'},
-					radius : '6',
-					datasets : [testModel.NWIS_DATASET]
-				});
-				expect(updateFinishedSpy).not.toHaveBeenCalled();
+				updateFinishedSpy.calls.reset();
 				fetchSiteDeferred.resolve();
 				expect(updateFinishedSpy).toHaveBeenCalled();
-
-				updateFinishedSpy.calls.reset();
-				testModel.set({
-					location : {latitude : '43.0', longitude : '-100.0'},
-					radius : '5',
-					datasets : [testModel.NWIS_DATASET, testModel.PRECIP_DATASET]
-				});
-
-				fetchSiteDeferred.resolve();
-				expect(updateFinishedSpy).not.toHaveBeenCalled();
-				fetchPrecipDeferred.resolve();
-				expect(updateFinishedSpy).toHaveBeenCalledWith([]);
 			});
 
 			it('Expects that if any of the dataset fetches failed, the event handler will be called with the array of failed datasets', function() {
-				testModel.set({
-					location : {latitude : '43.0', longitude : '-100.0'},
-					radius : '6',
-					datasets : [testModel.NWIS_DATASET, testModel.PRECIP_DATASET]
-				});
 				fetchSiteDeferred.reject();
-				fetchPrecipDeferred.resolve();
 				expect(updateFinishedSpy).toHaveBeenCalledWith([testModel.NWIS_DATASET]);
 			});
 		});

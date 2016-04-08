@@ -37,7 +37,7 @@ define([
 		/*
 		 * Instantiates the datasetModels and sets up the model event listeners which will fetch new
 		 * dataset model information if the datasetCollections have not yet been instantiated. If they
-		 * have already been created, reset the contents of the collections
+		 * have already been created, empty the contents of the collections
 		 */
 		initializeDatasetCollections : function() {
 			var datasetCollections;
@@ -58,6 +58,10 @@ define([
 			}
 		},
 
+		/*
+		 * @returns {Boolean} - Returns true if the model contains a location property that contains
+		 * an object with non empty latitude and longitude properties
+		 */
 		hasValidLocation : function() {
 			return (this.has('location') &&
 				((this.attributes.location.latitude) ? true : false) &&
@@ -86,13 +90,12 @@ define([
 		 * Model event handlers
 		 */
 
-		 /*
-		  *  Fetches the chosen datasets if the bounding box is valid. Otherwise it clears the datasets
+		 /*  If the radius or location has changed, all datasets are either fetched (if chosen) or cleared.
+		  *  If the dataset has changed, then the previous datasets or compared to the current. Datasets added to the
+		  *  current datasets are fetched and datasets removed from the current datasets are cleared.
 		  */
 		updateDatasetCollections : function() {
-			var self = this;
 			var previousAttributes = this.previousAttributes();
-
 			var boundingBox = this.getBoundingBox();
 			var chosenDatasets = this.has('datasets') ? this.get('datasets') : [];
 			var previousChosenDatasets = _.has(previousAttributes, 'datasets') ? previousAttributes.datasets : [];
@@ -116,10 +119,13 @@ define([
 				datasetsToClear =  _.difference(previousChosenDatasets, chosenDatasets);
 			}
 
-			this.fetchDatasets(datasetsToFetch);
+			this.fetchDatasets(datasetsToFetch, boundingBox);
 			this.clearDatasets(datasetsToClear);
 		},
 
+		/*
+		 * Updates the state of the model based on the current step and the previous step.
+		 */
 		updateModelState : function() {
 			var previousStep = this.previous('step');
 
@@ -145,10 +151,14 @@ define([
 			}
 		},
 
-		fetchDatasets : function(datasetKinds) {
+		/*
+		 * Internal function which retrieves the datasets in datasetKinds.
+		 * @param {Array of String} datasetKinds
+		 * @param {Object with north, south, east, west properties} boundingBox
+		 */
+		fetchDatasets : function(datasetKinds, boundingBox) {
 			var self = this;
 			var datasetsToFetch = _.pick(this.get('datasetCollections'), datasetKinds);
-			var boundingBox = this.getBoundingBox();
 			var fetchDonePromises = [];
 
 			var fetchDataset = function(datasetCollection, datasetKind) {
@@ -175,6 +185,10 @@ define([
 			}
 		},
 
+		/*
+		 * Internal function which clears the datasets in datasetKinds
+		 * @param {Array of String} datasetKinds
+		 */
 		clearDatasets : function(datasetKinds) {
 			var datasetsToClear = _.pick(this.get('datasetCollections'), datasetKinds);
 			_.each(datasetsToClear, function(datasetCollection) {

@@ -33,7 +33,7 @@ require.config({
 		'loglevel' : '/base/src/main/webapp/bower_components/loglevel/dist/loglevel',
 		'backbone.stickit' : '/base/src/main/webapp/bower_components/backbone.stickit/backbone.stickit',
 		'moment' : '/base/src/main/webapp/bower_components/moment/moment',
-		'bootstrap-datetimepicker' : '/base/src/main/webapp/bower_components/eonasdan-bootstrap-datetimepicker.src/js/bootstrap-datetimepicker'
+		'bootstrap-datetimepicker' : '/base/src/main/webapp/bower_components/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker'
 	},
 	shim: {
 		'bootstrap': ['jquery'],

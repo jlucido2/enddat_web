@@ -30,7 +30,8 @@
     "leaflet-providers": "^1.1.7",
     "loglevel": "^1.4.0",
     "backbone.stickit": "^0.9.2",
-    "moment": "^2.12.0"
+    "moment": "^2.12.0",
+    "eonasdan-bootstrap-datetimepicker": "^4.17.37"
   },
   "resolutions": {
     "underscore": "~1.8.3",

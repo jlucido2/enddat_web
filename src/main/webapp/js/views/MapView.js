@@ -225,6 +225,8 @@ define([
 			this.updateSiteMarker(datasetCollections[model.NWIS_DATASET]);
 			this.updatePrecipGridPoints(datasetCollections[model.PRECIP_DATASET]);
 
+			this.listenTo(model, 'change:startDate', this.updateDatasetDateFilter);
+			this.listenTo(model, 'change:endDate', this.updateDatasetDateFilter);
 			this.listenTo(datasetCollections[model.NWIS_DATASET], 'reset', this.updateSiteMarker);
 			this.listenTo(datasetCollections[model.PRECIP_DATASET], 'reset', this.updatePrecipGridPoints);
 		},

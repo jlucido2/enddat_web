@@ -4,10 +4,10 @@ define([
 	'loglevel',
 	'module',
 	'jquery',
-	'backbone',
 	'moment',
+	'models/BaseDatasetCollection',
 	'utils/jqueryUtils'
-], function(log, module, $, Backbone, moment, $utils) {
+], function(log, module, $, moment, BaseDatasetCollection, $utils) {
 	"use strict";
 
 	var getInteger = function(str) {
@@ -16,7 +16,7 @@ define([
 
 	var START_DATE = '2002-01-01';
 
-	var collection = Backbone.Collection.extend({
+	var collection = BaseDatasetCollection.extend({
 
 		url : module.config().precipWFSGetFeatureUrl,
 

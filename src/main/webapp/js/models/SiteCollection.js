@@ -3,17 +3,19 @@
 define([
 	'jquery',
 	'underscore',
-	'backbone',
+	'moment',
 	'loglevel',
 	'module',
-	'utils/rdbUtils'
-], function ($, _, Backbone, log, module, rdbUtils) {
+	'models/BaseDatasetCollection',
+	'utils/rdbUtils',
+	'utils/dateUtils'
+], function ($, _, moment, log, module, BaseDatasetCollection, rdbUtils, dateUtils) {
 	"use strict";
 
 	var config = module.config();
 	var parameterCodesPath = config.parameterCodesPath;
 
-	var model = Backbone.Collection.extend({
+	var model = BaseDatasetCollection.extend({
 
 		url: '',
 

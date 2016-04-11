@@ -13,7 +13,7 @@ define([
 		 * The startDate and endDate values in each model are assumed to be moment objects
 		 * @param {Moment} startDate
 		 * @param {Moment} endDate
-		 * @returns {Arra of Backbone.Model} whose startDate and endDate range overlaps the function parameters.
+		 * @returns {Array of Backbone.Model} whose startDate and endDate range overlaps the function parameters.
 		 *		If startDate or endDate are falsy, all of the models in the collection are returned.
 		 */
 		getModelsWithinDateFilter : function(startDate, endDate) {

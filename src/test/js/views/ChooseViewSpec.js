@@ -10,7 +10,7 @@ define([
 ], function($, select2, moment, WorkflowStateModel, ChooseView) {
 	"use strict";
 
-	fdescribe('views/ChooseView', function() {
+	describe('views/ChooseView', function() {
 		var testView;
 		var testModel;
 		var $testDiv;

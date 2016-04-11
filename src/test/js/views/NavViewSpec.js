@@ -3,10 +3,11 @@
 define([
 	'jquery',
 	'loglevel',
+	'moment',
 	'models/WorkflowStateModel',
 	'views/BaseView',
 	'views/NavView'
-], function($, log, WorkflowStateModel, BaseView, NavView) {
+], function($, log, moment, WorkflowStateModel, BaseView, NavView) {
 	describe('views/NavView', function() {
 		var testView;
 		var testModel;
@@ -17,6 +18,8 @@ define([
 		var projLocSel = '.nav-project-loc';
 		var chooseDataSel = '.nav-choose-data';
 		var processDataSel = '.nav-process-data';
+
+		var DATE_FORMAT = 'DMMMYYYY';
 
 		beforeEach(function() {
 			fakeServer = sinon.fakeServer.create();
@@ -167,7 +170,7 @@ define([
 					radius : '',
 					datasets : []
 				});
-				expect(mockRouter.navigate.calls.mostRecent().args).toEqual(['lat/42/lng/-101/radius//dataset/']);
+				expect(mockRouter.navigate.calls.mostRecent().args).toEqual(['lat/42/lng/-101/dataset/']);
 			});
 
 			it('Expects that if the step is CHOOSE_DATA and the location becomes invalid that the url is not updated', function() {
@@ -178,7 +181,7 @@ define([
 					datasets : []
 				});
 
-				expect(mockRouter.navigate.calls.mostRecent().args).toEqual(['lat/42/lng/-101/radius//dataset/']);
+				expect(mockRouter.navigate.calls.mostRecent().args).toEqual(['lat/42/lng/-101/dataset/']);
 
 				mockRouter.navigate.calls.reset();
 				testModel.set('location', {latitude : '', longitude : -101.0});
@@ -199,8 +202,8 @@ define([
 				expect(mockRouter.navigate.calls.mostRecent().args).toEqual(['lat/43/lng/-100/radius/2/dataset/NWIS/Precip']);
 
 				testModel.set({
-					startDate : '1Jan2000',
-					endDate : '1Jan2010'
+					startDate : moment('1Jan2000', DATE_FORMAT),
+					endDate : moment('1Jan2010', DATE_FORMAT)
 				});
 				expect(mockRouter.navigate.calls.mostRecent().args).toEqual(['lat/43/lng/-100/radius/2/startdate/1Jan2000/enddate/1Jan2010/dataset/NWIS/Precip']);
 				testModel.set('radius', 10);

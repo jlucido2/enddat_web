@@ -9,7 +9,7 @@ define([
 ], function(_, bootstrap, log, BaseView, hb_template) {
 	"use strict";
 
-	var DATE_FORMAT = 'YYYY-MM-DD';
+	var DATE_FORMAT = 'DMMMYYYY';
 
 	var view = BaseView.extend({
 		template : hb_template,
@@ -71,10 +71,10 @@ define([
 			var longitude = (_.has(state, 'location') && _.has(state.location, 'longitude')) ? state.location.longitude : '';
 
 			var location = 'lat/' + latitude + '/lng/' + longitude;
-			var radius = (model.has('radius')) ? '/radius/' + state.radius : '';
-			var startDate = (model.has('startDate')) ? '/startdate/' + state.startDate.format(DATE_FORMAT) : '';
-			var endDate = (model.has('endDate')) ? '/enddate/' + state.endDate.format(DATE_FORMAT) : '';
-			var datasets = (model.has('datasets')) ? '/dataset/' + state.datasets.join('/') : '';
+			var radius = (state.radius) ? '/radius/' + state.radius : '';
+			var startDate = (state.startDate) ? '/startdate/' + state.startDate.format(DATE_FORMAT) : '';
+			var endDate = (state.endDate) ? '/enddate/' + state.endDate.format(DATE_FORMAT) : '';
+			var datasets = (state.datasets) ? '/dataset/' + state.datasets.join('/') : '';
 			return location + radius + startDate + endDate + datasets;
 		},
 

@@ -4,10 +4,13 @@ define([
 	'jquery',
 	'backbone',
 	'loglevel',
+	'moment',
 	'models/WorkflowStateModel',
 	'views/DataDiscoveryView'
-], function ($, Backbone, log, WorkflowStateModel, DataDiscoveryView) {
+], function ($, Backbone, log, moment, WorkflowStateModel, DataDiscoveryView) {
 	"use strict";
+
+	var DATE_FORMAT = 'DMMMYYYY';
 
 	var appRouter = Backbone.Router.extend({
 		routes: {
@@ -61,8 +64,8 @@ define([
 			this.workflowState.set({
 				'location' : {latitude : lat, longitude : lng},
 				'radius' : radius,
-				'startDate' : startDate,
-				'endDate' : endDate
+				'startDate' : (startDate) ? moment(startDate, DATE_FORMAT) : '',
+				'endDate' : (endDate) ? moment(endDate, DATE_FORMAT) : ''
 			});
 			this.workflowState.set('step', this.workflowState.CHOOSE_DATA_STEP);
 			this.createView(DataDiscoveryView, {

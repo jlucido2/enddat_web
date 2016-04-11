@@ -65,9 +65,18 @@ define([
 				expect(testModel.get('radius')).toEqual('5');
 			});
 
+			// Have to call the select2 event handlers directly
 			it('Expects that changing the datasets updates the model\'s datasets property', function() {
-				$datasets.select2({data : [{'id':'NWIS', 'selected': 'selected'}]}).trigger('change');
+				var ev = {
+					params : {
+						data : {id : 'NWIS'}
+					}
+				};
+				testView.selectDataset(ev);
 				expect(testModel.get('datasets')).toEqual(['NWIS']);
+
+				testView.resetDataset(ev);
+				expect(testModel.get('datasets')).toEqual([]);
 			});
 		});
 

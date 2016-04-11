@@ -13,6 +13,7 @@ define([
 	var model = Backbone.Model.extend({
 		NWIS_DATASET : 'NWIS',
 		PRECIP_DATASET : 'PRECIP',
+		ALL_DATASETS : ['NWIS', 'PRECIP'],
 
 		PROJ_LOC_STEP : 'specifyProjectLocation',
 		CHOOSE_DATA_STEP : 'chooseData',
@@ -30,13 +31,13 @@ define([
 		initialize : function(attributes, options) {
 			Backbone.Model.prototype.initialize.apply(this, arguments);
 
-			this.on('change:step', this.updateModelState);
+			this.on('change:step', this.updateModelState, this);
 		},
 
 		/*
 		 * Instantiates the datasetModels and sets up the model event listeners which will fetch new
 		 * dataset model information if the datasetCollections have not yet been instantiated. If they
-		 * have already been created, reset the contents of the collections
+		 * have already been created, empty the contents of the collections
 		 */
 		initializeDatasetCollections : function() {
 			var datasetCollections;
@@ -51,19 +52,21 @@ define([
 					[this.PRECIP_DATASET, new PrecipitationCollection()]
 				]);
 				this.set('datasetCollections', datasetCollections);
-
-				// Set up event listeners to update the dataset models
-				this.on('change:location', this.updateDatasetCollections, this);
 				this.on('change:radius', this.updateDatasetCollections, this);
+				this.on('change:location', this.updateDatasetCollections, this);
 				this.on('change:datasets', this.updateDatasetCollections, this);
 			}
 		},
 
+		/*
+		 * @returns {Boolean} - Returns true if the model contains a location property that contains
+		 * an object with non empty latitude and longitude properties
+		 */
 		hasValidLocation : function() {
 			return (this.has('location') &&
 				((this.attributes.location.latitude) ? true : false) &&
 				((this.attributes.location.longitude) ? true : false));
-				
+
 		},
 
 		/*
@@ -87,77 +90,110 @@ define([
 		 * Model event handlers
 		 */
 
-		 /*
-		  *  Fetches the chosen datasets if the bounding box is valid. Otherwise it clears the datasets
+		 /*  If the radius or location has changed, all datasets are either fetched (if chosen) or cleared.
+		  *  If the dataset has changed, then the previous datasets or compared to the current. Datasets added to the
+		  *  current datasets are fetched and datasets removed from the current datasets are cleared.
 		  */
 		updateDatasetCollections : function() {
-			var self = this;
-
+			var previousAttributes = this.previousAttributes();
 			var boundingBox = this.getBoundingBox();
 			var chosenDatasets = this.has('datasets') ? this.get('datasets') : [];
-			var datasetCollections = this.get('datasetCollections');
-			var fetchDonePromises = [];
-			var fetchErrors = [];
+			var previousChosenDatasets = _.has(previousAttributes, 'datasets') ? previousAttributes.datasets : [];
 
-			var updateDataset = function(datasetCollection, datasetKind) {
-				if (_.contains(chosenDatasets, datasetKind)) {
-					var donePromise = $.Deferred();
-					fetchDonePromises.push(donePromise);
+			var datasetsToFetch = {};
+			var datasetsToClear = {};
 
-					datasetCollection.fetch(boundingBox)
-						.fail(function() {
-							fetchErrors.push(datasetKind);
-						})
-						.always(function() {
-							donePromise.resolve();
-						});
+			if (this.hasChanged('radius') || this.hasChanged('location')) {
+				//Need to fetch/clear all dataset collections
+				if (boundingBox) {
+					datasetsToFetch = chosenDatasets;
+					datasetsToClear = _.difference(this.ALL_DATASETS, chosenDatasets);
 				}
 				else {
-					datasetCollection.reset();
+					datasetsToClear = this.ALL_DATASETS;
 				}
-			};
-
-			if (boundingBox && (chosenDatasets.length > 0)) {
-				this.trigger('dataset:updateStart');
-				_.each(datasetCollections, updateDataset);
-				$.when.apply(this, fetchDonePromises).done(function() {
-					self.trigger('dataset:updateFinished', fetchErrors);
-				});
 			}
 			else {
-				// Clear the dataset collections if bounding box invalid or no chosen datasets
-				_.each(datasetCollections, function(datasetCollection) {
-					datasetCollection.reset();
+				//Update only datasets that have been added or removed from the chosen datasets
+				datasetsToFetch = _.difference(chosenDatasets, previousChosenDatasets);
+				datasetsToClear =  _.difference(previousChosenDatasets, chosenDatasets);
+			}
+
+			this.fetchDatasets(datasetsToFetch, boundingBox);
+			this.clearDatasets(datasetsToClear);
+		},
+
+		/*
+		 * Updates the state of the model based on the current step and the previous step.
+		 */
+		updateModelState : function() {
+			var previousStep = this.previous('step');
+
+			switch(this.get('step')) {
+				case this.PROJ_LOC_STEP:
+					if (this.has('datasetCollections')) {
+						_.each(this.get('datasetCollections'), function(collection) {
+							collection.reset();
+						});
+					};
+					this.unset('location', {silent : true});
+					this.unset('radius', {silent : true});
+					this.unset('datasets', {silent : true});
+					break;
+
+				case this.CHOOSE_DATA_STEP:
+					if (previousStep === this.PROJ_LOC_STEP) {
+						this.initializeDatasetCollections();
+						this.set('datasets', this.DEFAULT_CHOSEN_DATASETS, {silent: true});
+						this.set('radius', this.DEFAULT_CHOOSE_DATA_RADIUS);
+					}
+					break;
+			}
+		},
+
+		/*
+		 * Internal function which retrieves the datasets in datasetKinds.
+		 * @param {Array of String} datasetKinds
+		 * @param {Object with north, south, east, west properties} boundingBox
+		 */
+		fetchDatasets : function(datasetKinds, boundingBox) {
+			var self = this;
+			var datasetsToFetch = _.pick(this.get('datasetCollections'), datasetKinds);
+			var fetchDonePromises = [];
+
+			var fetchDataset = function(datasetCollection, datasetKind) {
+				var donePromise = $.Deferred();
+				datasetCollection.fetch(boundingBox)
+					.done(function() {
+						donePromise.resolve();
+					})
+					.fail(function() {
+						donePromise.resolve(datasetKind);
+					});
+				return donePromise;
+			};
+
+			if (!_.isEmpty(datasetsToFetch) && (boundingBox)) {
+				this.trigger('dataset:updateStart');
+				fetchDonePromises = _.map(datasetsToFetch, fetchDataset);
+				$.when.apply(this, fetchDonePromises).done(function() {
+					var datasetKindErrors = _.filter(arguments, function(arg) {
+						return (arg) ? true : false;
+					});
+					self.trigger('dataset:updateFinished', datasetKindErrors);
 				});
 			}
 		},
 
-		updateModelState : function(model, newStep) {
-			var previousStep = model.previous('step');
-
-			switch(newStep) {
-				case model.PROJ_LOC_STEP:
-					if (model.has('datasetCollections')) {
-						_.each(model.get('datasetCollections'), function(collection) {
-							collection.reset();
-						});
-					};
-					model.unset('location');
-					model.unset('radius');
-					model.unset('datasets');
-					break;
-
-				case model.CHOOSE_DATA_STEP:
-					if (previousStep === model.PROJ_LOC_STEP) {
-						model.set({
-							radius : model.DEFAULT_CHOOSE_DATA_RADIUS,
-							datasets : model.DEFAULT_CHOSEN_DATASETS
-						});
-					}
-					model.initializeDatasetCollections();
-					model.updateDatasetCollections(model, model.get('datasetCollections'));
-					break;
-			}
+		/*
+		 * Internal function which clears the datasets in datasetKinds
+		 * @param {Array of String} datasetKinds
+		 */
+		clearDatasets : function(datasetKinds) {
+			var datasetsToClear = _.pick(this.get('datasetCollections'), datasetKinds);
+			_.each(datasetsToClear, function(datasetCollection) {
+				datasetCollection.reset();
+			});
 		}
 	});
 

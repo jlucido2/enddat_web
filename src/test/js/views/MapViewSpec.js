@@ -51,6 +51,7 @@ define([
 
 			testModel = new WorkflowStateModel();
 			testModel.set('step', testModel.CHOOSE_DATA_STEP);
+			testModel.initializeDatasetCollections();
 			testSiteCollection = testModel.get('datasetCollections').NWIS;
 			testPrecipCollection = testModel.get('datasetCollections').PRECIP;
 

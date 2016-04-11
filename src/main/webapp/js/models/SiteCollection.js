@@ -15,18 +15,23 @@ define([
 	var config = module.config();
 	var parameterCodesPath = config.parameterCodesPath;
 
+	var DATE_FORMAT = 'YYYY-MM-DD';
+
 	var model = BaseDatasetCollection.extend({
 
 		url: '',
 
 		initialize: function(models, options) {
-			Backbone.Collection.prototype.initialize.apply(this, arguments);
+			BaseDatasetCollection.prototype.initialize.apply(this, arguments);
 
 			this.pCodePromise = this.getParameterCodes();
 			this.sCodePromise = this.getStatisticCodes();
 		},
 
 		fetch: function(boundingBox) {
+			var self = this;
+			var sitesDeferred = $.Deferred();
+
 			this.url = 'waterService/?format=rdb&bBox=' +
 				boundingBox.west.toFixed(6) + ',' +
 				boundingBox.south.toFixed(6) + ',' +
@@ -34,16 +39,12 @@ define([
 				boundingBox.north.toFixed(6) +
 				'&outputDataTypeCd=iv,dv&hasDataTypeCd=iv,dv&siteType=OC,LK,ST,SP,AS,AT';
 
-			var self = this;
-			var sitesDeferred = $.Deferred();
 			$.when(this.pCodePromise, this.sCodePromise).done(function() {
 				$.ajax({
 					type: "GET",
 					url: self.url,
 					dataType: 'text',
 					success: function(data, textStatus, jqXHR){
-						var parsedSites = [];
-						var siteData = {};
 						var lines = data.split("\n");
 						var importantColumns = {
 							"site_no" : null,
@@ -57,70 +58,72 @@ define([
 							"end_date" : null,
 							"count_nu" : null
 						};
-
-						parsedSites = rdbUtils.parseRDB(lines, importantColumns);
-
-						/* The parsedSites array contains elements that correspond
-						 * to rows from an rdb file, which represents one or more
-						 * parameter codes available for a site.  So multiple rows
-						 * may have the same site_no but different parm_cd.  These
-						 * rows are being merged here into an object where key is the
-						 * site_no and the value is an object with all of the data
-						 * for the site, including an array of one or more parameters.
-						 */
-						_.each(parsedSites, function(el, index) {
-							var site;
-
-							// Grab the currently collected data for el.site_no if it exists, otherwise, initialize a site data object
-							if (_.has(siteData, (el.site_no))) {
-								site = siteData[el.site_no];
-							}
-							else {
-								site = {
-									name : el.station_nm,
-									lat : el.dec_lat_va,
-									lon : el.dec_long_va,
-									parameters : []
-								};
-							}
-
-							// Create the name for the parameter and then push the parameter data onto the site data
-							var name = "Unknown parameter " + el.parm_cd + " " + el.stat_cd;
-							if (self.parameterCodes && self.statisticCodes) {
-								if (el.parm_cd) {
-									var pName = self.parameterCodes[el.parm_cd];
-									name = (pName?pName:"PCode " + el.parm_cd);
-									name += ((el.loc_web_ds) ?" (" + el.loc_web_ds + ")" : "");
-								}
-								if (el.stat_cd) {
-									var sName = self.statisticCodes[el.stat_cd];
-									name += " Daily " + (sName ? sName : el.stat_cd);
-								} else {
-									name += " Instantaneous";
-									el.stat_cd = "00000";
-								}
-							}
-
-							site.parameters.push({
-								name : name,
-								parameterCd : el.parm_cd,
-								statCd : el.stat_cd,
-								startDate : el.begin_date,
-								endDate : el.end_date,
-								count : el.count_nu
-							});
-
-							siteData[el.site_no] = site;
-
+						var parsedSites = rdbUtils.parseRDB(lines, importantColumns);
+						// Group the parse site information by site id
+						var siteDataBySiteNo = _.groupBy(parsedSites, function(site) {
+							return site.site_no;
 						});
 
-						self.reset(_.map(siteData, function(data, siteNo) {
-							var result = _.clone(data);
-							result.siteNo = siteNo;
-							return result;
-						}));
+						var getParameterArrayForSite = function(parametersForSite) {
+							var getParameter = function(parameter) {
+								var name = '';
+								var pName, sName;
+								var statCd = parameter.stat_cd;
+								if ((self.parameterCodes) && (parameter.parm_cd)) {
+									var pName = self.parameterCodes[parameter.parm_cd];
+									name = (pName ? pName : "PCode " + parameter.parm_cd);
+									name += ((parameter.loc_web_ds) ?" (" + parameter.loc_web_ds + ")" : "");
+								}
+								else {
+									name = 'Unknown parameter ' + parameter.parm_cd;
+								}
+								if (self.statisticCodes) {
+									if (statCd) {
+										var sName = self.statisticCodes[statCd];
+										name += " Daily " + (sName ? sName : statCd);
+									}
+									else {
+										name += " Instantaneous";
+										statCd = "00000";
+									}
+								}
+								else {
+									name += ' ' + statCd;
+								}
 
-						log.debug('Fetched sites ' + _.size(siteData));
+								return {
+									name : name,
+									parameterCd : parameter.parm_cd,
+									statCd : statCd,
+									startDate : moment(parameter.begin_date, DATE_FORMAT),
+									endDate : moment(parameter.end_date, DATE_FORMAT),
+									count : parameter.count_nu
+								};
+							};
+							return _.map(parametersForSite, getParameter);
+						};
+
+						var sites = _.map(siteDataBySiteNo, function(siteParameterData) {
+							var parameters = getParameterArrayForSite(siteParameterData)
+
+							var startDates = _.pluck(parameters, 'startDate');
+							var endDates = _.pluck(parameters, 'endDate');
+
+							var result= {
+								siteNo : siteParameterData[0].site_no,
+								name : siteParameterData[0].station_nm,
+								lat : siteParameterData[0].dec_lat_va,
+								lon : siteParameterData[0].dec_long_va,
+								startDate : moment.min(startDates),
+								endDate : moment.max(endDates),
+								parameters : parameters
+							};
+							return result;
+						});
+
+						self.reset(sites);
+
+						log.debug('Fetched sites ' + self.length);
 						sitesDeferred.resolve(jqXHR);
 					},
 					error: function(jqXHR, textStatus, errorThrown) {

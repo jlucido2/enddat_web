@@ -4,11 +4,12 @@ define([
 	'underscore',
 	'jquery',
 	'select2',
+	'moment',
 	'bootstrap-datetimepicker',
 	'backbone.stickit',
 	'views/BaseCollapsiblePanelView',
 	'hbs!hb_templates/choose'
-], function(_, $, select2, datetimepicker, stickit, BaseCollapsiblePanelView, hbTemplate) {
+], function(_, $, select2, moment, datetimepicker, stickit, BaseCollapsiblePanelView, hbTemplate) {
 	"use strict";
 
 	/*
@@ -18,6 +19,9 @@ define([
 	 *		@prop {Jquery el or selector} el
 	 *		@prop {Boolean} opened - Set to true if the panel should initially be open.
 	 */
+
+	var DATE_FORMAT = 'YYYY-MM-DD';
+
 	var view = BaseCollapsiblePanelView.extend({
 		template : hbTemplate,
 
@@ -33,9 +37,7 @@ define([
 		},
 
 		bindings : {
-			'#radius' : 'radius',
-			'#start-date' : 'startDate',
-			'#end-date' : 'endDate'
+			'#radius' : 'radius'
 		},
 
 
@@ -62,8 +64,12 @@ define([
 				theme : 'bootstrap'
 			});
 			this.updateDatasets();
+			this.updateStartDate();
+			this.updateEndDate();
 
 			this.listenTo(this.model, 'change:datasets', this.updateDatasets);
+			this.listenTo(this.model, 'change:startDate', this.updateStartDate);
+			this.listenTo(this.model, 'change:endDate', this.updateEndDate);
 			return this;
 		},
 
@@ -74,6 +80,20 @@ define([
 		updateDatasets : function() {
 			var chosenDatasets = (this.model.has('datasets')) ? this.model.get('datasets') : [];
 			this.$('#datasets-select').val(chosenDatasets).trigger('change');
+		},
+
+		updateStartDate : function() {
+			var startDate = (this.model.has('startDate')) ? this.model.get('startDate') : '';
+			var newValue = (startDate) ? startDate.format(DATE_FORMAT) : '';
+
+			this.$('#start-date').val(newValue);
+		},
+
+		updateEndDate : function() {
+			var endDate = (this.model.has('endDate')) ? this.model.get('endDate') : '';
+			var newValue = (endDate) ? endDate.format(DATE_FORMAT) : '';
+
+			this.$('#end-date').val(newValue);
 		},
 
 		/*
@@ -97,7 +117,7 @@ define([
 		changeStartDate : function(ev) {
 			var $endDate = this.$('#end-date-div');
 			if (ev.date) {
-				this.model.set('startDate', ev.date.format('YYYY-MM-DD'));
+				this.model.set('startDate', moment(ev.date));
 				$endDate.data('DateTimePicker').minDate(ev.date);
 			}
 			else {
@@ -109,7 +129,7 @@ define([
 		changeEndDate : function(ev) {
 			var $startDate = this.$('#start-date-div');
 			if (ev.date) {
-				this.model.set('endDate', ev.date.format('YYYY-MM-DD'));
+				this.model.set('endDate', moment(ev.date));
 				$startDate.data('DateTimePicker').maxDate(ev.date);
 			}
 			else {

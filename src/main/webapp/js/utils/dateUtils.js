@@ -7,15 +7,20 @@ define([
 		var self = {};
 
 		/*
-		 * @param {String} dateToTest - date Object
-		 * @param {Object with start and end string properties} dateRange - properties should be date objects
+		 * @param {Moment} dateToTest
+		 * @param {Object with start and end string properties} dateRange - properties should be parsable into Momenet objects
 		 * @returns {Boolean} - True if dateToTest is with dateRange.start and dateRange.end inclusive
 		 */
 		self.inDateRange = function(dateToTest, dateRange) {
-			var momentToTest = moment(dateToTest);
-			return (momentToTest.isSameOrAfter(dateRange.start) && momentToTest.isSameOrBefore(dateRange.end));
+			return (dateToTest.isSameOrAfter(dateRange.start) &&
+				dateToTest.isSameOrBefore(dateRange.end));
 		};
 
+		/*
+		 * @param {Object with start and end Moment properties} dateRange1
+		 * @param {Object with start and end Moment properties} dateRange2
+		 * @returns {Boolean} - True if dateRange1 intersects dateRange2
+		 */
 		self.dateRangeOverlaps = function(dateRange1, dateRange2) {
 			return (self.inDateRange(dateRange1.start, dateRange2) ||
 				self.inDateRange(dateRange1.end, dateRange2) ||

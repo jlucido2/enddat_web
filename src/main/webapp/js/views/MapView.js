@@ -225,8 +225,10 @@ define([
 			this.updateSiteMarker(datasetCollections[model.NWIS_DATASET]);
 			this.updatePrecipGridPoints(datasetCollections[model.PRECIP_DATASET]);
 
-			this.listenTo(model, 'change:startDate', this.updateDatasetDateFilter);
-			this.listenTo(model, 'change:endDate', this.updateDatasetDateFilter);
+			this.listenTo(model, 'change:startDate', this.updateSiteMarker);
+			this.listenTo(model, 'change:endDate', this.updateSiteMarker);
+			this.listenTo(model, 'change:startDate', this.updatePrecipGridPoints);
+			this.listenTo(model, 'change:endDate', this.updatePrecipGridPoints);
 			this.listenTo(datasetCollections[model.NWIS_DATASET], 'reset', this.updateSiteMarker);
 			this.listenTo(datasetCollections[model.PRECIP_DATASET], 'reset', this.updatePrecipGridPoints);
 		},
@@ -235,11 +237,14 @@ define([
 		 * @param {SiteModel} sites - has one or more site objects, each with properties
 		 *	latitude and longitude in order to be a valid location
 		 */
-		updateSiteMarker : function(siteCollection) {
+		updateSiteMarker : function() {
 			var self = this;
+			var siteCollection = this.model.get('datasetCollections')[this.model.NWIS_DATASET];
+			var filteredSiteModels = siteCollection.getModelsWithinDateFilter(this.model.get('startDate'), this.model.get('endDate'));
+
 			this.siteLayerGroup.clearLayers();
 
-			siteCollection.each(function(siteModel) {
+			_.each(filteredSiteModels, function(siteModel) {
 				var marker = L.marker([siteModel.attributes.lat, siteModel.attributes.lon], {
 					icon: siteIcon,
 					title: siteModel.attributes.name
@@ -252,8 +257,10 @@ define([
 		 * Updates the precipitation layer group to reflect the grid points in precipCollection
 		 * @param {models/PrecipitationCollection} precipCollection
 		 */
-		updatePrecipGridPoints : function(precipCollection) {
+		updatePrecipGridPoints : function() {
 			var self = this;
+			var precipCollection = this.model.get('datasetCollections')[this.model.PRECIP_DATASET];
+			var filteredPrecipModels = precipCollection.getModelsWithinDateFilter(this.model.get('startDate'), this.model.get('endDate'));
 
 			var moveCircleMarker = function(latLng) {
 				if (self.circleMarker) {
@@ -291,21 +298,19 @@ define([
 
 			this.precipLayerGroup.clearLayers();
 
-			if (precipCollection) {
-				precipCollection.each(function(precipModel) {
-					var latLng = new L.latLng(precipModel.attributes.lat, precipModel.attributes.lon);
-					var marker = L.marker(latLng, {
-						icon : precipIcon,
-						title : precipModel.attributes.y + ':' + precipModel.attributes.x
-					});
-					self.precipLayerGroup.addLayer(marker);
-
-					marker.on('click', function(ev) {
-						moveCircleMarker(latLng);
-						updatePrecipDataView(precipModel);
-					});
+			_.each(filteredPrecipModels, function(precipModel) {
+				var latLng = new L.latLng(precipModel.attributes.lat, precipModel.attributes.lon);
+				var marker = L.marker(latLng, {
+					icon : precipIcon,
+					title : precipModel.attributes.y + ':' + precipModel.attributes.x
 				});
-			}
+				self.precipLayerGroup.addLayer(marker);
+
+				marker.on('click', function(ev) {
+					moveCircleMarker(latLng);
+					updatePrecipDataView(precipModel);
+				});
+			});
 		}
 	});
 

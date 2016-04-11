@@ -8,19 +8,27 @@ define([
 
 	var model = Backbone.Collection.extend({
 
+
+		/*
+		 * The startDate and endDate values in each model are assumed to be moment objects
+		 * @param {Moment} startDate
+		 * @param {Moment} endDate
+		 * @returns {Arra of Backbone.Model} whose startDate and endDate range overlaps the function parameters.
+		 *		If startDate or endDate are falsy, all of the models in the collection are returned.
+		 */
 		getModelsWithinDateFilter : function(startDate, endDate) {
 			var dateFilter;
 			var result;
 
 			if ((startDate) && (endDate)) {
 				dateFilter = {
-					start : new Date(startDate),
-					end : new Date(endDate)
+					start : startDate,
+					end : endDate
 				};
 				result = this.filter(function(model) {
 					var modelDateRange = {
-						start : new Date(model.get('startDate')),
-						end : new Date(model.get('endDate'))
+						start : model.get('startDate'),
+						end : model.get('endDate')
 					};
 					return dateUtils.dateRangeOverlaps(modelDateRange, dateFilter);
 				});

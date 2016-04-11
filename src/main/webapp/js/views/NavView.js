@@ -9,8 +9,7 @@ define([
 ], function(_, bootstrap, log, BaseView, hb_template) {
 	"use strict";
 
-	var DEFAULT_RADIUS = 2;
-	var DEFAULT_DATASETS = ['NWIS'];
+	var DATE_FORMAT = 'YYYY-MM-DD';
 
 	var view = BaseView.extend({
 		template : hb_template,
@@ -73,8 +72,8 @@ define([
 
 			var location = 'lat/' + latitude + '/lng/' + longitude;
 			var radius = (model.has('radius')) ? '/radius/' + state.radius : '';
-			var startDate = (model.has('startDate')) ? '/startdate/' + state.startDate : '';
-			var endDate = (model.has('endDate')) ? '/enddate/' + state.endDate : '';
+			var startDate = (model.has('startDate')) ? '/startdate/' + state.startDate.format(DATE_FORMAT) : '';
+			var endDate = (model.has('endDate')) ? '/enddate/' + state.endDate.format(DATE_FORMAT) : '';
 			var datasets = (model.has('datasets')) ? '/dataset/' + state.datasets.join('/') : '';
 			return location + radius + startDate + endDate + datasets;
 		},

@@ -51,7 +51,8 @@
 					'leaflet-providers' : '<%=baseUrl%>bower_components/leaflet-providers/leaflet-providers',
 					'loglevel' : '<%=baseUrl%>bower_components/loglevel/dist/loglevel<%= development ? "" : ".min"%>',
 					'backbone.stickit' : '<%=baseUrl%>bower_components/backbone.stickit/backbone.stickit',
-					'moment' : '<%=baseUrl%>bower_components/moment/<%=development ? "" : "min/"%>moment<%=development ? "" : ".min"%>'
+					'moment' : '<%=baseUrl%>bower_components/moment/<%=development ? "" : "min/"%>moment<%=development ? "" : ".min"%>',
+					'bootstrap-datetimepicker' : '<%=baseUrl%>bower_components/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker'
 				},
 				shim: {
 					"bootstrap": [ "jquery" ],
@@ -67,7 +68,8 @@
 						deps: ['jquery', 'underscore', 'backbone'],
 						exports: 'Backgrid'
 					},
-					'backbone.stickit' : ['backbone', 'underscore']
+					'backbone.stickit' : ['backbone', 'underscore'],
+					'bootstrap-datetimepicker' : ['jquery', 'bootstrap', 'moment']
 				},
 				packages : [
 					{

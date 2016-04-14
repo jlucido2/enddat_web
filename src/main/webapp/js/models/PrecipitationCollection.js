@@ -4,19 +4,19 @@ define([
 	'loglevel',
 	'module',
 	'jquery',
-	'backbone',
 	'moment',
+	'models/BaseDatasetCollection',
 	'utils/jqueryUtils'
-], function(log, module, $, Backbone, moment, $utils) {
+], function(log, module, $, moment, BaseDatasetCollection, $utils) {
 	"use strict";
 
 	var getInteger = function(str) {
 		return str.split('.')[0];
 	};
 
-	var START_DATE = '2002-01-01';
+	var START_DATE = moment('2002-01-01', 'YYYY-MM-DD');
 
-	var collection = Backbone.Collection.extend({
+	var collection = BaseDatasetCollection.extend({
 
 		url : module.config().precipWFSGetFeatureUrl,
 
@@ -27,7 +27,7 @@ define([
 		 */
 		parse : function(xml) {
 			var result = [];
-			var today = moment().format('YYYY-MM-DD');
+			var today = moment();
 			$utils.xmlFind($(xml), 'wfs', 'member').each(function() {
 				var $this = $(this);
 

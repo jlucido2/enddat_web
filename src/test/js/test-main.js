@@ -32,7 +32,8 @@ require.config({
 		'leaflet-providers' : '/base/src/main/webapp/bower_components/leaflet-providers/leaflet-providers',
 		'loglevel' : '/base/src/main/webapp/bower_components/loglevel/dist/loglevel',
 		'backbone.stickit' : '/base/src/main/webapp/bower_components/backbone.stickit/backbone.stickit',
-		'moment' : '/base/src/main/webapp/bower_components/moment/moment'
+		'moment' : '/base/src/main/webapp/bower_components/moment/moment',
+		'bootstrap-datetimepicker' : '/base/src/main/webapp/bower_components/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker'
 	},
 	shim: {
 		'bootstrap': ['jquery'],
@@ -48,7 +49,8 @@ require.config({
 			deps: ['jquery', 'underscore', 'backbone'],
 			exports: 'Backgrid'
 		},
-		'backbone.stickit' : ['backbone', 'underscore']
+		'backbone.stickit' : ['backbone', 'underscore'],
+		'bootstrap-datetimepicker' : ['jquery', 'bootstrap', 'moment']
 	}
 });
 require(allTestFiles, window.__karma__.start);

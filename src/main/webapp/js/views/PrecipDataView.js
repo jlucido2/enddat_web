@@ -28,9 +28,11 @@ define([
 		initialize : function(options) {
 			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
 
-			this.context = this.model.attributes;
+			this.context = _.clone(this.model.attributes);
 			this.context.lat = (parseFloat(this.context.lat)).toFixed(3);
 			this.context.lon = (parseFloat(this.context.lon)).toFixed(3);
+			this.context.startDate = this.context.startDate.format('YYYY-MM-DD');
+			this.context.endDate = this.context.endDate.format('YYYY-MM-DD');
 		},
 
 		toggleCollectedDataVariable : function() {

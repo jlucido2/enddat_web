@@ -3,9 +3,10 @@
 
 define([
 	'jquery',
+	'moment',
 	'backbone',
 	'views/PrecipDataView'
-], function($, Backbone, PrecipDataView) {
+], function($, moment, Backbone, PrecipDataView) {
 
 	describe('views/PrecipDataView', function() {
 		var testView;
@@ -19,7 +20,9 @@ define([
 				lat : '43.1',
 				lon : '-100.2',
 				x : '514',
-				y : '720'
+				y : '720',
+				startDate : moment('2002-01-01', 'YYYY-MM-DD'),
+				endDate : moment('2016-04-18', 'YYYY-MM-DD')
 			});
 		});
 

@@ -136,15 +136,17 @@ define([
 							collection.reset();
 						});
 					};
-					this.unset('location', {silent : true});
-					this.unset('radius', {silent : true});
-					this.unset('datasets', {silent : true});
+					this.unset('datasets');
+					this.unset('location');
+					this.unset('radius');
+					this.unset('startDate');
+					this.unset('endDate');
 					break;
 
 				case this.CHOOSE_DATA_STEP:
 					if (previousStep === this.PROJ_LOC_STEP) {
 						this.initializeDatasetCollections();
-						this.set('datasets', this.DEFAULT_CHOSEN_DATASETS, {silent: true});
+						this.set('datasets', this.DEFAULT_CHOSEN_DATASETS);
 						this.set('radius', this.DEFAULT_CHOOSE_DATA_RADIUS);
 					}
 					break;

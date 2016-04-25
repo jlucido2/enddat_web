@@ -49,12 +49,12 @@ define([
 
 			//Set up date pickers
 			this.$('#start-date-div').datetimepicker({
-				format : 'YYYY-MM-DD',
+				format : DATE_FORMAT,
 				useCurrent: false,
 				maxDate : now
 			});
 			this.$('#end-date-div').datetimepicker({
-				format : 'YYYY-MM-DD',
+				format : DATE_FORMAT,
 				useCurrent : false,
 				maxDate : now
 			});

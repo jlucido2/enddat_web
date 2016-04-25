@@ -7,10 +7,9 @@ define([
 	'leaflet',
 	'Config',
 	'models/WorkflowStateModel',
-	'models/SiteCollection',
 	'views/BaseView',
 	'views/MapView'
-], function($, _, L, Config, WorkflowStateModel, SiteCollection, BaseView, MapView) {
+], function($, _, L, Config, WorkflowStateModel, BaseView, MapView) {
 	describe('views/MapView', function() {
 		var testView;
 		var $testDiv;

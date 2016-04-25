@@ -6,9 +6,9 @@ define([
 	'backbone',
 	'Config',
 	'utils/geoSpatialUtils',
-	'models/SiteCollection',
+	'models/NWISCollection',
 	'models/PrecipitationCollection'
-], function(_, $, Backbone, Config, geoSpatialUtils, SiteCollection, PrecipitationCollection) {
+], function(_, $, Backbone, Config, geoSpatialUtils, NWISCollection, PrecipitationCollection) {
 	"use strict";
 
 	var model = Backbone.Model.extend({
@@ -41,7 +41,7 @@ define([
 			}
 			else {
 				datasetCollections = _.object([
-					[Config.NWIS_DATASET, new SiteCollection()],
+					[Config.NWIS_DATASET, new NWISCollection()],
 					[Config.PRECIP_DATASET, new PrecipitationCollection()]
 				]);
 				this.set('datasetCollections', datasetCollections);

@@ -3,14 +3,14 @@
 
 define([
 	'jquery',
-	'models/SiteCollection'
-], function($, SiteCollection) {
-	describe('models/SiteCollection', function() {
+	'models/NWISCollection'
+], function($, NWISCollection) {
+	describe('models/NWISCollection', function() {
 		var testSiteModel;
 
 		beforeEach(function() {
 			sinon.stub($, "ajax");
-			testCollection = new SiteCollection();
+			testCollection = new NWISCollection();
 		});
 
 		afterEach(function() {

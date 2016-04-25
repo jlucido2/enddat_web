@@ -34,7 +34,7 @@ define([
 				fetch : fetchPrecipSpy.and.returnValue(fetchPrecipDeferred.promise()),
 				reset : resetPrecipSpy
 			}));
-			injector.mock('models/SiteCollection', Backbone.Collection.extend({
+			injector.mock('models/NWISCollection', Backbone.Collection.extend({
 				fetch : fetchSiteSpy.and.returnValue(fetchSiteDeferred.promise()),
 				reset : resetSiteSpy
 			}));

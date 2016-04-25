@@ -2,12 +2,11 @@
 
 define([
 	'underscore',
+	'Config',
 	'views/BaseCollapsiblePanelView',
 	'hbs!hb_templates/nwisData'
-], function(_, BaseCollapsiblePanelView, hbTemplate) {
+], function(_, Config, BaseCollapsiblePanelView, hbTemplate) {
 	"use strict";
-
-	var DATE_FORMAT = 'YYYY-MM-DD';
 
 	var view = BaseCollapsiblePanelView.extend({
 		template : hbTemplate,
@@ -22,8 +21,8 @@ define([
 		initialize : function(options) {
 			var formatDates = function (parameter) {
 				var result = _.clone(parameter);
-				result.startDate = parameter.startDate.format(DATE_FORMAT);
-				result.endDate = parameter.endDate.format(DATE_FORMAT);
+				result.startDate = parameter.startDate.format(Config.DATE_FORMAT);
+				result.endDate = parameter.endDate.format(Config.DATE_FORMAT);
 				return result;
 			};
 

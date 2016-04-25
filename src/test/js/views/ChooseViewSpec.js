@@ -5,9 +5,10 @@ define([
 	'jquery',
 	'select2',
 	'moment',
+	'Config',
 	'models/WorkflowStateModel',
 	'views/ChooseView'
-], function($, select2, moment, WorkflowStateModel, ChooseView) {
+], function($, select2, moment, Config, WorkflowStateModel, ChooseView) {
 	"use strict";
 
 	describe('views/ChooseView', function() {
@@ -24,7 +25,7 @@ define([
 			$testDiv = $('#test-div');
 
 			testModel = new WorkflowStateModel();
-			testModel.set('step', testModel.PROJ_LOC_STEP);
+			testModel.set('step', Config.PROJ_LOC_STEP);
 
 			testView = new ChooseView({
 				el : $testDiv,
@@ -53,13 +54,13 @@ define([
 					radius : '2',
 					startDate : moment('2001-01-01', DATE_FORMAT),
 					endDate : moment('2010-01-01', DATE_FORMAT),
-					datasets : [testModel.NWIS_DATASET]
+					datasets : [Config.NWIS_DATASET]
 				});
 				testView.render();
 				expect($testDiv.find('#radius').val()).toEqual('2');
 				expect($testDiv.find('#start-date').val()).toEqual('2001-01-01');
 				expect($testDiv.find('#end-date').val()).toEqual('2010-01-01');
-				expect($testDiv.find('#datasets-select').val()).toEqual([testModel.NWIS_DATASET]);
+				expect($testDiv.find('#datasets-select').val()).toEqual([Config.NWIS_DATASET]);
 			});
 		});
 

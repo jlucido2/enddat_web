@@ -4,12 +4,11 @@ define([
 	'underscore',
 	'bootstrap', // Needed by the bootstrap navbar
 	'loglevel',
+	'Config',
 	'views/BaseView',
 	'hbs!hb_templates/workflowNav'
-], function(_, bootstrap, log, BaseView, hb_template) {
+], function(_, bootstrap, log, Config, BaseView, hb_template) {
 	"use strict";
-
-	var DATE_FORMAT = 'DMMMYYYY';
 
 	var view = BaseView.extend({
 		template : hb_template,
@@ -30,9 +29,9 @@ define([
 			BaseView.prototype.initialize.apply(this, arguments);
 
 			this.navSelector = {};
-			this.navSelector[this.model.PROJ_LOC_STEP] = '.nav-project-loc';
-			this.navSelector[this.model.CHOOSE_DATA_STEP] = '.nav-choose-data';
-			this.navSelector[this.model.PROCESS_DATA_STEP] = '.nav-process-data';
+			this.navSelector[Config.PROJ_LOC_STEP] = '.nav-project-loc';
+			this.navSelector[Config.CHOOSE_DATA_STEP] = '.nav-choose-data';
+			this.navSelector[Config.PROCESS_DATA_STEP] = '.nav-process-data';
 
 			this.listenTo(this.model, 'change', this.updateNavigation);
 		},
@@ -48,20 +47,20 @@ define([
 		 */
 		goToProjectLocationStep : function(ev) {
 			ev.preventDefault();
-			if (this.model.get('step') !== this.model.PROJ_LOC_STEP) {
-				this.model.set('step', this.model.PROJ_LOC_STEP);
+			if (this.model.get('step') !== Config.PROJ_LOC_STEP) {
+				this.model.set('step', Config.PROJ_LOC_STEP);
 			}
 		},
 		goToChooseDataStep : function(ev) {
 			ev.preventDefault();
-			if (this.model.get('step') !== this.model.CHOOSE_DATA_STEP) {
-				this.model.set('step', this.model.CHOOSE_DATA_STEP);
+			if (this.model.get('step') !== Config.CHOOSE_DATA_STEP) {
+				this.model.set('step', Config.CHOOSE_DATA_STEP);
 			}
 		},
 		goToProcessDataStep : function(ev) {
 			ev.preventDefault();
-			if (this.model.get('step') !== this.model.PROCESS_DATA_STEP) {
-				this.model.set({step : this.model.PROCESS_DATA_STEP});
+			if (this.model.get('step') !== Config.PROCESS_DATA_STEP) {
+				this.model.set({step : Config.PROCESS_DATA_STEP});
 			}
 		},
 
@@ -72,8 +71,8 @@ define([
 
 			var location = 'lat/' + latitude + '/lng/' + longitude;
 			var radius = (state.radius) ? '/radius/' + state.radius : '';
-			var startDate = (state.startDate) ? '/startdate/' + state.startDate.format(DATE_FORMAT) : '';
-			var endDate = (state.endDate) ? '/enddate/' + state.endDate.format(DATE_FORMAT) : '';
+			var startDate = (state.startDate) ? '/startdate/' + state.startDate.format(Config.DATE_FORMAT_URL) : '';
+			var endDate = (state.endDate) ? '/enddate/' + state.endDate.format(Config.DATE_FORMAT_URL) : '';
 			var datasets = (state.datasets) ? '/dataset/' + state.datasets.join('/') : '';
 			return location + radius + startDate + endDate + datasets;
 		},
@@ -90,10 +89,10 @@ define([
 				this.$(currentStepSelector).addClass('active');
 			}
 			switch(newStep) {
-				case model.PROJ_LOC_STEP:
+				case Config.PROJ_LOC_STEP:
 					var location = model.get('location');
-					$chooseDataBtn = this.$(this.navSelector[model.CHOOSE_DATA_STEP]);
-					$processDataBtn = this.$(this.navSelector[model.PROCESS_DATA_STEP]);
+					$chooseDataBtn = this.$(this.navSelector[Config.CHOOSE_DATA_STEP]);
+					$processDataBtn = this.$(this.navSelector[Config.PROCESS_DATA_STEP]);
 
 					if ((location) && _.has(location, 'latitude') && (location.latitude) &&
 						_.has(location, 'longitude') && (location.longitude)) {
@@ -107,8 +106,8 @@ define([
 					this.router.navigate('');
 					break;
 
-				case model.CHOOSE_DATA_STEP:
-					$processDataBtn = this.$(this.navSelector[model.PROCESS_DATA_STEP]);
+				case Config.CHOOSE_DATA_STEP:
+					$processDataBtn = this.$(this.navSelector[Config.PROCESS_DATA_STEP]);
 					//TODO: We will need to add code to remove the disabled class from the process Data button
 					// when we know what will allow that step.
 					$processDataBtn.addClass('disabled');
@@ -119,7 +118,7 @@ define([
 					}
 					break;
 
-				case model.PROCESS_DATA_STEP:
+				case Config.PROCESS_DATA_STEP:
 					//TODO: probably will need to add things here as we figure out this step.
 					break;
 			}

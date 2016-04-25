@@ -4,9 +4,10 @@
 define([
 	'squire',
 	'jquery',
+	'Config',
 	'models/WorkflowStateModel',
 	'views/BaseView'
-], function(Squire, $, WorkflowStateModel, BaseView) {
+], function(Squire, $, Config, WorkflowStateModel, BaseView) {
 	"use strict";
 
 	describe("DataDiscoveryView", function() {
@@ -108,7 +109,7 @@ define([
 
 				testModel = new WorkflowStateModel();
 				spyOn(testModel, 'updateDatasetCollections');
-				testModel.set('step', testModel.PROJ_LOC_STEP);
+				testModel.set('step', Config.PROJ_LOC_STEP);
 
 				done();
 			});
@@ -173,14 +174,14 @@ define([
 				expect(setElNavViewSpy.calls.count()).toBe(3);
 				expect(renderNavViewSpy.calls.count()).toBe(2);
 
-				testModel.set('step', testModel.PROCESS_DATA_STEP);
+				testModel.set('step', Config.PROCESS_DATA_STEP);
 				testView.render();
 				expect(setElNavViewSpy.calls.count()).toBe(4);
 				expect(renderNavViewSpy.calls.count()).toBe(3);
 			});
 
 			it('Expects that if the workflow step is PROJ_LOC_STEP, the location and map views are created and rendered but not the choose data view', function() {
-				testModel.set('step', testModel.PROJ_LOC_STEP);
+				testModel.set('step', Config.PROJ_LOC_STEP);
 				testView.render();
 
 				expect(setElMapViewSpy).toHaveBeenCalled();
@@ -191,7 +192,7 @@ define([
 			});
 
 			it('Expects that if the workflow step is CHOOSE_DATA_STEP, the location, map, and choose data views are created and rendered', function() {
-				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_STEP);
 				testView.render();
 
 				expect(setElMapViewSpy).toHaveBeenCalled();
@@ -226,7 +227,7 @@ define([
 			});
 
 			it('Expects that the location and map subviews are removed if they have been created', function() {
-				testModel.set('step', testModel.PROJ_LOC_STEP);
+				testModel.set('step', Config.PROJ_LOC_STEP);
 				testView.render();
 				testView.remove();
 
@@ -236,7 +237,7 @@ define([
 			});
 
 			it('Expects that the location,map, and choose data subviews are removed if they have been created', function() {
-				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_STEP);
 				testView.render();
 				testView.remove();
 
@@ -284,18 +285,18 @@ define([
 
 
 			it('Expects that if the step changes from CHOOSE_DATA_STEP to PROJ_LOC_STEP, the choose view is removed', function() {
-				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_STEP);
 				removeChooseViewSpy.calls.reset();
-				testModel.set('step', testModel.PROJ_LOC_STEP);
+				testModel.set('step', Config.PROJ_LOC_STEP);
 
 				expect(removeChooseViewSpy).toHaveBeenCalled();
 			});
 
 			it('Expects that if the step changes from PROJ_LOC_STEP to CHOOSE_DATA_STEP, the choose view is created and rendered', function() {
-				testModel.set('step', testModel.PROJ_LOC_STEP);
+				testModel.set('step', Config.PROJ_LOC_STEP);
 				setElChooseViewSpy.calls.reset();
 				renderChooseViewSpy.calls.reset();
-				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_STEP);
 
 				expect(setElChooseViewSpy).toHaveBeenCalled();
 				expect(renderChooseViewSpy).toHaveBeenCalled();
@@ -303,7 +304,7 @@ define([
 
 			it('Expects that if the step changes, the alert view is closed', function() {
 				closeAlertSpy.calls.reset();
-				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_STEP);
 
 				expect(closeAlertSpy).toHaveBeenCalled();
 			});

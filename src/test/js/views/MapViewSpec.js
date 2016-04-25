@@ -5,11 +5,12 @@ define([
 	'jquery',
 	'underscore',
 	'leaflet',
+	'Config',
 	'models/WorkflowStateModel',
 	'models/SiteCollection',
 	'views/BaseView',
 	'views/MapView'
-], function($, _, L, WorkflowStateModel, SiteCollection, BaseView, MapView) {
+], function($, _, L, Config, WorkflowStateModel, SiteCollection, BaseView, MapView) {
 	describe('views/MapView', function() {
 		var testView;
 		var $testDiv;
@@ -42,18 +43,16 @@ define([
 			});
 			spyOn(L.control, 'layers').and.callThrough();
 			spyOn(L, 'marker').and.callThrough();
-			addLayerGroupSpy = jasmine.createSpy('addLayerGroupSpy');
-			addToGroupSpy = jasmine.createSpy('addToGroupSpy');
 			spyOn(L, 'layerGroup').and.callThrough();
 
 			spyOn(BaseView.prototype, 'initialize').and.callThrough();
 			spyOn(BaseView.prototype, 'remove').and.callThrough();
 
 			testModel = new WorkflowStateModel();
-			testModel.set('step', testModel.CHOOSE_DATA_STEP);
+			testModel.set('step', Config.CHOOSE_DATA_STEP);
 			testModel.initializeDatasetCollections();
-			testSiteCollection = testModel.get('datasetCollections').NWIS;
-			testPrecipCollection = testModel.get('datasetCollections').PRECIP;
+			testSiteCollection = testModel.get('datasetCollections')[Config.NWIS_DATASET];
+			testPrecipCollection = testModel.get('datasetCollections')[Config.PRECIP_DATASET];
 
 			testView = new MapView({
 				el : '#test-div',
@@ -82,8 +81,9 @@ define([
 		});
 
 		it('Expects that the dataset model\'s layer group\'s are created', function() {
-			expect(testView.siteLayerGroup).toBeDefined();
-			expect(testView.precipLayerGroup).toBeDefined();
+			expect(testView.siteLayerGroups).toBeDefined();
+			expect(testView.siteLayerGroups[Config.NWIS_DATASET]).toBeDefined();
+			expect(testView.siteLayerGroups[Config.PRECIP_DATASET]).toBeDefined();
 		});
 
 		describe('Tests for render', function() {
@@ -103,8 +103,8 @@ define([
 				layersAdded = _.map(addLayerSpy.calls.allArgs(), function(args) {
 					return args[0];
 				});
-				expect(_.contains(layersAdded, testView.siteLayerGroup)).toBe(true);
-				expect(_.contains(layersAdded, testView.precipLayerGroup)).toBe(true);
+				expect(_.contains(layersAdded, testView.siteLayerGroups[Config.NWIS_DATASET])).toBe(true);
+				expect(_.contains(layersAdded, testView.siteLayerGroups[Config.PRECIP_DATASET])).toBe(true);
 			});
 
 			it('Expects that the project location marker is not added to the map if location is not defined in the workflow state', function() {
@@ -174,9 +174,9 @@ define([
 
 			it('Expect that the site location marker is added to the map if there are sites in the site model', function() {
 				testSiteCollection.reset([{siteNo : '05464220','name': 'test', 'lat': '42.25152778', 'lon': '-92.2988889'}]);
-				spyOn(testView.siteLayerGroup, 'addLayer').and.callThrough();
+				spyOn(testView.siteLayerGroups[Config.NWIS_DATASET], 'addLayer').and.callThrough();
 				testView.render();
-				expect(testView.siteLayerGroup.addLayer.calls.count()).toBe(1);
+				expect(testView.siteLayerGroups[Config.NWIS_DATASET].addLayer.calls.count()).toBe(1);
 			});
 
 			it('Expects that the precipitation layer group contains markers for each grid', function() {
@@ -184,9 +184,9 @@ define([
 					{x : '1', y: '2', lon : '-100', lat : '43.0'},
 					{x : '1', y: '3', lon : '-100', lat : '44.0'}
 				]);
-				spyOn(testView.precipLayerGroup, 'addLayer').and.callThrough();
+				spyOn(testView.siteLayerGroups[Config.PRECIP_DATASET], 'addLayer').and.callThrough();
 				testView.render();
-				expect(testView.precipLayerGroup.addLayer.calls.count()).toBe(2);
+				expect(testView.siteLayerGroups[Config.PRECIP_DATASET].addLayer.calls.count()).toBe(2);
 			});
 		});
 
@@ -205,12 +205,21 @@ define([
 				expect(removeMapSpy).toHaveBeenCalled();
 			});
 
-			it('Expects precipDataView to be removed if it is defined', function() {
-				testView.precipDataView = jasmine.createSpyObj('precipDataView', ['remove']);
+			it('Expects siteDataViews to be removed ', function() {
+				var nwisRemoveSpy = jasmine.createSpy('nwisRemoveSpy');
+				var precipRemoveSpy = jasmine.createSpy('precipRemoveSpy');
+				testView.siteDataViews[Config.NWIS_DATASET] = {
+					remove : nwisRemoveSpy
+				};
+				testView.siteDataViews[Config.PRECIP_DATASET] = {
+					remove : precipRemoveSpy
+				};
 				testView.render();
 				testView.remove();
 
-				expect(testView.precipDataView.remove).toHaveBeenCalled();
+				expect(nwisRemoveSpy).toHaveBeenCalled();
+				expect(precipRemoveSpy).toHaveBeenCalled();
+				expect(testView.siteDataViews).toEqual({});
 			});
 		});
 
@@ -219,14 +228,20 @@ define([
 				testView.render();
 			});
 
-			it('Expects that if the testModel changes the step to PROJ_LOC_STEP, that the precipDataView is removed and assigned undefined', function() {
-				var removeSpy = jasmine.createSpy('removeSpy');
-				testView.precipDataView = {
-					remove : removeSpy
+			it('Expects that if the testModel changes the step to PROJ_LOC_STEP, that the dataViews are removed and assigned undefined', function() {
+				var removePrecipSpy = jasmine.createSpy('removePrecipSpy');
+				var removeNWISSpy = jasmine.createSpy('removeNWISSpy');
+				testView.siteataViews = {};
+				testView.siteDataViews[Config.PRECIP_DATASET] = {
+					remove : removePrecipSpy
 				};
-				testModel.set('step', testModel.PROJ_LOC_STEP);
+				testView.siteDataViews[Config.NWIS_DATASET] = {
+					remove : removeNWISSpy
+				};
+				testModel.set('step', Config.PROJ_LOC_STEP);
 
-				expect(removeSpy).toHaveBeenCalled();
+				expect(removePrecipSpy).toHaveBeenCalled();
+				expect(removeNWISSpy).toHaveBeenCalled();
 				expect(testView.precipDataView).toBeUndefined();
 			});
 
@@ -272,17 +287,17 @@ define([
 				expect(fitBoundsSpy).toHaveBeenCalled();
 			});
 
-			it('Expects that if the site model is updated, an updated site marker is added to the map', function() {
+			it('Expects that if the NWIS model is updated, an updated NWIS marker is added to the map', function() {
 				testSiteCollection.reset([{siteNo : '05464220','name': 'test', 'lat': '42.25152778', 'lon': '-92.2988889'}]);
 
-				expect(testView.siteLayerGroup.getLayers().length).toBe(1);
+				expect(testView.siteLayerGroups[Config.NWIS_DATASET].getLayers().length).toBe(1);
 			});
 
-			it('Expects that if the site model is updated and then cleared, no site markers will be on the map', function() {
+			it('Expects that if the NWIS model is updated and then cleared, no NWIS markers will be on the map', function() {
 				testSiteCollection.reset([{siteNo : '05464220','name': 'test', 'lat': '42.25152778', 'lon': '-92.2988889'}]);
 				testSiteCollection.reset();
 
-				expect(testView.siteLayerGroup.getLayers().length).toBe(0);
+				expect(testView.siteLayerGroups[Config.NWIS_DATASET].getLayers().length).toBe(0);
 			});
 
 			it('Expects that if the precipitation collection is updated, precipitation grid points will be on the map', function() {
@@ -290,7 +305,7 @@ define([
 					{x : '1', y: '2', lon : '-100', lat : '43.0'},
 					{x : '1', y: '3', lon : '-100', lat : '44.0'}
 				]);
-				expect(testView.precipLayerGroup.getLayers().length).toBe(2);
+				expect(testView.siteLayerGroups[Config.PRECIP_DATASET].getLayers().length).toBe(2);
 			});
 
 			it('Expects that if the precipitation collection is updated then cleared, no precipitation grid points will be on the map', function() {
@@ -299,7 +314,7 @@ define([
 					{x : '1', y: '3', lon : '-100', lat : '44.0'}
 				]);
 				testPrecipCollection.reset([]);
-				expect(testView.precipLayerGroup.getLayers().length).toBe(0);
+				expect(testView.siteLayerGroups[Config.PRECIP_DATASET].getLayers().length).toBe(0);
 			});
 		});
 

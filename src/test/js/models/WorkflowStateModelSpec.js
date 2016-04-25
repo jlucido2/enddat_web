@@ -6,8 +6,9 @@ define([
 	'jquery',
 	'backbone',
 	'moment',
+	'Config',
 	'utils/geoSpatialUtils'
-], function(Squire, $, Backbone, moment, geoSpatialUtils) {
+], function(Squire, $, Backbone, moment, Config, geoSpatialUtils) {
 
 	describe('models/WorkflowStateModel', function() {
 		var injector;
@@ -60,8 +61,8 @@ define([
 		it('Expects that calling initializeDatasetCollections initializes the datasetCollections property', function() {
 			testModel.initializeDatasetCollections();
 
-			expect(testModel.attributes.datasetCollections[testModel.NWIS_DATASET]).toBeDefined();
-			expect(testModel.attributes.datasetCollections[testModel.PRECIP_DATASET]).toBeDefined();
+			expect(testModel.attributes.datasetCollections[Config.NWIS_DATASET]).toBeDefined();
+			expect(testModel.attributes.datasetCollections[Config.PRECIP_DATASET]).toBeDefined();
 		});
 
 		describe('Tests for event handlers to update the datasets', function() {
@@ -137,7 +138,7 @@ define([
 			it('Expects that a dataset:updateStart event will be triggered if there is a valid bounding box and a dataset chosen.', function() {
 				updateStartSpy.calls.reset();
 				testModel.set({
-					datasets : [testModel.NWIS_DATASET, testModel.PRECIP_DATASET]
+					datasets : [Config.NWIS_DATASET, Config.PRECIP_DATASET]
 				});
 				expect(updateStartSpy).toHaveBeenCalled();
 
@@ -148,7 +149,7 @@ define([
 				expect(updateStartSpy).not.toHaveBeenCalled();
 
 				testModel.set({
-					datasets : [testModel.NWIS_DATASET]
+					datasets : [Config.NWIS_DATASET]
 				});
 				expect(updateStartSpy).toHaveBeenCalled();
 			});
@@ -161,7 +162,7 @@ define([
 
 			it('Expects that if any of the dataset fetches failed, the event handler will be called with the array of failed datasets', function() {
 				fetchSiteDeferred.reject();
-				expect(updateFinishedSpy).toHaveBeenCalledWith([testModel.NWIS_DATASET]);
+				expect(updateFinishedSpy).toHaveBeenCalledWith([Config.NWIS_DATASET]);
 			});
 		});
 
@@ -172,9 +173,9 @@ define([
 					radius : '6',
 					startDate : moment('2010-04-11', 'YYYY-MM-DD'),
 					endDate : moment('2016-04-15', 'YYYY-MM-DD'),
-					datasets : [testModel.NWIS_DATASET, testModel.PRECIP_DATASET]
+					datasets : [Config.NWIS_DATASET, Config.PRECIP_DATASET]
 				});
-				testModel.set('step', testModel.PROJ_LOC_STEP);
+				testModel.set('step', Config.PROJ_LOC_STEP);
 
 				expect(testModel.has('location')).toBe(false);
 				expect(testModel.has('radius')).toBe(false);
@@ -187,27 +188,27 @@ define([
 				testModel.initializeDatasetCollections();
 				resetSiteSpy.calls.reset();
 				resetPrecipSpy.calls.reset();
-				testModel.set('step', testModel.PROJ_LOC_STEP);
+				testModel.set('step', Config.PROJ_LOC_STEP);
 
 				expect(resetSiteSpy).toHaveBeenCalled();
 				expect(resetPrecipSpy).toHaveBeenCalled();
 			});
 
 			it('Expects that if the step changes to CHOOSE_DATA_STEP and the previous step was PROJ_LOC_STEP that the default radius and chosen datasets are set', function() {
-				testModel.set('step', testModel.PROJ_LOC_STEP);
+				testModel.set('step', Config.PROJ_LOC_STEP);
 				testModel.set('location', {latitude : '43.0', longitude : '-100.0'});
-				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_STEP);
 
 				expect(testModel.get('radius')).toEqual(testModel.DEFAULT_CHOOSE_DATA_RADIUS);
 				expect(testModel.get('datasets')).toEqual(testModel.DEFAULT_CHOSEN_DATASETS);
 			});
 
 			it('Expects that if the step changes to CHOOSE_DATA_STEP and the previous step was PROJ_LOC_STEP, the chosen datasets are fetched', function() {
-				testModel.set('step', testModel.PROJ_LOC_STEP);
+				testModel.set('step', Config.PROJ_LOC_STEP);
 				testModel.set('location', {latitude : '43.0', longitude : '-100.0'});
 				fetchPrecipSpy.calls.reset();
 				fetchSiteSpy.calls.reset();
-				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_STEP);
 
 				expect(fetchPrecipSpy).not.toHaveBeenCalled();
 				expect(fetchSiteSpy).toHaveBeenCalled();

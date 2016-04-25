@@ -5,22 +5,40 @@ define([
 	'leaflet',
 	'leaflet-providers',
 	'loglevel',
+	'Config',
 	'utils/jqueryUtils',
 	'utils/geoSpatialUtils',
 	'views/BaseView',
 	'views/PrecipDataView',
 	'views/NWISDataView',
 	'hbs!hb_templates/mapOps'
-], function(_, L, leafletProviders, log, $utils, geoSpatialUtils, BaseView, PrecipDataView, NWISDataView, hbTemplate) {
+], function(_, L, leafletProviders, log, Config, $utils, geoSpatialUtils, BaseView, PrecipDataView, NWISDataView, hbTemplate) {
 
-	var siteIcon = new L.icon({
+	var nwisIcon = new L.icon({
 		iconUrl : 'img/time-series.png',
 		iconSize : [10, 10]
 	});
+	var getNWISTitle = function(model) {
+		return model.get('name');
+	};
+
 	var precipIcon = L.icon({
 		iconUrl : 'img/national-precipitation.png',
 		iconSize : [14, 14]
 	});
+	var getPrecipTitle = function(model) {
+		return model.get('y') + ':' + model.get('x');
+	};
+
+	var DataViews =_.object(
+		[Config.NWIS_DATASET, Config.PRECIP_DATASET],
+		[NWISDataView, PrecipDataView]
+	);
+
+	var siteMarkerOptions = _.object(
+		[Config.NWIS_DATASET, Config.PRECIP_DATASET],
+		[{icon : nwisIcon, getTitle : getNWISTitle}, {icon : precipIcon, getTitle : getPrecipTitle}]
+	);
 
 	var MAP_WIDTH_CLASS = 'col-md-6';
 	var DATA_VIEW_WIDTH_CLASS = 'col-md-6';
@@ -65,11 +83,16 @@ define([
 				});
 			}, this);
 
-			this.siteLayerGroup = L.layerGroup();
-			this.precipLayerGroup = L.layerGroup();
+			this.siteLayerGroups = _.object(
+				[Config.NWIS_DATASET, Config.PRECIP_DATASET],
+				[L.layerGroup(), L.layerGroup()]
+			);
+
+			this.siteDataViews = {};
 		},
 
 		render : function() {
+			var self = this;
 			BaseView.prototype.render.apply(this, arguments);
 
 			if (_.has(this, 'map')) {
@@ -81,10 +104,11 @@ define([
 				layers : [this.baseLayers['World Street']]
 			});
 			_.each(this.controls, function(control) {
-				this.map.addControl(control);
+				self.map.addControl(control);
 			}, this);
-			this.map.addLayer(this.siteLayerGroup);
-			this.map.addLayer(this.precipLayerGroup);
+			_.each(this.siteLayerGroups, function(layerGroup) {
+				self.map.addLayer(layerGroup);
+			});
 
 			this.listenTo(this.model, 'change:step', this.updateWorkflowStep);
 
@@ -108,10 +132,17 @@ define([
 			if (_.has(this, 'map')) {
 				this.map.remove();
 			}
-			if (this.precipDataView) {
-				this.precipDataView.remove();
-			}
+			this.removeDataViews();
+
 			BaseView.prototype.remove.apply(this, arguments);
+			return this;
+		},
+
+		removeDataViews : function() {
+			_.each(this.siteDataViews, function(view) {
+				view.remove();
+			});
+			this.siteDataViews = {};
 		},
 
 		/*
@@ -164,11 +195,9 @@ define([
 		updateWorkflowStep: function (model, newStep) {
 			var $map = this.$('#' + this.mapDivId);
 			switch (newStep) {
-				case this.model.PROJ_LOC_STEP:
-					if (this.precipDataView) {
-						this.precipDataView.remove();
-						this.precipDataView = undefined;
-					}
+				case Config.PROJ_LOC_STEP:
+					this.removeDataViews();
+
 					if (this.map.hasLayer(this.circleMarker)) {
 						this.map.removeLayer(this.circleMarker);
 					}
@@ -223,24 +252,18 @@ define([
 		},
 
 		setupDatasetListeners : function(model, datasetCollections) {
-			this.updateSiteMarker(datasetCollections[model.NWIS_DATASET]);
-			this.updatePrecipGridPoints(datasetCollections[model.PRECIP_DATASET]);
+			this.updateAllSiteMarkers();
 
-			this.listenTo(model, 'change:startDate', this.updateSiteMarker);
-			this.listenTo(model, 'change:endDate', this.updateSiteMarker);
-			this.listenTo(model, 'change:startDate', this.updatePrecipGridPoints);
-			this.listenTo(model, 'change:endDate', this.updatePrecipGridPoints);
-			this.listenTo(datasetCollections[model.NWIS_DATASET], 'reset', this.updateSiteMarker);
-			this.listenTo(datasetCollections[model.PRECIP_DATASET], 'reset', this.updatePrecipGridPoints);
+			this.listenTo(model, 'change:startDate', this.updateAllSiteMarkers);
+			this.listenTo(model, 'change:endDate', this.updateAllSiteMarkers);
+
+			this.listenTo(datasetCollections[Config.NWIS_DATASET], 'reset', this.updateNWISMarker);
+			this.listenTo(datasetCollections[Config.PRECIP_DATASET], 'reset', this.updatePrecipGridPoints);
 		},
-		/*
-		 * Updates the siteLayerGroup to reflect the sites in the model
-		 * @param {SiteModel} sites - has one or more site objects, each with properties
-		 *	latitude and longitude in order to be a valid location
-		 */
-		updateSiteMarker : function() {
+
+		updateSiteMarkerLayer : function(datasetKind) {
 			var self = this;
-			var siteCollection = this.model.get('datasetCollections')[this.model.NWIS_DATASET];
+			var siteCollection = this.model.get('datasetCollections')[datasetKind];
 			var filteredSiteModels = siteCollection.getModelsWithinDateFilter(this.model.get('startDate'), this.model.get('endDate'));
 
 			var moveCircleMarker = function(latLng) {
@@ -258,106 +281,58 @@ define([
 				}
 			};
 
-			var updateNWISDataView = function(nwisModel) {
+			var updateDataView = function(siteModel) {
 				var $mapDiv = self.$('#' + self.mapDivId);
 
-				if (self.nwisDataView) {
-					self.nwisDataView.remove();
-				}
-				if (self.precipDataView) {
-					self.precipDataView.remove();
-				}
-				self.nwisDataView = new NWISDataView({
+				self.removeDataViews();
+				self.siteDataViews[datasetKind] = new DataViews[datasetKind]({
 					el : $utils.createDivInContainer(self.$(VARIABLE_CONTAINER_SEL)),
-					model : nwisModel,
+					model : siteModel,
 					opened : true
 				});
+
 				if (!$mapDiv.hasClass(MAP_WIDTH_CLASS)) {
 					$mapDiv.addClass(MAP_WIDTH_CLASS);
 					self.map.invalidateSize();
 					self.$(VARIABLE_CONTAINER_SEL).addClass(DATA_VIEW_WIDTH_CLASS);
 				}
-				self.nwisDataView.render();
+				self.siteDataViews[datasetKind].render();
 			};
 
-			this.siteLayerGroup.clearLayers();
+			this.siteLayerGroups[datasetKind].clearLayers();
 
 			_.each(filteredSiteModels, function(siteModel) {
 				var latLng = new L.latLng(siteModel.attributes.lat, siteModel.attributes.lon);
 				var marker = L.marker(latLng, {
-					icon: siteIcon,
-					title: siteModel.attributes.name
+					icon : siteMarkerOptions[datasetKind].icon,
+					title : siteMarkerOptions[datasetKind].getTitle(siteModel)
 				});
-				self.siteLayerGroup.addLayer(marker);
 
+				self.siteLayerGroups[datasetKind].addLayer(marker);
 				marker.on('click', function(ev) {
 					moveCircleMarker(latLng);
-					updateNWISDataView(siteModel);
+					updateDataView(siteModel);
 				});
 			});
 		},
 
+		updateAllSiteMarkers : function() {
+			_.each(Config.ALL_DATASETS, function(datasetKind) {
+				this.updateSiteMarkerLayer(datasetKind);
+			}, this);
+		},
+		/*
+		 * Updates the NWIS layerGroup to reflect the sites in the nwis collection
+		 */
+		updateNWISMarker : function() {
+			this.updateSiteMarkerLayer(Config.NWIS_DATASET);
+		},
+
 		/*
 		 * Updates the precipitation layer group to reflect the grid points in precipCollection
-		 * @param {models/PrecipitationCollection} precipCollection
 		 */
 		updatePrecipGridPoints : function() {
-			var self = this;
-			var precipCollection = this.model.get('datasetCollections')[this.model.PRECIP_DATASET];
-			var filteredPrecipModels = precipCollection.getModelsWithinDateFilter(this.model.get('startDate'), this.model.get('endDate'));
-
-			var moveCircleMarker = function(latLng) {
-				if (self.circleMarker) {
-					self.circleMarker.setLatLng(latLng);
-					if (!self.map.hasLayer(self.circleMarker)) {
-						self.map.addLayer(self.circleMarker);
-					}
-				}
-				else {
-					self.circleMarker = new L.circleMarker(latLng,{
-						radius : 15
-					});
-					self.map.addLayer(self.circleMarker);
-				}
-			};
-
-			var updatePrecipDataView = function(precipModel) {
-				var $mapDiv = self.$('#' + self.mapDivId);
-
-				if (self.precipDataView) {
-					self.precipDataView.remove();
-				}
-				if (self.nwisDataView) {
-					self.nwisDataView.remove();
-				}
-				self.precipDataView = new PrecipDataView({
-					el : $utils.createDivInContainer(self.$(VARIABLE_CONTAINER_SEL)),
-					model : precipModel,
-					opened : true
-				});
-				if (!$mapDiv.hasClass(MAP_WIDTH_CLASS)) {
-					$mapDiv.addClass(MAP_WIDTH_CLASS);
-					self.map.invalidateSize();
-					self.$(VARIABLE_CONTAINER_SEL).addClass(DATA_VIEW_WIDTH_CLASS);
-				}
-				self.precipDataView.render();
-			};
-
-			this.precipLayerGroup.clearLayers();
-
-			_.each(filteredPrecipModels, function(precipModel) {
-				var latLng = new L.latLng(precipModel.attributes.lat, precipModel.attributes.lon);
-				var marker = L.marker(latLng, {
-					icon : precipIcon,
-					title : precipModel.attributes.y + ':' + precipModel.attributes.x
-				});
-				self.precipLayerGroup.addLayer(marker);
-
-				marker.on('click', function(ev) {
-					moveCircleMarker(latLng);
-					updatePrecipDataView(precipModel);
-				});
-			});
+			this.updateSiteMarkerLayer(Config.PRECIP_DATASET);
 		}
 	});
 

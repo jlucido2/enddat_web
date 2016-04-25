@@ -2,11 +2,11 @@
 /* global parseFloat */
 
 define([
-	'loglevel',
 	'underscore',
+	'moment',
 	'views/BaseCollapsiblePanelView',
 	'hbs!hb_templates/precipData'
-], function(log, _, BaseCollapsiblePanelView, hbTemplate) {
+], function(_, moment, BaseCollapsiblePanelView, hbTemplate) {
 	"use strict";
 
 	/* @construct

@@ -1,0 +1,22 @@
+<div class="nwis-data-select">
+	<table class="table">
+		<thead>
+			<tr>
+				<th></th>
+				<th>Property</th>
+				<th>Start Date</th>
+				<th>End Date</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{#each parameters}}
+				<tr>
+					<td><input type="checkbox" {{#if selected}}checked{{/if}} id="toggle-param{{@index}}" /></td>
+					<td>{{name}}</td>
+					<td>{{startDate}}</td>
+					<td>{{endDate}}</td>
+				</tr>
+			{{/each}}
+		</tbody>
+	</table>
+</div>

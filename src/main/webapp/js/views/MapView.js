@@ -9,8 +9,9 @@ define([
 	'utils/geoSpatialUtils',
 	'views/BaseView',
 	'views/PrecipDataView',
+	'views/NWISDataView',
 	'hbs!hb_templates/mapOps'
-], function(_, L, leafletProviders, log, $utils, geoSpatialUtils, BaseView, PrecipDataView, hbTemplate) {
+], function(_, L, leafletProviders, log, $utils, geoSpatialUtils, BaseView, PrecipDataView, NWISDataView, hbTemplate) {
 
 	var siteIcon = new L.icon({
 		iconUrl : 'img/time-series.png',
@@ -242,14 +243,57 @@ define([
 			var siteCollection = this.model.get('datasetCollections')[this.model.NWIS_DATASET];
 			var filteredSiteModels = siteCollection.getModelsWithinDateFilter(this.model.get('startDate'), this.model.get('endDate'));
 
+			var moveCircleMarker = function(latLng) {
+				if (self.circleMarker) {
+					self.circleMarker.setLatLng(latLng);
+					if (!self.map.hasLayer(self.circleMarker)) {
+						self.map.addLayer(self.circleMarker);
+					}
+				}
+				else {
+					self.circleMarker = new L.circleMarker(latLng,{
+						radius : 15
+					});
+					self.map.addLayer(self.circleMarker);
+				}
+			};
+
+			var updateNWISDataView = function(nwisModel) {
+				var $mapDiv = self.$('#' + self.mapDivId);
+
+				if (self.nwisDataView) {
+					self.nwisDataView.remove();
+				}
+				if (self.precipDataView) {
+					self.precipDataView.remove();
+				}
+				self.nwisDataView = new NWISDataView({
+					el : $utils.createDivInContainer(self.$(VARIABLE_CONTAINER_SEL)),
+					model : nwisModel,
+					opened : true
+				});
+				if (!$mapDiv.hasClass(MAP_WIDTH_CLASS)) {
+					$mapDiv.addClass(MAP_WIDTH_CLASS);
+					self.map.invalidateSize();
+					self.$(VARIABLE_CONTAINER_SEL).addClass(DATA_VIEW_WIDTH_CLASS);
+				}
+				self.nwisDataView.render();
+			};
+
 			this.siteLayerGroup.clearLayers();
 
 			_.each(filteredSiteModels, function(siteModel) {
-				var marker = L.marker([siteModel.attributes.lat, siteModel.attributes.lon], {
+				var latLng = new L.latLng(siteModel.attributes.lat, siteModel.attributes.lon);
+				var marker = L.marker(latLng, {
 					icon: siteIcon,
 					title: siteModel.attributes.name
 				});
 				self.siteLayerGroup.addLayer(marker);
+
+				marker.on('click', function(ev) {
+					moveCircleMarker(latLng);
+					updateNWISDataView(siteModel);
+				});
 			});
 		},
 
@@ -282,6 +326,9 @@ define([
 
 				if (self.precipDataView) {
 					self.precipDataView.remove();
+				}
+				if (self.nwisDataView) {
+					self.nwisDataView.remove();
 				}
 				self.precipDataView = new PrecipDataView({
 					el : $utils.createDivInContainer(self.$(VARIABLE_CONTAINER_SEL)),

@@ -5,8 +5,9 @@ define([
 	'squire',
 	'jquery',
 	'backbone',
+	'moment',
 	'utils/geoSpatialUtils'
-], function(Squire, $, Backbone, geoSpatialUtils) {
+], function(Squire, $, Backbone, moment, geoSpatialUtils) {
 
 	describe('models/WorkflowStateModel', function() {
 		var injector;
@@ -165,10 +166,12 @@ define([
 		});
 
 		describe('Tests for event handlers for updating the workflow step', function() {
-			it('Expects that if the step changes to PROJ_LOC_STEP the location, radius, and datasets properties are unset', function() {
+			it('Expects that if the step changes to PROJ_LOC_STEP the location, radius, dates and datasets properties are unset', function() {
 				testModel.set({
 					location : {latitude : '43.0', longitude : '-100.0'},
 					radius : '6',
+					startDate : moment('2010-04-11', 'YYYY-MM-DD'),
+					endDate : moment('2016-04-15', 'YYYY-MM-DD'),
 					datasets : [testModel.NWIS_DATASET, testModel.PRECIP_DATASET]
 				});
 				testModel.set('step', testModel.PROJ_LOC_STEP);
@@ -176,6 +179,8 @@ define([
 				expect(testModel.has('location')).toBe(false);
 				expect(testModel.has('radius')).toBe(false);
 				expect(testModel.has('datasets')).toBe(false);
+				expect(testModel.has('startDate')).toBe(false);
+				expect(testModel.has('endDate')).toBe(false);
 			});
 
 			it('Expects that if the step changes to PROJ_LOC_STEP the datasetCollections will be cleared', function() {

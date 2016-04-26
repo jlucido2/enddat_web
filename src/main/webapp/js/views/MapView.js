@@ -8,11 +8,12 @@ define([
 	'Config',
 	'utils/jqueryUtils',
 	'utils/geoSpatialUtils',
+	'utils/LUtils',
 	'views/BaseView',
 	'views/PrecipDataView',
 	'views/NWISDataView',
 	'hbs!hb_templates/mapOps'
-], function(_, L, leafletProviders, log, Config, $utils, geoSpatialUtils, BaseView, PrecipDataView, NWISDataView, hbTemplate) {
+], function(_, L, leafletProviders, log, Config, $utils, geoSpatialUtils, LUtils, BaseView, PrecipDataView, NWISDataView, hbTemplate) {
 
 	var nwisIcon = new L.icon({
 		iconUrl : 'img/time-series.png',
@@ -281,12 +282,14 @@ define([
 				}
 			};
 
-			var updateDataView = function(siteModel) {
+			var updateDataView = function(siteModel, siteLatLng) {
 				var $mapDiv = self.$('#' + self.mapDivId);
+				var projectLocation = L.latLng(self.model.attributes.location.latitude, self.model.attributes.location.longitude);
 
 				self.removeDataViews();
 				self.siteDataViews[datasetKind] = new DataViews[datasetKind]({
 					el : $utils.createDivInContainer(self.$(VARIABLE_CONTAINER_SEL)),
+					distanceToProjectLocation : LUtils.milesBetween(projectLocation, siteLatLng).toFixed(3),
 					model : siteModel,
 					opened : true
 				});
@@ -302,7 +305,7 @@ define([
 			this.siteLayerGroups[datasetKind].clearLayers();
 
 			_.each(filteredSiteModels, function(siteModel) {
-				var latLng = new L.latLng(siteModel.attributes.lat, siteModel.attributes.lon);
+				var latLng = L.latLng(siteModel.attributes.lat, siteModel.attributes.lon);
 				var marker = L.marker(latLng, {
 					icon : siteMarkerOptions[datasetKind].icon,
 					title : siteMarkerOptions[datasetKind].getTitle(siteModel)
@@ -311,7 +314,7 @@ define([
 				self.siteLayerGroups[datasetKind].addLayer(marker);
 				marker.on('click', function(ev) {
 					moveCircleMarker(latLng);
-					updateDataView(siteModel);
+					updateDataView(siteModel, latLng);
 				});
 			});
 		},

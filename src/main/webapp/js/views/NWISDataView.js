@@ -13,6 +13,7 @@ define([
 	 * @param {Object} options
 	 *		@prop {Jquery selector or element} $el
 	 *		@prop {Backbone.Model} model - represents an NWIS site
+	 *		@prop {String} distanceToProjectLocation
 	 */
 	var view = BaseCollapsiblePanelView.extend({
 		template : hbTemplate,

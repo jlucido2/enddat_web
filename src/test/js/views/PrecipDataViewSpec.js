@@ -24,6 +24,11 @@ define([
 				startDate : moment('2002-01-01', 'YYYY-MM-DD'),
 				endDate : moment('2016-04-18', 'YYYY-MM-DD')
 			});
+			testView = new PrecipDataView({
+				$el : $testDiv,
+				model : testModel,
+				distanceToProjectLocation : '1.345'
+			})
 		});
 
 		afterEach(function() {
@@ -34,11 +39,10 @@ define([
 		});
 
 		it('Expects the view to be rendered with a context that contains the formatted contents of the model', function() {
-			testView = new PrecipDataView({
-				$el : $testDiv,
-				model : testModel
-			});
+
 			testView.render();
+
+			expect(testView.context.distance).toEqual('1.345');
 			expect(testView.context.x).toEqual('514');
 			expect(testView.context.y).toEqual('720');
 			expect(testView.context.lat).toEqual('43.135');
@@ -48,20 +52,12 @@ define([
 		});
 
 		it('Expects that the checkbox is not checked if the selected property is not defined in the model when the view is rendered', function() {
-			testView = new PrecipDataView({
-				$el : $testDiv,
-				model : testModel
-			});
 			testView.render();
 
 			expect(testView.$('input:checkbox').is(':checked')).toBe(false);
 		});
 
 		it('Expects that the checkbox is checked if the selected property is set to true in the model when the view is rendered', function() {
-			testView = new PrecipDataView({
-				$el : $testDiv,
-				model : testModel
-			});
 			testModel.set('selected', true);
 			testView.render();
 
@@ -69,10 +65,6 @@ define([
 		});
 
 		it('Expects that if the checkbox is checked, the selected property is set to true', function() {
-			testView = new PrecipDataView({
-				$el : $testDiv,
-				model : testModel
-			});
 			testView.render();
 			testView.$('input:checkbox').trigger('click');
 
@@ -80,10 +72,6 @@ define([
 		});
 
 		it('Expects that if the checkbox is clicked twice, the selected property is set back to false', function() {
-			testView = new PrecipDataView({
-				$el : $testDiv,
-				model : testModel
-			});
 			testView.render();
 			testView.$('input:checkbox').trigger('click');
 			testView.$('input:checkbox').trigger('click');

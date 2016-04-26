@@ -44,7 +44,8 @@ define([
 
 			testView = new NWISDataView({
 				$el : $testDiv,
-				model : testModel
+				model : testModel,
+				distanceToProjectLocation : '1.344'
 			});
 		});
 
@@ -58,6 +59,7 @@ define([
 		it('Expects that when the view is initialized the context contains formatted parameters', function() {
 			testView.render();
 
+			expect(testView.context.distance).toEqual('1.344');
 			expect(testView.context.parameters.length).toBe(2);
 			expect(testView.context.parameters[0]).toEqual({
 				name : 'Discharge cubic feet per second Daily Mean',

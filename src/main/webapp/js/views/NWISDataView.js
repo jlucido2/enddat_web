@@ -18,17 +18,19 @@ define([
 			'click input:checkbox' : 'toggleCollectedDataVariable'
 		},
 
-		initialize : function(options) {
+		render : function() {
 			var formatDates = function (parameter) {
 				var result = _.clone(parameter);
 				result.startDate = parameter.startDate.format(Config.DATE_FORMAT);
 				result.endDate = parameter.endDate.format(Config.DATE_FORMAT);
 				return result;
 			};
-
-			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
-
+			this.context.name = this.model.get('name');
+			this.context.siteNo = this.model.get('siteNo');
 			this.context.parameters = _.map(this.model.get('parameters'), formatDates);
+			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
+
+			return this;
 		},
 
 		toggleCollectedDataVariable : function(ev) {

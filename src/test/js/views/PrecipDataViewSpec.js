@@ -27,6 +27,9 @@ define([
 		});
 
 		afterEach(function() {
+			if (testView) {
+				testView.remove();
+			}
 			$testDiv.remove();
 		});
 
@@ -55,11 +58,11 @@ define([
 		});
 
 		it('Expects that the checkbox is checked if the selected property is set to true in the model when the view is rendered', function() {
-			testModel.set('selected', true);
 			testView = new PrecipDataView({
 				$el : $testDiv,
 				model : testModel
 			});
+			testModel.set('selected', true);
 			testView.render();
 
 			expect(testView.$('input:checkbox').is(':checked')).toBe(true);

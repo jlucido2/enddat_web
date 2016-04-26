@@ -26,14 +26,15 @@ define([
 			'click input:checkbox' : 'toggleCollectedDataVariable'
 		},
 
-		initialize : function(options) {
-			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
-
+		render : function() {
 			this.context = _.clone(this.model.attributes);
 			this.context.lat = (parseFloat(this.context.lat)).toFixed(3);
 			this.context.lon = (parseFloat(this.context.lon)).toFixed(3);
 			this.context.startDate = this.context.startDate.format(Config.DATE_FORMAT);
 			this.context.endDate = this.context.endDate.format(Config.DATE_FORMAT);
+
+			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
+			return this;
 		},
 
 		toggleCollectedDataVariable : function() {

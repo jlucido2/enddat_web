@@ -51,7 +51,9 @@ define([
 		toggleCollectedDataVariable : function(ev) {
 			var id = $(ev.target).attr('id');
 			var indexToUpdate = id[id.length - 1];
-			var parameters = _.clone(this.model.get('parameters'));
+			var parameters = _.map(this.model.get('parameters'), function(param) {
+				return _.clone(param);
+			});
 
 			parameters[indexToUpdate].selected = !parameters[indexToUpdate].selected;
 			this.model.set('parameters', parameters);

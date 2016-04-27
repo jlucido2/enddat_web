@@ -1,6 +1,6 @@
 <div>
-	{{#if selectedVariables}}
-		<table>
+	{{#if hasSelectedVariables}}
+		<table class="table">
 			<thead>
 				<tr>
 					<th></th>
@@ -12,15 +12,17 @@
 				</tr>
 			</thead>
 			<tbody>
-				{{#each selectedVariables}}
+				{{#each selectedDatasets}}
+					{{#each variables}}
 					<tr>
 						<td><button title="Remove from processing"><i class="fa fa-times"></i></button></td>
-						<td>{{dataset}}</td>
+						<td>{{../datasetName}}</td>
 						<td>{{siteId}}</td>
 						<td>{{startDate}}</td>
 						<td>{{endDate}}</td>
 						<td>{{property}}</td>
 					</tr>
+					{{/each}}
 				{{/each}}
 			</tbody>
 		</table>

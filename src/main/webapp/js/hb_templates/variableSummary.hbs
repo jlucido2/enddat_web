@@ -1,0 +1,30 @@
+<div>
+	{{#if selectedVariables}}
+		<table>
+			<thead>
+				<tr>
+					<th></th>
+					<th>Dataset</th>
+					<th>Site ID</th>
+					<th>Start Date</th>
+					<th>End Date</th>
+					<th>Property</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{#each selectedVariables}}
+					<tr>
+						<td><button title="Remove from processing"><i class="fa fa-times"></i></button></td>
+						<td>{{dataset}}</td>
+						<td>{{siteId}}</td>
+						<td>{{startDate}}</td>
+						<td>{{endDate}}</td>
+						<td>{{property}}</td>
+					</tr>
+				{{/each}}
+			</tbody>
+		</table>
+	{{else}}
+		<div>No variables are currently selected</div>
+	{{/if}}
+</div>

@@ -11,14 +11,16 @@ define([
 	'views/MapView',
 	'views/LocationView',
 	'views/ChooseView',
+	'views/VariableSummaryView',
 	'hbs!hb_templates/dataDiscovery'
-], function (log, _, Config, $utils, BaseView, NavView, AlertView, MapView, LocationView, ChooseView, hbTemplate) {
+], function (log, _, Config, $utils, BaseView, NavView, AlertView, MapView, LocationView, ChooseView, VariableSummaryView, hbTemplate) {
 	"use strict";
 
 	var NAVVIEW_SELECTOR = '.workflow-nav';
 	var LOCATION_SELECTOR = '.location-panel';
 	var CHOOSE_SELECTOR = '.choose-panel';
 	var MAPVIEW_SELECTOR = '.map-container-div';
+	var VARIABLE_SUMMARY_SELECTOR = '.variable-summary-container';
 	var ALERTVIEW_SELECTOR = '.alert-container';
 	var LOADING_SELECTOR = '.loading-indicator';
 
@@ -75,6 +77,9 @@ define([
 			if (this.chooseView) {
 				this.chooseView.remove();
 			}
+			if (this.variableSummaryView) {
+				this.variableSummaryView.remove();
+			}
 			BaseView.prototype.remove.apply(this, arguments);
 			return this;
 		},
@@ -108,7 +113,12 @@ define([
 						this.chooseView.remove();
 						this.chooseView = undefined;
 					}
+					if (this.variableSummaryView) {
+						this.variableSummaryView.remove();
+						this.variableSummaryView = undefined;
+					}
 					break;
+
 				case Config.CHOOSE_DATA_STEP:
 					if (!this.locationView) {
 						this.locationView = new LocationView({
@@ -133,6 +143,14 @@ define([
 							opened : true
 						});
 						this.chooseView.render();
+					}
+					if (!this.variableSummaryView) {
+						this.variableSummaryView = new VariableSummaryView({
+							el : $utils.createDivInContainer(this.$(VARIABLE_SUMMARY_SELECTOR)),
+							model : model,
+							opened : true
+						});
+						this.variableSummaryView.render();
 					}
 					break;
 			}

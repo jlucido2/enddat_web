@@ -30,7 +30,7 @@
 						'contextPath': '<%=baseUrl%>',
 						'development': '<%=development%>'
 					},
-					'models/SiteCollection': {
+					'models/NWISCollection': {
 						'parameterCodesPath': '<%=parameterCodesUrl%>'
 				 	},
 					'models/PrecipitationCollection' : {

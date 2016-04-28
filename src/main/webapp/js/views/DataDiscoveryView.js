@@ -3,6 +3,7 @@
 define([
 	'loglevel',
 	'underscore',
+	'Config',
 	'utils/jqueryUtils',
 	'views/BaseView',
 	'views/NavView',
@@ -11,7 +12,7 @@ define([
 	'views/LocationView',
 	'views/ChooseView',
 	'hbs!hb_templates/dataDiscovery'
-], function (log, _, $utils, BaseView, NavView, AlertView, MapView, LocationView, ChooseView, hbTemplate) {
+], function (log, _, Config, $utils, BaseView, NavView, AlertView, MapView, LocationView, ChooseView, hbTemplate) {
 	"use strict";
 
 	var NAVVIEW_SELECTOR = '.workflow-nav';
@@ -85,7 +86,7 @@ define([
 		updateSubViews : function(model, step) {
 			this.alertView.closeAlert();
 			switch(step) {
-				case model.PROJ_LOC_STEP:
+				case Config.PROJ_LOC_STEP:
 					if (!this.locationView) {
 						this.locationView = new LocationView({
 							el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
@@ -108,7 +109,7 @@ define([
 						this.chooseView = undefined;
 					}
 					break;
-				case model.CHOOSE_DATA_STEP:
+				case Config.CHOOSE_DATA_STEP:
 					if (!this.locationView) {
 						this.locationView = new LocationView({
 							el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),

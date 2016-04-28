@@ -4,21 +4,14 @@ define([
 	'underscore',
 	'jquery',
 	'backbone',
+	'Config',
 	'utils/geoSpatialUtils',
-	'models/SiteCollection',
+	'models/NWISCollection',
 	'models/PrecipitationCollection'
-], function(_, $, Backbone, geoSpatialUtils, SiteCollection, PrecipitationCollection) {
+], function(_, $, Backbone, Config, geoSpatialUtils, NWISCollection, PrecipitationCollection) {
 	"use strict";
 
 	var model = Backbone.Model.extend({
-		NWIS_DATASET : 'NWIS',
-		PRECIP_DATASET : 'PRECIP',
-		ALL_DATASETS : ['NWIS', 'PRECIP'],
-
-		PROJ_LOC_STEP : 'specifyProjectLocation',
-		CHOOSE_DATA_STEP : 'chooseData',
-		PROCESS_DATA_STEP :'processData',
-
 		DEFAULT_CHOOSE_DATA_RADIUS : 2,
 		DEFAULT_CHOSEN_DATASETS : ['NWIS'],
 
@@ -48,8 +41,8 @@ define([
 			}
 			else {
 				datasetCollections = _.object([
-					[this.NWIS_DATASET, new SiteCollection()],
-					[this.PRECIP_DATASET, new PrecipitationCollection()]
+					[Config.NWIS_DATASET, new NWISCollection()],
+					[Config.PRECIP_DATASET, new PrecipitationCollection()]
 				]);
 				this.set('datasetCollections', datasetCollections);
 				this.on('change:radius', this.updateDatasetCollections, this);
@@ -86,6 +79,7 @@ define([
 			return result;
 		},
 
+
 		/*
 		 * Model event handlers
 		 */
@@ -107,10 +101,10 @@ define([
 				//Need to fetch/clear all dataset collections
 				if (boundingBox) {
 					datasetsToFetch = chosenDatasets;
-					datasetsToClear = _.difference(this.ALL_DATASETS, chosenDatasets);
+					datasetsToClear = _.difference(Config.ALL_DATASETS, chosenDatasets);
 				}
 				else {
-					datasetsToClear = this.ALL_DATASETS;
+					datasetsToClear = Config.ALL_DATASETS;
 				}
 			}
 			else {
@@ -130,7 +124,7 @@ define([
 			var previousStep = this.previous('step');
 
 			switch(this.get('step')) {
-				case this.PROJ_LOC_STEP:
+				case Config.PROJ_LOC_STEP:
 					if (this.has('datasetCollections')) {
 						_.each(this.get('datasetCollections'), function(collection) {
 							collection.reset();
@@ -143,8 +137,8 @@ define([
 					this.unset('endDate');
 					break;
 
-				case this.CHOOSE_DATA_STEP:
-					if (previousStep === this.PROJ_LOC_STEP) {
+				case Config.CHOOSE_DATA_STEP:
+					if (previousStep === Config.PROJ_LOC_STEP) {
 						this.initializeDatasetCollections();
 						this.set('datasets', this.DEFAULT_CHOSEN_DATASETS);
 						this.set('radius', this.DEFAULT_CHOOSE_DATA_RADIUS);

@@ -7,9 +7,10 @@ define([
 	'moment',
 	'bootstrap-datetimepicker',
 	'backbone.stickit',
+	'Config',
 	'views/BaseCollapsiblePanelView',
 	'hbs!hb_templates/choose'
-], function(_, $, select2, moment, datetimepicker, stickit, BaseCollapsiblePanelView, hbTemplate) {
+], function(_, $, select2, moment, datetimepicker, stickit, Config, BaseCollapsiblePanelView, hbTemplate) {
 	"use strict";
 
 	/*
@@ -19,9 +20,6 @@ define([
 	 *		@prop {Jquery el or selector} el
 	 *		@prop {Boolean} opened - Set to true if the panel should initially be open.
 	 */
-
-	var DATE_FORMAT = 'YYYY-MM-DD';
-
 	var view = BaseCollapsiblePanelView.extend({
 		template : hbTemplate,
 
@@ -49,12 +47,12 @@ define([
 
 			//Set up date pickers
 			this.$('#start-date-div').datetimepicker({
-				format : DATE_FORMAT,
+				format : Config.DATE_FORMAT,
 				useCurrent: false,
 				maxDate : now
 			});
 			this.$('#end-date-div').datetimepicker({
-				format : DATE_FORMAT,
+				format : Config.DATE_FORMAT,
 				useCurrent : false,
 				maxDate : now
 			});
@@ -84,14 +82,14 @@ define([
 
 		updateStartDate : function() {
 			var startDate = (this.model.has('startDate')) ? this.model.get('startDate') : '';
-			var newValue = (startDate) ? startDate.format(DATE_FORMAT) : '';
+			var newValue = (startDate) ? startDate.format(Config.DATE_FORMAT) : '';
 
 			this.$('#start-date').val(newValue);
 		},
 
 		updateEndDate : function() {
 			var endDate = (this.model.has('endDate')) ? this.model.get('endDate') : '';
-			var newValue = (endDate) ? endDate.format(DATE_FORMAT) : '';
+			var newValue = (endDate) ? endDate.format(Config.DATE_FORMAT) : '';
 
 			this.$('#end-date').val(newValue);
 		},

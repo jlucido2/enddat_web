@@ -4,10 +4,11 @@ define([
 	'jquery',
 	'loglevel',
 	'moment',
+	'Config',
 	'models/WorkflowStateModel',
 	'views/BaseView',
 	'views/NavView'
-], function($, log, moment, WorkflowStateModel, BaseView, NavView) {
+], function($, log, moment, Config, WorkflowStateModel, BaseView, NavView) {
 	describe('views/NavView', function() {
 		var testView;
 		var testModel;
@@ -29,7 +30,7 @@ define([
 			testModel = new WorkflowStateModel({}, {
 				createDatasetModels : true
 			});
-			testModel.set('step', testModel.PROJ_LOC_STEP);
+			testModel.set('step', Config.PROJ_LOC_STEP);
 			mockRouter = jasmine.createSpyObj('mockRouter', ['navigate']);
 			log.setLevel('silent');
 		});
@@ -79,7 +80,7 @@ define([
 
 			it('Expects that if the workflow step is PROJ_LOC_STEP and location is defined, then the choose data btn is enabled', function() {
 				testModel.set({
-					step : testModel.PROJ_LOC_STEP,
+					step : Config.PROJ_LOC_STEP,
 					location : {latitude : 43.0, longitude : -100.0}
 				});
 				testView.render();
@@ -90,7 +91,7 @@ define([
 
 			it('Expects that if the workflow step is CHOOSE_DATA_STEP the choose data btn is active and the process data step is disabled', function() {
 				testModel.set({
-					step : testModel.CHOOSE_DATA_STEP,
+					step : Config.CHOOSE_DATA_STEP,
 					location : {latitude : 43.0, longitude : -100.0}
 				});
 				testView.render();
@@ -114,24 +115,24 @@ define([
 
 			it('Expects that clicking the choose data button, changes the step to choose data', function() {
 				testModel.set({
-					step : testModel.PROJ_LOC_STEP,
+					step : Config.PROJ_LOC_STEP,
 					location : {latitude : 43.0, longitude : -100.0}
 				});
 				testView.render();
 				$(chooseDataSel + ' a').trigger('click');
 
-				expect(testModel.get('step')).toEqual(testModel.CHOOSE_DATA_STEP);
+				expect(testModel.get('step')).toEqual(Config.CHOOSE_DATA_STEP);
 			});
 
 			it('Expects that clicking the project location button changes the step to proj loc', function() {
 				testModel.set({
-					step : testModel.CHOOSE_DATA_STEP,
+					step : Config.CHOOSE_DATA_STEP,
 					location : {latitude : 43.0, longitude : -100.0}
 				});
 				testView.render();
 				$(projLocSel + ' a').trigger('click');
 
-				expect(testModel.get('step')).toEqual(testModel.PROJ_LOC_STEP);
+				expect(testModel.get('step')).toEqual(Config.PROJ_LOC_STEP);
 			});
 		});
 
@@ -154,7 +155,7 @@ define([
 
 			it('Expects that if the step is changed to CHOOSE_DATA, the choose data btn is active', function() {
 				testModel.set('location', {latitude: 43.0, longitude : -100.0});
-				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_STEP);
 				expect(testView.$(projLocSel + ' a').hasClass('active')).toBe(false);
 				expect(testView.$(chooseDataSel + ' a').hasClass('active')).toBe(true);
 				expect(testView.$(processDataSel + ' a').hasClass('active')).toBe(false);
@@ -164,7 +165,7 @@ define([
 			});
 
 			it('Expects that if the step is changed to CHOOSE_DATA, then the router will navigate to the url with the lat and lon in it', function() {
-				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_STEP);
 				testModel.set({
 					location : {latitude: 42.0, longitude : -101.0},
 					radius : '',
@@ -174,7 +175,7 @@ define([
 			});
 
 			it('Expects that if the step is CHOOSE_DATA and the location becomes invalid that the url is not updated', function() {
-				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_STEP);
 				testModel.set({
 					location : {latitude: 42.0, longitude : -101.0},
 					radius : '',
@@ -191,7 +192,7 @@ define([
 
 			it('Expects that if the step is CHOOSE_DATA and radius, location, start/endDate, and datasets change the router will navigate to the appropriate url', function() {
 				testModel.set('location', {latitude: 43.0, longitude : -100.0});
-				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_STEP);
 				testModel.set({
 					radius : 2,
 					datasets : ['NWIS']

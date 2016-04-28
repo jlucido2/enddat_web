@@ -12,12 +12,11 @@ define([
 ], function ($, _, moment, log, module, BaseDatasetCollection, rdbUtils, dateUtils) {
 	"use strict";
 
-	var config = module.config();
-	var parameterCodesPath = config.parameterCodesPath;
+	var parameterCodesPath = module.config().parameterCodesPath;
 
 	var DATE_FORMAT = 'YYYY-MM-DD';
 
-	var model = BaseDatasetCollection.extend({
+	var collection = BaseDatasetCollection.extend({
 
 		url: '',
 
@@ -219,5 +218,5 @@ define([
 
 	});
 
-	return model;
+	return collection;
 });

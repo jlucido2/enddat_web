@@ -5,9 +5,10 @@ define([
 	'backbone',
 	'loglevel',
 	'moment',
+	'Config',
 	'models/WorkflowStateModel',
 	'views/DataDiscoveryView'
-], function ($, Backbone, log, moment, WorkflowStateModel, DataDiscoveryView) {
+], function ($, Backbone, log, moment, Config, WorkflowStateModel, DataDiscoveryView) {
 	"use strict";
 
 	var DATE_FORMAT = 'DMMMYYYY';
@@ -53,7 +54,7 @@ define([
 		},
 
 		specifyProjectLocationState: function () {
-			this.workflowState.set('step', this.workflowState.PROJ_LOC_STEP);
+			this.workflowState.set('step', Config.PROJ_LOC_STEP);
 			this.createView(DataDiscoveryView, {
 				model : this.workflowState
 			}).render();
@@ -67,7 +68,7 @@ define([
 				'startDate' : (startDate) ? moment(startDate, DATE_FORMAT) : '',
 				'endDate' : (endDate) ? moment(endDate, DATE_FORMAT) : ''
 			});
-			this.workflowState.set('step', this.workflowState.CHOOSE_DATA_STEP);
+			this.workflowState.set('step', Config.CHOOSE_DATA_STEP);
 			this.createView(DataDiscoveryView, {
 				model : this.workflowState
 			}).render();

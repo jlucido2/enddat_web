@@ -29,34 +29,40 @@ define([
 			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
 
 			this.distanceToProjectLocation = options.distanceToProjectLocation;
+			this.model.get('variables').each(function(variableModel) {
+				this.listenTo(variableModel, 'change:selected', this.updateSelectedCheckbox);
+			}, this);
 		},
 
 		render : function() {
-			var formatDates = function (parameter) {
-				var result = _.clone(parameter);
-				result.startDate = parameter.startDate.format(Config.DATE_FORMAT);
-				result.endDate = parameter.endDate.format(Config.DATE_FORMAT);
+			var formatDates = function (variableModel) {
+				var result = _.clone(variableModel.attributes);
+				result.startDate = variableModel.attributes.startDate.format(Config.DATE_FORMAT);
+				result.endDate = variableModel.attributes.endDate.format(Config.DATE_FORMAT);
+				result.id = variableModel.cid;
 				return result;
 			};
 
 			this.context.name = this.model.get('name');
 			this.context.siteNo = this.model.get('siteNo');
 			this.context.distance = this.distanceToProjectLocation;
-			this.context.parameters = _.map(this.model.get('parameters'), formatDates);
+			this.context.variables = this.model.get('variables').map(formatDates);
+
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
 
 			return this;
 		},
 
 		toggleCollectedDataVariable : function(ev) {
-			var id = $(ev.target).attr('id');
-			var indexToUpdate = id[id.length - 1];
-			var parameters = _.map(this.model.get('parameters'), function(param) {
-				return _.clone(param);
-			});
+			var id = $(ev.target).data('id');
+			var variableModelToUpdate = this.model.get('variables').get(id);
 
-			parameters[indexToUpdate].selected = !parameters[indexToUpdate].selected;
-			this.model.set('parameters', parameters);
+			variableModelToUpdate.set('selected', !variableModelToUpdate.attributes.selected);
+		},
+
+		updateSelectedCheckbox : function(variableModel) {
+			var $checkbox = this.$('input[data-id="' + variableModel.cid + '"]');
+			$checkbox.prop('checked', variableModel.has('selected') && variableModel.get('selected'));
 		}
 
 	});

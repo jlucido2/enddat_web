@@ -14,9 +14,9 @@
 			</tr>
 		</thead>
 		<tbody>
-			{{#each parameters}}
+			{{#each variables}}
 				<tr>
-					<td><input type="checkbox" {{#if selected}}checked{{/if}} id="toggle-param{{@index}}" /></td>
+					<td><input type="checkbox" {{#if selected}}checked{{/if}} data-id="{{id}}" /></td>
 					<td>{{name}}</td>
 					<td>{{startDate}}</td>
 					<td>{{endDate}}</td>

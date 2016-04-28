@@ -15,7 +15,8 @@
 				{{#each selectedDatasets}}
 					{{#each variables}}
 					<tr>
-						<td><button title="Remove from processing"><i class="fa fa-times"></i></button></td>
+						<td><button title="Remove from processing" data-id="{{modelId}}" data-variable-id ="{{variableId}}"
+									data-dataset-kind="{{../datasetName}}"><i class="fa fa-times"></i></button></td>
 						<td>{{../datasetName}}</td>
 						<td>{{siteId}}</td>
 						<td>{{startDate}}</td>

@@ -79,8 +79,13 @@ define([
 			});
 
 			return fetchDeferred.promise();
-		}
+		},
 
+		hasSelectedVariables : function() {
+			return this.some(function(model) {
+				return model.has('selected') && model.get('selected');
+			});
+		}
 	});
 
 	return collection;

@@ -12,7 +12,7 @@ define([
 
 	/* @construct
 	 * @param {Object} options
-	 *		@prop {String jquer selector or jquery element} $el
+	 *		@prop {String jquery selector or jquery element} $el
 	 *		@prop {Backbone.Model representing precipitation grid data} model
 	 *		@prop {String} distanceToProjectLocation
 	 */
@@ -30,6 +30,7 @@ define([
 			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
 
 			this.distanceToProjectLocation = options.distanceToProjectLocation;
+			this.listenTo(this.model, 'change:selected', this.updateSelectedCheckbox);
 		},
 
 		render : function() {
@@ -46,6 +47,10 @@ define([
 
 		toggleCollectedDataVariable : function() {
 			this.model.set('selected', !this.model.get('selected'));
+		},
+
+		updateSelectedCheckbox : function(model) {
+			this.$('table input:checkbox').prop('checked', model.has('selected') && model.get('selected'));
 		}
 	});
 

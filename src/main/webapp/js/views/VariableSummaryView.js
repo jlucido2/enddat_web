@@ -67,7 +67,7 @@ define([
 			var precipCollection = datasetCollections[Config.PRECIP_DATASET];
 			var nwisCollection = datasetCollections[Config.NWIS_DATASET];
 			this.listenTo(precipCollection, 'reset', this.setupPrecipModelListeners);
-			this.listenTo(nwisCollection, 'reset', this.setpNWISModelListeners);
+			this.listenTo(nwisCollection, 'reset', this.setupNWISModelListeners);
 
 			this.setupPrecipModelListeners(precipCollection);
 			this.setupNWISModelListeners(nwisCollection);

@@ -8,7 +8,7 @@ define([
 	'views/NWISDataView'
 ], function($, moment, Backbone, NWISDataView){
 
-	fdescribe('views/NWISDataView', function() {
+	describe('views/NWISDataView', function() {
 		var testView;
 		var testModel;
 		var $testDiv;

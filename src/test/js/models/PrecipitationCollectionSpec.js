@@ -99,5 +99,32 @@ define([
 				expect(testCollection.at(0).attributes.y).toEqual('557');
 			});
 		});
+
+		describe('Tests for hasSelectedVariables', function() {
+			beforeEach(function() {
+				testCollection.reset([
+					{x : '1', y: '2', lon : '-100', lat : '43.0'},
+					{x : '1', y: '3', lon : '-100', lat : '44.0'},
+					{x : '2', y: '3', lon : '-101', lat : '44.0'}
+				]);
+			});
+
+			it('Expects that if selected is not defined for any of the models that false is returned', function() {
+				expect(testCollection.hasSelectedVariables()).toBe(false);
+			});
+
+			it('Expects that if selected is set to false in one of the models and missing in the others that false is returned', function() {
+				testCollection.at(1).set('selected', false);
+
+				expect(testCollection.hasSelectedVariables()).toBe(false);
+			});
+
+			it('Expects that if selected is set to true in one of the models but false elsewhere that true is returned', function() {
+				testCollection.at(0).set('selected', false);
+				testCollection.at(2).set('selected', true);
+
+				expect(testCollection.hasSelectedVariables()).toBe(true);
+			});
+		});
 	});
 });

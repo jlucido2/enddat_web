@@ -27,6 +27,13 @@ define([
 			this.sCodePromise = this.getStatisticCodes();
 		},
 
+		/*
+		 * @param {Object with properties west, east, south, north} boundingBox
+		 * @returns {Jquery promise}
+		 *		@resolved with the JqXHR object when the NWIS sites for boundingBox have been fetched, parsed
+		 *			and the collection reset with the new data.
+		 *		@rejected with the jqXHR object if the fetch failed. The collection is cleared.
+		 */
 		fetch: function(boundingBox) {
 			var self = this;
 			var sitesDeferred = $.Deferred();
@@ -130,7 +137,7 @@ define([
 						if (404 === jqXHR.status) {
 							log.debug('No NWIS data available: ' + textStatus);
 							self.reset([]);
-							sitesDeferred.resolve();
+							sitesDeferred.resolve(jqXHR);
 						} else {
 							log.debug('Error in loading NWIS data: ' + textStatus);
 							self.reset([]);
@@ -142,6 +149,10 @@ define([
 			return sitesDeferred.promise();
 		},
 
+		/*
+		 * @returns {Boolean} if any of the nwis sites in the collection have variables that have
+		 * the selected property set to true.
+		 */
 		hasSelectedVariables : function() {
 			var isSelected = function(variableModel) {
 				return variableModel.has('selected') && variableModel.get('selected');

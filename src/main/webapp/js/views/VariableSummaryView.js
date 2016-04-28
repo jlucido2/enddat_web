@@ -9,6 +9,12 @@ define([
 ], function(_, Config, BaseCollapsiblePanelView, hbTemplate) {
 	"use strict";
 
+	/*
+	 * @constructs
+	 * @param {Object} options
+	 *		@prop {Jquery string selector or element} $el
+	 *		@prop {WorkflowStateModel} model
+	 */
 	var view = BaseCollapsiblePanelView.extend({
 		template : hbTemplate,
 
@@ -30,10 +36,10 @@ define([
 
 			//Set up model event listeners
 			if (this.model.has('datasetCollections')) {
-					this.initializeDatasetCollections(this.model, this.model.get('datasetCollections'));
+					this.setupDatasetCollectionsListeners(this.model, this.model.get('datasetCollections'));
 				}
 				else {
-					this.listenTo(this.model, 'change:datasetCollections', this.initializeDatasetCollections);
+					this.listenTo(this.model, 'change:datasetCollections', this.setupDatasetCollectionsListeners);
 				}
 		},
 
@@ -45,7 +51,7 @@ define([
 					variables : values
 				};
 			});
-			this.context.hasSelectedVariables = _.some(this.model.get('datasetCollections'), function(collection) {
+			this.context.hasSelectedVariables = this.model.has('datasetCollections') && _.some(this.model.get('datasetCollections'), function(collection) {
 				return collection.hasSelectedVariables();
 			});
 
@@ -53,17 +59,21 @@ define([
 			return this;
 		},
 
-		initializeDatasetCollections : function(model, datasetCollections) {
+		/*
+		 *  Model event listeners and helper functions
+		 */
+
+		setupDatasetCollectionsListeners : function(model, datasetCollections) {
 			var precipCollection = datasetCollections[Config.PRECIP_DATASET];
 			var nwisCollection = datasetCollections[Config.NWIS_DATASET];
-			this.listenTo(precipCollection, 'reset', this.initializePrecipCollection);
-			this.listenTo(nwisCollection, 'reset', this.initializeNWISCollection);
+			this.listenTo(precipCollection, 'reset', this.setupPrecipModelListeners);
+			this.listenTo(nwisCollection, 'reset', this.setpNWISModelListeners);
 
-			this.initializePrecipCollection(precipCollection);
-			this.initializeNWISCollection(nwisCollection);
+			this.setupPrecipModelListeners(precipCollection);
+			this.setupNWISModelListeners(nwisCollection);
 		},
 
-		initializePrecipCollection : function(collection) {
+		setupPrecipModelListeners : function(collection) {
 			collection.each(function(precipModel) {
 				this.listenTo(precipModel, 'change:selected', this.updatePrecipContext);
 			}, this);
@@ -74,7 +84,7 @@ define([
 			}
 		},
 
-		initializeNWISCollection : function(collection) {
+		setupNWISModelListeners : function(collection) {
 			collection.each(function(nwisModel) {
 				var variableModels = nwisModel.get('variables');
 				variableModels.each(function(variableModel) {
@@ -134,7 +144,7 @@ define([
 					return {
 						modelId : nwisModel.cid,
 						variableId : variableModel.cid,
-						siteId : variableModel.attributes.siteNo,
+						siteId : nwisModel.attributes.siteNo,
 						startDate : variableModel.attributes.startDate.format(Config.DATE_FORMAT),
 						endDate : variableModel.attributes.endDate.format(Config.DATE_FORMAT),
 						property : variableModel.attributes.name
@@ -149,6 +159,10 @@ define([
 				return memo.concat(selectedVariables);
 		   }, []);
 		},
+
+		/*
+		 * DOM Event handlers
+		 */
 
 		removeVariable : function(ev) {
 			var $button = $(ev.currentTarget);

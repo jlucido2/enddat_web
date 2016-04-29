@@ -31,7 +31,7 @@ module.exports = function (config) {
 			{pattern: 'src/test/js/views/*.js', included: false},
 			{pattern: 'src/test/js/models/*.js', included: false},
 			{pattern: 'src/test/js/utils/*.js', included: false},
-
+			{pattern: 'src/test/js/leafletCustomControls/*.js', included: false}
 		],
 		// list of files to exclude
 		exclude: [

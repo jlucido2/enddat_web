@@ -9,24 +9,19 @@ define([
 	'utils/jqueryUtils',
 	'utils/geoSpatialUtils',
 	'utils/LUtils',
+	'leafletCustomControls/legendControl',
 	'views/BaseView',
 	'views/PrecipDataView',
 	'views/NWISDataView',
 	'hbs!hb_templates/mapOps'
-], function(_, L, leafletProviders, log, Config, $utils, geoSpatialUtils, LUtils, BaseView, PrecipDataView, NWISDataView, hbTemplate) {
+], function(_, L, leafletProviders, log, Config, $utils, geoSpatialUtils, LUtils, legendControl, BaseView, PrecipDataView, NWISDataView, hbTemplate) {
 
-	var nwisIcon = new L.icon({
-		iconUrl : 'img/time-series.png',
-		iconSize : [10, 10]
+	var siteIcons = _.mapObject(Config.DATASET_ICON, function(value) {
+		return L.icon(value);
 	});
 	var getNWISTitle = function(model) {
 		return model.get('name');
 	};
-
-	var precipIcon = L.icon({
-		iconUrl : 'img/national-precipitation.png',
-		iconSize : [14, 14]
-	});
 	var getPrecipTitle = function(model) {
 		return model.get('y') + ':' + model.get('x');
 	};
@@ -36,10 +31,10 @@ define([
 		[NWISDataView, PrecipDataView]
 	);
 
-	var siteMarkerOptions = _.object(
-		[Config.NWIS_DATASET, Config.PRECIP_DATASET],
-		[{icon : nwisIcon, getTitle : getNWISTitle}, {icon : precipIcon, getTitle : getPrecipTitle}]
-	);
+	var siteMarkerOptions = _.object([
+		[Config.NWIS_DATASET, {icon : siteIcons[Config.NWIS_DATASET], getTitle : getNWISTitle}],
+		[Config.PRECIP_DATASET, {icon : siteIcons[Config.PRECIP_DATASET], getTitle : getPrecipTitle}]
+	]);
 
 	var MAP_WIDTH_CLASS = 'col-md-6';
 	var DATA_VIEW_WIDTH_CLASS = 'col-md-6';
@@ -67,7 +62,8 @@ define([
 			};
 
 			this.controls = [
-				L.control.layers(this.baseLayers, {})
+				L.control.layers(this.baseLayers, {}),
+				legendControl({collapsed : true})
 			];
 
 			this.projLocationMarker = L.marker([0, 0], {

@@ -70,9 +70,9 @@ define([
 			expect(BaseView.prototype.initialize).toHaveBeenCalled();
 		});
 
-		it('Expects that the layer switcher control is created', function() {
+		it('Expects that the layer switcher control and legend control are created', function() {
 			expect(L.control.layers).toHaveBeenCalled();
-			expect(testView.controls.length).toBe(1);
+			expect(testView.controls.length).toBe(2);
 		});
 
 		it('Expects that a project location marker is created', function() {

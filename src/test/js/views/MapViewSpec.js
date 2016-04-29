@@ -58,6 +58,7 @@ define([
 				mapDivId : 'test-map-div',
 				model : testModel
 			});
+			spyOn(testView.legendControl, 'setVisibility');
 		});
 
 		afterEach(function() {

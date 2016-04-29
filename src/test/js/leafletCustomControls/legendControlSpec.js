@@ -8,7 +8,7 @@ define([
 	'Config',
 	'leafletCustomControls/legendControl'
 ], function($, _, L, Config, legendControl) {
-	fdescribe('leafletCustomControls/legendControl', function() {
+	describe('leafletCustomControls/legendControl', function() {
 		var $testDiv;
 		var testMap;
 		var testControl;

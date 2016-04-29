@@ -61,9 +61,10 @@ define([
 				'World Imagery' : L.tileLayer.provider('Esri.WorldImagery')
 			};
 
+			this.legendControl = legendControl({opened : false});
 			this.controls = [
 				L.control.layers(this.baseLayers, {}),
-				legendControl({collapsed : true})
+				this.legendControl
 			];
 
 			this.projLocationMarker = L.marker([0, 0], {
@@ -108,6 +109,7 @@ define([
 			});
 
 			this.listenTo(this.model, 'change:step', this.updateWorkflowStep);
+			this.updateWorkflowStep(this.model, this.model.get('step'));
 
 			this.updateLocationMarkerAndExtent(this.model, this.model.get('location'));
 			this.listenTo(this.model, 'change:location', this.updateLocationMarkerAndExtent);
@@ -203,6 +205,10 @@ define([
 						$map.removeClass(MAP_WIDTH_CLASS);
 						this.map.invalidateSize();
 					}
+					break;
+
+				case Config.CHOOSE_DATA_STEP:
+					this.legendControl.setVisibility(true);
 					break;
 			}
 		},

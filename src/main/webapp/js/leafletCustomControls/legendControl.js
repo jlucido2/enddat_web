@@ -9,10 +9,16 @@ define([
 	var COLLAPSE_ICON = 'fa fa-minus';
 	var EXPAND_ICON = 'fa fa-plus';
 
+	/*
+	 * @constructs
+	 *		@param {Object} options
+	 *		New properties
+	 *		@prop {Boolean} opened - Set to true if you want the control created already exanded.
+	 */
 	var Control = L.Control.extend({
 		options : {
 			position : 'topleft',
-			collapsed : true
+			opened : true
 		},
 
 		initialize : function(options) {
@@ -37,13 +43,13 @@ define([
 			this._legendDisplayDiv = L.DomUtil.create('div', 'leaflet-legend-body', container);
 
 			projLocDiv = L.DomUtil.create('div', 'leaflet-legend-marker-div', this._legendDisplayDiv);
-			projLocDiv.innerHTML = '<img src="' + Config.PROJ_LOC_ICON_URL + '" /><span>Project Location</span>';
+			projLocDiv.innerHTML = '<img class="proj-location-icon" src="' + Config.PROJ_LOC_ICON_URL + '" /><span>Project Location</span>';
 			_.each(Config.DATASET_ICON, function(value, key) {
 				var imgDiv = L.DomUtil.create('div', 'leaflet-legend-marker', this._legendDisplayDiv);
-			    imgDiv.innerHTML = '<img src="' + value.iconUrl + '" /><span>' + key + '</span>';
+			    imgDiv.innerHTML = '<img class="' + key + '-icon" src="' + value.iconUrl + '" /><span>' + key + '</span>';
 			}, this);
 
-			this.setVisibility(this.options.collapsed);
+			this.setVisibility(this.options.opened);
 
 			//Add toggle handler for control collapse button
 			L.DomEvent.on(headerDiv, 'click', this._toggleVisibilityHandler, this);
@@ -52,15 +58,18 @@ define([
 			return container;
 		},
 
-		setVisibility : function(collapse) {
+		/*
+		 * @param {Boolean} expanded - Set to true if the panel should be expanded, otherwise collapse it.
+		 */
+		setVisibility : function(expanded) {
 			var toggleEl = this._panelToggle.getElementsByTagName('i')[0];
-			if (collapse) {
-				toggleEl.className = EXPAND_ICON;
-				this._legendDisplayDiv.style = "display:none;";
-			}
-			else {
+			if (expanded) {
 				toggleEl.className = COLLAPSE_ICON;
 				this._legendDisplayDiv.style = "display:block;";
+			}
+			else {
+				toggleEl.className = EXPAND_ICON;
+				this._legendDisplayDiv.style = "display:none;";
 			}
 		},
 

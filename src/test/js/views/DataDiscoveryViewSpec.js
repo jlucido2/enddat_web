@@ -22,6 +22,7 @@ define([
 		var setElMapViewSpy, renderMapViewSpy, removeMapViewSpy;
 		var setElLocationViewSpy, renderLocationViewSpy, removeLocationViewSpy;
 		var setElChooseViewSpy, renderChooseViewSpy, removeChooseViewSpy;
+		var setElSummaryViewSpy, renderSummaryViewSpy, removeSummaryViewSpy;
 		var setElAlertViewSpy, renderAlertViewSpy, removeAlertViewSpy, showSuccessAlertSpy, showDangerAlertSpy, closeAlertSpy;
 
 		var injector;
@@ -50,6 +51,10 @@ define([
 			setElChooseViewSpy = jasmine.createSpy('setElChooseViewSpy');
 			renderChooseViewSpy = jasmine.createSpy('renderChooseViewSpy');
 			removeChooseViewSpy = jasmine.createSpy('removeChooseViewSpy');
+
+			setElSummaryViewSpy = jasmine.createSpy('setElSummaryViewSpy');
+			renderSummaryViewSpy = jasmine.createSpy('renderSummaryViewSpy');
+			removeSummaryViewSpy = jasmine.createSpy('removeSummaryViewSpy');
 
 			setElAlertViewSpy = jasmine.createSpy('setElAlertViewSpy');
 			renderAlertViewSpy = jasmine.createSpy('renderAlertViewSpy');
@@ -93,6 +98,14 @@ define([
 				}),
 				render : renderChooseViewSpy,
 				remove : removeChooseViewSpy
+			}));
+
+			injector.mock('views/VariableSummaryView', BaseView.extend({
+				setElement : setElSummaryViewSpy.and.returnValue({
+					render : renderSummaryViewSpy
+				}),
+				render : renderSummaryViewSpy,
+				remove : removeSummaryViewSpy
 			}));
 
 			injector.mock('views/AlertView', BaseView.extend({
@@ -142,6 +155,7 @@ define([
 			expect(setElMapViewSpy.calls.count()).toBe(0);
 			expect(setElLocationViewSpy.calls.count()).toBe(0);
 			expect(setElChooseViewSpy.calls.count()).toBe(0);
+			expect(setElSummaryViewSpy.calls.count()).toBe(0);
 			expect(setElAlertViewSpy.calls.count()).toBe(1);
 		});
 
@@ -189,9 +203,10 @@ define([
 				expect(setElLocationViewSpy).toHaveBeenCalled();
 				expect(renderLocationViewSpy).toHaveBeenCalled();
 				expect(setElChooseViewSpy).not.toHaveBeenCalled();
+				expect(setElSummaryViewSpy).not.toHaveBeenCalled();
 			});
 
-			it('Expects that if the workflow step is CHOOSE_DATA_STEP, the location, map, and choose data views are created and rendered', function() {
+			it('Expects that if the workflow step is CHOOSE_DATA_STEP, the location, map, variable summary and choose data views are created and rendered', function() {
 				testModel.set('step', Config.CHOOSE_DATA_STEP);
 				testView.render();
 
@@ -201,6 +216,8 @@ define([
 				expect(renderLocationViewSpy).toHaveBeenCalled();
 				expect(setElChooseViewSpy).toHaveBeenCalled();
 				expect(renderChooseViewSpy).toHaveBeenCalled();
+				expect(setElSummaryViewSpy).toHaveBeenCalled();
+				expect(renderSummaryViewSpy).toHaveBeenCalled()
 			});
 		});
 
@@ -223,6 +240,7 @@ define([
 				expect(removeAlertViewSpy).toHaveBeenCalled();
 				expect(removeLocationViewSpy).not.toHaveBeenCalled();
 				expect(removeChooseViewSpy).not.toHaveBeenCalled();
+				expect(removeSummaryViewSpy).not.toHaveBeenCalled();
 				expect(removeMapViewSpy).not.toHaveBeenCalled();
 			});
 
@@ -236,13 +254,14 @@ define([
 				expect(removeMapViewSpy).toHaveBeenCalled();
 			});
 
-			it('Expects that the location,map, and choose data subviews are removed if they have been created', function() {
+			it('Expects that the location,map, variable summary, and choose data subviews are removed if they have been created', function() {
 				testModel.set('step', Config.CHOOSE_DATA_STEP);
 				testView.render();
 				testView.remove();
 
 				expect(removeLocationViewSpy).toHaveBeenCalled();
 				expect(removeChooseViewSpy).toHaveBeenCalled();
+				expect(removeSummaryViewSpy).toHaveBeenCalled();
 				expect(removeMapViewSpy).toHaveBeenCalled();
 			});
 		});
@@ -284,22 +303,28 @@ define([
 			});
 
 
-			it('Expects that if the step changes from CHOOSE_DATA_STEP to PROJ_LOC_STEP, the choose view is removed', function() {
+			it('Expects that if the step changes from CHOOSE_DATA_STEP to PROJ_LOC_STEP, the choose view and summary view is removed', function() {
 				testModel.set('step', Config.CHOOSE_DATA_STEP);
 				removeChooseViewSpy.calls.reset();
+				removeSummaryViewSpy.calls.reset();
 				testModel.set('step', Config.PROJ_LOC_STEP);
 
 				expect(removeChooseViewSpy).toHaveBeenCalled();
+				expect(removeSummaryViewSpy).toHaveBeenCalled()
 			});
 
-			it('Expects that if the step changes from PROJ_LOC_STEP to CHOOSE_DATA_STEP, the choose view is created and rendered', function() {
+			it('Expects that if the step changes from PROJ_LOC_STEP to CHOOSE_DATA_STEP, the choose view and summary views are created and rendered', function() {
 				testModel.set('step', Config.PROJ_LOC_STEP);
 				setElChooseViewSpy.calls.reset();
 				renderChooseViewSpy.calls.reset();
+				setElSummaryViewSpy.calls.reset();
+				renderSummaryViewSpy.calls.reset();
 				testModel.set('step', Config.CHOOSE_DATA_STEP);
 
 				expect(setElChooseViewSpy).toHaveBeenCalled();
 				expect(renderChooseViewSpy).toHaveBeenCalled();
+				expect(setElSummaryViewSpy).toHaveBeenCalled();
+				expect(renderSummaryViewSpy).toHaveBeenCalled();
 			});
 
 			it('Expects that if the step changes, the alert view is closed', function() {

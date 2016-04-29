@@ -12,10 +12,28 @@ define([
 		var testView;
 		var testModel;
 		var $testDiv;
+		var variables;
 
 		beforeEach(function() {
 			$('body').append('<div id="test-div"></div>');
 			$testDiv = $('#test-div');
+
+			variables = new Backbone.Collection([
+				{
+					name : 'Discharge cubic feet per second Daily Mean',
+					parameterCd : '4343',
+					statCd : '1111',
+					startDate : moment('2005-01-01', 'YYYY-MM-DD'),
+					endDate : moment('2015-04-18', 'YYYY-MM-DD')
+				},
+				{
+					name : 'PCode 80155 Daily Mean',
+					parameterCd : '80155',
+					statCd : '1111',
+					startDate : moment('2002-01-01', 'YYYY-MM-DD'),
+					endDate : moment('2016-04-18', 'YYYY-MM-DD')
+				}
+			]);
 
 			testModel = new Backbone.Model({
 				lat : '43.1346',
@@ -24,22 +42,7 @@ define([
 				name : 'PESHTIGO RIVER AT MOUTH NEAR PESHTIGO, WI',
 				startDate : moment('2002-01-01', 'YYYY-MM-DD'),
 				endDate : moment('2016-04-18', 'YYYY-MM-DD'),
-				parameters : [
-					{
-						name : 'Discharge cubic feet per second Daily Mean',
-						parameterCd : '4343',
-						statCd : '1111',
-						startDate : moment('2005-01-01', 'YYYY-MM-DD'),
-						endDate : moment('2015-04-18', 'YYYY-MM-DD')
-					},
-					{
-						name : 'PCode 80155 Daily Mean',
-						parameterCd : '80155',
-						statCd : '1111',
-						startDate : moment('2002-01-01', 'YYYY-MM-DD'),
-						endDate : moment('2016-04-18', 'YYYY-MM-DD')
-					}
-				]
+				variables : variables
 			});
 
 			testView = new NWISDataView({
@@ -60,15 +63,17 @@ define([
 			testView.render();
 
 			expect(testView.context.distance).toEqual('1.344');
-			expect(testView.context.parameters.length).toBe(2);
-			expect(testView.context.parameters[0]).toEqual({
+			expect(testView.context.variables.length).toBe(2);
+			expect(testView.context.variables[0]).toEqual({
+				id : variables.at(0).cid,
 				name : 'Discharge cubic feet per second Daily Mean',
 				parameterCd : '4343',
 				statCd : '1111',
 				startDate : '2005-01-01',
 				endDate : '2015-04-18'
 			});
-			expect(testView.context.parameters[1]).toEqual({
+			expect(testView.context.variables[1]).toEqual({
+				id : variables.at(1).cid,
 				name : 'PCode 80155 Daily Mean',
 				parameterCd : '80155',
 				statCd : '1111',
@@ -78,26 +83,47 @@ define([
 		});
 
 		it('Expects that the checkbox is checked if the selected property for a parameter is set to true when the view is rendered', function() {
-			var parameters = testModel.get('parameters');
-			parameters[0].selected = true;
+			var variables = testModel.get('variables');
+			variables.at(0).set('selected', true);
 			testView.render();
 
-			expect(testModel.get('parameters')[0].selected).toBe(true);
+			expect(testView.context.variables[0].selected).toBe(true);
 		});
 
 		it('Expects that when the checkbox is checked, the selected property is set to true', function() {
+			var var1 = variables.at(1);
 			testView.render();
-			testView.$('#toggle-param1').trigger('click');
+			testView.$('[data-id="' + var1.cid + '"]').trigger('click');
 
-			expect(testModel.get('parameters')[1].selected).toBe(true);
+			expect(var1.get('selected')).toBe(true);
 		});
 
 		it('Expects that when the checkbox is checked and then unchecked, the selected property is set to false', function() {
+			var $checkbox;
+			var var1 = variables.at(1);
 			testView.render();
-			testView.$('#toggle-param1').trigger('click');
-			testView.$('#toggle-param1').trigger('click');
+			$checkbox = testView.$('[data-id="' + var1.cid + '"]');
+			$checkbox.trigger('click');
 
-			expect(testModel.get('parameters')[1].selected).toBe(false);
+			expect(var1.get('selected')).toBe(true);
+
+			$checkbox.trigger('click');
+
+			expect(var1.get('selected')).toBe(false);
+		});
+
+		it('Expects that if a variable model\'s selected attributes changes, the checkbox for that variable reflects the change', function() {
+			var $checkbox;
+			var var1 = variables.at(1);
+			testView.render();
+			$checkbox = testView.$('[data-id="' + var1.cid + '"]');
+			var1.set('selected', true);
+
+			expect($checkbox.prop('checked')).toBe(true);
+
+			var1.set('selected', false);
+
+			expect($checkbox.prop('checked')).toBe(false);
 		});
 	});
 });

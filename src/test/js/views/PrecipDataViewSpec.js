@@ -39,7 +39,6 @@ define([
 		});
 
 		it('Expects the view to be rendered with a context that contains the formatted contents of the model', function() {
-
 			testView.render();
 
 			expect(testView.context.distance).toEqual('1.345');
@@ -77,6 +76,21 @@ define([
 			testView.$('input:checkbox').trigger('click');
 
 			expect(testModel.get('selected')).toBe(false);
+		});
+
+		it('Expects that if the model\'s selected attribute is updated the variable checkbox reflects it\'s state', function() {
+			var $checkbox;
+			testView.render();
+			$checkbox = testView.$('input:checkbox');
+			testModel.set('selected', false);
+
+			expect($checkbox.prop('checked')).toBe(false);
+
+			testModel.set('selected', true);
+			expect($checkbox.prop('checked')).toBe(true);
+
+			testModel.unset('selected');
+			expect($checkbox.prop('checked')).toBe(false);
 		});
 	});
 });

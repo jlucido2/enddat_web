@@ -79,8 +79,16 @@ define([
 			});
 
 			return fetchDeferred.promise();
-		}
+		},
 
+		/*
+		 * @returns {Boolean} - True if any of the precipitation models contain a selected variable
+		 */
+		hasSelectedVariables : function() {
+			return this.some(function(model) {
+				return model.has('selected') && model.get('selected');
+			});
+		}
 	});
 
 	return collection;

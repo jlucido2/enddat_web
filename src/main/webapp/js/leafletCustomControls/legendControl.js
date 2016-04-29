@@ -75,7 +75,7 @@ define([
 
 		_toggleVisibilityHandler : function(ev) {
 			var toggleEl = this._panelToggle.getElementsByTagName('i')[0];
-			this.setVisibility(toggleEl.className === COLLAPSE_ICON);
+			this.setVisibility(toggleEl.className === EXPAND_ICON);
 		}
 	});
 

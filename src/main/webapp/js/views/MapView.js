@@ -9,24 +9,19 @@ define([
 	'utils/jqueryUtils',
 	'utils/geoSpatialUtils',
 	'utils/LUtils',
+	'leafletCustomControls/legendControl',
 	'views/BaseView',
 	'views/PrecipDataView',
 	'views/NWISDataView',
 	'hbs!hb_templates/mapOps'
-], function(_, L, leafletProviders, log, Config, $utils, geoSpatialUtils, LUtils, BaseView, PrecipDataView, NWISDataView, hbTemplate) {
+], function(_, L, leafletProviders, log, Config, $utils, geoSpatialUtils, LUtils, legendControl, BaseView, PrecipDataView, NWISDataView, hbTemplate) {
 
-	var nwisIcon = new L.icon({
-		iconUrl : 'img/time-series.png',
-		iconSize : [10, 10]
+	var siteIcons = _.mapObject(Config.DATASET_ICON, function(value) {
+		return L.icon(value);
 	});
 	var getNWISTitle = function(model) {
 		return model.get('name');
 	};
-
-	var precipIcon = L.icon({
-		iconUrl : 'img/national-precipitation.png',
-		iconSize : [14, 14]
-	});
 	var getPrecipTitle = function(model) {
 		return model.get('y') + ':' + model.get('x');
 	};
@@ -36,10 +31,10 @@ define([
 		[NWISDataView, PrecipDataView]
 	);
 
-	var siteMarkerOptions = _.object(
-		[Config.NWIS_DATASET, Config.PRECIP_DATASET],
-		[{icon : nwisIcon, getTitle : getNWISTitle}, {icon : precipIcon, getTitle : getPrecipTitle}]
-	);
+	var siteMarkerOptions = _.object([
+		[Config.NWIS_DATASET, {icon : siteIcons[Config.NWIS_DATASET], getTitle : getNWISTitle}],
+		[Config.PRECIP_DATASET, {icon : siteIcons[Config.PRECIP_DATASET], getTitle : getPrecipTitle}]
+	]);
 
 	var MAP_WIDTH_CLASS = 'col-md-6';
 	var DATA_VIEW_WIDTH_CLASS = 'col-md-6';
@@ -66,8 +61,10 @@ define([
 				'World Imagery' : L.tileLayer.provider('Esri.WorldImagery')
 			};
 
+			this.legendControl = legendControl({opened : false});
 			this.controls = [
-				L.control.layers(this.baseLayers, {})
+				L.control.layers(this.baseLayers, {}),
+				this.legendControl
 			];
 
 			this.projLocationMarker = L.marker([0, 0], {
@@ -112,6 +109,7 @@ define([
 			});
 
 			this.listenTo(this.model, 'change:step', this.updateWorkflowStep);
+			this.updateWorkflowStep(this.model, this.model.get('step'));
 
 			this.updateLocationMarkerAndExtent(this.model, this.model.get('location'));
 			this.listenTo(this.model, 'change:location', this.updateLocationMarkerAndExtent);
@@ -207,6 +205,10 @@ define([
 						$map.removeClass(MAP_WIDTH_CLASS);
 						this.map.invalidateSize();
 					}
+					break;
+
+				case Config.CHOOSE_DATA_STEP:
+					this.legendControl.setVisibility(true);
 					break;
 			}
 		},

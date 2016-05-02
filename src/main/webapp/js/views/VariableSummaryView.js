@@ -38,9 +38,9 @@ define([
 			if (this.model.has('datasetCollections')) {
 					this.setupDatasetCollectionsListeners(this.model, this.model.get('datasetCollections'));
 				}
-				else {
-					this.listenTo(this.model, 'change:datasetCollections', this.setupDatasetCollectionsListeners);
-				}
+			else {
+				this.listenTo(this.model, 'change:datasetCollections', this.setupDatasetCollectionsListeners);
+			}
 		},
 
 		render : function() {

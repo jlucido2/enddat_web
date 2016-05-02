@@ -26,6 +26,7 @@ define([
 				return (lineString.length === 0) || lineString[0] === '#';
 			})
 			.map(function(rowString) {
+				// Removes any trailing carriage return and then splits the row into columns
 				if (_.last(rowString) === '\r') {
 					rowString = rowString.substring(0, rowString.length - 2);
 				}
@@ -41,7 +42,7 @@ define([
 	};
 
 	/* @param	{Object} string
-	 * returns	{Object} string - converted string to upper case and remove special characters
+	 * returns	{Object} string - Removes special characters and capitalizes each character which follows a space.
 	 */
 	self.toTitleCase = function (str) {
 		var lowerCase = str.toLowerCase();

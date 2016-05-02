@@ -4,47 +4,40 @@ define([
 	'underscore'
 ], function (_) {
 	"use strict";
-	
+
 	var self = {};
 
-	/* @param	[Array] lines - array containing each line from an rdb file
-	 * @param	{Object} importantColumns - object of tab-delimited columns found in lines
-	 * returns	[Array] columnsArray - array of objects where each object holds key/value(s)
-	 *					corresponding to the parsed column(s) from a line
+	/*
+	 * Function assumes that the file uses rdb formatting, that columns are separated by tabs, that rows
+	 * that begin with a # characters are comments, that the first non comment line are the column keys, and
+	 * that the line following this line does not contain data.
+	 * Note that the function handles Strings where the lines end in \n (linefeed) or in \r followed by \l
+	 * (carriage return followed by linefeed)
+	 * @param {String} data - Contents have rdb formatting.
+	 * @returns {Array of Objects} - where object keys are the column names and the values are the column value
 	 */
-	self.parseRDB = function(lines, importantColumns) {
-		var columnIndexes = _.extend({}, importantColumns);
-		var isIndexesFound = false;
-		var isIntoData = false;
-		var columnsArray = [];
-		_.each(lines, function(el, lineIndex) {
-			if (el && 0 < el.length && '#' !== el.charAt(0)) {
-				var row = el.split('\t');
+	self.parseRDB = function(data) {
+		var lines = data.split('\n');
+		var rows = []; // Array of Arrays - each representing a row and column
+		var colKeys = [];
 
-				if (!isIndexesFound) {
-					isIndexesFound = true;
-					//at beginning, get data indexes
-					_.each(row, function(colName, colIndex) {
-						if (_.has(columnIndexes,colName)) {
-							columnIndexes[colName] = colIndex;
-						}
-					});
-				} else if(!isIntoData) {
-					isIntoData = true;
-					//skip line after column Headers
-				} else {
-					var columnValues = _.extend({}, importantColumns);
-
-					//Load up the values
-					_.each(columnIndexes, function(colIndex, name) {
-						columnValues[name] = row[colIndex];
-					});
-
-					columnsArray.push(columnValues);
+		rows = _.chain(lines)
+			.reject(function(lineString) {
+				return (lineString.length === 0) || lineString[0] === '#';
+			})
+			.map(function(rowString) {
+				if (_.last(rowString) === '\r') {
+					rowString = rowString.substring(0, rowString.length - 2);
 				}
-			}
+				return rowString.split('\t');
+			})
+			.value();
+
+		colKeys = rows[0];
+		//Skip the line after the column headers
+		return _.map(rows.slice(2), function(row) {
+			return _.object(colKeys, row);
 		});
-		return columnsArray;
 	};
 
 	/* @param	{Object} string
@@ -55,7 +48,7 @@ define([
 	    return lowerCase.replace(/(?:^|\s)\w/g, function(match) {
 	        return match.toUpperCase();
 	    });
-	}
+	};
 
 	return self;
 });

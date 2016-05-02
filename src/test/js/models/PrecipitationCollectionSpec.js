@@ -47,7 +47,7 @@ define([
 				expect(fakeServer.requests[0].url).toContain('bbox=' + encodeURIComponent(bbox.south + ',' + bbox.west + ',' + bbox.north + ',' + bbox.east));
 			});
 
-			it('Expects that failed ajax response causes the promise to be rejected and the collection cleared', function() {
+			xit('Expects that failed ajax response causes the promise to be rejected and the collection cleared', function() {
 				fakeServer.respondWith([500, {'Content-Type' : 'text'}, 'Internal server error']);
 				fakeServer.respond();
 				expect(successSpy).not.toHaveBeenCalled();

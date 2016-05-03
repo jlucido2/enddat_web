@@ -191,10 +191,10 @@ define([
 				dataType: 'text',
 				success: function(data) {
 					var parsedStats = rdbUtils.parseRDB(data);
-					var statName = _.map(_.pluck(parsedStats, 'stat_NM'), function(nm) {
-						return rdbUtils.toTitleCase(nm);
-					});
-					self.statisticCodes = _.object(_.pluck(parsedStats, 'stat_CD'), statName);
+
+					self.statisticCodes = _.object(
+						_.pluck(parsedStats, 'stat_CD'),
+						_.map(_.pluck(parsedStats, 'stat_NM')), rdbUtils.toTileCase);
 					log.debug('Fetched statistic codes ' + _.size(self.statisticCodes));
 					deferred.resolve();
 				},

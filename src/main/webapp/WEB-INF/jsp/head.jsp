@@ -18,9 +18,10 @@
 	Boolean development = Boolean.parseBoolean(props.getProperty("enddat.development"));
 	String baseUrl = props.getProperty("enddat.base.url", request.getContextPath());
 	if (!baseUrl.endsWith("/")) { baseUrl += "/"; }
-	String parameterCodesUrl = props.getProperty("enddat.pmcodes.url");
 	String version = props.getProperty("application.version");
-	String precipWFSGetFeatureUrl = props.getProperty("enddat.precip-wfs-getfeature.url");
+
+	String parameterCodesUrl = props.getProperty("enddat.endpoint.nwis.pmcodes");
+	String precipWFSGetFeatureUrl = props.getProperty("enddat.endpoint.precip.wfsgetfeature");
 %>
 
 <link rel="shortcut icon" type="image/ico" href="img/favicon.ico">

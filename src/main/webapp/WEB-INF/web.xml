@@ -19,7 +19,7 @@
 		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
 		<init-param>
 			<param-name>forward-url-param</param-name>
-			<param-value>enddat.service.url</param-value>
+			<param-value>enddat.endpoint.service</param-value>
 		</init-param>
 		<init-param>
 			<param-name>readTimeout</param-name>
@@ -41,7 +41,7 @@
 		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
 		<init-param>
 			<param-name>forward-url-param</param-name>
-			<param-value>enddat.waterservice.url</param-value>
+			<param-value>enddat.endpoint.nwis.site</param-value>
 		</init-param>
 		<init-param>
 			<param-name>readTimeout</param-name>
@@ -59,7 +59,7 @@
 		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
 		<init-param>
 			<param-name>forward-url-param</param-name>
-			<param-value>enddat.statcodes.url</param-value>
+			<param-value>enddat.endpoint.nwis.statcodes</param-value>
 		</init-param>
 		<init-param>
 			<param-name>readTimeout</param-name>

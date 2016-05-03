@@ -194,7 +194,8 @@ define([
 
 					self.statisticCodes = _.object(
 						_.pluck(parsedStats, 'stat_CD'),
-						_.map(_.pluck(parsedStats, 'stat_NM')), rdbUtils.toTileCase);
+						_.map(_.pluck(parsedStats, 'stat_NM'), rdbUtils.toTitleCase)
+					);
 					log.debug('Fetched statistic codes ' + _.size(self.statisticCodes));
 					deferred.resolve();
 				},

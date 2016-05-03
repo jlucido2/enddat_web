@@ -1,6 +1,51 @@
 #map-div {
 	height : 100%;
 }
+
+.leaflet-legend-div {
+	background-color : @panel-bg;
+	border-radius : 5px;
+	box-shadow : 0 1px 5px rgba(0,0,0,0.4);
+	
+	.leaflet-legend-panel-header {
+		padding-left : 6px;
+		padding-right : 6px;
+		padding-top : 2px;
+		padding-botton : 2px;
+		background-color : @panel-default-heading-bg;
+		border-top-left-radius : 5px;
+		border-top-right-radius : 5px;
+		border-bottom-color : @panel-default-border;
+		border-bottom-width : 1px;
+		border-bottom-style : solid;
+		span {
+			padding-left : 4px;
+			padding-right : 4px;
+		}
+		.leaflet-legend-panel-header-title {
+			font-size : 14px;
+		}
+		.leaflet-legend-panel-header-toggle {
+			float : right;
+			padding-top : 2px;
+			margin-left : 4px;
+		}
+	}
+	.leaflet-legend-body {
+		margin : 6px;
+		img {
+			height : 11px;
+			width : 11px;
+		}
+		.proj-location-icon {
+			height : 15px;
+			width : 11px;
+		}
+		span {
+			margin-left : 8px;
+		}
+	}
+}
 .dataset-variable-container {
 	max-height: 100%;
 	overflow-y: scroll;

@@ -3,7 +3,7 @@
 
 	<groupId>gov.usgs.owi</groupId>
 	<artifactId>enddat_web</artifactId>
-	<version>2.0.0-SNAPSHOT</version>
+	<version>2.0-SNAPSHOT</version>
 	<packaging>war</packaging>
 
 	<name>EnDDaT UI</name>
@@ -118,13 +118,7 @@
 		<dependency>
 			<groupId>gov.usgs.cida</groupId>
 			<artifactId>proxy-utils</artifactId>
-			<version>1.0.7</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>gov.usgs.cida</groupId>
-			<artifactId>tomcat-filters</artifactId>
-			<version>1.0</version>
+			<version>1.0.12</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>

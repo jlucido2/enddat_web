@@ -19,11 +19,7 @@
 		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
 		<init-param>
 			<param-name>forward-url-param</param-name>
-			<param-value>enddat.service.url</param-value>
-		</init-param>
-		<init-param>
-			<param-name>forward-url</param-name>
-			<param-value>http://localhost:8080/enddat-services/</param-value>
+			<param-value>enddat.endpoint.service</param-value>
 		</init-param>
 		<init-param>
 			<param-name>readTimeout</param-name>
@@ -45,7 +41,7 @@
 		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
 		<init-param>
 			<param-name>forward-url-param</param-name>
-			<param-value>enddat.waterservice.url</param-value>
+			<param-value>enddat.endpoint.nwis.site</param-value>
 		</init-param>
 		<init-param>
 			<param-name>readTimeout</param-name>
@@ -60,11 +56,10 @@
 
 	<servlet>
 		<servlet-name>STCodesServlet</servlet-name>
-		<servlet-class>gov.usgs.cida.proxy.AuthIgnoringProxyServlet</servlet-class>
+		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
 		<init-param>
-			<param-name>forward-url</param-name>
-			<!--<param-value>http://nwis.waterdata.usgs.gov/nwis/help/</param-value>-->
-			<param-value>http://help.waterdata.usgs.gov/code/stat_code_query?fmt=rdb</param-value>
+			<param-name>forward-url-param</param-name>
+			<param-value>enddat.endpoint.nwis.statcodes</param-value>
 		</init-param>
 		<init-param>
 			<param-name>readTimeout</param-name>
@@ -74,6 +69,6 @@
 
 	<servlet-mapping>
 		<servlet-name>STCodesServlet</servlet-name>
-		<url-pattern>/stcodes</url-pattern>
+		<url-pattern>/stcodes/*</url-pattern>
 	</servlet-mapping>
 </web-app>

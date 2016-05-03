@@ -51,20 +51,7 @@ define([
 					url: self.url,
 					dataType: 'text',
 					success: function(data, textStatus, jqXHR){
-						var lines = data.split("\n");
-						var importantColumns = {
-							"site_no" : null,
-							"station_nm" : null,
-							"dec_lat_va" : null,
-							"dec_long_va" : null,
-							"parm_cd" : null,
-							"stat_cd" : null,
-							"loc_web_ds" : null,
-							"begin_date" : null,
-							"end_date" : null,
-							"count_nu" : null
-						};
-						var parsedSites = rdbUtils.parseRDB(lines, importantColumns);
+						var parsedSites = rdbUtils.parseRDB(data);
 						// Group the parse site information by site id
 						var siteDataBySiteNo = _.groupBy(parsedSites, function(site) {
 							return site.site_no;
@@ -176,18 +163,8 @@ define([
 				url : parameterCodesPath + 'pmcodes?radio_pm_search=param_group&pm_group=Physical&format=rdb&show=parameter_nm',
 				dataType: 'text',
 				success: function(data) {
-					var parsedParams = [];
-					var lines = data.split("\n");
-					var columns = {
-						"parameter_cd" : null,
-						"parameter_nm" : null
-					};
-
-					self.parameterCodes = {};
-					parsedParams = rdbUtils.parseRDB(lines, columns);
-					_.each(parsedParams, function(el, index) {
-						self.parameterCodes[el.parameter_cd] = el.parameter_nm;
-					});
+					var parsedParams = rdbUtils.parseRDB(data);
+					self.parameterCodes = _.object(_.pluck(parsedParams, 'parameter_cd'), _.pluck(parsedParams, 'parameter_nm'))
 					log.debug('Fetched parameter codes ' + _.size(self.parameterCodes));
 					deferred.resolve();
 				},
@@ -210,22 +187,15 @@ define([
 			var deferred = $.Deferred();
 			$.ajax({
 				type : "GET",
-				url : 'stcodes?read_file=stat&format=rdb',
+				url : 'stcodes/?fmt=rdb',
 				dataType: 'text',
 				success: function(data) {
-					var parsedStats = [];
-					var lines = data.split("\n");
-					var columns = {
-						stat_CD : null,
-						stat_NM : null,
-						stat_DS : null
-					};
+					var parsedStats = rdbUtils.parseRDB(data);
 
-					self.statisticCodes = {};
-					parsedStats = rdbUtils.parseRDB(lines, columns);
-					_.each(parsedStats, function(el) {
-						self.statisticCodes[el.stat_CD] = rdbUtils.toTitleCase(el.stat_NM);
-					});
+					self.statisticCodes = _.object(
+						_.pluck(parsedStats, 'stat_CD'),
+						_.map(_.pluck(parsedStats, 'stat_NM'), rdbUtils.toTitleCase)
+					);
 					log.debug('Fetched statistic codes ' + _.size(self.statisticCodes));
 					deferred.resolve();
 				},

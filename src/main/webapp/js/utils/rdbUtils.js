@@ -11,7 +11,7 @@ define([
 	 * Function assumes that the file uses rdb formatting, that columns are separated by tabs, that rows
 	 * that begin with a # characters are comments, that the first non comment line are the column keys, and
 	 * that the line following this line does not contain data.
-	 * Note that the function handles Strings where the lines end in \n (linefeed) or in \r followed by \l
+	 * Note that the function handles Strings where the lines end in \n (linefeed) or in \r followed by \n
 	 * (carriage return followed by linefeed)
 	 * @param {String} data - Contents have rdb formatting.
 	 * @returns {Array of Objects} - where object keys are the column names and the values are the column value

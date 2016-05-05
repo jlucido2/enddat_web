@@ -86,7 +86,7 @@ define([
 				[L.layerGroup(), L.layerGroup()]
 			);
 
-			this.siteDataViews = {};
+			this.selectedSite = undefined;
 		},
 
 		render : function() {
@@ -138,10 +138,10 @@ define([
 		},
 
 		removeDataViews : function() {
-			_.each(this.siteDataViews, function(view) {
-				view.remove();
-			});
-			this.siteDataViews = {};
+			if (this.selectedSite) {
+				this.selectedSite.dataView.remove();
+				this.selectedSite = undefined;
+			}
 		},
 
 		/*
@@ -289,19 +289,23 @@ define([
 				var projectLocation = L.latLng(self.model.attributes.location.latitude, self.model.attributes.location.longitude);
 
 				self.removeDataViews();
-				self.siteDataViews[datasetKind] = new DataViews[datasetKind]({
-					el : $utils.createDivInContainer(self.$(VARIABLE_CONTAINER_SEL)),
-					distanceToProjectLocation : LUtils.milesBetween(projectLocation, siteLatLng).toFixed(3),
+				self.selectedSite = {
+					datasetKind : datasetKind,
 					model : siteModel,
-					opened : true
-				});
+					dataView : new DataViews[datasetKind]({
+						el : $utils.createDivInContainer(self.$(VARIABLE_CONTAINER_SEL)),
+						distanceToProjectLocation : LUtils.milesBetween(projectLocation, siteLatLng).toFixed(3),
+						model : siteModel,
+						opened : true
+					})
+				};
 
 				if (!$mapDiv.hasClass(MAP_WIDTH_CLASS)) {
 					$mapDiv.addClass(MAP_WIDTH_CLASS);
 					self.map.invalidateSize();
 					self.$(VARIABLE_CONTAINER_SEL).addClass(DATA_VIEW_WIDTH_CLASS);
 				}
-				self.siteDataViews[datasetKind].render();
+				self.selectedSite.dataView.render();
 			};
 
 			this.siteLayerGroups[datasetKind].clearLayers();

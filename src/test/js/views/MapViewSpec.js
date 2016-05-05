@@ -205,21 +205,18 @@ define([
 				expect(removeMapSpy).toHaveBeenCalled();
 			});
 
-			it('Expects siteDataViews to be removed ', function() {
-				var nwisRemoveSpy = jasmine.createSpy('nwisRemoveSpy');
-				var precipRemoveSpy = jasmine.createSpy('precipRemoveSpy');
-				testView.siteDataViews[Config.NWIS_DATASET] = {
-					remove : nwisRemoveSpy
-				};
-				testView.siteDataViews[Config.PRECIP_DATASET] = {
-					remove : precipRemoveSpy
+			it('Expects selectedSite\'s data view to be removed ', function() {
+				var dataViewRemoveSpy = jasmine.createSpy('nwisRemoveSpy');
+				testView.selectedSite = {
+					dataView : {
+						remove : dataViewRemoveSpy
+					}
 				};
 				testView.render();
 				testView.remove();
 
-				expect(nwisRemoveSpy).toHaveBeenCalled();
-				expect(precipRemoveSpy).toHaveBeenCalled();
-				expect(testView.siteDataViews).toEqual({});
+				expect(dataViewRemoveSpy).toHaveBeenCalled();
+				expect(testView.selectedSite).not.toBeDefined();
 			});
 		});
 
@@ -229,20 +226,17 @@ define([
 			});
 
 			it('Expects that if the testModel changes the step to PROJ_LOC_STEP, that the dataViews are removed and assigned undefined', function() {
-				var removePrecipSpy = jasmine.createSpy('removePrecipSpy');
-				var removeNWISSpy = jasmine.createSpy('removeNWISSpy');
-				testView.siteataViews = {};
-				testView.siteDataViews[Config.PRECIP_DATASET] = {
-					remove : removePrecipSpy
+				var dataViewRemoveSpy = jasmine.createSpy('nwisRemoveSpy');
+				testView.selectedSite = {
+					dataView : {
+						remove : dataViewRemoveSpy
+					}
 				};
-				testView.siteDataViews[Config.NWIS_DATASET] = {
-					remove : removeNWISSpy
-				};
+
 				testModel.set('step', Config.PROJ_LOC_STEP);
 
-				expect(removePrecipSpy).toHaveBeenCalled();
-				expect(removeNWISSpy).toHaveBeenCalled();
-				expect(testView.precipDataView).toBeUndefined();
+				expect(dataViewRemoveSpy).toHaveBeenCalled();
+				expect(testView.selectedSite).toBeUndefined();
 			});
 
 			it('Expects that if location goes from unset to set the marker is added to the map and it\'s location is set', function() {

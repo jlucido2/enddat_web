@@ -14,7 +14,7 @@ define([
 		template : hb_template,
 
 		events : {
-			'click .nav-project-loc a' : 'clickProjectLocationStep',
+			'click .nav-project-loc a' : 'showWarning',
 			'click .nav-choose-data a' : 'goToChooseDataStep',
 			'click .nav-process-data a' : 'goToProcessDataStep',
 			'click .nav-warning-modal .ok-button' : 'goToProjectLocationStep'
@@ -47,10 +47,10 @@ define([
 		/*
 		 * DOM Event handlers
 		 */
-		clickProjectLocationStep : function(ev) {
+		showWarning : function(ev) {
 			ev.preventDefault();
 			if (this.model.get('step') !== Config.PROJ_LOC_STEP) {
-					this.$('.nav-warning-modal').modal('show');
+				this.$('.nav-warning-modal').modal('show');
 			}
 		},
 

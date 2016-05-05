@@ -169,8 +169,8 @@ define([
 				return donePromise;
 			};
 
+			this.trigger('dataset:updateStart');
 			if (!_.isEmpty(datasetsToFetch) && (boundingBox)) {
-				this.trigger('dataset:updateStart');
 				fetchDonePromises = _.map(datasetsToFetch, fetchDataset);
 				$.when.apply(this, fetchDonePromises).done(function() {
 					var datasetKindErrors = _.filter(arguments, function(arg) {
@@ -178,6 +178,9 @@ define([
 					});
 					self.trigger('dataset:updateFinished', datasetKindErrors);
 				});
+			}
+			else {
+				this.trigger('dataset:updateFinished', []);
 			}
 		},
 

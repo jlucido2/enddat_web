@@ -1,7 +1,6 @@
 /* jslint browser: true */
 
 define([
-	'loglevel',
 	'underscore',
 	'Config',
 	'utils/jqueryUtils',
@@ -13,7 +12,7 @@ define([
 	'views/ChooseView',
 	'views/VariableSummaryView',
 	'hbs!hb_templates/dataDiscovery'
-], function (log, _, Config, $utils, BaseView, NavView, AlertView, MapView, LocationView, ChooseView, VariableSummaryView, hbTemplate) {
+], function (_, Config, $utils, BaseView, NavView, AlertView, MapView, LocationView, ChooseView, VariableSummaryView, hbTemplate) {
 	"use strict";
 
 	var NAVVIEW_SELECTOR = '.workflow-nav';
@@ -59,6 +58,8 @@ define([
 			// Set up event listeners on the workflow model
 			this.listenTo(this.model, 'dataset:updateStart', this.showLoadingIndicator);
 			this.listenTo(this.model, 'dataset:updateFinished', this.hideLoadingIndicator);
+			this.listenTo(this.model, 'change:startDate', this.showSuccessfulFetchAlert);
+			this.listenTo(this.model, 'change:endDate', this.showSuccessfulFetchAlert);
 			this.listenTo(this.model, 'change:step', this.updateSubViews);
 			this.listenTo(this.model, 'change:datasets', this.closeAlert);
 
@@ -160,17 +161,35 @@ define([
 			this.$(LOADING_SELECTOR).show();
 		},
 
-		hideLoadingIndicator : function(fetchErrorTypes) {
-			var chosenDatasets = this.model.get('datasets');
+		_filterMsg : function() {
+			var state = this.model.attributes;
+			var latitude = (_.has(state, 'location') && _.has(state.location, 'latitude')) ? state.location.latitude : '';
+			var longitude = (_.has(state, 'location') && _.has(state.location, 'longitude')) ? state.location.longitude : '';
 
+			var radius = (state.radius) ? state.radius : '';
+			var startDate = (state.startDate) ? state.startDate.format(Config.DATE_FORMAT) : '';
+			var endDate = (state.endDate) ? state.endDate.format(Config.DATE_FORMAT) : '';
+			var chosenDatasets = (state.datasets) ? state.datasets : [];
+
+			var dateFilterMsg = (startDate && endDate) ? 'date filter from ' + startDate + ' to ' + endDate : 'no date filter';
+
+			return 'Successfully fetched data of type(s): ' + chosenDatasets.join(', ') +
+				' at location ' + latitude + ' ' + longitude +
+				', radius ' + radius + ' mi and ' + dateFilterMsg;
+		},
+
+		showSuccessfulFetchAlert : function() {
+			this.alertView.showSuccessAlert(this._filterMsg());
+		},
+
+		hideLoadingIndicator : function(fetchErrorTypes) {
 			this.$(LOADING_SELECTOR).hide();
 			if (fetchErrorTypes.length === 0) {
-				this.alertView.showSuccessAlert('Successfully fetch data of type(s): ' + chosenDatasets.join(', '));
+				this.showSuccessfulFetchAlert();
 			}
 			else {
 				this.alertView.showDangerAlert('Unable to fetch the following data types: ' + fetchErrorTypes.join(', '));
 			}
-			this.$(ALERTVIEW_SELECTOR).show();
 		},
 
 		closeAlert : function() {

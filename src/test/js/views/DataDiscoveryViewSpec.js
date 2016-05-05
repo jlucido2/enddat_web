@@ -4,10 +4,11 @@
 define([
 	'squire',
 	'jquery',
+	'moment',
 	'Config',
 	'models/WorkflowStateModel',
 	'views/BaseView'
-], function(Squire, $, Config, WorkflowStateModel, BaseView) {
+], function(Squire, $, moment, Config, WorkflowStateModel, BaseView) {
 	"use strict";
 
 	describe("DataDiscoveryView", function() {
@@ -217,7 +218,7 @@ define([
 				expect(setElChooseViewSpy).toHaveBeenCalled();
 				expect(renderChooseViewSpy).toHaveBeenCalled();
 				expect(setElSummaryViewSpy).toHaveBeenCalled();
-				expect(renderSummaryViewSpy).toHaveBeenCalled()
+				expect(renderSummaryViewSpy).toHaveBeenCalled();
 			});
 		});
 
@@ -302,6 +303,19 @@ define([
 				expect(showDangerAlertSpy).toHaveBeenCalled();
 			});
 
+			it('Expects that if the startDate property is changed the success alert is shown', function() {
+				showSuccessAlertSpy.calls.reset();
+				testModel.set('startDate', moment());
+
+				expect(showSuccessAlertSpy).toHaveBeenCalled();
+			});
+
+			it('Expects that if the endDate property is changed the success alert is shown', function() {
+				showSuccessAlertSpy.calls.reset();
+				testModel.set('endDate', moment());
+
+				expect(showSuccessAlertSpy).toHaveBeenCalled();
+			});
 
 			it('Expects that if the step changes from CHOOSE_DATA_STEP to PROJ_LOC_STEP, the choose view and summary view is removed', function() {
 				testModel.set('step', Config.CHOOSE_DATA_STEP);
@@ -310,7 +324,7 @@ define([
 				testModel.set('step', Config.PROJ_LOC_STEP);
 
 				expect(removeChooseViewSpy).toHaveBeenCalled();
-				expect(removeSummaryViewSpy).toHaveBeenCalled()
+				expect(removeSummaryViewSpy).toHaveBeenCalled();
 			});
 
 			it('Expects that if the step changes from PROJ_LOC_STEP to CHOOSE_DATA_STEP, the choose view and summary views are created and rendered', function() {

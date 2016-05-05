@@ -35,7 +35,10 @@ define([
 		},
 
 		bindings : {
-			'#radius' : 'radius'
+			'#radius' : {
+				observe : 'radius',
+				events : ['change']
+			}
 		},
 
 

@@ -2,7 +2,7 @@
 
 define([
 	'underscore',
-	'bootstrap', // Needed by the bootstrap navbar
+	'bootstrap', // Needed by the bootstrap navbar and modal
 	'loglevel',
 	'Config',
 	'views/BaseView',
@@ -14,9 +14,10 @@ define([
 		template : hb_template,
 
 		events : {
-			'click .nav-project-loc a' : 'goToProjectLocationStep',
+			'click .nav-project-loc a' : 'showWarning',
 			'click .nav-choose-data a' : 'goToChooseDataStep',
-			'click .nav-process-data a' : 'goToProcessDataStep'
+			'click .nav-process-data a' : 'goToProcessDataStep',
+			'click .nav-warning-modal .ok-button' : 'goToProjectLocationStep'
 		},
 
 		/*
@@ -38,6 +39,7 @@ define([
 
 		render : function() {
 			BaseView.prototype.render.apply(this, arguments);
+			this.$('.nav-warning-modal').modal({show : false});
 			this.updateNavigation(this.model, true);
 			return this;
 		},
@@ -45,10 +47,18 @@ define([
 		/*
 		 * DOM Event handlers
 		 */
+		showWarning : function(ev) {
+			ev.preventDefault();
+			if (this.model.get('step') !== Config.PROJ_LOC_STEP) {
+				this.$('.nav-warning-modal').modal('show');
+			}
+		},
+
 		goToProjectLocationStep : function(ev) {
 			ev.preventDefault();
 			if (this.model.get('step') !== Config.PROJ_LOC_STEP) {
 				this.model.set('step', Config.PROJ_LOC_STEP);
+				this.$('.nav-warning-modal').modal('hide');
 			}
 		},
 		goToChooseDataStep : function(ev) {

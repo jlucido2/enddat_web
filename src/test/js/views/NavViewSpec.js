@@ -27,9 +27,12 @@ define([
 			$('body').append('<div id="test-div"></div>');
 			$testDiv = $('#test-div');
 
+			spyOn($.fn, 'modal').and.callThrough();
+
 			testModel = new WorkflowStateModel({}, {
 				createDatasetModels : true
 			});
+
 			testModel.set('step', Config.PROJ_LOC_STEP);
 			mockRouter = jasmine.createSpyObj('mockRouter', ['navigate']);
 			log.setLevel('silent');
@@ -66,6 +69,12 @@ define([
 				spyOn(BaseView.prototype, 'render').and.callThrough();
 				testView.render();
 				expect(BaseView.prototype.render).toHaveBeenCalled();
+			});
+
+			it('Expects that the warning modal will be initialized', function() {
+				testView.render();
+
+				expect($.fn.modal).toHaveBeenCalled();
 			});
 
 			it('Expects that if the workflow step is PROJ_LOC_STEP and no location is defined, the project location nav btn is active and the choose data and process data buttons are disabled', function() {
@@ -124,13 +133,42 @@ define([
 				expect(testModel.get('step')).toEqual(Config.CHOOSE_DATA_STEP);
 			});
 
-			it('Expects that clicking the project location button changes the step to proj loc', function() {
+			it('Expects that clicking the project location button causes the warning modal to be shown', function() {
 				testModel.set({
 					step : Config.CHOOSE_DATA_STEP,
 					location : {latitude : 43.0, longitude : -100.0}
 				});
 				testView.render();
+				$.fn.modal.calls.reset();
 				$(projLocSel + ' a').trigger('click');
+
+				expect($.fn.modal).toHaveBeenCalledWith('show');
+			});
+
+			it('Expects that clicking the cancel button in the modal does nothing to the state of the workflow model', function() {
+				var currentWorkflowState;
+				testModel.set({
+					step : Config.CHOOSE_DATA_STEP,
+					location : {latitude : 43.0, longitude : -100.0}
+				});
+				currentWorkflowState = testModel.attributes;
+				testView.render();
+				$(projLocSel + ' a').trigger('click');
+				$('.nav-warning-modal .cancel-button').trigger('click');
+
+				expect(testModel.attributes).toEqual(currentWorkflowState);
+			});
+
+			it('Expects that clicking the ok button sets the workflow step to PROJ_LOC_STEP', function() {
+				var currentWorkflowState;
+				testModel.set({
+					step : Config.CHOOSE_DATA_STEP,
+					location : {latitude : 43.0, longitude : -100.0}
+				});
+				currentWorkflowState = testModel.attributes;
+				testView.render();
+				$(projLocSel + ' a').trigger('click');
+				$('.nav-warning-modal .ok-button').trigger('click');
 
 				expect(testModel.get('step')).toEqual(Config.PROJ_LOC_STEP);
 			});

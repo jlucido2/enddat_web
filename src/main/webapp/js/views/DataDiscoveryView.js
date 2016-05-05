@@ -1,7 +1,6 @@
 /* jslint browser: true */
 
 define([
-	'loglevel',
 	'underscore',
 	'Config',
 	'utils/jqueryUtils',
@@ -13,7 +12,7 @@ define([
 	'views/ChooseView',
 	'views/VariableSummaryView',
 	'hbs!hb_templates/dataDiscovery'
-], function (log, _, Config, $utils, BaseView, NavView, AlertView, MapView, LocationView, ChooseView, VariableSummaryView, hbTemplate) {
+], function (_, Config, $utils, BaseView, NavView, AlertView, MapView, LocationView, ChooseView, VariableSummaryView, hbTemplate) {
 	"use strict";
 
 	var NAVVIEW_SELECTOR = '.workflow-nav';
@@ -170,7 +169,7 @@ define([
 			var radius = (state.radius) ? state.radius : '';
 			var startDate = (state.startDate) ? state.startDate.format(Config.DATE_FORMAT) : '';
 			var endDate = (state.endDate) ? state.endDate.format(Config.DATE_FORMAT) : '';
-			var chosenDatasets = state.datasets;
+			var chosenDatasets = (state.datasets) ? state.datasets : [];
 
 			var dateFilterMsg = (startDate && endDate) ? 'date filter from ' + startDate + ' to ' + endDate : 'no date filter';
 
@@ -189,7 +188,7 @@ define([
 				this.showSuccessfulFetchAlert();
 			}
 			else {
-				this.alertView.showDangerAlert('Unable to fetch the following data types: ' + fetchErrorTypes.join(', ') + filterMsg);
+				this.alertView.showDangerAlert('Unable to fetch the following data types: ' + fetchErrorTypes.join(', '));
 			}
 		},
 

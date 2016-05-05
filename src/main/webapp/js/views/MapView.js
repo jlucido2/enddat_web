@@ -131,13 +131,13 @@ define([
 			if (_.has(this, 'map')) {
 				this.map.remove();
 			}
-			this.removeDataViews();
+			this.removeDataView();
 
 			BaseView.prototype.remove.apply(this, arguments);
 			return this;
 		},
 
-		removeDataViews : function() {
+		removeDataView : function() {
 			if (this.selectedSite) {
 				this.selectedSite.dataView.remove();
 				this.selectedSite = undefined;
@@ -195,7 +195,7 @@ define([
 			var $map = this.$('#' + this.mapDivId);
 			switch (newStep) {
 				case Config.PROJ_LOC_STEP:
-					this.removeDataViews();
+					this.removeDataView();
 
 					if (this.map.hasLayer(this.circleMarker)) {
 						this.map.removeLayer(this.circleMarker);
@@ -266,6 +266,8 @@ define([
 
 		updateSiteMarkerLayer : function(datasetKind) {
 			var self = this;
+			var $mapDiv = this.$('#' + self.mapDivId);
+
 			var siteCollection = this.model.get('datasetCollections')[datasetKind];
 			var filteredSiteModels = siteCollection.getModelsWithinDateFilter(this.model.get('startDate'), this.model.get('endDate'));
 
@@ -285,10 +287,9 @@ define([
 			};
 
 			var updateDataView = function(siteModel, siteLatLng) {
-				var $mapDiv = self.$('#' + self.mapDivId);
 				var projectLocation = L.latLng(self.model.attributes.location.latitude, self.model.attributes.location.longitude);
 
-				self.removeDataViews();
+				self.removeDataView();
 				self.selectedSite = {
 					datasetKind : datasetKind,
 					model : siteModel,
@@ -308,8 +309,16 @@ define([
 				self.selectedSite.dataView.render();
 			};
 
-			this.siteLayerGroups[datasetKind].clearLayers();
+			// Determine if the selected site is still in the collection
+			if (this.selectedSite && (this.selectedSite.datasetKind === datasetKind) &&
+				!_.contains(filteredSiteModels, this.selectedSite.model)) {
+				this.selectedSite.dataView.remove();
+				$mapDiv.removeClass(MAP_WIDTH_CLASS);
+				this.map.invalidateSize();
+				this.map.removeLayer(this.circleMarker);
+			}
 
+			this.siteLayerGroups[datasetKind].clearLayers();
 			_.each(filteredSiteModels, function(siteModel) {
 				var latLng = L.latLng(siteModel.attributes.lat, siteModel.attributes.lon);
 				var marker = L.marker(latLng, {

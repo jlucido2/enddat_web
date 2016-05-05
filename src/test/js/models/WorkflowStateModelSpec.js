@@ -135,7 +135,7 @@ define([
 				expect(resetPrecipSpy).toHaveBeenCalled();
 			});
 
-			it('Expects that a dataset:updateStart event will be triggered if there is a valid bounding box and a dataset chosen.', function() {
+			it('Expects that a dataset:updateStart event will be triggered if there is a valid bounding box regardless as whether a dataset chosen.', function() {
 				updateStartSpy.calls.reset();
 				testModel.set({
 					datasets : [Config.NWIS_DATASET, Config.PRECIP_DATASET]
@@ -146,7 +146,7 @@ define([
 				testModel.set({
 					datasets : []
 				});
-				expect(updateStartSpy).not.toHaveBeenCalled();
+				expect(updateStartSpy).toHaveBeenCalled();
 
 				testModel.set({
 					datasets : [Config.NWIS_DATASET]
@@ -163,6 +163,16 @@ define([
 			it('Expects that if any of the dataset fetches failed, the event handler will be called with the array of failed datasets', function() {
 				fetchSiteDeferred.reject();
 				expect(updateFinishedSpy).toHaveBeenCalledWith([Config.NWIS_DATASET]);
+			});
+
+			it('Expects that a dataset:updateFinished event handler will be called with an empty array if no datasets have been chosen', function() {
+				fetchSiteDeferred.resolve();
+				updateFinishedSpy.calls.reset();
+				testModel.set({
+					datasets : []
+				});
+
+				expect(updateFinishedSpy).toHaveBeenCalledWith([]);
 			});
 		});
 

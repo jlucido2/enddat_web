@@ -90,6 +90,8 @@ define([
 		 */
 
 		updateSubViews : function(model, step) {
+			var prevStep = model.previous('step');
+
 			this.alertView.closeAlert();
 			switch(step) {
 				case Config.PROJ_LOC_STEP:
@@ -154,6 +156,13 @@ define([
 						this.variableSummaryView.render();
 					}
 					break;
+
+				case Config.CHOOSE_DATA_VARIABLES_STEP:
+					if (prevStep === Config.CHOOSE_DATA_FILTERS_STEP) {
+						this.locationView.collapse();
+						this.chooseView.collapse();
+					}
+
 			}
 		},
 

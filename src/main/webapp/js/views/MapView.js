@@ -330,6 +330,7 @@ define([
 				marker.on('click', function(ev) {
 					moveCircleMarker(latLng);
 					updateDataView(siteModel, latLng);
+					self.model.set('step', Config.CHOOSE_DATA_VARIABLES_STEP);
 				});
 			});
 		},

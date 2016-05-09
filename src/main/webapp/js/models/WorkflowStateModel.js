@@ -11,9 +11,18 @@ define([
 ], function(_, $, Backbone, Config, geoSpatialUtils, NWISCollection, PrecipitationCollection) {
 	"use strict";
 
+	var DEFAULT_CHOOSE_DATA_RADIUS = 2;
+	var DEFAULT_CHOSEN_DATASETS = ['NWIS'];
+
+	// Defaults for processing step
+	var DEFAULT_TIME_INTERVAL = 6
+	var DEFAULT_TIME_ZONE = '0_GMT'
+	var DEFAULT_PROCESSING_TIME_RANGE_FROM_LATEST = 30; // Days after the latest selected variable's data.
+	var DEFAULT_OUTPUT_DATA_FORMAT = 'Excel';
+	var DEFAULT_OUTPUT_FORMAT = 'tab';
+
 	var model = Backbone.Model.extend({
-		DEFAULT_CHOOSE_DATA_RADIUS : 2,
-		DEFAULT_CHOSEN_DATASETS : ['NWIS'],
+
 
 		defaults : function() {
 			return {
@@ -140,10 +149,15 @@ define([
 				case Config.CHOOSE_DATA_FILTERS_STEP:
 					if (previousStep === Config.PROJ_LOC_STEP) {
 						this.initializeDatasetCollections();
-						this.set('datasets', this.DEFAULT_CHOSEN_DATASETS);
-						this.set('radius', this.DEFAULT_CHOOSE_DATA_RADIUS);
+						this.set('datasets', DEFAULT_CHOSEN_DATASETS);
+						this.set('radius', DEFAULT_CHOOSE_DATA_RADIUS);
 					}
 					break;
+
+				case Config.PROCESS_DATA_STEP:
+					this.set('processParams', {
+
+					});
 			}
 		},
 
@@ -193,6 +207,10 @@ define([
 			_.each(datasetsToClear, function(datasetCollection) {
 				datasetCollection.reset();
 			});
+		},
+
+		getProcessingUrl : function() {
+			var params;
 		}
 	});
 

@@ -22,6 +22,7 @@
 
 	String parameterCodesUrl = props.getProperty("enddat.endpoint.nwis.pmcodes");
 	String precipWFSGetFeatureUrl = props.getProperty("enddat.endpoint.precip.wfsgetfeature");
+	String servicesUrl = props.getProperty("enddat.endpoint.service");
 %>
 
 <link rel="shortcut icon" type="image/ico" href="img/favicon.ico">

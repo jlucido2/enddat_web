@@ -150,6 +150,10 @@ define([
 
 		},
 
+		getSelectedVariableDateRange : function() {
+			var selectedModels;
+		},
+
 		/*
 		 * Retrieves the parameter codes and set the parameterCodes property on the collection. If
 		 * the fetch fails the parameterCodes property is assigned undefined.

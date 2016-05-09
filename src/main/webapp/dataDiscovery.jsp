@@ -34,8 +34,10 @@
 						'parameterCodesPath': '<%=parameterCodesUrl%>'
 				 	},
 					'models/PrecipitationCollection' : {
-						'precipWFSGetFeatureUrl' : '<%=precipWFSGetFeatureUrl%>',
-					}
+						'precipWFSGetFeatureUrl' : '<%=precipWFSGetFeatureUrl%>'
+					},
+					'models/WorkflowStateModel' : {
+						'serviceUrl' : '<%=servicesUrl%>'
 				},
 				baseUrl: "<%=baseUrl%>/js/",
 				paths: {

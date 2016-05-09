@@ -58,6 +58,18 @@ define([
 			return this;
 		},
 
+		collapse : function() {
+			this.$('.panel-body').collapse('hide');
+			this.$('.expand-icon').show();
+			this.$('.collapse-icon').hide();
+		},
+
+		expand : function() {
+			this.$('.panel-body').collapse('show');
+			this.$('.expand-icon').hide();
+			this.$('.collapse-icon').show();
+		},
+
 		toggleIcon : function(ev) {
 			var $button = $(ev.currentTarget);
 			var $visibleIcon = $button.find('i:visible');

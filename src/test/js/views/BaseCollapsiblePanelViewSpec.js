@@ -104,6 +104,44 @@ define([
 			});
 		});
 
+		describe('Tests for collapse function', function() {
+			it('Expects that if the panel is open and the collapse function is called, the panel is collapsed', function() {
+				testView = new TestPanelView({
+					el : $testDiv,
+					context : {
+						buttonName : 'Test Button Name'
+					},
+					opened : true
+				});
+				testView.render();
+				testView.collapse();
+
+				expect($testDiv.find('.collapse-icon').is(':visible')).toBe(false);
+				expect($testDiv.find('.expand-icon').is(':visible')).toBe(true);
+				expect($testDiv.find('.panel-body').hasClass('in')).toBe(false);
+			});
+		});
+
+		describe('Tests for expand function', function() {
+			it('Expects that if the panel is closed and the expand function is called, the panel is opened', function() {
+				testView = new TestPanelView({
+					el : $testDiv,
+					context : {
+						buttonName : 'Test Button Name'
+					},
+					opened : false
+				});
+				testView.render();
+				testView.expand();
+
+				expect($testDiv.find('.collapse-icon').is(':visible')).toBe(true);
+				expect($testDiv.find('.expand-icon').is(':visible')).toBe(false);
+				setTimeout(function() {
+					expect($testDiv.find('.panel-body').hasClass('in')).toBe(true);
+				}, 1000);
+			});
+		});
+
 		describe('Tests for toggling the collapse icon', function() {
 			var $toggle, $collapseBtn, $expandBtn;
 			beforeEach(function() {

@@ -21,8 +21,8 @@ define([
 		var initializeBaseViewSpy, renderBaseViewSpy, removeBaseViewSpy;
 		var setElNavViewSpy, renderNavViewSpy, removeNavViewSpy;
 		var setElMapViewSpy, renderMapViewSpy, removeMapViewSpy;
-		var setElLocationViewSpy, renderLocationViewSpy, removeLocationViewSpy;
-		var setElChooseViewSpy, renderChooseViewSpy, removeChooseViewSpy;
+		var setElLocationViewSpy, renderLocationViewSpy, removeLocationViewSpy, collapseLocationViewSpy, expandLocationViewSpy;
+		var setElChooseViewSpy, renderChooseViewSpy, removeChooseViewSpy, collapseChooseViewSpy, expandChooseViewSpy;
 		var setElSummaryViewSpy, renderSummaryViewSpy, removeSummaryViewSpy;
 		var setElAlertViewSpy, renderAlertViewSpy, removeAlertViewSpy, showSuccessAlertSpy, showDangerAlertSpy, closeAlertSpy;
 
@@ -48,10 +48,15 @@ define([
 			setElLocationViewSpy = jasmine.createSpy('setElLocationViewSpy');
 			renderLocationViewSpy = jasmine.createSpy('renderLocationViewSpy');
 			removeLocationViewSpy = jasmine.createSpy('removeLocationViewSpy');
+			collapseLocationViewSpy = jasmine.createSpy('collapseLocationViewSpy');
+			expandLocationViewSpy = jasmine.createSpy('expandLocationViewSpy');
 
 			setElChooseViewSpy = jasmine.createSpy('setElChooseViewSpy');
 			renderChooseViewSpy = jasmine.createSpy('renderChooseViewSpy');
 			removeChooseViewSpy = jasmine.createSpy('removeChooseViewSpy');
+			collapseChooseViewSpy = jasmine.createSpy('collapseChooseViewSpy');
+			expandChooseViewSpy = jasmine.createSpy('expandChooseViewSpy');
+
 
 			setElSummaryViewSpy = jasmine.createSpy('setElSummaryViewSpy');
 			renderSummaryViewSpy = jasmine.createSpy('renderSummaryViewSpy');
@@ -90,7 +95,9 @@ define([
 					render : renderLocationViewSpy
 				}),
 				render : renderLocationViewSpy,
-				remove : removeLocationViewSpy
+				remove : removeLocationViewSpy,
+				expand : expandLocationViewSpy,
+				collapse : collapseLocationViewSpy
 			}));
 
 			injector.mock('views/ChooseView', BaseView.extend({
@@ -98,7 +105,9 @@ define([
 					render : renderChooseViewSpy
 				}),
 				render : renderChooseViewSpy,
-				remove : removeChooseViewSpy
+				remove : removeChooseViewSpy,
+				expand : expandChooseViewSpy,
+				collapse : collapseChooseViewSpy
 			}));
 
 			injector.mock('views/VariableSummaryView', BaseView.extend({
@@ -317,7 +326,7 @@ define([
 				expect(showSuccessAlertSpy).toHaveBeenCalled();
 			});
 
-			it('Expects that if the step changes from CHOOSE_DATA_FILTERS_STEP to PROJ_LOC_STEP, the choose view and summary view is removed', function() {
+			it('Expects that if the step changes from CHOOSE_DATA_FILTERS_STEP to PROJ_LOC_STEP, the choose view and summary view are removed and the location view is expanded', function() {
 				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
 				removeChooseViewSpy.calls.reset();
 				removeSummaryViewSpy.calls.reset();
@@ -325,6 +334,7 @@ define([
 
 				expect(removeChooseViewSpy).toHaveBeenCalled();
 				expect(removeSummaryViewSpy).toHaveBeenCalled();
+				expect(expandLocationViewSpy).toHaveBeenCalled();
 			});
 
 			it('Expects that if the step changes from PROJ_LOC_STEP to CHOOSE_DATA_FILTERS_STEP, the choose view and summary views are created and rendered', function() {
@@ -339,6 +349,16 @@ define([
 				expect(renderChooseViewSpy).toHaveBeenCalled();
 				expect(setElSummaryViewSpy).toHaveBeenCalled();
 				expect(renderSummaryViewSpy).toHaveBeenCalled();
+			});
+
+			it('Expects that if the step changes from CHOOSE_DATA_FILTERS_STEP to CHOOSE_DATA_VARIABLE_STEP, the location and choose views are collapsed', function() {
+				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
+				collapseLocationViewSpy.calls.reset();
+				collapseChooseViewSpy.calls.reset();
+				testModel.set('step', Config.CHOOSE_DATA_VARIABLES_STEP);
+
+				expect(collapseLocationViewSpy).toHaveBeenCalled();
+				expect(collapseChooseViewSpy).toHaveBeenCalled();
 			});
 
 			it('Expects that if the step changes, the alert view is closed', function() {

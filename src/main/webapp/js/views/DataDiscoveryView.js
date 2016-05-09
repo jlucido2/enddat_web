@@ -103,6 +103,9 @@ define([
 						});
 						this.locationView.render();
 					}
+					else {
+						this.locationView.expand();
+					}
 					if (!this.mapView) {
 						this.mapView = new MapView({
 							el : $utils.createDivInContainer(this.$(MAPVIEW_SELECTOR)),

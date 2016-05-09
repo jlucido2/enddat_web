@@ -122,7 +122,7 @@ define([
 				});
 			});
 
-			it('Expects that clicking the choose data button, changes the step to choose data', function() {
+			it('Expects that clicking the choose data button, changes the step to CHOOSE_DATA_FILTERS_STEP', function() {
 				testModel.set({
 					step : Config.PROJ_LOC_STEP,
 					location : {latitude : 43.0, longitude : -100.0}
@@ -263,6 +263,19 @@ define([
 				expect(mockRouter.navigate.calls.mostRecent().args).toEqual(['lat/43/lng/-100/radius/2/startdate/1Jan2000/enddate/1Jan2010/dataset/NWIS/Precip']);
 				testModel.set('radius', 10);
 				expect(mockRouter.navigate.calls.mostRecent().args).toEqual(['lat/43/lng/-100/radius/10/startdate/1Jan2000/enddate/1Jan2010/dataset/NWIS/Precip']);
+			});
+
+			it('Expects that if the step is CHOOSE_DATA_FILTERS_STEP and changed to CHOOSE_DATA_VARIABLES_STEP, the choose data btn remains active', function() {
+				testModel.set('location', {latitude: 43.0, longitude : -100.0});
+				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_VARIABLES_STEP);
+
+				expect(testView.$(projLocSel + ' a').hasClass('active')).toBe(false);
+				expect(testView.$(chooseDataSel + ' a').hasClass('active')).toBe(true);
+				expect(testView.$(processDataSel + ' a').hasClass('active')).toBe(false);
+				expect(testView.$(projLocSel).hasClass('disabled')).toBe(false);
+				expect(testView.$(chooseDataSel).hasClass('disabled')).toBe(false);
+				expect(testView.$(processDataSel).hasClass('disabled')).toBe(true);
 			});
 		});
 	});

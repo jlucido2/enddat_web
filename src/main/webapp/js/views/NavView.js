@@ -32,6 +32,7 @@ define([
 			this.navSelector = {};
 			this.navSelector[Config.PROJ_LOC_STEP] = '.nav-project-loc';
 			this.navSelector[Config.CHOOSE_DATA_FILTERS_STEP] = '.nav-choose-data';
+			this.navSelector[Config.CHOOSE_DATA_VARIABLES_STEP] = '.nav-choose-data';
 			this.navSelector[Config.PROCESS_DATA_STEP] = '.nav-process-data';
 
 			this.listenTo(this.model, 'change', this.updateNavigation);

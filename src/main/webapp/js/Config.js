@@ -22,7 +22,8 @@ define([], function() {
 		},
 
 		PROJ_LOC_STEP : 'specifyProjectLocation',
-		CHOOSE_DATA_STEP : 'chooseData',
+		CHOOSE_DATA_FILTERS_STEP : 'chooseDataFilters',
+		CHOOSE_DATA_VARIABLES_STEP : 'chooseDataVariables',
 		PROCESS_DATA_STEP :'processData',
 
 		DATE_FORMAT : 'YYYY-MM-DD',

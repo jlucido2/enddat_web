@@ -31,7 +31,7 @@ define([
 
 			this.navSelector = {};
 			this.navSelector[Config.PROJ_LOC_STEP] = '.nav-project-loc';
-			this.navSelector[Config.CHOOSE_DATA_STEP] = '.nav-choose-data';
+			this.navSelector[Config.CHOOSE_DATA_FILTERS_STEP] = '.nav-choose-data';
 			this.navSelector[Config.PROCESS_DATA_STEP] = '.nav-process-data';
 
 			this.listenTo(this.model, 'change', this.updateNavigation);
@@ -62,9 +62,10 @@ define([
 			}
 		},
 		goToChooseDataStep : function(ev) {
+			var step = this.model.get('step');
 			ev.preventDefault();
-			if (this.model.get('step') !== Config.CHOOSE_DATA_STEP) {
-				this.model.set('step', Config.CHOOSE_DATA_STEP);
+			if ((step !== Config.CHOOSE_DATA_FILTERS_STEP) && (step !== Config.CHOOSE_DATA_VARIABLES_STEP)) {
+				this.model.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
 			}
 		},
 		goToProcessDataStep : function(ev) {
@@ -101,7 +102,7 @@ define([
 			switch(newStep) {
 				case Config.PROJ_LOC_STEP:
 					var location = model.get('location');
-					$chooseDataBtn = this.$(this.navSelector[Config.CHOOSE_DATA_STEP]);
+					$chooseDataBtn = this.$(this.navSelector[Config.CHOOSE_DATA_FILTERS_STEP]);
 					$processDataBtn = this.$(this.navSelector[Config.PROCESS_DATA_STEP]);
 
 					if ((location) && _.has(location, 'latitude') && (location.latitude) &&
@@ -116,7 +117,7 @@ define([
 					this.router.navigate('');
 					break;
 
-				case Config.CHOOSE_DATA_STEP:
+				case Config.CHOOSE_DATA_FILTERS_STEP:
 					$processDataBtn = this.$(this.navSelector[Config.PROCESS_DATA_STEP]);
 					//TODO: We will need to add code to remove the disabled class from the process Data button
 					// when we know what will allow that step.

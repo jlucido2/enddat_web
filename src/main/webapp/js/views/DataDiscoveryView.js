@@ -120,7 +120,7 @@ define([
 					}
 					break;
 
-				case Config.CHOOSE_DATA_STEP:
+				case Config.CHOOSE_DATA_FILTERS_STEP:
 					if (!this.locationView) {
 						this.locationView = new LocationView({
 							el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),

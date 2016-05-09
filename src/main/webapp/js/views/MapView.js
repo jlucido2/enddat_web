@@ -207,7 +207,7 @@ define([
 					}
 					break;
 
-				case Config.CHOOSE_DATA_STEP:
+				case Config.CHOOSE_DATA_FILTERS_STEP:
 					this.legendControl.setVisibility(true);
 					break;
 			}

@@ -68,7 +68,7 @@ define([
 				'startDate' : (startDate) ? moment(startDate, DATE_FORMAT) : '',
 				'endDate' : (endDate) ? moment(endDate, DATE_FORMAT) : ''
 			});
-			this.workflowState.set('step', Config.CHOOSE_DATA_STEP);
+			this.workflowState.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
 			this.createView(DataDiscoveryView, {
 				model : this.workflowState
 			}).render();

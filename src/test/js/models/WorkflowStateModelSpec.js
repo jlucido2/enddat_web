@@ -204,21 +204,21 @@ define([
 				expect(resetPrecipSpy).toHaveBeenCalled();
 			});
 
-			it('Expects that if the step changes to CHOOSE_DATA_STEP and the previous step was PROJ_LOC_STEP that the default radius and chosen datasets are set', function() {
+			it('Expects that if the step changes to CHOOSE_DATA_FILTERS_STEP and the previous step was PROJ_LOC_STEP that the default radius and chosen datasets are set', function() {
 				testModel.set('step', Config.PROJ_LOC_STEP);
 				testModel.set('location', {latitude : '43.0', longitude : '-100.0'});
-				testModel.set('step', Config.CHOOSE_DATA_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
 
 				expect(testModel.get('radius')).toEqual(testModel.DEFAULT_CHOOSE_DATA_RADIUS);
 				expect(testModel.get('datasets')).toEqual(testModel.DEFAULT_CHOSEN_DATASETS);
 			});
 
-			it('Expects that if the step changes to CHOOSE_DATA_STEP and the previous step was PROJ_LOC_STEP, the chosen datasets are fetched', function() {
+			it('Expects that if the step changes to CHOOSE_DATA_FILTERS_STEP and the previous step was PROJ_LOC_STEP, the chosen datasets are fetched', function() {
 				testModel.set('step', Config.PROJ_LOC_STEP);
 				testModel.set('location', {latitude : '43.0', longitude : '-100.0'});
 				fetchPrecipSpy.calls.reset();
 				fetchSiteSpy.calls.reset();
-				testModel.set('step', Config.CHOOSE_DATA_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
 
 				expect(fetchPrecipSpy).not.toHaveBeenCalled();
 				expect(fetchSiteSpy).toHaveBeenCalled();

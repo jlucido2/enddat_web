@@ -137,7 +137,7 @@ define([
 					this.unset('endDate');
 					break;
 
-				case Config.CHOOSE_DATA_STEP:
+				case Config.CHOOSE_DATA_FILTERS_STEP:
 					if (previousStep === Config.PROJ_LOC_STEP) {
 						this.initializeDatasetCollections();
 						this.set('datasets', this.DEFAULT_CHOSEN_DATASETS);

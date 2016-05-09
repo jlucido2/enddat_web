@@ -90,6 +90,8 @@ define([
 		 */
 
 		updateSubViews : function(model, step) {
+			var prevStep = model.previous('step');
+
 			this.alertView.closeAlert();
 			switch(step) {
 				case Config.PROJ_LOC_STEP:
@@ -100,6 +102,9 @@ define([
 							opened : true
 						});
 						this.locationView.render();
+					}
+					else {
+						this.locationView.expand();
 					}
 					if (!this.mapView) {
 						this.mapView = new MapView({
@@ -120,7 +125,7 @@ define([
 					}
 					break;
 
-				case Config.CHOOSE_DATA_STEP:
+				case Config.CHOOSE_DATA_FILTERS_STEP:
 					if (!this.locationView) {
 						this.locationView = new LocationView({
 							el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
@@ -154,6 +159,13 @@ define([
 						this.variableSummaryView.render();
 					}
 					break;
+
+				case Config.CHOOSE_DATA_VARIABLES_STEP:
+					if (prevStep === Config.CHOOSE_DATA_FILTERS_STEP) {
+						this.locationView.collapse();
+						this.chooseView.collapse();
+					}
+
 			}
 		},
 

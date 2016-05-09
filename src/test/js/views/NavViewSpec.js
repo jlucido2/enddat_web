@@ -98,9 +98,9 @@ define([
 				expect(testView.$(processDataSel).hasClass('disabled')).toBe(true);
 			});
 
-			it('Expects that if the workflow step is CHOOSE_DATA_STEP the choose data btn is active and the process data step is disabled', function() {
+			it('Expects that if the workflow step is CHOOSE_DATA_FILTERS_STEP the choose data btn is active and the process data step is disabled', function() {
 				testModel.set({
-					step : Config.CHOOSE_DATA_STEP,
+					step : Config.CHOOSE_DATA_FILTERS_STEP,
 					location : {latitude : 43.0, longitude : -100.0}
 				});
 				testView.render();
@@ -122,7 +122,7 @@ define([
 				});
 			});
 
-			it('Expects that clicking the choose data button, changes the step to choose data', function() {
+			it('Expects that clicking the choose data button, changes the step to CHOOSE_DATA_FILTERS_STEP', function() {
 				testModel.set({
 					step : Config.PROJ_LOC_STEP,
 					location : {latitude : 43.0, longitude : -100.0}
@@ -130,12 +130,28 @@ define([
 				testView.render();
 				$(chooseDataSel + ' a').trigger('click');
 
-				expect(testModel.get('step')).toEqual(Config.CHOOSE_DATA_STEP);
+				expect(testModel.get('step')).toEqual(Config.CHOOSE_DATA_FILTERS_STEP);
+			});
+
+			it('Expects that clicking the choose data button, only changes the step if the current step is not CHOOSE_DATA_FILTERS_STEP or CHOOSE_DATA_VARIABLES_STEP', function() {
+				testModel.set({
+					step : Config.CHOOSE_DATA_FILTERS_STEP,
+					location : {latitude : 43.0, longitude : -100.0}
+				});
+				testView.render();
+				$(chooseDataSel + ' a').trigger('click');
+
+				expect(testModel.get('step')).toEqual(Config.CHOOSE_DATA_FILTERS_STEP);
+
+				testModel.set('step', Config.CHOOSE_DATA_VARIABLES_STEP);
+				$(chooseDataSel + ' a').trigger('click');
+
+				expect(testModel.get('step')).toEqual(Config.CHOOSE_DATA_VARIABLES_STEP);
 			});
 
 			it('Expects that clicking the project location button causes the warning modal to be shown', function() {
 				testModel.set({
-					step : Config.CHOOSE_DATA_STEP,
+					step : Config.CHOOSE_DATA_FILTERS_STEP,
 					location : {latitude : 43.0, longitude : -100.0}
 				});
 				testView.render();
@@ -148,7 +164,7 @@ define([
 			it('Expects that clicking the cancel button in the modal does nothing to the state of the workflow model', function() {
 				var currentWorkflowState;
 				testModel.set({
-					step : Config.CHOOSE_DATA_STEP,
+					step : Config.CHOOSE_DATA_FILTERS_STEP,
 					location : {latitude : 43.0, longitude : -100.0}
 				});
 				currentWorkflowState = testModel.attributes;
@@ -162,7 +178,7 @@ define([
 			it('Expects that clicking the ok button sets the workflow step to PROJ_LOC_STEP', function() {
 				var currentWorkflowState;
 				testModel.set({
-					step : Config.CHOOSE_DATA_STEP,
+					step : Config.CHOOSE_DATA_FILTERS_STEP,
 					location : {latitude : 43.0, longitude : -100.0}
 				});
 				currentWorkflowState = testModel.attributes;
@@ -191,9 +207,9 @@ define([
 				expect(testView.$(processDataSel).hasClass('disabled')).toBe(true);
 			});
 
-			it('Expects that if the step is changed to CHOOSE_DATA, the choose data btn is active', function() {
+			it('Expects that if the step is changed to CHOOSE_DATA_FILTERS_STEP, the choose data btn is active', function() {
 				testModel.set('location', {latitude: 43.0, longitude : -100.0});
-				testModel.set('step', Config.CHOOSE_DATA_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
 				expect(testView.$(projLocSel + ' a').hasClass('active')).toBe(false);
 				expect(testView.$(chooseDataSel + ' a').hasClass('active')).toBe(true);
 				expect(testView.$(processDataSel + ' a').hasClass('active')).toBe(false);
@@ -202,8 +218,8 @@ define([
 				expect(testView.$(processDataSel).hasClass('disabled')).toBe(true);
 			});
 
-			it('Expects that if the step is changed to CHOOSE_DATA, then the router will navigate to the url with the lat and lon in it', function() {
-				testModel.set('step', Config.CHOOSE_DATA_STEP);
+			it('Expects that if the step is changed to CHOOSE_DATA_FILTERS_STEP, then the router will navigate to the url with the lat and lon in it', function() {
+				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
 				testModel.set({
 					location : {latitude: 42.0, longitude : -101.0},
 					radius : '',
@@ -212,8 +228,8 @@ define([
 				expect(mockRouter.navigate.calls.mostRecent().args).toEqual(['lat/42/lng/-101/dataset/']);
 			});
 
-			it('Expects that if the step is CHOOSE_DATA and the location becomes invalid that the url is not updated', function() {
-				testModel.set('step', Config.CHOOSE_DATA_STEP);
+			it('Expects that if the step is CHOOSE_DATA_FILTERS_STEP and the location becomes invalid that the url is not updated', function() {
+				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
 				testModel.set({
 					location : {latitude: 42.0, longitude : -101.0},
 					radius : '',
@@ -228,9 +244,9 @@ define([
 				expect(mockRouter.navigate).not.toHaveBeenCalled();
 			});
 
-			it('Expects that if the step is CHOOSE_DATA and radius, location, start/endDate, and datasets change the router will navigate to the appropriate url', function() {
+			it('Expects that if the step is CHOOSE_DATA_FILTERS_STEP and radius, location, start/endDate, and datasets change the router will navigate to the appropriate url', function() {
 				testModel.set('location', {latitude: 43.0, longitude : -100.0});
-				testModel.set('step', Config.CHOOSE_DATA_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
 				testModel.set({
 					radius : 2,
 					datasets : ['NWIS']
@@ -247,6 +263,19 @@ define([
 				expect(mockRouter.navigate.calls.mostRecent().args).toEqual(['lat/43/lng/-100/radius/2/startdate/1Jan2000/enddate/1Jan2010/dataset/NWIS/Precip']);
 				testModel.set('radius', 10);
 				expect(mockRouter.navigate.calls.mostRecent().args).toEqual(['lat/43/lng/-100/radius/10/startdate/1Jan2000/enddate/1Jan2010/dataset/NWIS/Precip']);
+			});
+
+			it('Expects that if the step is CHOOSE_DATA_FILTERS_STEP and changed to CHOOSE_DATA_VARIABLES_STEP, the choose data btn remains active', function() {
+				testModel.set('location', {latitude: 43.0, longitude : -100.0});
+				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_VARIABLES_STEP);
+
+				expect(testView.$(projLocSel + ' a').hasClass('active')).toBe(false);
+				expect(testView.$(chooseDataSel + ' a').hasClass('active')).toBe(true);
+				expect(testView.$(processDataSel + ' a').hasClass('active')).toBe(false);
+				expect(testView.$(projLocSel).hasClass('disabled')).toBe(false);
+				expect(testView.$(chooseDataSel).hasClass('disabled')).toBe(false);
+				expect(testView.$(processDataSel).hasClass('disabled')).toBe(true);
 			});
 		});
 	});

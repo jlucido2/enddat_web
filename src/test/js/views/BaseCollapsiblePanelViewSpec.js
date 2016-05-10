@@ -123,7 +123,7 @@ define([
 		});
 
 		describe('Tests for expand function', function() {
-			it('Expects that if the panel is closed and the expand function is called, the panel is opened', function() {
+			it('Expects that if the panel is closed and the expand function is called, the panel is opened', function(done) {
 				testView = new TestPanelView({
 					el : $testDiv,
 					context : {
@@ -138,6 +138,7 @@ define([
 				expect($testDiv.find('.expand-icon').is(':visible')).toBe(false);
 				setTimeout(function() {
 					expect($testDiv.find('.panel-body').hasClass('in')).toBe(true);
+					done();
 				}, 1000);
 			});
 		});

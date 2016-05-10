@@ -6,8 +6,11 @@ define([
 	'utils/dateUtils'
 ], function(_, Backbone, dateUtils) {
 
-	var model = Backbone.Collection.extend({
-
+	/*
+	 * @constructs - the collection contains models with startDate and endDate properties, both moment objects and a
+	 * variables property which is BaseVariableCollection.
+	 */
+	var collection = Backbone.Collection.extend({
 
 		/*
 		 * The startDate and endDate values in each model are assumed to be moment objects
@@ -38,10 +41,23 @@ define([
 			}
 
 			return result;
+		},
+
+		/*
+		 * @returns {Array of Objects with name and value properties} -
+		 *		 representing the URL parameters for the selected variables
+		 */
+		getSelectedVariablesUrlParams : function() {
+			var variablesCollections = this.pluck('variables');
+			var getSelectedUrlParams = function(variableCollection) {
+				return variableCollection.selectedUrlParams();
+			};
+
+			return _.flatten(_.map(variablesCollections, getSelectedUrlParams));
 		}
 	});
 
-	return model;
+	return collection;
 });
 
 

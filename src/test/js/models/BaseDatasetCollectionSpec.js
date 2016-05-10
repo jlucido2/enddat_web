@@ -3,18 +3,20 @@
 
 define([
 	'moment',
-	'models/BaseDatasetCollection'
-], function(moment, BaseDatasetCollection) {
+	'underscore',
+	'models/BaseDatasetCollection',
+	'models/BaseVariableCollection'
+], function(moment, _, BaseDatasetCollection, BaseVariableCollection) {
 
 	describe('models/BaseDatasetCollection', function() {
 
 		describe('Tests for getModelsWithinDateFilter', function() {
 
-			var testModel;
+			var testCollection;
 			var DATE_FORMAT = 'MM-DD-YYYY';
 
 			beforeEach(function() {
-				testModel = new BaseDatasetCollection([
+				testCollection = new BaseDatasetCollection([
 					{id : 1, startDate : moment('01-01-2000', DATE_FORMAT), endDate : moment('01-01-2010', DATE_FORMAT)},
 					{id : 2, startDate : moment('01-01-2001', DATE_FORMAT), endDate : moment('01-01-2011', DATE_FORMAT)},
 					{id : 3, startDate : moment('01-01-2005', DATE_FORMAT), endDate : moment('01-01-2007', DATE_FORMAT)},
@@ -23,20 +25,70 @@ define([
 			});
 
 			it ('Expects that if either the startDate or endDate is falsy, the entire collection is returned', function() {
-				expect(testModel.getModelsWithinDateFilter(moment('01-01-2003', DATE_FORMAT), '').length).toBe(4);
-				expect(testModel.getModelsWithinDateFilter('', moment('01-01-2003', DATE_FORMAT)).length).toBe(4);
+				expect(testCollection.getModelsWithinDateFilter(moment('01-01-2003', DATE_FORMAT), '').length).toBe(4);
+				expect(testCollection.getModelsWithinDateFilter('', moment('01-01-2003', DATE_FORMAT)).length).toBe(4);
 			});
 
 			it('Expects that only models within the date range will be returned', function() {
 				var results;
-				results = testModel.getModelsWithinDateFilter(moment('03-01-2003', DATE_FORMAT), moment('01-01-2004', DATE_FORMAT));
+				results = testCollection.getModelsWithinDateFilter(moment('03-01-2003', DATE_FORMAT), moment('01-01-2004', DATE_FORMAT));
 				expect(results.length).toBe(2);
 
-				results = testModel.getModelsWithinDateFilter(moment('01-01-1999', DATE_FORMAT), moment('01-01-2014', DATE_FORMAT));
+				results = testCollection.getModelsWithinDateFilter(moment('01-01-1999', DATE_FORMAT), moment('01-01-2014', DATE_FORMAT));
 				expect(results.length).toBe(4);
 
-				results = testModel.getModelsWithinDateFilter(moment('01-01-2013', DATE_FORMAT), moment('01-01-2015', DATE_FORMAT));
+				results = testCollection.getModelsWithinDateFilter(moment('01-01-2013', DATE_FORMAT), moment('01-01-2015', DATE_FORMAT));
 				expect(results.length).toBe(0);
+			});
+		});
+
+		describe('Tests for getSelectedVariablesUrlParams', function() {
+			var VariableCollection = BaseVariableCollection.extend({
+				selectedUrlParams : function() {
+					var selectedVars = this.getSelectedVariables();
+					return _.map(selectedVars, function(variableModel) {
+						return {
+							name : 'Test1',
+							value : variableModel.attributes.x + ':' + variableModel.attributes.y
+						};
+					});
+				}
+			});
+			var testCollection;
+
+			it('Expects that an empty collection will return an empty array', function() {
+				testCollection = new BaseDatasetCollection();
+
+				expect(testCollection.getSelectedVariablesUrlParams()).toEqual([]);
+			});
+
+			it('Expects that a collection where none of the variables are selected will return an empty array', function() {
+				testCollection = new BaseDatasetCollection([
+					{id : 1, variables : new VariableCollection([{x : 1, y : 1}, {x : 2, y: 2}])},
+					{id : 2, variables : new VariableCollection([{x : 10, y : 10}, {x : 20, y : 20}, {x : 30, y : 30}])}
+				]);
+
+				expect(testCollection.getSelectedVariablesUrlParams()).toEqual([]);
+			});
+
+			it('Expects that a collection where some of the variables are selected will return those variables represented as parameters', function() {
+				var result;
+				testCollection = new BaseDatasetCollection([
+					{id : 1, variables : new VariableCollection([{x : 1, y : 1, selected : true}, {x : 2, y: 2}])},
+					{id : 2, variables : new VariableCollection([{x : 10, y : 10}, {x : 20, y : 20, selected: true}, {x : 30, y : 30, selected: true}])}
+				]);
+				result = testCollection.getSelectedVariablesUrlParams();
+
+				expect(result.length).toBe(3);
+				expect(_.find(result, function(param) {
+					return (param.name === 'Test1') && (param.value === '1:1');
+				})).toEqual({name : 'Test1', value : '1:1'});
+				expect(_.find(result, function(param) {
+					return (param.name === 'Test1') && (param.value === '20:20');
+				})).toEqual({name : 'Test1', value : '20:20'});
+				expect(_.find(result, function(param) {
+					return (param.name === 'Test1') && (param.value === '30:30');
+				})).toEqual({name : 'Test1', value : '30:30'});
 			});
 		});
 	});

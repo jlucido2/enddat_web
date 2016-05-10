@@ -38,6 +38,7 @@
 					},
 					'models/WorkflowStateModel' : {
 						'serviceUrl' : '<%=servicesUrl%>'
+					}
 				},
 				baseUrl: "<%=baseUrl%>/js/",
 				paths: {

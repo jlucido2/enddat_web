@@ -4,12 +4,12 @@ define([
 	'jquery',
 	'underscore',
 	'moment',
-	'backbone',
 	'loglevel',
 	'module',
 	'models/BaseDatasetCollection',
+	'models/NWISVariableCollection',
 	'utils/rdbUtils'
-], function ($, _, moment, Backbone, log, module, BaseDatasetCollection, rdbUtils) {
+], function ($, _, moment, log, module, BaseDatasetCollection, NWISVariableCollection, rdbUtils) {
 	"use strict";
 
 	var parameterCodesPath = module.config().parameterCodesPath;
@@ -111,7 +111,7 @@ define([
 								lon : siteParameterData[0].dec_long_va,
 								startDate : moment.min(startDates),
 								endDate : moment.max(endDates),
-								variables : new Backbone.Collection(variables)
+								variables : new NWISVariableCollection(variables)
 							};
 							return result;
 						});

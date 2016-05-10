@@ -34,11 +34,14 @@ define([
 		},
 
 		render : function() {
-			this.context = _.clone(this.model.attributes);
-			this.context.lat = (parseFloat(this.context.lat)).toFixed(3);
-			this.context.lon = (parseFloat(this.context.lon)).toFixed(3);
-			this.context.startDate = this.context.startDate.format(Config.DATE_FORMAT);
-			this.context.endDate = this.context.endDate.format(Config.DATE_FORMAT);
+			var attributes = this.model.attributes;
+			var variable = attributes.variables.at(0).attributes;
+			this.context.lat = (parseFloat(attributes.lat)).toFixed(3);
+			this.context.lon = (parseFloat(attributes.lon)).toFixed(3);
+			this.context.startDate = variable.startDate.format(Config.DATE_FORMAT);
+			this.context.endDate = variable.endDate.format(Config.DATE_FORMAT);
+			this.context.x = variable.x;
+			this.context.y = variable.y;
 			this.context.distance = this.distanceToProjectLocation;
 
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);

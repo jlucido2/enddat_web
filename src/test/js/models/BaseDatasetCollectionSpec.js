@@ -10,6 +10,34 @@ define([
 
 	describe('models/BaseDatasetCollection', function() {
 
+		describe('Tests for hasSelectedVariables', function() {
+			var testCollection;
+
+			it('Expects that an empty collection returns false', function() {
+				testCollection = new BaseDatasetCollection();
+
+				expect(testCollection.hasSelectedVariables()).toBe(false);
+			});
+
+			it('Expects that a collection with no selected variables returns false', function() {
+				testCollection = new BaseDatasetCollection([
+					{id : 1, variables : new BaseVariableCollection([{x : 1}, {x : 2}])},
+					{id : 2, variables : new BaseVariableCollection([{x : 3}])}
+				]);
+
+				expect(testCollection.hasSelectedVariables()).toBe(false);
+			});
+
+			it('Expects that a collection with selected variables returns true', function() {
+				testCollection = new BaseDatasetCollection([
+					{id : 1, variables : new BaseVariableCollection([{x : 1, selected: true}, {x : 2}])},
+					{id : 2, variables : new BaseVariableCollection([{x : 3}])}
+				]);
+
+				expect(testCollection.hasSelectedVariables()).toBe(true);
+			});
+		});
+
 		describe('Tests for getSiteModelsWithinDateFilter', function() {
 
 			var testCollection;

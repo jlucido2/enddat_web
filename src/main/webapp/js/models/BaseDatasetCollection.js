@@ -13,6 +13,15 @@ define([
 	var collection = Backbone.Collection.extend({
 
 		/*
+		 * @returns {Boolean} - ture if any of the models contain a variable that has been selected
+		 */
+		hasSelectedVariables : function() {
+			return this.some(function(model) {
+				return model.get('variables').hasSelectedVariables();
+			});
+		},
+
+		/*
 		 * The startDate and endDate values in each model are assumed to be moment objects
 		 * @param {Moment} startDate
 		 * @param {Moment} endDate

@@ -73,29 +73,28 @@ define([
 			this.setupNWISModelListeners(nwisCollection);
 		},
 
-		setupPrecipModelListeners : function(collection) {
-			collection.each(function(precipModel) {
-				this.listenTo(precipModel, 'change:selected', this.updatePrecipContext);
-			}, this);
-			this._updateSelectedPrecipPoints(collection);
+		_setupDatasetVariableListeners : function(collection, changeSelectedHandlerFnc, updateSelectedSiteVariables) {
+			var self = this;
+
+			collection.each(function(siteModel) {
+				var variableCollection = siteModel.get('variables');
+				variableCollection.each(function(variableModel) {
+					self.listenTo(variableModel, 'change:selected', changeSelectedHandlerFnc);
+				});
+			});
+			updateSelectedSiteVariables(collection);
 
 			if (this.hasBeenRendered) {
 				this.render();
 			}
 		},
 
-		setupNWISModelListeners : function(collection) {
-			collection.each(function(nwisModel) {
-				var variableModels = nwisModel.get('variables');
-				variableModels.each(function(variableModel) {
-					this.listenTo(variableModel, 'change:selected', this.updateNWISContext);
-				}, this);
-			}, this);
-			this._updateSelectedNWISVariables(collection);
+		setupPrecipModelListeners : function(collection) {
+			this._setupDatasetVariableListeners(collection, this.updatePrecipContext, _.bind(this._updateSelectedPrecipPoints, this));
+		},
 
-			if (this.hasBeenRendered) {
-				this.render();
-			}
+		setupNWISModelListeners : function(collection) {
+			this._setupDatasetVariableListeners(collection, this.updateNWISContext, _.bind(this._updateSelectedNWISVariables, this));
 		},
 
 		updatePrecipContext : function() {
@@ -105,25 +104,30 @@ define([
 			}
 		},
 
+		_getSelectedContextVars: function(collection, getContextVariable) {
+			var contextVars = [];
+			collection.each(function(siteModel) {
+				var selectedVariables = siteModel.get('variables').getSelectedVariables();
+				_.each(selectedVariables, function(variableModel) {
+					contextVars.push(getContextVariable(variableModel, siteModel));
+				});
+			});
+			return contextVars;
+		},
+
 		_updateSelectedPrecipPoints : function(precipCollection) {
-			var isSelected = function(model) {
-				return model.has('selected') && model.get('selected');
-			};
-			var getContextVariable = function(model) {
+			var getContextVariable = function(variableModel, precipModel) {
 				return {
-					modelId : model.cid,
-					variableId : model.cid,
-					siteId : (parseFloat(model.attributes.lat)).toFixed(3) + ', ' + (parseFloat(model.attributes.lon)).toFixed(3),
-					startDate : model.attributes.startDate.format(Config.DATE_FORMAT),
-					endDate : model.attributes.endDate.format(Config.DATE_FORMAT),
-					property : model.attributes.y + ':' + model.attributes.x
+					modelId : precipModel.cid,
+					variableId : variableModel.cid,
+					siteId : (parseFloat(precipModel.attributes.lat)).toFixed(3) + ', ' + (parseFloat(precipModel.attributes.lon)).toFixed(3),
+					startDate : variableModel.attributes.startDate.format(Config.DATE_FORMAT),
+					endDate : variableModel.attributes.endDate.format(Config.DATE_FORMAT),
+					property : variableModel.attributes.y + ':' + variableModel.attributes.x
 				};
 			};
 
-			this.selectedDatasets[Config.PRECIP_DATASET] =  precipCollection.chain()
-				.filter(isSelected)
-				.map(getContextVariable)
-				.value();
+			this.selectedDatasets[Config.PRECIP_DATASET] = this._getSelectedContextVars(precipCollection, getContextVariable);
 		},
 
 		updateNWISContext : function() {
@@ -134,30 +138,17 @@ define([
 		},
 
 		_updateSelectedNWISVariables : function(nwisCollection) {
-			this.selectedDatasets[Config.NWIS_DATASET] = nwisCollection.reduce(function(memo, nwisModel) {
-				var variableModels = nwisModel.get('variables');
-
-				var isSelected = function(variableModel) {
-					return variableModel.has('selected') && variableModel.get('selected');
+			var getContextVariable = function(variableModel, nwisModel) {
+				return {
+					modelId : nwisModel.cid,
+					variableId : variableModel.cid,
+					siteId : nwisModel.attributes.siteNo,
+					startDate : variableModel.attributes.startDate.format(Config.DATE_FORMAT),
+					endDate : variableModel.attributes.endDate.format(Config.DATE_FORMAT),
+					property : variableModel.attributes.name
 				};
-				var getContextVariable = function(variableModel) {
-					return {
-						modelId : nwisModel.cid,
-						variableId : variableModel.cid,
-						siteId : nwisModel.attributes.siteNo,
-						startDate : variableModel.attributes.startDate.format(Config.DATE_FORMAT),
-						endDate : variableModel.attributes.endDate.format(Config.DATE_FORMAT),
-						property : variableModel.attributes.name
-					};
-				};
-
-				var selectedVariables = variableModels.chain()
-					.filter(isSelected)
-				   .map(getContextVariable)
-				   .value();
-
-				return memo.concat(selectedVariables);
-		   }, []);
+			};
+			this.selectedDatasets[Config.NWIS_DATASET] = this._getSelectedContextVars(nwisCollection, getContextVariable);
 		},
 
 		/*

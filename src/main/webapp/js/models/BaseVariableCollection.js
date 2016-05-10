@@ -38,6 +38,21 @@ define([
 				return model.has('selected') && model.get('selected');
 			});
 		},
+		/*
+		 * @returns {Object} - with start and end properties.
+		 * returns the range of dates where at least one variable in the collection has data. If the
+		 * collection contains no variables, return undefined.
+		 */
+		getDateRange : function() {
+			var dateRange = undefined;
+			if (this.length !== 0) {
+				dateRange = {
+					start : moment.min(this.pluck('startDate')),
+					end : moment.max(this.pluck('endDate'))
+				};
+			}
+			return dateRange;
+		},
 
 		/*
 		 * @returns {Object} - with start and end properties.

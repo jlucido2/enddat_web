@@ -19,7 +19,7 @@ define([
 		 * @returns {Array of Backbone.Model} whose startDate and endDate range overlaps the function parameters.
 		 *		If startDate or endDate are falsy, all of the models in the collection are returned.
 		 */
-		getModelsWithinDateFilter : function(startDate, endDate) {
+		getSiteModelsWithinDateFilter : function(startDate, endDate) {
 			var dateFilter;
 			var result;
 
@@ -29,11 +29,7 @@ define([
 					end : endDate
 				};
 				result = this.filter(function(model) {
-					var modelDateRange = {
-						start : model.get('startDate'),
-						end : model.get('endDate')
-					};
-					return dateUtils.dateRangeOverlaps(modelDateRange, dateFilter);
+					return dateUtils.dateRangeOverlaps(model.attributes.variables.getDateRange(), dateFilter);
 				});
 			}
 			else {

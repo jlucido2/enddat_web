@@ -73,6 +73,27 @@ define([
 			});
 		});
 
+		describe('Tests for getDateRange', function() {
+			it('Expects that an empty collection will return undefined', function() {
+				testCollection = new BaseVariableCollection();
+
+				expect(testCollection.getDateRange()).toBeUndefined();
+			});
+
+			it('Expects that the date range of a collection a variables is returned', function() {
+				var result;
+				testCollection = new BaseVariableCollection([
+					{startDate : moment('2002-01-04', DATE_FORMAT), endDate : moment('2010-01-04')},
+					{startDate : moment('2006-01-04', DATE_FORMAT), endDate : moment('2010-01-04')},
+					{startDate : moment('2001-01-04', DATE_FORMAT), endDate : moment('2007-01-04')}
+				]);
+				result = testCollection.getDateRange();
+
+				expect(result.start.format(DATE_FORMAT)).toEqual('2001-01-04');
+				expect(result.end.format(DATE_FORMAT)).toEqual('2010-01-04');
+			});
+		});
+
 		describe('Tests for getOverlappingDateRange', function() {
 			it('Expects that an empty collection will return undefined', function() {
 				testCollection = new BaseVariableCollection();

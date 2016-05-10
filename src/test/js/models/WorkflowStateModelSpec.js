@@ -209,8 +209,8 @@ define([
 				testModel.set('location', {latitude : '43.0', longitude : '-100.0'});
 				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
 
-				expect(testModel.get('radius')).toEqual(testModel.DEFAULT_CHOOSE_DATA_RADIUS);
-				expect(testModel.get('datasets')).toEqual(testModel.DEFAULT_CHOSEN_DATASETS);
+				expect(testModel.get('radius')).toEqual(2);
+				expect(testModel.get('datasets')).toEqual(['NWIS']);
 			});
 
 			it('Expects that if the step changes to CHOOSE_DATA_FILTERS_STEP and the previous step was PROJ_LOC_STEP, the chosen datasets are fetched', function() {

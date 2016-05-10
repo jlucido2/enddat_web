@@ -84,8 +84,9 @@ define([
 								else {
 									name += ' ' + statCd;
 								}
-
+								// We are putting the siteNo in the variables collection as it is needed when forming url parameters
 								return {
+									siteNo : variable.site_no,
 									name : name,
 									parameterCd : variable.parm_cd,
 									statCd : statCd,
@@ -134,24 +135,6 @@ define([
 				});
 			});
 			return sitesDeferred.promise();
-		},
-
-		/*
-		 * @returns {Boolean} if any of the nwis sites in the collection have variables that have
-		 * the selected property set to true.
-		 */
-		hasSelectedVariables : function() {
-			var isSelected = function(variableModel) {
-				return variableModel.has('selected') && variableModel.get('selected');
-			};
-			return this.some(function(model) {
-				return model.has('variables') && model.get('variables').some(isSelected);
-			});
-
-		},
-
-		getSelectedVariableDateRange : function() {
-			var selectedModels;
 		},
 
 		/*

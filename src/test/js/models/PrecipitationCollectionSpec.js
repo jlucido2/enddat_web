@@ -3,8 +3,9 @@
 /* global sinon, expect, jasmine */
 
 define([
-	'models/PrecipitationCollection'
-], function(PrecipitationCollection) {
+	'models/PrecipitationCollection',
+	'models/PrecipitationVariableCollection'
+], function(PrecipitationCollection, PrecipitationVariableCollection) {
 	describe('models/PrecipitationCollection', function() {
 		var fakeServer;
 		var testCollection;
@@ -32,8 +33,8 @@ define([
 				failSpy = jasmine.createSpy('failSpy');
 
 				testCollection.reset([
-					{x : '1', y: '2', lon : '-100', lat : '43.0'},
-					{x : '1', y: '3', lon : '-100', lat : '44.0'}
+					{variables : new PrecipitationVariableCollection([{x : '1', y: '2'}]), lon : '-100', lat : '43.0'},
+					{variables : new PrecipitationVariableCollection([{x : '1', y: '3'}]), lon : '-100', lat : '44.0'}
 				]);
 
 				fetchPromise = testCollection.fetch(bbox).done(successSpy).fail(failSpy);
@@ -95,17 +96,17 @@ define([
 				expect(testCollection.length).toBe(2);
 				expect(testCollection.at(0).attributes.lat).toEqual('43.10');
 				expect(testCollection.at(0).attributes.lon).toEqual('-89.53');
-				expect(testCollection.at(0).attributes.x).toEqual('689');
-				expect(testCollection.at(0).attributes.y).toEqual('557');
+				expect(testCollection.at(0).attributes.variables.at(0).attributes.x).toEqual('689');
+				expect(testCollection.at(0).attributes.variables.at(0).attributes.y).toEqual('557');
 			});
 		});
 
 		describe('Tests for hasSelectedVariables', function() {
 			beforeEach(function() {
 				testCollection.reset([
-					{x : '1', y: '2', lon : '-100', lat : '43.0'},
-					{x : '1', y: '3', lon : '-100', lat : '44.0'},
-					{x : '2', y: '3', lon : '-101', lat : '44.0'}
+					{variables : new PrecipitationVariableCollection([{x : '1', y: '2'}]), lon : '-100', lat : '43.0'},
+					{variables : new PrecipitationVariableCollection([{x : '1', y: '3'}]), lon : '-100', lat : '44.0'},
+					{variables : new PrecipitationVariableCollection([{x : '2', y: '3'}]), lon : '-101', lat : '44.0'}
 				]);
 			});
 

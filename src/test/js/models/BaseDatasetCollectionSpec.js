@@ -8,7 +8,7 @@ define([
 	'models/BaseVariableCollection'
 ], function(moment, _, BaseDatasetCollection, BaseVariableCollection) {
 
-	fdescribe('models/BaseDatasetCollection', function() {
+	describe('models/BaseDatasetCollection', function() {
 
 		describe('Tests for getSiteModelsWithinDateFilter', function() {
 

@@ -6,8 +6,9 @@ define([
 	'jquery',
 	'moment',
 	'models/BaseDatasetCollection',
+	'models/PrecipitationVariableCollection',
 	'utils/jqueryUtils'
-], function(log, module, $, moment, BaseDatasetCollection, $utils) {
+], function(log, module, $, moment, BaseDatasetCollection, PrecipitationVariableCollection, $utils) {
 	"use strict";
 
 	var getInteger = function(str) {
@@ -21,7 +22,9 @@ define([
 		url : module.config().precipWFSGetFeatureUrl,
 
 		/*
-		 * Parse the {Document} and returns a json object which can be used to create the collection.
+		 * Parse the xml document and returns a json object which can be used to create the collection.
+		 * Each precipitation site represents a single variable so the variables property will
+		 * contain a collection with a single model.
 		 * @param {Document} xml
 		 * @returns {Array of Objects}
 		 */
@@ -32,12 +35,16 @@ define([
 				var $this = $(this);
 
 				result.push({
-					x : getInteger($utils.xmlFind($this, 'sb', 'x').text()),
-					y : getInteger($utils.xmlFind($this, 'sb', 'y').text()),
 					lon : $utils.xmlFind($this, 'sb', 'X1').text(),
 					lat : $utils.xmlFind($this, 'sb', 'X2').text(),
-					startDate : START_DATE,
-					endDate : today
+					variables : new PrecipitationVariableCollection([
+						{
+							x : getInteger($utils.xmlFind($this, 'sb', 'x').text()),
+							y : getInteger($utils.xmlFind($this, 'sb', 'y').text()),
+							startDate : START_DATE,
+							endDate : today
+						}
+					])
 				});
 			});
 			return result;
@@ -88,7 +95,9 @@ define([
 			return this.some(function(model) {
 				return model.has('selected') && model.get('selected');
 			});
-		}
+		},
+
+
 	});
 
 	return collection;

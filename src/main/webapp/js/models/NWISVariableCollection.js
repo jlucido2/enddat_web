@@ -8,15 +8,15 @@ define([
 
 	var collection = BaseVariableCollection.extend({
 
-		selectedUrlParams : function(siteNo) {
+		getSelectedUrlParams : function(siteAttributes) {
 			var selectedVars = this.getSelectedVariables();
 
 			return _.map(selectedVars, function(model) {
-				var attrs = model.attributes;
+				var varAttrs = model.attributes;
 				return {
 					name : 'NWIS',
-					value : siteNo + ':' + attrs.parameterCd + ':' + attrs.statCd +
-						'!' + attrs.name + ': ' + siteNo
+					value : siteAttributes.siteNo + ':' + varAttrs.parameterCd + ':' + varAttrs.statCd +
+						'!' + varAttrs.name + ': ' + siteAttributes.siteNo
 				};
 			});
 		}

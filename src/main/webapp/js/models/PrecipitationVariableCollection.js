@@ -15,7 +15,7 @@ define([
 	 */
 	var collection = BaseVariableCollection.extend({
 
-		selectedUrlParams : function() {
+		getSelectedUrlParams : function() {
 			var selectedVars = this.getSelectedVariables();
 			return _.map(selectedVars, function(model) {
 				var attrs = model.attributes;

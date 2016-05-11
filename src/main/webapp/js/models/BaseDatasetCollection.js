@@ -53,12 +53,11 @@ define([
 		 *		 representing the URL parameters for the selected variables
 		 */
 		getSelectedVariablesUrlParams : function() {
-			var variablesCollections = this.pluck('variables');
-			var getSelectedUrlParams = function(variableCollection) {
-				return variableCollection.selectedUrlParams();
-			};
-
-			return _.flatten(_.map(variablesCollections, getSelectedUrlParams));
+			var params = [];
+			params = this.map(function(siteModel)  {
+				return siteModel.get('variables').getSelectedUrlParams(siteModel.attributes);
+			});
+			return _.flatten(params);
 		}
 	});
 

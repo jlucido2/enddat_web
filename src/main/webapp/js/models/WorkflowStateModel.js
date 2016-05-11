@@ -89,6 +89,17 @@ define([
 			return result;
 		},
 
+		getSelectedVariablesUrlParams : function() {
+			var datasetCollections = this.get('datasetCollections');
+
+			return _.chain(datasetCollections)
+				.map(function(datasetCollection) {
+					return datasetCollection.getSelectedVariablesUrlParams();
+				})
+				.flatten()
+				.value();
+		},
+
 
 		/*
 		 * Model event handlers

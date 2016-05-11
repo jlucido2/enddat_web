@@ -36,8 +36,8 @@
 					'models/PrecipitationCollection' : {
 						'precipWFSGetFeatureUrl' : '<%=precipWFSGetFeatureUrl%>'
 					},
-					'models/WorkflowStateModel' : {
-						'serviceUrl' : '<%=servicesUrl%>'
+					'views/ProcessDataView' : {
+						'baseUrl' : '<%=baseUrl%>'
 					}
 				},
 				baseUrl: "<%=baseUrl%>/js/",

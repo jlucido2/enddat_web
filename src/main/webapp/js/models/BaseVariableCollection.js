@@ -14,14 +14,6 @@ define([
 	var collection = Backbone.Collection.extend({
 
 		/*
-		 * Should be overridden when this collection is extended
-		 * @returns {Array of Objects with name and value properties representing URL parameters}
-		 */
-		selectedUrlParams : function() {
-			return [];
-		},
-
-		/*
 		 * @returns {Boolean} - true if any model in the collection has the selected property set to true.
 		 */
 		hasSelectedVariables : function() {

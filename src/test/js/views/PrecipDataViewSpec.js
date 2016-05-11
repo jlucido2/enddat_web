@@ -9,7 +9,7 @@ define([
 	'views/PrecipDataView'
 ], function($, moment, Backbone, PrecipitationVariableCollection, PrecipDataView) {
 
-	fdescribe('views/PrecipDataView', function() {
+	describe('views/PrecipDataView', function() {
 		var testView;
 		var testModel;
 		var $testDiv;

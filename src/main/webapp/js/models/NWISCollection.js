@@ -86,7 +86,6 @@ define([
 								}
 								// We are putting the siteNo in the variables collection as it is needed when forming url parameters
 								return {
-									siteNo : variable.site_no,
 									name : name,
 									parameterCd : variable.parm_cd,
 									statCd : statCd,

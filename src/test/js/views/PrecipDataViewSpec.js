@@ -33,7 +33,7 @@ define([
 				$el : $testDiv,
 				model : testModel,
 				distanceToProjectLocation : '1.345'
-			})
+			});
 		});
 
 		afterEach(function() {

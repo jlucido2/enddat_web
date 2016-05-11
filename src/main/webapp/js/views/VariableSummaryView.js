@@ -44,7 +44,6 @@ define([
 		},
 
 		render : function() {
-			this.hasBeenRendered = true;
 			this.context.selectedDatasets = _.map(this.selectedDatasets, function(values, datasetKind) {
 				return {
 					datasetName : datasetKind,
@@ -56,13 +55,62 @@ define([
 			});
 
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
+			this.hasBeenRendered = true;
 			return this;
+		},
+
+		/*
+		 * Helper function for a dataset collection, that sets up the model event listeners for the variables for the selected property,
+		 * using changeSelectedHandlerFnc for the event handler.
+		 * Once these are setup, call changeSelectedHandlerFnc to update the display
+		 * @param {BaseDatasetCollection} collection
+		 * @param {Function} changeSelectedHandlerFnc
+		 */
+		_setupDatasetVariableListeners : function(collection, changeSelectedHandlerFnc) {
+			var self = this;
+
+			collection.each(function(siteModel) {
+				var variableCollection = siteModel.get('variables');
+				variableCollection.each(function(variableModel) {
+					self.listenTo(variableModel, 'change:selected', changeSelectedHandlerFnc);
+				});
+			});
+			_.bind(changeSelectedHandlerFnc, this)();
+		},
+
+		/*
+		 * Helper function to get the list of selected variables for a collection and update the
+		 * selectedDatasets by apply getContextVariable to each selected variable
+		 * @param {BaseDatasetCollection} collection
+		 * @param {String} datasetKind
+		 * @param {Function} getContextVariable - should take a variableModel and siteModel parameters
+		 * @returns {undefined}
+		 */
+		_updateSelectedVariableContext : function(collection, datasetKind, getContextVariable) {
+			var contextVars = [];
+			collection.each(function(siteModel) {
+				var selectedVariables = siteModel.get('variables').getSelectedVariables();
+				_.each(selectedVariables, function(variableModel) {
+					contextVars.push(getContextVariable(variableModel, siteModel));
+				});
+			});
+			this.selectedDatasets[datasetKind] = contextVars;
+
+			if (this.hasBeenRendered) {
+				this.render();
+			}
 		},
 
 		/*
 		 *  Model event listeners and helper functions
 		 */
 
+		/*
+		 *
+		 * @param {WorkflowStateModel} model
+		 * @param {Object, each property represents a dataset} datasetCollections
+		 * @returns {undefined}
+		 */
 		setupDatasetCollectionsListeners : function(model, datasetCollections) {
 			var precipCollection = datasetCollections[Config.PRECIP_DATASET];
 			var nwisCollection = datasetCollections[Config.NWIS_DATASET];
@@ -73,49 +121,10 @@ define([
 			this.setupNWISModelListeners(nwisCollection);
 		},
 
-		_setupDatasetVariableListeners : function(collection, changeSelectedHandlerFnc, updateSelectedSiteVariables) {
-			var self = this;
-
-			collection.each(function(siteModel) {
-				var variableCollection = siteModel.get('variables');
-				variableCollection.each(function(variableModel) {
-					self.listenTo(variableModel, 'change:selected', changeSelectedHandlerFnc);
-				});
-			});
-			updateSelectedSiteVariables(collection);
-
-			if (this.hasBeenRendered) {
-				this.render();
-			}
-		},
-
-		setupPrecipModelListeners : function(collection) {
-			this._setupDatasetVariableListeners(collection, this.updatePrecipContext, _.bind(this._updateSelectedPrecipPoints, this));
-		},
-
-		setupNWISModelListeners : function(collection) {
-			this._setupDatasetVariableListeners(collection, this.updateNWISContext, _.bind(this._updateSelectedNWISVariables, this));
-		},
-
-		updatePrecipContext : function() {
-			this._updateSelectedPrecipPoints(this.model.get('datasetCollections')[Config.PRECIP_DATASET]);
-			if (this.hasBeenRendered) {
-				this.render();
-			}
-		},
-
-		_getSelectedContextVars: function(collection, getContextVariable) {
-			var contextVars = [];
-			collection.each(function(siteModel) {
-				var selectedVariables = siteModel.get('variables').getSelectedVariables();
-				_.each(selectedVariables, function(variableModel) {
-					contextVars.push(getContextVariable(variableModel, siteModel));
-				});
-			});
-			return contextVars;
-		},
-
-		_updateSelectedPrecipPoints : function(precipCollection) {
+		/*
+		 * Updates the selectedDatasets for precipitiation points
+		 */
+		updateSelectedPrecipPoints : function() {
 			var getContextVariable = function(variableModel, precipModel) {
 				return {
 					modelId : precipModel.cid,
@@ -126,18 +135,21 @@ define([
 					property : variableModel.attributes.y + ':' + variableModel.attributes.x
 				};
 			};
-
-			this.selectedDatasets[Config.PRECIP_DATASET] = this._getSelectedContextVars(precipCollection, getContextVariable);
+			this._updateSelectedVariableContext(this.model.get('datasetCollections')[Config.PRECIP_DATASET], Config.PRECIP_DATASET, getContextVariable);
 		},
 
-		updateNWISContext : function() {
-			this._updateSelectedNWISVariables(this.model.get('datasetCollections')[Config.NWIS_DATASET]);
-			if (this.hasBeenRendered) {
-				this.render();
-			}
+		/*
+		 * Sets up the event listeners for changes in the selected property for each site's variable for the precipitation dataset
+		 * @param {BaseDatasetCollection} collection
+		 */
+		setupPrecipModelListeners : function(collection) {
+			this._setupDatasetVariableListeners(collection, this.updateSelectedPrecipPoints);
 		},
 
-		_updateSelectedNWISVariables : function(nwisCollection) {
+		/*
+		 * Updates the selectedDatasets for NWIS sites
+		 */
+		updateSelectedNWISVariables : function() {
 			var getContextVariable = function(variableModel, nwisModel) {
 				return {
 					modelId : nwisModel.cid,
@@ -148,13 +160,20 @@ define([
 					property : variableModel.attributes.name
 				};
 			};
-			this.selectedDatasets[Config.NWIS_DATASET] = this._getSelectedContextVars(nwisCollection, getContextVariable);
+			this._updateSelectedVariableContext(this.model.get('datasetCollections')[Config.NWIS_DATASET], Config.NWIS_DATASET, getContextVariable);
+		},
+
+		/*
+		 * Sets up the event listeners for changes in the selected property for each site's variable for the NWIS dataset
+		 * @param {BaseDatasetCollection} collection
+		 */
+		setupNWISModelListeners : function(collection) {
+			this._setupDatasetVariableListeners(collection, this.updateSelectedNWISVariables);
 		},
 
 		/*
 		 * DOM Event handlers
 		 */
-
 		removeVariable : function(ev) {
 			var $button = $(ev.currentTarget);
 			var id = $button.data('id');

@@ -14,16 +14,18 @@ define([
 		var injector;
 		var WorkflowStateModel, testModel;
 
-		var fetchPrecipSpy, resetPrecipSpy ;
-		var fetchSiteSpy, resetSiteSpy;
+		var fetchPrecipSpy, resetPrecipSpy, hasSelectedVarsPrecipSpy;
+		var fetchSiteSpy, resetSiteSpy, hasSelectedVarsSiteSpy;
 		var fetchPrecipDeferred, fetchSiteDeferred;
 
 		beforeEach(function(done) {
 			fetchPrecipSpy = jasmine.createSpy('fetchPrecipSpy');
 			resetPrecipSpy = jasmine.createSpy('resetPrecipSpy');
+			hasSelectedVarsPrecipSpy = jasmine.createSpy('hasSelectedVarsPrecipSpy');
 
 			fetchSiteSpy = jasmine.createSpy('fetchSiteSpy');
 			resetSiteSpy = jasmine.createSpy('resetSiteSpy');
+			hasSelectedVarsSiteSpy = jasmine.createSpy('hasSelectedVarsSiteSpy');
 
 			fetchPrecipDeferred = $.Deferred();
 			fetchSiteDeferred = $.Deferred();
@@ -32,11 +34,13 @@ define([
 
 			injector.mock('models/PrecipitationCollection', Backbone.Collection.extend({
 				fetch : fetchPrecipSpy.and.returnValue(fetchPrecipDeferred.promise()),
-				reset : resetPrecipSpy
+				reset : resetPrecipSpy,
+				hasSelectedVariables : hasSelectedVarsPrecipSpy
 			}));
 			injector.mock('models/NWISCollection', Backbone.Collection.extend({
 				fetch : fetchSiteSpy.and.returnValue(fetchSiteDeferred.promise()),
-				reset : resetSiteSpy
+				reset : resetSiteSpy,
+				hasSelectedVariables : hasSelectedVarsSiteSpy
 			}));
 			injector.mock('utils/geoSpatialUtils', geoSpatialUtils);
 			spyOn(geoSpatialUtils, 'getBoundingBox').and.returnValue({

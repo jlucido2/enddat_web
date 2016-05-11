@@ -26,7 +26,8 @@ define([
 
 		defaults : function() {
 			return {
-				step : 'unknown'
+				step : 'unknown',
+				hasSelectedVariables : false
 			};
 		},
 
@@ -175,6 +176,12 @@ define([
 				var donePromise = $.Deferred();
 				datasetCollection.fetch(boundingBox)
 					.done(function() {
+						/* set up event handlers to update hasSelectedVariables */
+						datasetCollection.each(function(siteModel) {
+							siteModel.get('variables').each(function(variableModel) {
+								variableModel.on('change:selected', self.updateHasSelectedVariables, self);
+							});
+						});
 						donePromise.resolve();
 					})
 					.fail(function() {
@@ -209,8 +216,14 @@ define([
 			});
 		},
 
-		getProcessingUrl : function() {
-			var params;
+		/*
+		 * Event handler for dataset collection variables selected change handler.
+		 */
+		updateHasSelectedVariables : function() {
+			var hasSelectedVariables = _.some(this.get('datasetCollections'), function(datasetCollection) {
+				return datasetCollection.hasSelectedVariables();
+			});
+			this.set('hasSelectedVariables', hasSelectedVariables);
 		}
 	});
 

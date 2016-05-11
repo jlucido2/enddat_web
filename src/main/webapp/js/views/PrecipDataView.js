@@ -30,12 +30,13 @@ define([
 			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
 
 			this.distanceToProjectLocation = options.distanceToProjectLocation;
-			this.listenTo(this.model, 'change:selected', this.updateSelectedCheckbox);
+			this.listenTo(this.model.get('variables').at(0), 'change:selected', this.updateSelectedCheckbox);
 		},
 
 		render : function() {
 			var attributes = this.model.attributes;
 			var variable = attributes.variables.at(0).attributes;
+			this.context.selected = variable.selected;
 			this.context.lat = (parseFloat(attributes.lat)).toFixed(3);
 			this.context.lon = (parseFloat(attributes.lon)).toFixed(3);
 			this.context.startDate = variable.startDate.format(Config.DATE_FORMAT);
@@ -49,11 +50,12 @@ define([
 		},
 
 		toggleCollectedDataVariable : function() {
-			this.model.set('selected', !this.model.get('selected'));
+			var variable = this.model.get('variables').at(0);
+			variable.set('selected', !variable.get('selected'));
 		},
 
-		updateSelectedCheckbox : function(model) {
-			this.$('table input:checkbox').prop('checked', model.has('selected') && model.get('selected'));
+		updateSelectedCheckbox : function(variableModel) {
+			this.$('table input:checkbox').prop('checked', variableModel.has('selected') && variableModel.get('selected'));
 		}
 	});
 

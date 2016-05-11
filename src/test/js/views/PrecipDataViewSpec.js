@@ -5,10 +5,11 @@ define([
 	'jquery',
 	'moment',
 	'backbone',
+	'models/PrecipitationVariableCollection',
 	'views/PrecipDataView'
-], function($, moment, Backbone, PrecipDataView) {
+], function($, moment, Backbone, PrecipitationVariableCollection, PrecipDataView) {
 
-	describe('views/PrecipDataView', function() {
+	fdescribe('views/PrecipDataView', function() {
 		var testView;
 		var testModel;
 		var $testDiv;
@@ -19,10 +20,14 @@ define([
 			testModel = new Backbone.Model({
 				lat : '43.1346',
 				lon : '-100.2121',
-				x : '514',
-				y : '720',
-				startDate : moment('2002-01-01', 'YYYY-MM-DD'),
-				endDate : moment('2016-04-18', 'YYYY-MM-DD')
+				variables : new PrecipitationVariableCollection([
+					{
+						x : '514',
+						y : '720',
+						startDate : moment('2002-01-01', 'YYYY-MM-DD'),
+						endDate : moment('2016-04-18', 'YYYY-MM-DD')
+					}
+				])
 			});
 			testView = new PrecipDataView({
 				$el : $testDiv,
@@ -57,7 +62,7 @@ define([
 		});
 
 		it('Expects that the checkbox is checked if the selected property is set to true in the model when the view is rendered', function() {
-			testModel.set('selected', true);
+			testModel.get('variables').at(0).set('selected', true);
 			testView.render();
 
 			expect(testView.$('input:checkbox').is(':checked')).toBe(true);
@@ -67,7 +72,7 @@ define([
 			testView.render();
 			testView.$('input:checkbox').trigger('click');
 
-			expect(testModel.get('selected')).toBe(true);
+			expect(testModel.get('variables').at(0).get('selected')).toBe(true);
 		});
 
 		it('Expects that if the checkbox is clicked twice, the selected property is set back to false', function() {
@@ -75,21 +80,22 @@ define([
 			testView.$('input:checkbox').trigger('click');
 			testView.$('input:checkbox').trigger('click');
 
-			expect(testModel.get('selected')).toBe(false);
+			expect(testModel.get('variables').at(0).get('selected')).toBe(false);
 		});
 
 		it('Expects that if the model\'s selected attribute is updated the variable checkbox reflects it\'s state', function() {
 			var $checkbox;
+			var variableModel = testModel.get('variables').at(0);
 			testView.render();
 			$checkbox = testView.$('input:checkbox');
-			testModel.set('selected', false);
+			variableModel.set('selected', false);
 
 			expect($checkbox.prop('checked')).toBe(false);
 
-			testModel.set('selected', true);
+			variableModel.set('selected', true);
 			expect($checkbox.prop('checked')).toBe(true);
 
-			testModel.unset('selected');
+			variableModel.unset('selected');
 			expect($checkbox.prop('checked')).toBe(false);
 		});
 	});

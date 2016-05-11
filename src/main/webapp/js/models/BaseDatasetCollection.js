@@ -2,9 +2,10 @@
 
 define([
 	'underscore',
+	'moment',
 	'backbone',
 	'utils/dateUtils'
-], function(_, Backbone, dateUtils) {
+], function(_, moment, Backbone, dateUtils) {
 
 	/*
 	 * @constructs - the collection contains models with startDate and endDate properties, both moment objects and a
@@ -58,6 +59,26 @@ define([
 				return siteModel.get('variables').getSelectedUrlParams(siteModel.attributes);
 			});
 			return _.flatten(params);
+		},
+
+		getSelectedOverlappingDateRange : function() {
+			var result = undefined;
+			var siteSelectedVarsDateRange =
+				_.chain(this.models)
+					.map(function(siteModel) {
+						return siteModel.get('variables').getSelectedOverlappingDateRange();
+					})
+					.filter(function(dateRange) {
+						return (dateRange);
+					})
+					.value();
+			if (siteSelectedVarsDateRange.length !== 0) {
+				result = {
+					start : moment.max(_.pluck(siteSelectedVarsDateRange, 'start')),
+					end : moment.min(_.pluck(siteSelectedVarsDateRange, 'end'))
+				};
+			}
+			return result;
 		}
 	});
 

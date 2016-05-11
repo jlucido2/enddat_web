@@ -3,22 +3,23 @@
 define([
 	'underscore',
 	'jquery',
+	'moment',
 	'backbone',
 	'Config',
 	'utils/geoSpatialUtils',
 	'models/NWISCollection',
 	'models/PrecipitationCollection'
-], function(_, $, Backbone, Config, geoSpatialUtils, NWISCollection, PrecipitationCollection) {
+], function(_, $, moment, Backbone, Config, geoSpatialUtils, NWISCollection, PrecipitationCollection) {
 	"use strict";
 
 	var DEFAULT_CHOOSE_DATA_RADIUS = 2;
 	var DEFAULT_CHOSEN_DATASETS = ['NWIS'];
 
 	// Defaults for processing step
-	var DEFAULT_TIME_INTERVAL = 6
-	var DEFAULT_TIME_ZONE = '0_GMT'
+	var DEFAULT_TIME_INTERVAL = 6;
+	var DEFAULT_TIME_ZONE = '0_GMT';
 	var DEFAULT_PROCESSING_TIME_RANGE_FROM_LATEST = 30; // Days after the latest selected variable's data.
-	var DEFAULT_OUTPUT_DATA_FORMAT = 'Excel';
+	var DEFAULT_OUTPUT_DATE_FORMAT = 'Excel';
 	var DEFAULT_OUTPUT_FORMAT = 'tab';
 
 	var model = Backbone.Model.extend({
@@ -143,6 +144,8 @@ define([
 		 */
 		updateModelState : function() {
 			var previousStep = this.previous('step');
+			var dateRange;
+			var outputDateRange = undefined;
 
 			switch(this.get('step')) {
 				case Config.PROJ_LOC_STEP:
@@ -167,10 +170,42 @@ define([
 					break;
 
 				case Config.PROCESS_DATA_STEP:
-					this.set('processParams', {
-
+					dateRange = this.getSelectedVarsDateRange();
+					if (dateRange) {
+						outputDateRange = {
+							start : moment.max(dateRange.start, dateRange.end.clone().subtract(DEFAULT_PROCESSING_TIME_RANGE_FROM_LATEST, 'days')),
+							end : dateRange.end
+						}
+					}
+					this.set({
+						outputFileFormat : DEFAULT_OUTPUT_FORMAT,
+						outputTimeZone : DEFAULT_TIME_ZONE,
+						outputTimeGapInterval : DEFAULT_TIME_INTERVAL,
+						outputDateFormat : DEFAULT_OUTPUT_DATE_FORMAT,
+						outputDateRange : outputDateRange
 					});
 			}
+		},
+
+		getSelectedVarsDateRange : function() {
+			var datasetCollections = this.get('datasetCollections');
+			var datasetDateRanges =
+				_.chain(datasetCollections)
+					.map(function(datasetCollection) {
+						return datasetCollection.getSelectedOverlappingDateRange();
+					})
+					.filter(function(dateRange) {
+						return (dateRange);
+					})
+					.value();
+			var result = undefined;
+			if (datasetDateRanges.length > 0) {
+				result = {
+					start : moment.max(_.pluck(datasetDateRanges, 'start')),
+					end : moment.min(_.pluck(datasetDateRanges, 'end'))
+				};
+			}
+			return result;
 		},
 
 		/*

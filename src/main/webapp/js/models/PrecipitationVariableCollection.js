@@ -5,7 +5,6 @@ define([
 	'models/BaseVariableCollection'
 ], function(_, BaseVariableCollection) {
 
-	var TIME_BOUNDS = 124860;
 	var variableId = 'precip3';
 	var variableName = 'Total precip - 1 hr';
 
@@ -15,14 +14,14 @@ define([
 	 */
 	var collection = BaseVariableCollection.extend({
 
-		getSelectedUrlParams : function() {
+		getSelectedUrlParams : function(timeBounds) {
 			var selectedVars = this.getSelectedVariables();
 			return _.map(selectedVars, function(model) {
 				var attrs = model.attributes;
 				return {
 					name : 'Precip',
 					value : attrs.y + ':' + attrs.x + ':' +
-						TIME_BOUNDS + ':' + variableId + '!' + variableName +
+						timeBounds + ':' + variableId + '!' + variableName +
 						' [' + attrs.y + ',' + attrs.x + ']'
 				};
 			});

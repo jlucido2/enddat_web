@@ -34,7 +34,8 @@
 						'parameterCodesPath': '<%=parameterCodesUrl%>'
 				 	},
 					'models/PrecipitationCollection' : {
-						'precipWFSGetFeatureUrl' : '<%=precipWFSGetFeatureUrl%>'
+						'precipWFSGetFeatureUrl' : '<%=precipWFSGetFeatureUrl%>',
+						'cidaThreddsPrecipData' : '<%=cidaThreddsPrecipData%>'
 					},
 					'views/ProcessDataView' : {
 						'baseUrl' : '<%=baseUrl%>'

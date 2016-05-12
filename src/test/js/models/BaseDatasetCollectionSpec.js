@@ -8,7 +8,7 @@ define([
 	'models/BaseVariableCollection'
 ], function(moment, _, BaseDatasetCollection, BaseVariableCollection) {
 
-	describe('models/BaseDatasetCollection', function() {
+	xdescribe('models/BaseDatasetCollection', function() {
 
 		describe('Tests for hasSelectedVariables', function() {
 			var testCollection;

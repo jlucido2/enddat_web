@@ -129,6 +129,10 @@ define([
 						this.variableSummaryView.remove();
 						this.variableSummaryView = undefined;
 					}
+					if (this.processDataView) {
+						this.processDataView.remove();
+						this.processDataView = undefined;
+					}
 					break;
 
 				case Config.CHOOSE_DATA_FILTERS_STEP:
@@ -164,9 +168,15 @@ define([
 						});
 						this.variableSummaryView.render();
 					}
+					if (this.processDataView) {
+						this.processDataView.remove();
+						this.processDataView = undefined;
+					}
+
 					break;
 
 				case Config.CHOOSE_DATA_VARIABLES_STEP:
+					// You can only get to this step from CHOOSE_DATA_FILTER_STEP
 					if (prevStep === Config.CHOOSE_DATA_FILTERS_STEP) {
 						this.locationView.collapse();
 						this.chooseView.collapse();

@@ -23,7 +23,7 @@ define([
 			{name : 'endPosition', value : attrs.outputDateRange.end.format(Config.DATE_FORMAT)}
 		];
 
-		return 'service/execute?' +
+		return BASE_URL + 'service/execute?' +
 			$.param(params.concat(varParams));
 	};
 
@@ -47,11 +47,12 @@ define([
 
 		showUrl : function(ev) {
 			ev.preventDefault();
-			this.$('.url-container').html(BASE_URL + getUrl(this.model));
+			this.$('.url-container').html(getUrl(this.model));
 		},
 
 		getData : function(ev) {
 			ev.preventDefault();
+			window.open(getUrl(this.model), '_blank');
 		}
 	});
 

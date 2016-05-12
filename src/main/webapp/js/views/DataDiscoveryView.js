@@ -173,6 +173,8 @@ define([
 						this.processDataView = undefined;
 					}
 
+					this.variableSummaryView.expand();
+
 					break;
 
 				case Config.CHOOSE_DATA_VARIABLES_STEP:

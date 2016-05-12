@@ -6,7 +6,7 @@ define([
 	'backbone',
 	'utils/dateUtils'
 ], function(_, moment, Backbone, dateUtils) {
-
+	"use strict";
 	/*
 	 * @constructs - the collection contains models with startDate and endDate properties, both moment objects and a
 	 * variables property which is BaseVariableCollection.
@@ -63,16 +63,16 @@ define([
 
 		getSelectedOverlappingDateRange : function() {
 			var result = undefined;
-			var siteSelectedVarsDateRange =
-				_.chain(this.models)
-					.map(function(siteModel) {
-						return siteModel.get('variables').getSelectedOverlappingDateRange();
-					})
-					.filter(function(dateRange) {
-						return (dateRange);
-					})
-					.value();
-			if (siteSelectedVarsDateRange.length !== 0) {
+			var siteSelectedVarsDateRange = this.chain()
+				.filter(function(siteModel) {
+					return siteModel.get('variables').hasSelectedVariables();
+				})
+				.map(function(siteModel) {
+					return siteModel.get('variables').getSelectedOverlappingDateRange();
+				})
+				.value();
+
+			if ((siteSelectedVarsDateRange.length > 0) && !_.contains(siteSelectedVarsDateRange, undefined)) {
 				result = {
 					start : moment.max(_.pluck(siteSelectedVarsDateRange, 'start')),
 					end : moment.min(_.pluck(siteSelectedVarsDateRange, 'end'))

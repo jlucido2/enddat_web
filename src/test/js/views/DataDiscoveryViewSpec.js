@@ -282,6 +282,7 @@ define([
 					el : $testDiv,
 					model : testModel
 				});
+				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
 				testView.render();
 			});
 			it('Expects the loading indicator to be shown when the dataset:updateStart event is triggered on the model', function() {
@@ -363,7 +364,7 @@ define([
 
 			it('Expects that if the step changes, the alert view is closed', function() {
 				closeAlertSpy.calls.reset();
-				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
+				testModel.set('step', Config.PROJ_LOC_STEP);
 
 				expect(closeAlertSpy).toHaveBeenCalled();
 			});

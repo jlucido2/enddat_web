@@ -4,6 +4,7 @@ define([
 	'underscore',
 	'models/BaseVariableCollection'
 ], function(_, BaseVariableCollection) {
+	"use strict";
 
 	var variableId = 'precip3';
 	var variableName = 'Total precip - 1 hr';

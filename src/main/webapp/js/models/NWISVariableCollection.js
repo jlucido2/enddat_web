@@ -4,7 +4,7 @@ define([
 	'underscore',
 	'models/BaseVariableCollection'
 ], function(_, BaseVariableCollection) {
-
+	"use strict";
 
 	var collection = BaseVariableCollection.extend({
 

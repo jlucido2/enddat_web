@@ -13,7 +13,8 @@ require.config({
 
 	config: {
 		'models/PrecipitationCollection' : {
-			precipWFSGetFeatureUrl : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0'
+			precipWFSGetFeatureUrl : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',
+			cidaThreddsPrecipData : 'dodsC/fakedata'
 		}
 	},
 

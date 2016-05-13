@@ -69,6 +69,8 @@ define([
 			var self = this;
 			var fetchSiteDataDeferred = $.Deferred();
 			var fetchDDSDeferred = $.Deferred();
+			var fetchDeferred = $.Deferred();
+			var parsedXML;
 
 			$.ajax({
 				url : GET_FEATURE_URL,
@@ -79,18 +81,16 @@ define([
 				success : function(xml, textStatus, jqXHR) {
 					if ($utils.xmlFind($(xml), 'ows', 'ExceptionReport').length > 0) {
 						log.debug('Precipitation GetFeature fetch failed with Exception from service');
-						self.reset([]);
 						fetchSiteDataDeferred.reject(jqXHR);
 					}
 					else {
-						self.reset(self.parse(xml));
+						parsedXML = self.parse(xml);
 						log.debug('Precipitation fetch succeeded, fetched ' + self.size() + ' grid');
 						fetchSiteDataDeferred.resolve(jqXHR);
 					}
 				},
 				error : function(jqXHR) {
 					log.debug('Precipitation GetFeature fetch failed');
-					self.reset([]);
 					fetchSiteDataDeferred.reject(jqXHR);
 				}
 			});
@@ -107,7 +107,17 @@ define([
 				}
 			});
 
-			return $.when(fetchSiteDataDeferred, fetchDDSDeferred);
+			$.when(fetchSiteDataDeferred, fetchDDSDeferred)
+				.done(function() {
+					self.reset(parsedXML);
+					fetchDeferred.resolve();
+				})
+				.fail(function() {
+					self.reset([]);
+					fetchDeferred.reject();
+				});
+
+			return fetchDeferred.promise();
 		},
 
 		/*

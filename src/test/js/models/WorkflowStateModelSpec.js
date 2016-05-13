@@ -69,7 +69,7 @@ define([
 			expect(testModel.attributes.datasetCollections[Config.PRECIP_DATASET]).toBeDefined();
 		});
 
-		describe('Tests for event handlers to update the datasets', function() {
+		describe('Tests for model event handlers to update the datasets', function() {
 			var updateStartSpy, updateFinishedSpy;
 			beforeEach(function() {
 				updateStartSpy = jasmine.createSpy('updateStartSpy');
@@ -226,6 +226,20 @@ define([
 
 				expect(fetchPrecipSpy).not.toHaveBeenCalled();
 				expect(fetchSiteSpy).toHaveBeenCalled();
+			});
+
+			it('Expects that if the step changes from CHOOSE_DATA_VARIABLES_STEP to PROCESS_DATA_STEP, the defaults for the processing step are set', function() {
+				spyOn(testModel, 'getSelectedVarsDateRange').and.returnValue({
+					start : moment('01-01-2010', Config.DATE_FORMAT),
+					end : moment('05-01-2015', Config.DATE_FORMAT)
+				});
+				testModel.set('step', Config.CHOOSE_DATA_VARIABLES_STEP);
+				testModel.set('step', Config.PROCESS_DATA_STEP);
+
+				expect(testModel.has('outputDateRange')).toBe(true);
+				expect(testModel.has('outputFileFormat')).toBe(true);
+				expect(testModel.has('outputTimeGapInterval')).toBe(true);
+				expect(testModel.has('outputDateFormat')).toBe(true);
 			});
 		});
 

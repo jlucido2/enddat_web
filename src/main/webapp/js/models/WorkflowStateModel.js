@@ -90,6 +90,10 @@ define([
 			return result;
 		},
 
+		/*
+		 * @returns {Array of Objects with name and value properties to be used to form the url parameters for
+		 *		processing requests}
+		 */
 		getSelectedVariablesUrlParams : function() {
 			var datasetCollections = this.get('datasetCollections');
 
@@ -100,7 +104,6 @@ define([
 				.flatten()
 				.value();
 		},
-
 
 		/*
 		 * Model event handlers
@@ -187,6 +190,12 @@ define([
 			}
 		},
 
+		/*
+		 *
+		 * @returns {Object with start and end properties}. Returns undefined if there is no valid date range
+		 */
+		//TODO: This will probably change to returning the union of the date ranges rather than intersection so
+		//not writing any tests for this at the moment.
 		getSelectedVarsDateRange : function() {
 			var datasetCollections = this.get('datasetCollections');
 			var datasetDateRanges =
@@ -263,7 +272,7 @@ define([
 		},
 
 		/*
-		 * Event handler for dataset collection variables selected change handler.
+		 * Model event handler for dataset collection variables selected change handler.
 		 */
 		updateHasSelectedVariables : function() {
 			var hasSelectedVariables = _.some(this.get('datasetCollections'), function(datasetCollection) {

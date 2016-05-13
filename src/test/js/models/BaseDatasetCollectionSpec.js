@@ -9,7 +9,7 @@ define([
 ], function(moment, _, BaseDatasetCollection, BaseVariableCollection) {
 	"use strict";
 
-	describe('models/BaseDatasetCollection', function() {
+	fdescribe('models/BaseDatasetCollection', function() {
 
 		var DATE_FORMAT = 'MM-DD-YYYY';
 
@@ -126,13 +126,13 @@ define([
 			});
 		});
 
-		describe('Tests for getSelectedOverlappingDateRange', function() {
+		describe('Tests for getSelectedDateRange', function() {
 			var testCollection;
 
 			it('Expects an empty collection returns undefined', function() {
 				testCollection = new BaseDatasetCollection();
 
-				expect(testCollection.getSelectedOverlappingDateRange()).toBeUndefined();
+				expect(testCollection.getSelectedDateRange()).toBeUndefined();
 			});
 
 			it('Expects a collection with no selected variables will return undefined', function() {
@@ -147,7 +147,7 @@ define([
 					])}
 				]);
 
-				expect(testCollection.getSelectedOverlappingDateRange()).toBeUndefined();
+				expect(testCollection.getSelectedDateRange()).toBeUndefined();
 			});
 
 			it('Expects a collection with a single selected variable will return that variables date range', function() {
@@ -162,7 +162,7 @@ define([
 							{startDate : moment('01-01-2008', DATE_FORMAT), endDate : moment('01-01-2012', DATE_FORMAT)}
 					])}
 				]);
-				result = testCollection.getSelectedOverlappingDateRange();
+				result = testCollection.getSelectedDateRange();
 
 				expect(result.start.format(DATE_FORMAT)).toEqual('01-01-2005');
 				expect(result.end.format(DATE_FORMAT)).toEqual('01-01-2007');
@@ -180,25 +180,10 @@ define([
 							{startDate : moment('01-01-2008', DATE_FORMAT), endDate : moment('01-01-2012', DATE_FORMAT)}
 					])}
 				]);
-				result = testCollection.getSelectedOverlappingDateRange();
+				result = testCollection.getSelectedDateRange();
 
-				expect(result.start.format(DATE_FORMAT)).toEqual('01-01-2001');
-				expect(result.end.format(DATE_FORMAT)).toEqual('01-01-2007');
-			});
-
-			it('Expects a collection with selected variables to return undefined if no overlapping range', function() {
-				testCollection = new BaseDatasetCollection([
-					{id : 1, variables : new BaseVariableCollection([
-							{startDate : moment('01-01-2000', DATE_FORMAT), endDate : moment('01-01-2010', DATE_FORMAT), selected: true},
-						    {startDate : moment('01-01-2001', DATE_FORMAT), endDate : moment('01-01-2011', DATE_FORMAT), selected : true}
-					])},
-					{id : 3, variables : new BaseVariableCollection([
-							{startDate : moment('01-01-1999', DATE_FORMAT), endDate : moment('01-01-2007', DATE_FORMAT), selected: true},
-							{startDate : moment('01-01-2008', DATE_FORMAT), endDate : moment('01-01-2012', DATE_FORMAT), selected: true}
-					])}
-				]);
-
-				expect(testCollection.getSelectedOverlappingDateRange()).toBeUndefined();
+				expect(result.start.format(DATE_FORMAT)).toEqual('01-01-1999');
+				expect(result.end.format(DATE_FORMAT)).toEqual('01-01-2011');
 			});
 		});
 	});

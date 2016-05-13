@@ -61,21 +61,26 @@ define([
 			return _.flatten(params);
 		},
 
-		getSelectedOverlappingDateRange : function() {
+		/*
+		 * Return the date range over which data is available for the selected variables
+		 * @returns {Object with start and end properties which are moments}. If no selected
+		 * variables return undefined.
+		 */
+		getSelectedDateRange : function() {
 			var result = undefined;
 			var siteSelectedVarsDateRange = this.chain()
 				.filter(function(siteModel) {
 					return siteModel.get('variables').hasSelectedVariables();
 				})
 				.map(function(siteModel) {
-					return siteModel.get('variables').getSelectedOverlappingDateRange();
+					return siteModel.get('variables').getSelectedDateRange();
 				})
 				.value();
 
 			if ((siteSelectedVarsDateRange.length > 0) && !_.contains(siteSelectedVarsDateRange, undefined)) {
 				result = {
-					start : moment.max(_.pluck(siteSelectedVarsDateRange, 'start')),
-					end : moment.min(_.pluck(siteSelectedVarsDateRange, 'end'))
+					start : moment.min(_.pluck(siteSelectedVarsDateRange, 'start')),
+					end : moment.max(_.pluck(siteSelectedVarsDateRange, 'end'))
 				};
 			}
 			return result;

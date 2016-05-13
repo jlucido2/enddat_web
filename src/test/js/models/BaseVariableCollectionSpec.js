@@ -7,6 +7,7 @@ define([
 	'moment',
 	'models/BaseVariableCollection'
 ], function(_, moment, BaseVariableCollection) {
+	"use strict";
 
 	describe('models/BaseVariableCollection', function() {
 		var testCollection;
@@ -91,6 +92,37 @@ define([
 
 				expect(result.start.format(DATE_FORMAT)).toEqual('2001-01-04');
 				expect(result.end.format(DATE_FORMAT)).toEqual('2010-01-04');
+			});
+		});
+
+		describe('Tests for getSelectedDateRange', function() {
+			it('Expects that an empty collection will return undefined', function() {
+				testCollection = new BaseVariableCollection();
+
+				expect(testCollection.getSelectedDateRange()).toBeUndefined();
+			});
+
+			it('Expects that a collection with variables where none are selected will return undefined', function() {
+				testCollection = new BaseVariableCollection([
+					{startDate : moment('2002-01-04', DATE_FORMAT), endDate : moment('2010-01-04')},
+					{startDate : moment('2006-01-04', DATE_FORMAT), endDate : moment('2010-01-04')},
+					{startDate : moment('2001-01-04', DATE_FORMAT), endDate : moment('2007-01-04')}
+				]);
+
+				expect(testCollection.getSelectedDateRange()).toBeUndefined();
+			});
+
+			it('Expects that a collection with selected variables returns the appropriate date range', function() {
+				var result;
+				testCollection = new BaseVariableCollection([
+					{startDate : moment('2002-01-04', DATE_FORMAT), endDate : moment('2010-01-04'), selected : true},
+					{startDate : moment('2006-01-04', DATE_FORMAT), endDate : moment('2011-01-04'), selected : true},
+					{startDate : moment('2001-01-04', DATE_FORMAT), endDate : moment('2007-01-04')}
+				]);
+				result = testCollection.getSelectedDateRange();
+
+				expect(result.start.format(DATE_FORMAT)).toEqual('2002-01-04');
+				expect(result.end.format(DATE_FORMAT)).toEqual('2011-01-04');
 			});
 		});
 

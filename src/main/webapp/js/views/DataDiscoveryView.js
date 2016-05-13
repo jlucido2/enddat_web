@@ -193,20 +193,29 @@ define([
 							opened : true
 						});
 						this.processDataView.render();
+					}
+					if (!this.variableSummaryView) {
+						this.variableSummaryView = new VariableSummaryView({
+							el : $utils.createDivInContainer(this.$(VARIABLE_SUMMARY_SELECTOR)),
+							model : model,
+							opened : false
+						});
+					}
+					else {
 						this.variableSummaryView.collapse();
+					}
 
-						if (this.locationView) {
-							this.locationView.remove();
-							this.locationView = undefined;
-						}
-						if (this.chooseView) {
-							this.chooseView.remove();
-							this.chooseView = undefined;
-						}
-						if (this.mapView) {
-							this.mapView.remove();
-							this.mapView = undefined;
-						}
+					if (this.locationView) {
+						this.locationView.remove();
+						this.locationView = undefined;
+					}
+					if (this.chooseView) {
+						this.chooseView.remove();
+						this.chooseView = undefined;
+					}
+					if (this.mapView) {
+						this.mapView.remove();
+						this.mapView = undefined;
 					}
 
 			}

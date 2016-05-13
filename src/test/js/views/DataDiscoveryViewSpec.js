@@ -11,7 +11,7 @@ define([
 ], function(Squire, $, moment, Config, WorkflowStateModel, BaseView) {
 	"use strict";
 
-	xdescribe("DataDiscoveryView", function() {
+	describe("DataDiscoveryView", function() {
 
 		var DataDiscoveryView;
 		var testView;
@@ -23,7 +23,8 @@ define([
 		var setElMapViewSpy, renderMapViewSpy, removeMapViewSpy;
 		var setElLocationViewSpy, renderLocationViewSpy, removeLocationViewSpy, collapseLocationViewSpy, expandLocationViewSpy;
 		var setElChooseViewSpy, renderChooseViewSpy, removeChooseViewSpy, collapseChooseViewSpy, expandChooseViewSpy;
-		var setElSummaryViewSpy, renderSummaryViewSpy, removeSummaryViewSpy;
+		var setElSummaryViewSpy, renderSummaryViewSpy, removeSummaryViewSpy, collapseSummaryViewSpy, expandSummaryViewSpy;
+		var setElProcessDataViewSpy, renderProcessDataViewSpy, removeProcessDataViewSpy;
 		var setElAlertViewSpy, renderAlertViewSpy, removeAlertViewSpy, showSuccessAlertSpy, showDangerAlertSpy, closeAlertSpy;
 
 		var injector;
@@ -57,10 +58,15 @@ define([
 			collapseChooseViewSpy = jasmine.createSpy('collapseChooseViewSpy');
 			expandChooseViewSpy = jasmine.createSpy('expandChooseViewSpy');
 
-
 			setElSummaryViewSpy = jasmine.createSpy('setElSummaryViewSpy');
 			renderSummaryViewSpy = jasmine.createSpy('renderSummaryViewSpy');
 			removeSummaryViewSpy = jasmine.createSpy('removeSummaryViewSpy');
+			collapseSummaryViewSpy = jasmine.createSpy('collapseSummaryViewSpy');
+			expandSummaryViewSpy = jasmine.createSpy('expandSummaryViewSpy');
+
+			setElProcessDataViewSpy = jasmine.createSpy('setElProcessDataViewSpy');
+			renderProcessDataViewSpy = jasmine.createSpy('renderProcessDataViewSpy');
+			removeProcessDataViewSpy = jasmine.createSpy('removeProcessDataViewSpy');
 
 			setElAlertViewSpy = jasmine.createSpy('setElAlertViewSpy');
 			renderAlertViewSpy = jasmine.createSpy('renderAlertViewSpy');
@@ -115,7 +121,17 @@ define([
 					render : renderSummaryViewSpy
 				}),
 				render : renderSummaryViewSpy,
-				remove : removeSummaryViewSpy
+				remove : removeSummaryViewSpy,
+				collapse : collapseSummaryViewSpy,
+				expand : expandSummaryViewSpy
+			}));
+
+			injector.mock('views/ProcessDataView', BaseView.extend({
+				setElement : setElProcessDataViewSpy.and.returnValue({
+					render : renderProcessDataViewSpy
+				}),
+				render : renderProcessDataViewSpy,
+				remove : removeProcessDataViewSpy
 			}));
 
 			injector.mock('views/AlertView', BaseView.extend({
@@ -214,6 +230,7 @@ define([
 				expect(renderLocationViewSpy).toHaveBeenCalled();
 				expect(setElChooseViewSpy).not.toHaveBeenCalled();
 				expect(setElSummaryViewSpy).not.toHaveBeenCalled();
+				expect(setElProcessDataViewSpy).not.toHaveBeenCalled();
 			});
 
 			it('Expects that if the workflow step is CHOOSE_DATA_FILTERS_STEP, the location, map, variable summary and choose data views are created and rendered', function() {
@@ -251,6 +268,7 @@ define([
 				expect(removeLocationViewSpy).not.toHaveBeenCalled();
 				expect(removeChooseViewSpy).not.toHaveBeenCalled();
 				expect(removeSummaryViewSpy).not.toHaveBeenCalled();
+				expect(removeProcessDataViewSpy).not.toHaveBeenCalled();
 				expect(removeMapViewSpy).not.toHaveBeenCalled();
 			});
 
@@ -273,6 +291,15 @@ define([
 				expect(removeChooseViewSpy).toHaveBeenCalled();
 				expect(removeSummaryViewSpy).toHaveBeenCalled();
 				expect(removeMapViewSpy).toHaveBeenCalled();
+			});
+
+			it('Expects that the variable summary and process data subviews are removed when the step is PROCESS_DATA_STEP', function() {
+				testModel.set('step', Config.PROCESS_DATA_STEP);
+				testView.render();
+				testView.remove();
+
+				expect(removeSummaryViewSpy).toHaveBeenCalled();
+				expect(removeProcessDataViewSpy).toHaveBeenCalled();
 			});
 		});
 
@@ -359,6 +386,55 @@ define([
 
 				expect(collapseLocationViewSpy).toHaveBeenCalled();
 				expect(collapseChooseViewSpy).toHaveBeenCalled();
+			});
+
+			it('Expects that if the step changes from CHOOSE_DATA_VARIABLES_STEP to PROCESS_DATA_STEP, the process data view is created and rendered, the location,choose, and map views are removed and variable summary is collapsed', function() {
+				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_VARIABLES_STEP);
+				removeLocationViewSpy.calls.reset();
+				removeChooseViewSpy.calls.reset();
+				removeMapViewSpy.calls.reset();
+				collapseSummaryViewSpy.calls.reset();
+				renderProcessDataViewSpy.calls.reset();
+				testModel.set('step', Config.PROCESS_DATA_STEP);
+
+				expect(removeLocationViewSpy).toHaveBeenCalled();
+				expect(removeChooseViewSpy).toHaveBeenCalled();
+				expect(removeMapViewSpy).toHaveBeenCalled();
+				expect(collapseSummaryViewSpy).toHaveBeenCalled();
+				expect(renderProcessDataViewSpy).toHaveBeenCalled();
+			});
+
+			it('Expects that if the step is PROCESS_DATA_STEP and goes back to CHOOSE_DATA_FILTERS_STEP, the process data view is removed, the location, choose, and map view are created and the variable summary is shown', function() {
+				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_VARIABLES_STEP);
+				testModel.set('step', Config.PROCESS_DATA_STEP);
+				renderLocationViewSpy.calls.reset();
+				renderChooseViewSpy.calls.reset();
+				renderMapViewSpy.calls.reset();
+				expandSummaryViewSpy.calls.reset();
+				removeProcessDataViewSpy.calls.reset();
+				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
+
+				expect(renderLocationViewSpy).toHaveBeenCalled();
+				expect(renderChooseViewSpy).toHaveBeenCalled();
+				expect(renderMapViewSpy).toHaveBeenCalled();
+				expect(expandSummaryViewSpy).toHaveBeenCalled();
+				expect(removeProcessDataViewSpy).toHaveBeenCalled();
+			});
+
+			it('Expects that if the step is PROCESS_DATA_STEP and changes to PROJ_LOC_STEP, the process data and summary views are removed, and the location view is created', function() {
+				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_VARIABLES_STEP);
+				testModel.set('step', Config.PROCESS_DATA_STEP);
+				removeProcessDataViewSpy.calls.reset();
+				removeSummaryViewSpy.calls.reset();
+				renderLocationViewSpy.calls.reset();
+				testModel.set('step', Config.PROJ_LOC_STEP);
+
+				expect(removeProcessDataViewSpy).toHaveBeenCalled();
+				expect(removeSummaryViewSpy).toHaveBeenCalled();
+				expect(renderLocationViewSpy).toHaveBeenCalled();
 			});
 
 			it('Expects that if the step changes, the alert view is closed', function() {

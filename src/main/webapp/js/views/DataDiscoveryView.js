@@ -243,7 +243,11 @@ define([
 		},
 
 		showSuccessfulFetchAlert : function() {
-			this.alertView.showSuccessAlert(this._filterMsg());
+			var step = this.model.get('step');
+			if ((step === Config.CHOOSE_DATA_FILTERS_STEP) ||
+				(step === Config.CHOOSE_DATA_VARIABLES_STEP)) {
+				this.alertView.showSuccessAlert(this._filterMsg());
+			}
 		},
 
 		hideLoadingIndicator : function(fetchErrorTypes) {

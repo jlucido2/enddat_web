@@ -3,8 +3,9 @@
 /* global sinon, expect, jasmine */
 
 define([
-	'models/PrecipitationCollection'
-], function(PrecipitationCollection) {
+	'models/PrecipitationCollection',
+	'models/PrecipitationVariableCollection'
+], function(PrecipitationCollection, PrecipitationVariableCollection) {
 	describe('models/PrecipitationCollection', function() {
 		var fakeServer;
 		var testCollection;
@@ -25,52 +26,7 @@ define([
 				north : '43',
 				south : '42'
 			};
-			var fetchPromise;
-			var successSpy, failSpy;
-			beforeEach(function() {
-				successSpy = jasmine.createSpy('successSpy');
-				failSpy = jasmine.createSpy('failSpy');
-
-				testCollection.reset([
-					{x : '1', y: '2', lon : '-100', lat : '43.0'},
-					{x : '1', y: '3', lon : '-100', lat : '44.0'}
-				]);
-
-				fetchPromise = testCollection.fetch(bbox).done(successSpy).fail(failSpy);
-			});
-
-			it('Expects that the url used in the service call is retrieved from the module configuration', function() {
-				expect(fakeServer.requests[0].url).toContain('http:dummyservice/wfs/?service=wfs&amp;version=2.0.0');
-			});
-
-			it('Expects that the url will contain the urlencoded bbox parameter', function() {
-				expect(fakeServer.requests[0].url).toContain('bbox=' + encodeURIComponent(bbox.south + ',' + bbox.west + ',' + bbox.north + ',' + bbox.east));
-			});
-
-			it('Expects that failed ajax response causes the promise to be rejected and the collection cleared', function() {
-				fakeServer.respondWith([500, {'Content-Type' : 'text'}, 'Internal server error']);
-				fakeServer.respond();
-				expect(successSpy).not.toHaveBeenCalled();
-				expect(failSpy).toHaveBeenCalled();
-				expect(testCollection.length).toBe(0);
-			});
-
-			it('Expects that a successfully ajax response with an exception report causes the promise to be rejected and the collection cleared', function() {
-				fakeServer.respondWith([200, {'Content-Type' : 'text/xml'}, '<ows:ExceptionReport xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0.0" xsi:schemaLocation="http://www.opengis.net/ows/1.1 https://www.sciencebase.gov:443/catalogMaps/schemas/ows/1.1.0/owsAll.xsd">' +
-					'<ows:Exception exceptionCode="NoApplicableCode">' +
-					'<ows:ExceptionText>java.lang.NullPointerException' +
-					'null</ows:ExceptionText>' +
-					'</ows:Exception>' +
-					'</ows:ExceptionReport>']);
-				fakeServer.respond();
-				expect(successSpy).not.toHaveBeenCalled();
-				expect(failSpy).toHaveBeenCalled();
-				expect(testCollection.length).toBe(0);
-			});
-
-			it('Expects that a successful respond causes the promise to be resolved and the collection to be updated with the contents of the response', function() {
-				fakeServer.respondWith([200, {'Content-Type' : 'text/xml'},
-					'<?xml version="1.0" encoding="UTF-8"?><wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0" ' +
+			var SITE_RESPONSE = '<?xml version="1.0" encoding="UTF-8"?><wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0" ' +
 						'xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:sb="http://sciencebase.gov/catalog">' +
 						'<wfs:boundedBy><gml:Envelope srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4269">' +
 						'<gml:lowerCorner>-89.53 43.09</gml:lowerCorner>' +
@@ -88,42 +44,87 @@ define([
 						'</gml:boundedBy><sb:the_geom><gml:Point srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4269">' +
 						'<gml:pos>-89.48 43.09</gml:pos></gml:Point></sb:the_geom>' +
 						'<sb:x>690.0</sb:x><sb:y>557.0</sb:y><sb:X1>-89.48</sb:X1><sb:X2>43.09</sb:X2></sb:ncep_stiv_cell_points>' +
-						'</wfs:member></wfs:FeatureCollection>']);
+						'</wfs:member></wfs:FeatureCollection>';
+			var DDS_RESPONSE = 'Dataset {\n' +
+					'Float32 Total_precipitation_surface_1_Hour_Accumulation[time = 125225][y = 881][x = 1121]; \n' +
+					'Float64 time_bounds[time = 125225][time_bounds_1 = 2];\n' +
+					'Float32 lon[x = 1121][y = 881]; \n' +
+					'Float32 lat[x = 1121][y = 881];\n' +
+					'Float64 time[time = 125225];\n' +
+					'} stageiv_combined;';
+			var fetchPromise;
+			var successSpy, failSpy;
+			beforeEach(function() {
+				successSpy = jasmine.createSpy('successSpy');
+				failSpy = jasmine.createSpy('failSpy');
+
+				testCollection.reset([
+					{variables : new PrecipitationVariableCollection([{x : '1', y: '2'}]), lon : '-100', lat : '43.0'},
+					{variables : new PrecipitationVariableCollection([{x : '1', y: '3'}]), lon : '-100', lat : '44.0'}
+				]);
+
+				fetchPromise = testCollection.fetch(bbox).done(successSpy).fail(failSpy);
+			});
+
+			it('Expects that the url used in the site service call is retrieved from the module configuration', function() {
+				expect(fakeServer.requests[0].url).toContain('http:dummyservice/wfs/?service=wfs&amp;version=2.0.0');
+			});
+
+			it('Expects the url used in the dds service call is retrieved from the module configuration', function() {
+				expect(fakeServer.requests[1].url).toContain('cidathredds/dodsC/fakedata');
+			});
+
+			it('Expects that the site url will contain the urlencoded bbox parameter', function() {
+				expect(fakeServer.requests[0].url).toContain('bbox=' + encodeURIComponent(bbox.south + ',' + bbox.west + ',' + bbox.north + ',' + bbox.east));
+			});
+
+			it('Expects that failed ajax response for the site service causes the promise to be rejected and the collection cleared', function() {
+				fakeServer.respondWith(/http:dummyservice\/wfs\//, [500, {'Content-Type' : 'text'}, 'Internal server error']);
+				fakeServer.respondWith('cidathredds/dodsC/fakedata.dds', [200, {'Content-Type' : 'text'}, DDS_RESPONSE]);
 				fakeServer.respond();
+
+				expect(successSpy).not.toHaveBeenCalled();
+				expect(failSpy).toHaveBeenCalled();
+				expect(testCollection.length).toBe(0);
+			});
+
+			it('Expects that failed ajax response for the dds service causes the promise to be rejected and the collection cleared', function() {
+				fakeServer.respondWith(/http:dummyservice\/wfs\//, [200, {'Content-Type' : 'text/xml'}, SITE_RESPONSE]);
+				fakeServer.respondWith('cidathredds/dodsC/fakedata.dds', [500, {'Content-Type' : 'text'}, 'Internal server error']);
+				fakeServer.respond();
+
+				expect(successSpy).not.toHaveBeenCalled();
+				expect(failSpy).toHaveBeenCalled();
+				expect(testCollection.length).toBe(0);
+			});
+
+			it('Expects that a successfully ajax response with an exception report causes the promise to be rejected and the collection cleared', function() {
+				fakeServer.respondWith(/http:dummyservice\/wfs\//, [200, {'Content-Type' : 'text/xml'}, '<ows:ExceptionReport xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0.0" xsi:schemaLocation="http://www.opengis.net/ows/1.1 https://www.sciencebase.gov:443/catalogMaps/schemas/ows/1.1.0/owsAll.xsd">' +
+					'<ows:Exception exceptionCode="NoApplicableCode">' +
+					'<ows:ExceptionText>java.lang.NullPointerException' +
+					'null</ows:ExceptionText>' +
+					'</ows:Exception>' +
+					'</ows:ExceptionReport>']);
+				fakeServer.respondWith('cidathredds/dodsC/fakedata.dds', [200, {'Content-Type' : 'text'}, DDS_RESPONSE]);
+				fakeServer.respond();
+
+				expect(successSpy).not.toHaveBeenCalled();
+				expect(failSpy).toHaveBeenCalled();
+				expect(testCollection.length).toBe(0);
+			});
+
+			it('Expects that a successful respond for the site and dds services causes the promise to be resolved and the collection to be updated with the contents of the response', function() {
+				fakeServer.respondWith(/http:dummyservice\/wfs\//, [200, {'Content-Type' : 'text/xml'}, SITE_RESPONSE]);
+				fakeServer.respondWith('cidathredds/dodsC/fakedata.dds', [200, {'Content-Type' : 'text'}, DDS_RESPONSE]);
+				fakeServer.respond();
+
 				expect(successSpy).toHaveBeenCalled();
 				expect(failSpy).not.toHaveBeenCalled();
 				expect(testCollection.length).toBe(2);
 				expect(testCollection.at(0).attributes.lat).toEqual('43.10');
 				expect(testCollection.at(0).attributes.lon).toEqual('-89.53');
-				expect(testCollection.at(0).attributes.x).toEqual('689');
-				expect(testCollection.at(0).attributes.y).toEqual('557');
-			});
-		});
-
-		describe('Tests for hasSelectedVariables', function() {
-			beforeEach(function() {
-				testCollection.reset([
-					{x : '1', y: '2', lon : '-100', lat : '43.0'},
-					{x : '1', y: '3', lon : '-100', lat : '44.0'},
-					{x : '2', y: '3', lon : '-101', lat : '44.0'}
-				]);
-			});
-
-			it('Expects that if selected is not defined for any of the models that false is returned', function() {
-				expect(testCollection.hasSelectedVariables()).toBe(false);
-			});
-
-			it('Expects that if selected is set to false in one of the models and missing in the others that false is returned', function() {
-				testCollection.at(1).set('selected', false);
-
-				expect(testCollection.hasSelectedVariables()).toBe(false);
-			});
-
-			it('Expects that if selected is set to true in one of the models but false elsewhere that true is returned', function() {
-				testCollection.at(0).set('selected', false);
-				testCollection.at(2).set('selected', true);
-
-				expect(testCollection.hasSelectedVariables()).toBe(true);
+				expect(testCollection.at(0).attributes.variables.at(0).attributes.x).toEqual('689');
+				expect(testCollection.at(0).attributes.variables.at(0).attributes.y).toEqual('557');
 			});
 		});
 	});

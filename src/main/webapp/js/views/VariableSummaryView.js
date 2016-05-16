@@ -44,7 +44,6 @@ define([
 		},
 
 		render : function() {
-			this.hasBeenRendered = true;
 			this.context.selectedDatasets = _.map(this.selectedDatasets, function(values, datasetKind) {
 				return {
 					datasetName : datasetKind,
@@ -56,13 +55,62 @@ define([
 			});
 
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
+			this.hasBeenRendered = true;
 			return this;
+		},
+
+		/*
+		 * Helper function for a dataset collection, that sets up the model event listeners for the variables for the selected property,
+		 * using changeSelectedHandlerFnc for the event handler.
+		 * Once these are setup, call changeSelectedHandlerFnc to update the display
+		 * @param {BaseDatasetCollection} collection
+		 * @param {Function} changeSelectedHandlerFnc
+		 */
+		_setupDatasetVariableListeners : function(collection, changeSelectedHandlerFnc) {
+			var self = this;
+
+			collection.each(function(siteModel) {
+				var variableCollection = siteModel.get('variables');
+				variableCollection.each(function(variableModel) {
+					self.listenTo(variableModel, 'change:selected', changeSelectedHandlerFnc);
+				});
+			});
+			_.bind(changeSelectedHandlerFnc, this)();
+		},
+
+		/*
+		 * Helper function to get the list of selected variables for a collection and update the
+		 * selectedDatasets by apply getContextVariable to each selected variable
+		 * @param {BaseDatasetCollection} collection
+		 * @param {String} datasetKind
+		 * @param {Function} getContextVariable - should take a variableModel and siteModel parameters
+		 * @returns {undefined}
+		 */
+		_updateSelectedVariableContext : function(collection, datasetKind, getContextVariable) {
+			var contextVars = [];
+			collection.each(function(siteModel) {
+				var selectedVariables = siteModel.get('variables').getSelectedVariables();
+				_.each(selectedVariables, function(variableModel) {
+					contextVars.push(getContextVariable(variableModel, siteModel));
+				});
+			});
+			this.selectedDatasets[datasetKind] = contextVars;
+
+			if (this.hasBeenRendered) {
+				this.render();
+			}
 		},
 
 		/*
 		 *  Model event listeners and helper functions
 		 */
 
+		/*
+		 *
+		 * @param {WorkflowStateModel} model
+		 * @param {Object, each property represents a dataset} datasetCollections
+		 * @returns {undefined}
+		 */
 		setupDatasetCollectionsListeners : function(model, datasetCollections) {
 			var precipCollection = datasetCollections[Config.PRECIP_DATASET];
 			var nwisCollection = datasetCollections[Config.NWIS_DATASET];
@@ -73,97 +121,59 @@ define([
 			this.setupNWISModelListeners(nwisCollection);
 		},
 
-		setupPrecipModelListeners : function(collection) {
-			collection.each(function(precipModel) {
-				this.listenTo(precipModel, 'change:selected', this.updatePrecipContext);
-			}, this);
-			this._updateSelectedPrecipPoints(collection);
-
-			if (this.hasBeenRendered) {
-				this.render();
-			}
-		},
-
-		setupNWISModelListeners : function(collection) {
-			collection.each(function(nwisModel) {
-				var variableModels = nwisModel.get('variables');
-				variableModels.each(function(variableModel) {
-					this.listenTo(variableModel, 'change:selected', this.updateNWISContext);
-				}, this);
-			}, this);
-			this._updateSelectedNWISVariables(collection);
-
-			if (this.hasBeenRendered) {
-				this.render();
-			}
-		},
-
-		updatePrecipContext : function() {
-			this._updateSelectedPrecipPoints(this.model.get('datasetCollections')[Config.PRECIP_DATASET]);
-			if (this.hasBeenRendered) {
-				this.render();
-			}
-		},
-
-		_updateSelectedPrecipPoints : function(precipCollection) {
-			var isSelected = function(model) {
-				return model.has('selected') && model.get('selected');
-			};
-			var getContextVariable = function(model) {
+		/*
+		 * Updates the selectedDatasets for precipitiation points
+		 */
+		updateSelectedPrecipPoints : function() {
+			var getContextVariable = function(variableModel, precipModel) {
 				return {
-					modelId : model.cid,
-					variableId : model.cid,
-					siteId : (parseFloat(model.attributes.lat)).toFixed(3) + ', ' + (parseFloat(model.attributes.lon)).toFixed(3),
-					startDate : model.attributes.startDate.format(Config.DATE_FORMAT),
-					endDate : model.attributes.endDate.format(Config.DATE_FORMAT),
-					property : model.attributes.y + ':' + model.attributes.x
+					modelId : precipModel.cid,
+					variableId : variableModel.cid,
+					siteId : (parseFloat(precipModel.attributes.lat)).toFixed(3) + ', ' + (parseFloat(precipModel.attributes.lon)).toFixed(3),
+					startDate : variableModel.attributes.startDate.format(Config.DATE_FORMAT),
+					endDate : variableModel.attributes.endDate.format(Config.DATE_FORMAT),
+					property : variableModel.attributes.y + ':' + variableModel.attributes.x
 				};
 			};
-
-			this.selectedDatasets[Config.PRECIP_DATASET] =  precipCollection.chain()
-				.filter(isSelected)
-				.map(getContextVariable)
-				.value();
+			this._updateSelectedVariableContext(this.model.get('datasetCollections')[Config.PRECIP_DATASET], Config.PRECIP_DATASET, getContextVariable);
 		},
 
-		updateNWISContext : function() {
-			this._updateSelectedNWISVariables(this.model.get('datasetCollections')[Config.NWIS_DATASET]);
-			if (this.hasBeenRendered) {
-				this.render();
-			}
+		/*
+		 * Sets up the event listeners for changes in the selected property for each site's variable for the precipitation dataset
+		 * @param {BaseDatasetCollection} collection
+		 */
+		setupPrecipModelListeners : function(collection) {
+			this._setupDatasetVariableListeners(collection, this.updateSelectedPrecipPoints);
 		},
 
-		_updateSelectedNWISVariables : function(nwisCollection) {
-			this.selectedDatasets[Config.NWIS_DATASET] = nwisCollection.reduce(function(memo, nwisModel) {
-				var variableModels = nwisModel.get('variables');
-
-				var isSelected = function(variableModel) {
-					return variableModel.has('selected') && variableModel.get('selected');
+		/*
+		 * Updates the selectedDatasets for NWIS sites
+		 */
+		updateSelectedNWISVariables : function() {
+			var getContextVariable = function(variableModel, nwisModel) {
+				return {
+					modelId : nwisModel.cid,
+					variableId : variableModel.cid,
+					siteId : nwisModel.attributes.siteNo,
+					startDate : variableModel.attributes.startDate.format(Config.DATE_FORMAT),
+					endDate : variableModel.attributes.endDate.format(Config.DATE_FORMAT),
+					property : variableModel.attributes.name
 				};
-				var getContextVariable = function(variableModel) {
-					return {
-						modelId : nwisModel.cid,
-						variableId : variableModel.cid,
-						siteId : nwisModel.attributes.siteNo,
-						startDate : variableModel.attributes.startDate.format(Config.DATE_FORMAT),
-						endDate : variableModel.attributes.endDate.format(Config.DATE_FORMAT),
-						property : variableModel.attributes.name
-					};
-				};
+			};
+			this._updateSelectedVariableContext(this.model.get('datasetCollections')[Config.NWIS_DATASET], Config.NWIS_DATASET, getContextVariable);
+		},
 
-				var selectedVariables = variableModels.chain()
-					.filter(isSelected)
-				   .map(getContextVariable)
-				   .value();
-
-				return memo.concat(selectedVariables);
-		   }, []);
+		/*
+		 * Sets up the event listeners for changes in the selected property for each site's variable for the NWIS dataset
+		 * @param {BaseDatasetCollection} collection
+		 */
+		setupNWISModelListeners : function(collection) {
+			this._setupDatasetVariableListeners(collection, this.updateSelectedNWISVariables);
 		},
 
 		/*
 		 * DOM Event handlers
 		 */
-
 		removeVariable : function(ev) {
 			var $button = $(ev.currentTarget);
 			var id = $button.data('id');

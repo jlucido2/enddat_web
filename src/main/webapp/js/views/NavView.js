@@ -92,8 +92,11 @@ define([
 		updateNavigation : function(model, isRendering) {
 			var stepHasChanged = isRendering ? true : model.hasChanged('step');
 			var newStep = model.get('step');
+			var location = model.get('location');
 
-			var $chooseDataBtn, $processDataBtn, currentStepSelector;
+			var $chooseDataBtn = this.$(this.navSelector[Config.CHOOSE_DATA_FILTERS_STEP]);
+			var $processDataBtn= this.$(this.navSelector[Config.PROCESS_DATA_STEP]);
+			var currentStepSelector;
 
 			if (stepHasChanged) {
 				currentStepSelector = this.navSelector[newStep] + ' a';
@@ -102,10 +105,6 @@ define([
 			}
 			switch(newStep) {
 				case Config.PROJ_LOC_STEP:
-					var location = model.get('location');
-					$chooseDataBtn = this.$(this.navSelector[Config.CHOOSE_DATA_FILTERS_STEP]);
-					$processDataBtn = this.$(this.navSelector[Config.PROCESS_DATA_STEP]);
-
 					if ((location) && _.has(location, 'latitude') && (location.latitude) &&
 						_.has(location, 'longitude') && (location.longitude)) {
 						$chooseDataBtn.removeClass('disabled');
@@ -119,10 +118,14 @@ define([
 					break;
 
 				case Config.CHOOSE_DATA_FILTERS_STEP:
-					$processDataBtn = this.$(this.navSelector[Config.PROCESS_DATA_STEP]);
-					//TODO: We will need to add code to remove the disabled class from the process Data button
-					// when we know what will allow that step.
-					$processDataBtn.addClass('disabled');
+				case Config.CHOOSE_DATA_VARIABLES_STEP:
+					if (model.get('hasSelectedVariables')) {
+						$processDataBtn.removeClass('disabled');
+					}
+					else {
+						$processDataBtn.addClass('disabled');
+					}
+
 					if (model.has('location') &&
 						_.has(model.attributes.location, 'latitude') && (model.attributes.location.latitude) &&
 						_.has(model.attributes.location, 'longitude') && (model.attributes.location.longitude)) {

@@ -35,6 +35,10 @@
 				 	},
 					'models/PrecipitationCollection' : {
 						'precipWFSGetFeatureUrl' : '<%=precipWFSGetFeatureUrl%>',
+						'cidaThreddsPrecipData' : '<%=cidaThreddsPrecipData%>'
+					},
+					'views/ProcessDataView' : {
+						'baseUrl' : '<%=baseUrl%>'
 					}
 				},
 				baseUrl: "<%=baseUrl%>/js/",

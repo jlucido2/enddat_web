@@ -14,16 +14,18 @@ define([
 		var injector;
 		var WorkflowStateModel, testModel;
 
-		var fetchPrecipSpy, resetPrecipSpy ;
-		var fetchSiteSpy, resetSiteSpy;
+		var fetchPrecipSpy, resetPrecipSpy, hasSelectedVarsPrecipSpy;
+		var fetchSiteSpy, resetSiteSpy, hasSelectedVarsSiteSpy;
 		var fetchPrecipDeferred, fetchSiteDeferred;
 
 		beforeEach(function(done) {
 			fetchPrecipSpy = jasmine.createSpy('fetchPrecipSpy');
 			resetPrecipSpy = jasmine.createSpy('resetPrecipSpy');
+			hasSelectedVarsPrecipSpy = jasmine.createSpy('hasSelectedVarsPrecipSpy');
 
 			fetchSiteSpy = jasmine.createSpy('fetchSiteSpy');
 			resetSiteSpy = jasmine.createSpy('resetSiteSpy');
+			hasSelectedVarsSiteSpy = jasmine.createSpy('hasSelectedVarsSiteSpy');
 
 			fetchPrecipDeferred = $.Deferred();
 			fetchSiteDeferred = $.Deferred();
@@ -32,11 +34,13 @@ define([
 
 			injector.mock('models/PrecipitationCollection', Backbone.Collection.extend({
 				fetch : fetchPrecipSpy.and.returnValue(fetchPrecipDeferred.promise()),
-				reset : resetPrecipSpy
+				reset : resetPrecipSpy,
+				hasSelectedVariables : hasSelectedVarsPrecipSpy
 			}));
 			injector.mock('models/NWISCollection', Backbone.Collection.extend({
 				fetch : fetchSiteSpy.and.returnValue(fetchSiteDeferred.promise()),
-				reset : resetSiteSpy
+				reset : resetSiteSpy,
+				hasSelectedVariables : hasSelectedVarsSiteSpy
 			}));
 			injector.mock('utils/geoSpatialUtils', geoSpatialUtils);
 			spyOn(geoSpatialUtils, 'getBoundingBox').and.returnValue({
@@ -65,7 +69,7 @@ define([
 			expect(testModel.attributes.datasetCollections[Config.PRECIP_DATASET]).toBeDefined();
 		});
 
-		describe('Tests for event handlers to update the datasets', function() {
+		describe('Tests for model event handlers to update the datasets', function() {
 			var updateStartSpy, updateFinishedSpy;
 			beforeEach(function() {
 				updateStartSpy = jasmine.createSpy('updateStartSpy');
@@ -209,8 +213,8 @@ define([
 				testModel.set('location', {latitude : '43.0', longitude : '-100.0'});
 				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
 
-				expect(testModel.get('radius')).toEqual(testModel.DEFAULT_CHOOSE_DATA_RADIUS);
-				expect(testModel.get('datasets')).toEqual(testModel.DEFAULT_CHOSEN_DATASETS);
+				expect(testModel.get('radius')).toEqual(2);
+				expect(testModel.get('datasets')).toEqual(['NWIS']);
 			});
 
 			it('Expects that if the step changes to CHOOSE_DATA_FILTERS_STEP and the previous step was PROJ_LOC_STEP, the chosen datasets are fetched', function() {
@@ -222,6 +226,20 @@ define([
 
 				expect(fetchPrecipSpy).not.toHaveBeenCalled();
 				expect(fetchSiteSpy).toHaveBeenCalled();
+			});
+
+			it('Expects that if the step changes from CHOOSE_DATA_VARIABLES_STEP to PROCESS_DATA_STEP, the defaults for the processing step are set', function() {
+				spyOn(testModel, 'getSelectedVarsDateRange').and.returnValue({
+					start : moment('01-01-2010', Config.DATE_FORMAT),
+					end : moment('05-01-2015', Config.DATE_FORMAT)
+				});
+				testModel.set('step', Config.CHOOSE_DATA_VARIABLES_STEP);
+				testModel.set('step', Config.PROCESS_DATA_STEP);
+
+				expect(testModel.has('outputDateRange')).toBe(true);
+				expect(testModel.has('outputFileFormat')).toBe(true);
+				expect(testModel.has('outputTimeGapInterval')).toBe(true);
+				expect(testModel.has('outputDateFormat')).toBe(true);
 			});
 		});
 

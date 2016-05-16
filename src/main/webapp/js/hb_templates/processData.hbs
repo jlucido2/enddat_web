@@ -1,0 +1,9 @@
+{{#if hasOverlappingData }}
+	<div class ="op-buttons-container">
+		<button class="btn btn-info show-url-btn" type="button">Show data processing url</button>
+		<button class="btn btn-primary get-data-btn" type="button">Get data (opens new tab)</button>
+	</div>
+	<div class="url-container"></div>
+{{else}}
+	<div class="error-warning">Unable to process data because there are no overlapping times in selected variables.</div>
+{{/if}}

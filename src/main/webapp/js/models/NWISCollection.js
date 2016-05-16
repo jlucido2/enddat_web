@@ -4,12 +4,12 @@ define([
 	'jquery',
 	'underscore',
 	'moment',
-	'backbone',
 	'loglevel',
 	'module',
 	'models/BaseDatasetCollection',
+	'models/NWISVariableCollection',
 	'utils/rdbUtils'
-], function ($, _, moment, Backbone, log, module, BaseDatasetCollection, rdbUtils) {
+], function ($, _, moment, log, module, BaseDatasetCollection, NWISVariableCollection, rdbUtils) {
 	"use strict";
 
 	var parameterCodesPath = module.config().parameterCodesPath;
@@ -84,7 +84,7 @@ define([
 								else {
 									name += ' ' + statCd;
 								}
-
+								// We are putting the siteNo in the variables collection as it is needed when forming url parameters
 								return {
 									name : name,
 									parameterCd : variable.parm_cd,
@@ -110,7 +110,7 @@ define([
 								lon : siteParameterData[0].dec_long_va,
 								startDate : moment.min(startDates),
 								endDate : moment.max(endDates),
-								variables : new Backbone.Collection(variables)
+								variables : new NWISVariableCollection(variables)
 							};
 							return result;
 						});
@@ -135,21 +135,7 @@ define([
 			});
 			return sitesDeferred.promise();
 		},
-
-		/*
-		 * @returns {Boolean} if any of the nwis sites in the collection have variables that have
-		 * the selected property set to true.
-		 */
-		hasSelectedVariables : function() {
-			var isSelected = function(variableModel) {
-				return variableModel.has('selected') && variableModel.get('selected');
-			};
-			return this.some(function(model) {
-				return model.has('variables') && model.get('variables').some(isSelected);
-			});
-
-		},
-
+		
 		/*
 		 * Retrieves the parameter codes and set the parameterCodes property on the collection. If
 		 * the fetch fails the parameterCodes property is assigned undefined.

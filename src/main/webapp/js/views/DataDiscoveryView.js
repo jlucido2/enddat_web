@@ -11,8 +11,10 @@ define([
 	'views/LocationView',
 	'views/ChooseView',
 	'views/VariableSummaryView',
+	'views/ProcessDataView',
 	'hbs!hb_templates/dataDiscovery'
-], function (_, Config, $utils, BaseView, NavView, AlertView, MapView, LocationView, ChooseView, VariableSummaryView, hbTemplate) {
+], function (_, Config, $utils, BaseView, NavView, AlertView, MapView, LocationView, ChooseView,
+		VariableSummaryView, ProcessDataView, hbTemplate) {
 	"use strict";
 
 	var NAVVIEW_SELECTOR = '.workflow-nav';
@@ -20,6 +22,7 @@ define([
 	var CHOOSE_SELECTOR = '.choose-panel';
 	var MAPVIEW_SELECTOR = '.map-container-div';
 	var VARIABLE_SUMMARY_SELECTOR = '.variable-summary-container';
+	var PROCESS_DATA_SELECTOR = '.process-data-container';
 	var ALERTVIEW_SELECTOR = '.alert-container';
 	var LOADING_SELECTOR = '.loading-indicator';
 
@@ -81,6 +84,9 @@ define([
 			if (this.variableSummaryView) {
 				this.variableSummaryView.remove();
 			}
+			if (this.processDataView) {
+				this.processDataView.remove();
+			}
 			BaseView.prototype.remove.apply(this, arguments);
 			return this;
 		},
@@ -123,6 +129,10 @@ define([
 						this.variableSummaryView.remove();
 						this.variableSummaryView = undefined;
 					}
+					if (this.processDataView) {
+						this.processDataView.remove();
+						this.processDataView = undefined;
+					}
 					break;
 
 				case Config.CHOOSE_DATA_FILTERS_STEP:
@@ -158,12 +168,54 @@ define([
 						});
 						this.variableSummaryView.render();
 					}
+					if (this.processDataView) {
+						this.processDataView.remove();
+						this.processDataView = undefined;
+					}
+
+					this.variableSummaryView.expand();
+
 					break;
 
 				case Config.CHOOSE_DATA_VARIABLES_STEP:
+					// You can only get to this step from CHOOSE_DATA_FILTER_STEP
 					if (prevStep === Config.CHOOSE_DATA_FILTERS_STEP) {
 						this.locationView.collapse();
 						this.chooseView.collapse();
+					}
+					break;
+
+				case Config.PROCESS_DATA_STEP:
+					if (!this.processDataView) {
+						this.processDataView = new ProcessDataView({
+							el : $utils.createDivInContainer(this.$(PROCESS_DATA_SELECTOR)),
+							model : model,
+							opened : true
+						});
+						this.processDataView.render();
+					}
+					if (!this.variableSummaryView) {
+						this.variableSummaryView = new VariableSummaryView({
+							el : $utils.createDivInContainer(this.$(VARIABLE_SUMMARY_SELECTOR)),
+							model : model,
+							opened : false
+						});
+					}
+					else {
+						this.variableSummaryView.collapse();
+					}
+
+					if (this.locationView) {
+						this.locationView.remove();
+						this.locationView = undefined;
+					}
+					if (this.chooseView) {
+						this.chooseView.remove();
+						this.chooseView = undefined;
+					}
+					if (this.mapView) {
+						this.mapView.remove();
+						this.mapView = undefined;
 					}
 
 			}

@@ -4,10 +4,12 @@ define([
 	'loglevel',
 	'module',
 	'jquery',
+	'underscore',
 	'moment',
 	'models/BaseDatasetCollection',
+	'models/PrecipitationVariableCollection',
 	'utils/jqueryUtils'
-], function(log, module, $, moment, BaseDatasetCollection, $utils) {
+], function(log, module, $, _, moment, BaseDatasetCollection, PrecipitationVariableCollection, $utils) {
 	"use strict";
 
 	var getInteger = function(str) {
@@ -15,13 +17,22 @@ define([
 	};
 
 	var START_DATE = moment('2002-01-01', 'YYYY-MM-DD');
+	var GET_FEATURE_URL = module.config().precipWFSGetFeatureUrl;
+	var PRECIP_DATA_DDS_URL = 'cidathredds/' + module.config().cidaThreddsPrecipData + '.dds';
+
+	var getTimeBounds = function(ddsText) {
+		var lines = ddsText.split('\n');
+		var timeBoundsLine = lines[5];
+		var timeBounds = /(\d+])/.exec(timeBoundsLine)[0];
+		return timeBounds.replace(/]/, '');
+	};
 
 	var collection = BaseDatasetCollection.extend({
 
-		url : module.config().precipWFSGetFeatureUrl,
-
 		/*
-		 * Parse the {Document} and returns a json object which can be used to create the collection.
+		 * Parse the xml document and returns a json object which can be used to create the collection.
+		 * Each precipitation site represents a single variable so the variables property will
+		 * contain a collection with a single model.
 		 * @param {Document} xml
 		 * @returns {Array of Objects}
 		 */
@@ -32,12 +43,16 @@ define([
 				var $this = $(this);
 
 				result.push({
-					x : getInteger($utils.xmlFind($this, 'sb', 'x').text()),
-					y : getInteger($utils.xmlFind($this, 'sb', 'y').text()),
 					lon : $utils.xmlFind($this, 'sb', 'X1').text(),
 					lat : $utils.xmlFind($this, 'sb', 'X2').text(),
-					startDate : START_DATE,
-					endDate : today
+					variables : new PrecipitationVariableCollection([
+						{
+							x : getInteger($utils.xmlFind($this, 'sb', 'x').text()),
+							y : getInteger($utils.xmlFind($this, 'sb', 'y').text()),
+							startDate : START_DATE,
+							endDate : today
+						}
+					])
 				});
 			});
 			return result;
@@ -45,49 +60,76 @@ define([
 
 		/*
 		 * Fetches the precipitation grid data for the specified bounding box and updates the collection contents.
-		 * If the fetch fails the collection is reset
+		 * If the fetch fails the collection is reset. The .dds document is also fetched using the precipitation service
+		 * to determine the time_bounds parameter
 		 * @param {Object} boundingBox - west, east, north, and south properties
 		 * @returns a promise. Both rejected and resolved return the original jqXHR
 		 */
 		fetch : function (boundingBox) {
 			var self = this;
+			var fetchSiteDataDeferred = $.Deferred();
+			var fetchDDSDeferred = $.Deferred();
 			var fetchDeferred = $.Deferred();
+			var parsedXML;
 
 			$.ajax({
-				url : this.url,
+				url : GET_FEATURE_URL,
 				data : {
 					srsName : 'EPSG:4269',
 					bbox : [boundingBox.south, boundingBox.west, boundingBox.north, boundingBox.east].join(',')
 				},
 				success : function(xml, textStatus, jqXHR) {
 					if ($utils.xmlFind($(xml), 'ows', 'ExceptionReport').length > 0) {
-						log.debug('Precipitation fetch failed with Exception from service');
-						self.reset([]);
-						fetchDeferred.reject(jqXHR);
+						log.debug('Precipitation GetFeature fetch failed with Exception from service');
+						fetchSiteDataDeferred.reject(jqXHR);
 					}
 					else {
-						self.reset(self.parse(xml));
+						parsedXML = self.parse(xml);
 						log.debug('Precipitation fetch succeeded, fetched ' + self.size() + ' grid');
-						fetchDeferred.resolve(jqXHR);
+						fetchSiteDataDeferred.resolve(jqXHR);
 					}
 				},
 				error : function(jqXHR) {
-					log.debug('Precipitation fetch failed');
-					self.reset([]);
-					fetchDeferred.reject(jqXHR);
+					log.debug('Precipitation GetFeature fetch failed');
+					fetchSiteDataDeferred.reject(jqXHR);
 				}
 			});
+
+			$.ajax({
+				url : PRECIP_DATA_DDS_URL,
+				success : function (response, textStatus, jqXHR) {
+					self.timeBounds = getTimeBounds(response);
+					fetchDDSDeferred.resolve(jqXHR);
+				},
+				error : function(jqXHR) {
+					log.debug('Unable to retrieve the precipitation service\'s dds');
+					fetchDDSDeferred.reject(jqXHR);
+				}
+			});
+
+			$.when(fetchSiteDataDeferred, fetchDDSDeferred)
+				.done(function() {
+					self.reset(parsedXML);
+					fetchDeferred.resolve();
+				})
+				.fail(function() {
+					self.reset([]);
+					fetchDeferred.reject();
+				});
 
 			return fetchDeferred.promise();
 		},
 
 		/*
-		 * @returns {Boolean} - True if any of the precipitation models contain a selected variable
+		 * @override
+		 * Need to pass the collection's timeBounds attribute to the getSelectedUrlParams method.
 		 */
-		hasSelectedVariables : function() {
-			return this.some(function(model) {
-				return model.has('selected') && model.get('selected');
-			});
+		getSelectedVariablesUrlParams : function() {
+			var params = [];
+			params = this.map(function(siteModel) {
+				return siteModel.get('variables').getSelectedUrlParams(this.timeBounds);
+			}, this);
+			return _.flatten(params);
 		}
 	});
 

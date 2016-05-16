@@ -277,6 +277,18 @@ define([
 				expect(testView.$(chooseDataSel).hasClass('disabled')).toBe(false);
 				expect(testView.$(processDataSel).hasClass('disabled')).toBe(true);
 			});
+
+			it('Expects that if the steop is CHOOSE_DATA_VARIABLES_STEP and the hasSelectedVariables is changed to true, the process data button in enabled', function() {
+				var processDataBtn = testView.$(processDataSel);
+				testModel.set('location', {latitude: 43.0, longitude : -100.0});
+				testModel.set('step', Config.CHOOSE_DATA_VARIABLES_STEP);
+
+				expect(processDataBtn.hasClass('disabled')).toBe(true);
+
+				testModel.set('hasSelectedVariables', true);
+
+				expect(processDataBtn.hasClass('disabled')).toBe(false);
+			});
 		});
 	});
 });

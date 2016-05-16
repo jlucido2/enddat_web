@@ -3,21 +3,32 @@
 define([
 	'underscore',
 	'jquery',
+	'moment',
 	'backbone',
 	'Config',
 	'utils/geoSpatialUtils',
 	'models/NWISCollection',
 	'models/PrecipitationCollection'
-], function(_, $, Backbone, Config, geoSpatialUtils, NWISCollection, PrecipitationCollection) {
+], function(_, $, moment, Backbone, Config, geoSpatialUtils, NWISCollection, PrecipitationCollection) {
 	"use strict";
 
+	var DEFAULT_CHOOSE_DATA_RADIUS = 2;
+	var DEFAULT_CHOSEN_DATASETS = ['NWIS'];
+
+	// Defaults for processing step
+	var DEFAULT_TIME_INTERVAL = 6;
+	var DEFAULT_TIME_ZONE = '0_GMT';
+	var DEFAULT_PROCESSING_TIME_RANGE_FROM_LATEST = 30; // Days after the latest selected variable's data.
+	var DEFAULT_OUTPUT_DATE_FORMAT = 'Excel';
+	var DEFAULT_OUTPUT_FORMAT = 'tab';
+
 	var model = Backbone.Model.extend({
-		DEFAULT_CHOOSE_DATA_RADIUS : 2,
-		DEFAULT_CHOSEN_DATASETS : ['NWIS'],
+
 
 		defaults : function() {
 			return {
-				step : 'unknown'
+				step : 'unknown',
+				hasSelectedVariables : false
 			};
 		},
 
@@ -79,6 +90,20 @@ define([
 			return result;
 		},
 
+		/*
+		 * @returns {Array of Objects with name and value properties to be used to form the url parameters for
+		 *		processing requests}
+		 */
+		getSelectedVariablesUrlParams : function() {
+			var datasetCollections = this.get('datasetCollections');
+
+			return _.chain(datasetCollections)
+				.map(function(datasetCollection) {
+					return datasetCollection.getSelectedVariablesUrlParams();
+				})
+				.flatten()
+				.value();
+		},
 
 		/*
 		 * Model event handlers
@@ -122,6 +147,8 @@ define([
 		 */
 		updateModelState : function() {
 			var previousStep = this.previous('step');
+			var dateRange;
+			var outputDateRange = undefined;
 
 			switch(this.get('step')) {
 				case Config.PROJ_LOC_STEP:
@@ -140,11 +167,54 @@ define([
 				case Config.CHOOSE_DATA_FILTERS_STEP:
 					if (previousStep === Config.PROJ_LOC_STEP) {
 						this.initializeDatasetCollections();
-						this.set('datasets', this.DEFAULT_CHOSEN_DATASETS);
-						this.set('radius', this.DEFAULT_CHOOSE_DATA_RADIUS);
+						this.set('datasets', DEFAULT_CHOSEN_DATASETS);
+						this.set('radius', DEFAULT_CHOOSE_DATA_RADIUS);
 					}
 					break;
+
+				case Config.PROCESS_DATA_STEP:
+					dateRange = this.getSelectedVarsDateRange();
+					if (dateRange) {
+						outputDateRange = {
+							start : moment.max(dateRange.start, dateRange.end.clone().subtract(DEFAULT_PROCESSING_TIME_RANGE_FROM_LATEST, 'days')),
+							end : dateRange.end
+						}
+					}
+					this.set({
+						outputFileFormat : DEFAULT_OUTPUT_FORMAT,
+						outputTimeZone : DEFAULT_TIME_ZONE,
+						outputTimeGapInterval : DEFAULT_TIME_INTERVAL,
+						outputDateFormat : DEFAULT_OUTPUT_DATE_FORMAT,
+						outputDateRange : outputDateRange
+					});
 			}
+		},
+
+		/*
+		 *
+		 * @returns {Object with start and end properties}. Returns undefined if there is no valid date range
+		 */
+		//TODO: This will probably change to returning the union of the date ranges rather than intersection so
+		//not writing any tests for this at the moment.
+		getSelectedVarsDateRange : function() {
+			var datasetCollections = this.get('datasetCollections');
+			var datasetDateRanges =
+				_.chain(datasetCollections)
+					.map(function(datasetCollection) {
+						return datasetCollection.getSelectedOverlappingDateRange();
+					})
+					.filter(function(dateRange) {
+						return (dateRange);
+					})
+					.value();
+			var result = undefined;
+			if (datasetDateRanges.length > 0) {
+				result = {
+					start : moment.max(_.pluck(datasetDateRanges, 'start')),
+					end : moment.min(_.pluck(datasetDateRanges, 'end'))
+				};
+			}
+			return result;
 		},
 
 		/*
@@ -161,6 +231,12 @@ define([
 				var donePromise = $.Deferred();
 				datasetCollection.fetch(boundingBox)
 					.done(function() {
+						/* set up event handlers to update hasSelectedVariables */
+						datasetCollection.each(function(siteModel) {
+							siteModel.get('variables').each(function(variableModel) {
+								variableModel.on('change:selected', self.updateHasSelectedVariables, self);
+							});
+						});
 						donePromise.resolve();
 					})
 					.fail(function() {
@@ -193,6 +269,16 @@ define([
 			_.each(datasetsToClear, function(datasetCollection) {
 				datasetCollection.reset();
 			});
+		},
+
+		/*
+		 * Model event handler for dataset collection variables selected change handler.
+		 */
+		updateHasSelectedVariables : function() {
+			var hasSelectedVariables = _.some(this.get('datasetCollections'), function(datasetCollection) {
+				return datasetCollection.hasSelectedVariables();
+			});
+			this.set('hasSelectedVariables', hasSelectedVariables);
 		}
 	});
 

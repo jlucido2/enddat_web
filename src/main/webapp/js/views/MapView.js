@@ -269,7 +269,7 @@ define([
 			var $mapDiv = this.$('#' + self.mapDivId);
 
 			var siteCollection = this.model.get('datasetCollections')[datasetKind];
-			var filteredSiteModels = siteCollection.getModelsWithinDateFilter(this.model.get('startDate'), this.model.get('endDate'));
+			var filteredSiteModels = siteCollection.getSiteModelsWithinDateFilter(this.model.get('startDate'), this.model.get('endDate'));
 
 			var moveCircleMarker = function(latLng) {
 				if (self.circleMarker) {

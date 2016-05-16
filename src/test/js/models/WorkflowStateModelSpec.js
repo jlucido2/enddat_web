@@ -323,8 +323,8 @@ define([
 			});
 
 			it('Expects that if the datasetCollections contain no selected data variables, then undefined is returned', function() {
-				testModel.set('datasetCollections', [
-					new BaseDatasetCollection([
+				testModel.set('datasetCollections', {
+					NWIS : new BaseDatasetCollection([
 						{variables : new BaseVariableCollection([
 								{startDate : moment('2001-01-04', Config.DATE_FORMAT), endDate : moment('2007-01-04', Config.DATE_FORMAT)},
 								{startDate : moment('2003-04-03', Config.DATE_FORMAT), endDate : moment('2012-01-04', Config.DATE_FORMAT)}
@@ -333,20 +333,20 @@ define([
 								{startDate : moment('2006-01-04', Config.DATE_FORMAT), endDate : moment('2008-01-04', Config.DATE_FORMAT)}
 						])}
 					]),
-					new BaseDatasetCollection([
+					PRECIP : new BaseDatasetCollection([
 						{variables : new BaseVariableCollection([
 							{startDate : moment('1998-01-04', Config.DATE_FORMAT), endDate : moment('2009-01-04', Config.DATE_FORMAT)}
 						])}
 					])
-				]);
+				});
 
 				expect(testModel.getSelectedVarsDateRange()).toBeUndefined();
 			});
 
 			it('Expects that if the datasetCollections contain selected data variables, the date range returned is the union of the selected variables date range', function() {
 				var result;
-				testModel.set('datasetCollections', [
-					new BaseDatasetCollection([
+				testModel.set('datasetCollections', {
+					NWIS : new BaseDatasetCollection([
 						{variables : new BaseVariableCollection([
 								{selected : true, startDate : moment('2001-01-04', Config.DATE_FORMAT), endDate : moment('2007-11-04', Config.DATE_FORMAT)},
 								{startDate : moment('2003-04-03', Config.DATE_FORMAT), endDate : moment('2012-01-04', Config.DATE_FORMAT)}
@@ -355,12 +355,12 @@ define([
 								{selected : true, startDate : moment('2006-01-04', Config.DATE_FORMAT), endDate : moment('2008-01-04', Config.DATE_FORMAT)}
 						])}
 					]),
-					new BaseDatasetCollection([
+					PRECIP : new BaseDatasetCollection([
 						{variables : new BaseVariableCollection([
-							{selected : true,startDate : moment('1998-01-04', Config.DATE_FORMAT), endDate : moment('2007-01-04', Config.DATE_FORMAT)}
+							{selected : true, startDate : moment('1998-01-04', Config.DATE_FORMAT), endDate : moment('2007-01-04', Config.DATE_FORMAT)}
 						])}
 					])
-				]);
+				});
 				result = testModel.getSelectedVarsDateRange();
 
 				expect(result.start.format(Config.DATE_FORMAT)).toEqual('1998-01-04');

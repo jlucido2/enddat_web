@@ -173,19 +173,12 @@ define([
 					break;
 
 				case Config.PROCESS_DATA_STEP:
-					dateRange = this.getSelectedVarsDateRange();
-					if (dateRange) {
-						outputDateRange = {
-							start : moment.max(dateRange.start, dateRange.end.clone().subtract(DEFAULT_PROCESSING_TIME_RANGE_FROM_LATEST, 'days')),
-							end : dateRange.end
-						}
-					}
 					this.set({
 						outputFileFormat : DEFAULT_OUTPUT_FORMAT,
 						outputTimeZone : DEFAULT_TIME_ZONE,
 						outputTimeGapInterval : DEFAULT_TIME_INTERVAL,
 						outputDateFormat : DEFAULT_OUTPUT_DATE_FORMAT,
-						outputDateRange : outputDateRange
+						outputDateRange : this.getSelectedVarsDateRange()
 					});
 			}
 		},
@@ -197,11 +190,11 @@ define([
 		getSelectedVarsDateRange : function() {
 			var result = undefined;
 			var dateRanges;
-			var datasetCollections = (this.has('datasetCollections')) ? this.get('datasetCollections') : [];
-			if (datasetCollections.length > 0) {
+			var datasetCollections = (this.has('datasetCollections')) ? this.get('datasetCollections') : {};
+			if (!_.isEmpty(datasetCollections)) {
 				dateRanges = _.chain(datasetCollections)
-					.map(function(datasetModel) {
-						return datasetModel.getSelectedDateRange();
+					.map(function(datasetCollection) {
+						return datasetCollection.getSelectedDateRange();
 					})
 					.filter(function(dateRange) {
 						return (dateRange);

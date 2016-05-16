@@ -1,4 +1,4 @@
-/* jslint browser */
+/* jslint browser: true */
 
 define([
 	'jquery',
@@ -29,6 +29,12 @@ define([
 			$.param(params.concat(varParams));
 	};
 
+	/*
+	 * @constructs
+	 * @param {Object} options
+	 *		@prop {Jquery selector or element} el
+	 *		@prop {models/WorkflowStateModel}
+	 */
 	var view = BaseCollapsiblePanelView.extend({
 		template : hbTemplate,
 
@@ -47,10 +53,6 @@ define([
 			var selectedVarsDateRange = this.model.getSelectedVarsDateRange();
 			var outputDateRange = this.model.get('outputDateRange');
 
-			//this.context = {
-			//	startDate : this.model.attributes.outputDateRange.start.format(Config.DATE_FORMAT),
-			//	endDate : this.model.attributes.outputDateRange.end.format(Config.DATE_FORMAT)
-			//};
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
 
 			//Set up date pickers
@@ -78,14 +80,13 @@ define([
 		 */
 
 		updateOutputDateRangeInputs : function(model, outputDateRange) {
-			var $startDate = this.$('output-start-date-div');
-			var $endDate = this.$('output-end-date-div');
+			var $startDate = this.$('#output-start-date-div');
+			var $endDate = this.$('#output-end-date-div');
 
 			$startDate.data('DateTimePicker').maxDate(outputDateRange.end);
-			$endDate.data('DateTimePickers').minDate(outputDateRange.start);
-
-			$startDate.find('#output-start-date').val(outputDateRange.start);
-			$startDate.find('#output-end-date').val(outputDateRange.end);
+			$startDate.data('DateTimePicker').date(outputDateRange.start);
+			$endDate.data('DateTimePicker').minDate(outputDateRange.start);
+			$endDate.data('DateTimePicker').date(outputDateRange.end);
 		},
 
 		/*

@@ -9,7 +9,7 @@ define([
 ], function(moment, _, BaseDatasetCollection, BaseVariableCollection) {
 	"use strict";
 
-	fdescribe('models/BaseDatasetCollection', function() {
+	describe('models/BaseDatasetCollection', function() {
 
 		var DATE_FORMAT = 'MM-DD-YYYY';
 

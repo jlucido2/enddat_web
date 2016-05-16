@@ -191,28 +191,28 @@ define([
 		},
 
 		/*
-		 *
-		 * @returns {Object with start and end properties}. Returns undefined if there is no valid date range
+		 * Returns the union of the selected data variables date range
+		 * @returns {Object with start and end properties}. Returns undefined if there are no selected variables
 		 */
-		//TODO: This will probably change to returning the union of the date ranges rather than intersection so
-		//not writing any tests for this at the moment.
 		getSelectedVarsDateRange : function() {
-			var datasetCollections = this.get('datasetCollections');
-			var datasetDateRanges =
-				_.chain(datasetCollections)
-					.map(function(datasetCollection) {
-						return datasetCollection.getSelectedOverlappingDateRange();
+			var result = undefined;
+			var dateRanges;
+			var datasetCollections = (this.has('datasetCollections')) ? this.get('datasetCollections') : [];
+			if (datasetCollections.length > 0) {
+				dateRanges = _.chain(datasetCollections)
+					.map(function(datasetModel) {
+						return datasetModel.getSelectedDateRange();
 					})
 					.filter(function(dateRange) {
 						return (dateRange);
 					})
 					.value();
-			var result = undefined;
-			if (datasetDateRanges.length > 0) {
-				result = {
-					start : moment.max(_.pluck(datasetDateRanges, 'start')),
-					end : moment.min(_.pluck(datasetDateRanges, 'end'))
-				};
+				if (dateRanges.length > 0) {
+					result = {
+						start : moment.min(_.pluck(dateRanges, 'start')),
+						end : moment.max(_.pluck(dateRanges, 'end'))
+					};
+				}
 			}
 			return result;
 		},

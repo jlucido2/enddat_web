@@ -31,7 +31,9 @@ define([
 			'select2:unselect #datasets-select' : 'resetDataset',
 			// To set the model value from a datetimepicker, handle the event of the input's div
 			'dp.change #start-date-div' : 'changeStartDate',
-			'dp.change #end-date-div' : 'changeEndDate'
+			'dp.change #end-date-div' : 'changeEndDate',
+			'change #start-date' : 'changeStartDateInput',
+			'change #end-date' : 'changeEndDateInput'
 		},
 
 		bindings : {
@@ -84,17 +86,14 @@ define([
 		},
 
 		updateStartDate : function() {
-			var startDate = (this.model.has('startDate')) ? this.model.get('startDate') : '';
-			var newValue = (startDate) ? startDate.format(Config.DATE_FORMAT) : '';
+			var startDate = (this.model.has('startDate') && (this.model.attributes.startDate)) ? this.model.attributes.startDate : null;
 
-			this.$('#start-date').val(newValue);
+			this.$('#start-date-div').data('DateTimePicker').date(startDate);
 		},
 
 		updateEndDate : function() {
-			var endDate = (this.model.has('endDate')) ? this.model.get('endDate') : '';
-			var newValue = (endDate) ? endDate.format(Config.DATE_FORMAT) : '';
-
-			this.$('#end-date').val(newValue);
+			var endDate = (this.model.has('endDate')  && (this.model.attributes.endDate)) ? this.model.attributes.endDate : null;
+			this.$('#end-date-div').data('DateTimePicker').date(endDate);
 		},
 
 		/*
@@ -113,6 +112,14 @@ define([
 				return (ev.params.data.id === datasetKind);
 			});
 			this.model.set('datasets', datasets);
+		},
+
+		changeStartDateInput : function(ev) {
+			console.log('In changeStartDateInput');
+		},
+
+		changeEndDateInput : function(ev) {
+			console.log('In changeEndDateInput');
 		},
 
 		changeStartDate : function(ev) {

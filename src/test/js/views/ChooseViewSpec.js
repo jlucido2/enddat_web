@@ -111,8 +111,8 @@ define([
 				testView.render();
 				$rad = $testDiv.find('#radius');
 				$datasets = $testDiv.find('#datasets-select');
-				$startDate = $testDiv.find('#start-date');
-				$endDate = $testDiv.find('#end-date');
+				$startDate = $testDiv.find('#start-date-div');
+				$endDate = $testDiv.find('#end-date-div');
 			});
 
 			it('Expects that if the model\'s radius property is updated the radius field is updated', function() {
@@ -128,18 +128,18 @@ define([
 
 			it('Expects that when the model\'s startDate property is updated, the start date field is updated', function() {
 				testModel.set('startDate', moment('2004-04-01', DATE_FORMAT));
-				expect($startDate.val()).toEqual('2004-04-01');
+				expect($startDate.data('DateTimePicker').date().format(DATE_FORMAT)).toEqual('2004-04-01');
 
 				testModel.set('startDate', '');
-				expect($startDate.val()).toEqual('');
+				expect($startDate.data('DateTimePicker').date()).toEqual(null);
 			});
 
 			it('Expects that when the model\'s endDate property is updated, the end date field is updated', function() {
 				testModel.set('endDate', moment('2004-04-01', DATE_FORMAT));
-				expect($endDate.val()).toEqual('2004-04-01');
+				expect($endDate.data('DateTimePicker').date().format(DATE_FORMAT)).toEqual('2004-04-01');
 
 				testModel.set('endDate', '');
-				expect($endDate.val()).toEqual('');
+				expect($endDate.data('DateTimePicker').date()).toEqual(null);
 			});
 		});
 	});

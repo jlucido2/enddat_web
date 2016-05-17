@@ -1,4 +1,5 @@
 /* jslint browser: true */
+/* global parseFloat */
 
 define([
 	'underscore',
@@ -227,8 +228,8 @@ define([
 
 		_filterMsg : function() {
 			var state = this.model.attributes;
-			var latitude = (_.has(state, 'location') && _.has(state.location, 'latitude')) ? state.location.latitude : '';
-			var longitude = (_.has(state, 'location') && _.has(state.location, 'longitude')) ? state.location.longitude : '';
+			var latitude = (_.has(state, 'location') && _.has(state.location, 'latitude')) ? parseFloat(state.location.latitude).toFixed(3) : '';
+			var longitude = (_.has(state, 'location') && _.has(state.location, 'longitude')) ? parseFloat(state.location.longitude).toFixed(3) : '';
 
 			var radius = (state.radius) ? state.radius : '';
 			var startDate = (state.startDate) ? state.startDate.format(Config.DATE_FORMAT) : '';

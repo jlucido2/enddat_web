@@ -31,9 +31,7 @@ define([
 			'select2:unselect #datasets-select' : 'resetDataset',
 			// To set the model value from a datetimepicker, handle the event of the input's div
 			'dp.change #start-date-div' : 'changeStartDate',
-			'dp.change #end-date-div' : 'changeEndDate',
-			'change #start-date' : 'changeStartDateInput',
-			'change #end-date' : 'changeEndDateInput'
+			'dp.change #end-date-div' : 'changeEndDate'
 		},
 
 		bindings : {
@@ -112,14 +110,6 @@ define([
 				return (ev.params.data.id === datasetKind);
 			});
 			this.model.set('datasets', datasets);
-		},
-
-		changeStartDateInput : function(ev) {
-			console.log('In changeStartDateInput');
-		},
-
-		changeEndDateInput : function(ev) {
-			console.log('In changeEndDateInput');
 		},
 
 		changeStartDate : function(ev) {

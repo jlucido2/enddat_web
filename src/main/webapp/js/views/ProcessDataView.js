@@ -126,8 +126,10 @@ define([
 		},
 
 		showUrl : function(ev) {
+			var url = getUrl(this.model);
+			var $link = this.$('.url-container a');
 			ev.preventDefault();
-			this.$('.url-container').html(getUrl(this.model));
+			$link.attr('href', url).html(url);
 		},
 
 		getData : function(ev) {

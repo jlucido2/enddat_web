@@ -15,8 +15,8 @@ define([
 				var varAttrs = model.attributes;
 				return {
 					name : 'NWIS',
-					value : siteAttributes.siteNo + ':' + varAttrs.parameterCd + ':' + varAttrs.statCd +
-						'!' + varAttrs.name + ': ' + siteAttributes.siteNo
+					value : siteAttributes.siteNo + ':' + varAttrs.parameterCd + ':' + varAttrs.statCd,
+					colName : varAttrs.name + ': ' + siteAttributes.siteNo
 				};
 			});
 		}

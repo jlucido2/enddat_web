@@ -21,9 +21,8 @@ define([
 				var attrs = model.attributes;
 				return {
 					name : 'Precip',
-					value : attrs.y + ':' + attrs.x + ':' +
-						timeBounds + ':' + variableId + '!' + variableName +
-						' [' + attrs.y + ',' + attrs.x + ']'
+					value : attrs.y + ':' + attrs.x + ':' + timeBounds + ':' + variableId,
+					colName : variableName + ' [' + attrs.y + ',' + attrs.x + ']'
 				};
 			});
 		}

@@ -8,8 +8,9 @@ define([
 	'Config',
 	'utils/geoSpatialUtils',
 	'models/NWISCollection',
-	'models/PrecipitationCollection'
-], function(_, $, moment, Backbone, Config, geoSpatialUtils, NWISCollection, PrecipitationCollection) {
+	'models/PrecipitationCollection',
+	'models/TimeSeriesOptionCollection'
+], function(_, $, moment, Backbone, Config, geoSpatialUtils, NWISCollection, PrecipitationCollection, TimeSeriesOptionCollection) {
 	"use strict";
 
 	var DEFAULT_CHOOSE_DATA_RADIUS = 2;
@@ -18,7 +19,6 @@ define([
 	// Defaults for processing step
 	var DEFAULT_TIME_INTERVAL = 6;
 	var DEFAULT_TIME_ZONE = '0_GMT';
-	var DEFAULT_PROCESSING_TIME_RANGE_FROM_LATEST = 30; // Days after the latest selected variable's data.
 	var DEFAULT_OUTPUT_DATE_FORMAT = 'Excel';
 	var DEFAULT_OUTPUT_FORMAT = 'tab';
 
@@ -96,10 +96,34 @@ define([
 		 */
 		getSelectedVariablesUrlParams : function() {
 			var datasetCollections = this.get('datasetCollections');
-
-			return _.chain(datasetCollections)
+			var timeSeriesOptions = this.get('timeSeriesOptions');
+			var variableUrlParams = _.chain(datasetCollections)
 				.map(function(datasetCollection) {
 					return datasetCollection.getSelectedVariablesUrlParams();
+				})
+				.flatten()
+				.value();
+
+			return timeSeriesOptions.chain()
+				.map(function(timeSeriesOptionModel) {
+					var statParameter = timeSeriesOptionModel.getStatParameter();
+					var statColName = timeSeriesOptionModel.getColName();
+					return _.map(variableUrlParams, function(urlParam) {
+						var result;
+						if (statParameter) {
+							result = {
+								name : urlParam.name,
+								value : urlParam.value + ':' + statParameter + urlParam.colName + ':' + statColName
+							};
+						}
+						else {
+							result = {
+								name : urlParam.name,
+								value : urlParam.value + '!' + urlParam.colName
+							};
+						}
+						return result;
+					});
 				})
 				.flatten()
 				.value();
@@ -147,7 +171,6 @@ define([
 		 */
 		updateModelState : function() {
 			var previousStep = this.previous('step');
-			var dateRange;
 			var outputDateRange = undefined;
 
 			switch(this.get('step')) {
@@ -195,7 +218,8 @@ define([
 						outputTimeZone : DEFAULT_TIME_ZONE,
 						outputTimeGapInterval : DEFAULT_TIME_INTERVAL,
 						outputDateFormat : DEFAULT_OUTPUT_DATE_FORMAT,
-						outputDateRange : outputDateRange
+						outputDateRange : outputDateRange,
+						timeSeriesOptions : new TimeSeriesOptionCollection([{statistic : 'raw'}])
 					});
 			}
 		},

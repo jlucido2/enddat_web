@@ -47,6 +47,30 @@ define([
 		},
 
 		/*
+		 * Returns the union of the date ranges for the selected variables.
+		 * @returns {Object} with start and end properties which are moments. Returns undefined if
+		 * no variables are selected
+		 */
+		getSelectedDateRange : function() {
+			var getStartDate = function(variableModel) {
+				return variableModel.get('startDate');
+			}
+			var getEndDate = function(variableModel) {
+				return variableModel.get('endDate');
+			}
+			var selectedVars = this.getSelectedVariables();
+			var result = undefined;
+			if (selectedVars.length > 0) {
+				result = {
+					start : moment.min(_.map(selectedVars, getStartDate)),
+					end : moment.max(_.map(selectedVars, getEndDate))
+				}
+			}
+
+			return result;
+		},
+
+		/*
 		 * @returns {Object} - with start and end properties.
 		 * returns the range of dates where each variable in the collection has data. If no such range
 		 * return undefined.

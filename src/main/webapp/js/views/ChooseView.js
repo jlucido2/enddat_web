@@ -84,17 +84,14 @@ define([
 		},
 
 		updateStartDate : function() {
-			var startDate = (this.model.has('startDate')) ? this.model.get('startDate') : '';
-			var newValue = (startDate) ? startDate.format(Config.DATE_FORMAT) : '';
+			var startDate = (this.model.has('startDate') && (this.model.attributes.startDate)) ? this.model.attributes.startDate : null;
 
-			this.$('#start-date').val(newValue);
+			this.$('#start-date-div').data('DateTimePicker').date(startDate);
 		},
 
 		updateEndDate : function() {
-			var endDate = (this.model.has('endDate')) ? this.model.get('endDate') : '';
-			var newValue = (endDate) ? endDate.format(Config.DATE_FORMAT) : '';
-
-			this.$('#end-date').val(newValue);
+			var endDate = (this.model.has('endDate')  && (this.model.attributes.endDate)) ? this.model.attributes.endDate : null;
+			this.$('#end-date-div').data('DateTimePicker').date(endDate);
 		},
 
 		/*

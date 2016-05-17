@@ -1,12 +1,14 @@
-/* jslint browser */
+/* jslint browser: true */
 
 define([
 	'jquery',
+	'moment',
+	'bootstrap-datetimepicker',
 	'module',
 	'Config',
 	'views/BaseCollapsiblePanelView',
 	'hbs!hb_templates/processData'
-], function($, module, Config, BaseCollapsiblePanelView, hbTemplate) {
+], function($, moment, datetimepicker, module, Config, BaseCollapsiblePanelView, hbTemplate) {
 	"use strict";
 
 	var BASE_URL = module.config().baseUrl;
@@ -27,6 +29,12 @@ define([
 			$.param(params.concat(varParams));
 	};
 
+	/*
+	 * @constructs
+	 * @param {Object} options
+	 *		@prop {Jquery selector or element} el
+	 *		@prop {models/WorkflowStateModel}
+	 */
 	var view = BaseCollapsiblePanelView.extend({
 		template : hbTemplate,
 
@@ -35,14 +43,86 @@ define([
 
 		additionalEvents : {
 			'click .show-url-btn' : 'showUrl',
-			'click .get-data-btn' : 'getData'
+			'click .get-data-btn' : 'getData',
+			//To set the model value from a datetimepicker, hand
+			'dp.change #output-start-date-div' : 'changeOutputStartDate',
+			'dp.change #output-end-date-div' : 'changeOutputEndDate'
 		},
 
 		render : function() {
-			var dateRange = this.model.getSelectedVarsDateRange();
-			this.context.hasOverlappingData = (dateRange) ? true : false;
+			var selectedVarsDateRange = this.model.getSelectedVarsDateRange();
+			var outputDateRange = this.model.get('outputDateRange');
+
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
+
+			//Set up date pickers
+			this.$('#output-start-date-div').datetimepicker({
+				format : Config.DATE_FORMAT,
+				useCurrent: false,
+				defaultDate : outputDateRange.start,
+				minDate : selectedVarsDateRange.start,
+				maxDate : outputDateRange.end
+			});
+			this.$('#output-end-date-div').datetimepicker({
+				format : Config.DATE_FORMAT,
+				useCurrent : false,
+				defaultDate : outputDateRange.end,
+				minDate : outputDateRange.start,
+				maxDate : selectedVarsDateRange.end
+			});
+
+			this.listenTo(this.model, 'change:outputDateRange', this.updateOutputDateRangeInputs);
 			return this;
+		},
+
+		/*
+		 * Model event listeners
+		 */
+
+		updateOutputDateRangeInputs : function(model, outputDateRange) {
+			var $startDate = this.$('#output-start-date-div');
+			var $endDate = this.$('#output-end-date-div');
+
+			$startDate.data('DateTimePicker').maxDate(outputDateRange.end);
+			$startDate.data('DateTimePicker').date(outputDateRange.start);
+			$endDate.data('DateTimePicker').minDate(outputDateRange.start);
+			$endDate.data('DateTimePicker').date(outputDateRange.end);
+		},
+
+		/*
+		 * DOM Event Handlers
+		 */
+
+		changeOutputStartDate : function(ev) {
+			var currentOutputDateRange = this.model.get('outputDateRange');
+			if (ev.date) {
+				this.model.set('outputDateRange', {
+					start : moment(ev.date),
+					end  : currentOutputDateRange.end
+				});
+			}
+			else {
+				this.model.set('outputDateRange', {
+					start : this.model.getSelectedVarsDateRange().start,
+					end : currentOutputDateRange.end
+				});
+			}
+		},
+
+		changeOutputEndDate : function(ev) {
+			var currentOutputDateRange = this.model.get('outputDateRange');
+			if (ev.date) {
+				this.model.set('outputDateRange', {
+					start : currentOutputDateRange.start,
+					end  : moment(ev.date)
+				});
+			}
+			else {
+				this.model.set('outputDateRange', {
+					start : currentOutputDateRange.start,
+					end : this.model.getSelectedVarsDateRange().end
+				});
+			}
 		},
 
 		showUrl : function(ev) {

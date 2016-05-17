@@ -209,11 +209,16 @@ define([
 				expect(setElNavViewSpy.calls.count()).toBe(2);
 				expect(renderNavViewSpy.calls.count()).toBe(1);
 
-				testModel.set('step', testModel.CHOOSE_DATA_STEP);
+				testModel.set('step', testModel.CHOOSE_DATA_FILTERS_STEP);
 				testView.render();
 				expect(setElNavViewSpy.calls.count()).toBe(3);
 				expect(renderNavViewSpy.calls.count()).toBe(2);
 
+				testModel.set('step', testModel.CHOOSE_DATA_VARIABLES_STEP);
+				testModel.set({
+					startDate : moment('2005-04-01', Config.DATE_FORMAT),
+					endDate : moment('2009-03-11', Config.DATE_FORMAT)
+				});
 				testModel.set('step', Config.PROCESS_DATA_STEP);
 				testView.render();
 				expect(setElNavViewSpy.calls.count()).toBe(4);
@@ -294,6 +299,10 @@ define([
 			});
 
 			it('Expects that the variable summary and process data subviews are removed when the step is PROCESS_DATA_STEP', function() {
+				testModel.set({
+					startDate : moment('2005-04-01', Config.DATE_FORMAT),
+					endDate : moment('2009-03-11', Config.DATE_FORMAT)
+				});
 				testModel.set('step', Config.PROCESS_DATA_STEP);
 				testView.render();
 				testView.remove();
@@ -397,6 +406,10 @@ define([
 				removeMapViewSpy.calls.reset();
 				collapseSummaryViewSpy.calls.reset();
 				renderProcessDataViewSpy.calls.reset();
+				testModel.set({
+					startDate : moment('2005-04-01', Config.DATE_FORMAT),
+					endDate : moment('2009-03-11', Config.DATE_FORMAT)
+				});
 				testModel.set('step', Config.PROCESS_DATA_STEP);
 
 				expect(removeLocationViewSpy).toHaveBeenCalled();
@@ -409,6 +422,10 @@ define([
 			it('Expects that if the step is PROCESS_DATA_STEP and goes back to CHOOSE_DATA_FILTERS_STEP, the process data view is removed, the location, choose, and map view are created and the variable summary is shown', function() {
 				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
 				testModel.set('step', Config.CHOOSE_DATA_VARIABLES_STEP);
+				testModel.set({
+					startDate : moment('2005-04-01', Config.DATE_FORMAT),
+					endDate : moment('2009-03-11', Config.DATE_FORMAT)
+				});
 				testModel.set('step', Config.PROCESS_DATA_STEP);
 				renderLocationViewSpy.calls.reset();
 				renderChooseViewSpy.calls.reset();
@@ -427,6 +444,10 @@ define([
 			it('Expects that if the step is PROCESS_DATA_STEP and changes to PROJ_LOC_STEP, the process data and summary views are removed, and the location view is created', function() {
 				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
 				testModel.set('step', Config.CHOOSE_DATA_VARIABLES_STEP);
+				testModel.set({
+					startDate : moment('2005-04-01', Config.DATE_FORMAT),
+					endDate : moment('2009-03-11', Config.DATE_FORMAT)
+				});
 				testModel.set('step', Config.PROCESS_DATA_STEP);
 				removeProcessDataViewSpy.calls.reset();
 				removeSummaryViewSpy.calls.reset();

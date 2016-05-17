@@ -8,7 +8,7 @@ define([
 	'models/WorkflowStateModel',
 	'views/ProcessDataView'
 ], function($, moment, Config, WorkflowStateModel, ProcessDataView) {
-	fdescribe('views/ProcessDataView', function() {
+	describe('views/ProcessDataView', function() {
 		var testView;
 		var $testDiv;
 		var testModel;

@@ -173,12 +173,29 @@ define([
 					break;
 
 				case Config.PROCESS_DATA_STEP:
+					var outputDateRange;
+					var startDate = this.get('startDate');
+					var endDate = this.get('endDate');
+					var selectedVarsDateRange = this.getSelectedVarsDateRange();
+
+					if ((startDate) && (endDate)) {
+						outputDateRange = {
+							start : startDate,
+							end : endDate
+						};
+					}
+					else {
+						outputDateRange = {
+							start : moment(selectedVarsDateRange.end).subtract(1, 'month'),
+							end : selectedVarsDateRange.end
+						};
+					}
 					this.set({
 						outputFileFormat : DEFAULT_OUTPUT_FORMAT,
 						outputTimeZone : DEFAULT_TIME_ZONE,
 						outputTimeGapInterval : DEFAULT_TIME_INTERVAL,
 						outputDateFormat : DEFAULT_OUTPUT_DATE_FORMAT,
-						outputDateRange : this.getSelectedVarsDateRange()
+						outputDateRange : outputDateRange
 					});
 			}
 		},

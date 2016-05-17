@@ -27,7 +27,7 @@
 			var require = {
 				config: {
 					'init': {
-						'contextPath': '<%=baseUrl%>',
+						'baseUrl': '<%=baseUrl%>',
 						'development': '<%=development%>'
 					},
 					'models/NWISCollection': {
@@ -41,7 +41,7 @@
 						'baseUrl' : '<%=baseUrl%>'
 					}
 				},
-				baseUrl: "<%=baseUrl%>/js/",
+				baseUrl: "<%=baseUrl%>js/",
 				paths: {
 					"bootstrap" :  '<%=baseUrl%>bower_components/bootstrap/dist/js/bootstrap<%= development ? "" : ".min"%>',
 					"jquery": '<%=baseUrl%>bower_components/jquery/dist/jquery<%= development ? "" : ".min"%>',

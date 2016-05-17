@@ -18,7 +18,9 @@ define([
 
 	var router = new Router();
 
-	Backbone.history.start({root: config.contextPath});
+	var origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
+	var root  = config.baseUrl.replace(origin, '');
+	Backbone.history.start({root: root});
 
 	return router;
 });

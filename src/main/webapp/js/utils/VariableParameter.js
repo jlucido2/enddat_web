@@ -18,12 +18,15 @@ define([], function() {
 		/*
 		 * @param {String} statParam - String describing the statistic to apply to the variable
 		 * @param {String} statColName - String to be appended to the variable's column name, describing the statistic
-		 * @returns {String} representing the url parameter for the variable with the statistics applied to it.
+		 * @returns {Object with name and value properties} representing the url parameter for the variable with the statistics applied to it.
 		 */
-		this.getUrlParameterString = function(statParam, statColName) {
+		this.getUrlParameter = function(statParam, statColName) {
 			var value = (statParam) ? this.value + ':' + statParam : this.value;
 			var colName = (statColName) ? this.colName + ' ' + statColName : this.colName;
-			return this.name + '=' + value + '!' +  colName;
+			return {
+				name : this.name,
+				value : value + '!' + colName
+			};
 		};
 	};
 

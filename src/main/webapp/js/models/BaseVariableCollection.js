@@ -3,9 +3,8 @@
 define([
 	'underscore',
 	'backbone',
-	'moment',
-	'utils/dateUtils'
-], function(_, Backbone, moment, dateUtils) {
+	'moment'
+], function(_, Backbone, moment) {
 	"use strict";
 	/*
 	 * Models are xpected to have startDate and endDate property and to use the selected property to indicate that

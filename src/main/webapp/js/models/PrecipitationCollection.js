@@ -85,7 +85,7 @@ define([
 					}
 					else {
 						parsedXML = self.parse(xml);
-						log.debug('Precipitation fetch succeeded, fetched ' + self.size() + ' grid');
+						log.debug('Precipitation fetch succeeded, fetched ' + parsedXML.length + ' grid');
 						fetchSiteDataDeferred.resolve(jqXHR);
 					}
 				},

@@ -243,6 +243,7 @@ define([
 				expect(testModel.has('outputFileFormat')).toBe(true);
 				expect(testModel.has('outputTimeGapInterval')).toBe(true);
 				expect(testModel.has('outputDateFormat')).toBe(true);
+				expect(testModel.has('timeSeriesOptions')).toBe(true);
 			});
 
 			it('Expects that if the step changes to PROCESS_DATA_STEP and the startDate and endDate have values, these values will be used to set the initial value of the outputDateRange', function() {

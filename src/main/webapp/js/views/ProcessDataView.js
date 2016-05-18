@@ -15,7 +15,7 @@ define([
 
 	var getUrl = function(model) {
 		var attrs = model.attributes;
-		var varParams = model.getSelectedVariablesUrlParams();
+		var varParams = model.getSelectedVariablesUrlStrings();
 		var params = [
 			{name : 'style', value : attrs.outputFileFormat},
 			{name : 'DateFormat', value : attrs.outputDateFormat},
@@ -25,8 +25,7 @@ define([
 			{name : 'endPosition', value : attrs.outputDateRange.end.format(Config.DATE_FORMAT)}
 		];
 
-		return BASE_URL + 'service/execute?' +
-			$.param(params.concat(varParams));
+		return BASE_URL + 'service/execute?' + $.param(params) + '&' + varParams.join('&');
 	};
 
 	/*

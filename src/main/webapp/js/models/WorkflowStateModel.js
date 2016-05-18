@@ -91,10 +91,11 @@ define([
 		},
 
 		/*
-		 * @returns {Array of Objects with name and value properties to be used to form the url parameters for
-		 *		processing requests}
+		 * For each selected variable, the returned array contains a url string parameter for each time series option and
+		 * selected variable.
+		 * @returns {Array of String}
 		 */
-		getSelectedVariablesUrlParams : function() {
+		getSelectedVariablesUrlStrings : function() {
 			var datasetCollections = this.get('datasetCollections');
 			var timeSeriesOptions = this.get('timeSeriesOptions');
 			var variableUrlParams = _.chain(datasetCollections)
@@ -109,20 +110,7 @@ define([
 					var statParameter = timeSeriesOptionModel.getStatParameter();
 					var statColName = timeSeriesOptionModel.getColName();
 					return _.map(variableUrlParams, function(urlParam) {
-						var result;
-						if (statParameter) {
-							result = {
-								name : urlParam.name,
-								value : urlParam.value + ':' + statParameter + urlParam.colName + ':' + statColName
-							};
-						}
-						else {
-							result = {
-								name : urlParam.name,
-								value : urlParam.value + '!' + urlParam.colName
-							};
-						}
-						return result;
+						return urlParam.getUrlParameterString(statParameter, statColName);
 					});
 				})
 				.flatten()

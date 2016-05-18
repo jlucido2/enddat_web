@@ -3,15 +3,28 @@
 define([
 	'jquery',
 	'moment',
+	'handlebars',
 	'bootstrap-datetimepicker',
 	'module',
 	'Config',
+	'models/TimeSeriesOptionCollection',
 	'views/BaseCollapsiblePanelView',
 	'hbs!hb_templates/processData'
-], function($, moment, datetimepicker, module, Config, BaseCollapsiblePanelView, hbTemplate) {
+], function($, moment, Handlebars, datetimepicker, module, Config, TimeSeriesOptionCollection, BaseCollapsiblePanelView, hbTemplate) {
 	"use strict";
 
 	var BASE_URL = module.config().baseUrl;
+	var TIME_SERIES_OPTIONS = [
+		{statName : 'raw', statTitle : 'Raw data', checked: true, timeSpanRequired : false},
+		{statName : 'Min', statTitle : 'Minimum', checked: false, timeSpanRequired : true},
+		{statName : 'Max', statTitle : 'Maximum', checked: false, timeSpanRequired : true},
+		{statName : 'Sum', statTitle : 'Summation', checked: false, timeSpanRequired : true},
+		{statName : 'Diff', statTitle : 'Difference', checked: false, timeSpanRequired : true},
+		{statName : 'MaxDifference', statTitle : 'Max Difference', checked: false, timeSpanRequired : true},
+		{statName : 'StDev', statTitle : 'Standard Deviation', checked: false, timeSpanRequired : true}
+	];
+
+	var ERROR_ALERT_TEMPLATE = Handlebars.compile('<div class="alert alert-danger" role="alert">{{message}}</div>');
 
 	var getUrl = function(model) {
 		var attrs = model.attributes;
@@ -26,6 +39,19 @@ define([
 		];
 
 		return BASE_URL + 'service/execute?' + $.param(params.concat(varParams));
+	};
+
+	var validTimeSpan = function($input) {
+		var isValid;
+		var timeSpan;
+		if ($input.length === 0) {
+			isValid = true;
+		}
+		else {
+			timeSpan = $input.val();
+			isValid = ((timeSpan) && (parseFloat(timeSpan) > 0)) ? true : false;
+		}
+		return isValid;
 	};
 
 	/*
@@ -45,13 +71,16 @@ define([
 			'click .get-data-btn' : 'getData',
 			//To set the model value from a datetimepicker, hand
 			'dp.change #output-start-date-div' : 'changeOutputStartDate',
-			'dp.change #output-end-date-div' : 'changeOutputEndDate'
+			'dp.change #output-end-date-div' : 'changeOutputEndDate',
+
+			'change .ts-option-div input' : 'removeErrorAlert'
 		},
 
 		render : function() {
 			var selectedVarsDateRange = this.model.getSelectedVarsDateRange();
 			var outputDateRange = this.model.get('outputDateRange');
 
+			this.context.timeSeriesOptions = TIME_SERIES_OPTIONS;
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
 
 			//Set up date pickers
@@ -89,8 +118,53 @@ define([
 		},
 
 		/*
+		 *
+		 */
+		updateTimeSeriesOptions : function() {
+			var result = [];
+			this.$('.ts-option-div .stat-type-checkbox:checked').each(function() {
+				var $parentDiv = $(this).parents('.ts-option-div');
+				var $timeSpanInput = $parentDiv.find('.time-span-input');
+				var isValidTimeSpan;
+				var timeSpan;
+
+				if ($timeSpanInput.length > 0) {
+					isValidTimeSpan = validTimeSpan($timeSpanInput);
+					timeSpan = $timeSpanInput.val();
+					if (isValidTimeSpan) {
+						result.push({
+							statistic : $(this).val(),
+							timeSpan : timeSpan
+						});
+					}
+					else {
+						result = [];
+						$parentDiv.append(ERROR_ALERT_TEMPLATE({message : 'Must enter a time span'}));
+						return false;
+					}
+				}
+				else {
+					result.push({statistic : $(this).val()});
+				}
+			});
+
+			this.model.set('timeSeriesOptions', new TimeSeriesOptionCollection(result));
+		},
+
+
+
+		/*
 		 * DOM Event Handlers
 		 */
+
+		removeErrorAlert : function(ev) {
+			var $tsContainer = $(ev.currentTarget).parents('.ts-option-div');
+			var isChecked = $tsContainer.find('.stat-type-checkbox').is(':checked');
+			var $timeSpan = $tsContainer.find('.time-span-input');
+			if (validTimeSpan($timeSpan)) {
+				$tsContainer.find('.alert').remove();
+			}
+		},
 
 		changeOutputStartDate : function(ev) {
 			var currentOutputDateRange = this.model.get('outputDateRange');
@@ -125,15 +199,24 @@ define([
 		},
 
 		showUrl : function(ev) {
-			var url = getUrl(this.model);
-			var $link = this.$('.url-container a');
-			ev.preventDefault();
-			$link.attr('href', url).html(url);
+			var url;
+			var $link;
+			this.updateTimeSeriesOptions();
+			if (this.model.get('timeSeriesOptions').length > 0) {
+				url = getUrl(this.model);
+				$link = this.$('.url-container a');
+				ev.preventDefault();
+
+				$link.attr('href', url).html(url);
+			}
 		},
 
 		getData : function(ev) {
 			ev.preventDefault();
-			window.open(getUrl(this.model), '_blank');
+			this.updateTimeSeriesOptions();
+			if (this.model.get('timeSeriesOptions').length > 0) {
+				window.open(getUrl(this.model), '_blank');
+			}
 		}
 	});
 

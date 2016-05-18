@@ -1,5 +1,22 @@
 <h4>Time Series Processing Options</h4>
-	
+<div class="time-series-options-container">
+	{{#each timeSeriesOptions}}
+		<div class="form-inline ts-option-div">
+			<div class="form-group ts-option-stat-type-div" id="ts-option-{{statName}}-div">
+				<label>
+					<input type="checkbox" class="stat-type-checkbox" value="{{statName}}" {{#if checked}}checked{{/if}} />
+					{{statTitle}}
+				</label>
+			</div>
+			{{#if timeSpanRequired}}
+				<div class="form-group ts-option-time-span">
+					<input class="form-control time-span-input" min="1" type="number" value=""  />
+					Hours
+				</div>
+			{{/if}}
+		</div>
+	{{/each}}
+</div>
 <div class="form-group">
 	<label>Output Date Range</label>
 	<div class="form-inline">

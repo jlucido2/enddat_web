@@ -22,7 +22,7 @@ define([], function() {
 		 */
 		this.getUrlParameterString = function(statParam, statColName) {
 			var value = (statParam) ? this.value + ':' + statParam : this.value;
-			var colName = (statColName) ? this.colName + ':' + statColName : this.colName;
+			var colName = (statColName) ? this.colName + ' ' + statColName : this.colName;
 			return this.name + '=' + value + '!' +  colName;
 		};
 	};

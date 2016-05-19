@@ -103,24 +103,6 @@ define([
 		},
 
 		/*
-		 * For each selected variable, the returned array contains a url string parameter for each time series option and
-		 * selected variable.
-		 * @returns {Array of Objects with name and value properties}
-		 */
-		getSelectedVariablesUrlParameters : function() {
-			var datasetCollections = this.get('datasetCollections');
-			return _.chain(datasetCollections)
-				.map(function(datasetCollection) {
-					return datasetCollection.getSelectedVariablesUrlParams();
-				})
-				.flatten()
-				.map(function(variableParam) {
-					return variableParam.getUrlParameter();
-				})
-				.value();
-		},
-
-		/*
 		 * Model event handlers
 		 */
 

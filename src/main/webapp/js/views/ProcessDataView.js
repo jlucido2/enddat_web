@@ -2,26 +2,21 @@
 
 define([
 	'jquery',
+	'underscore',
 	'moment',
 	'handlebars',
 	'bootstrap-datetimepicker',
 	'module',
 	'Config',
+	'utils/jqueryUtils',
 	'views/BaseCollapsiblePanelView',
+	'views/VariableTsOptionView',
 	'hbs!hb_templates/processData'
-], function($, moment, Handlebars, datetimepicker, module, Config, BaseCollapsiblePanelView, hbTemplate) {
+], function($, _, moment, Handlebars, datetimepicker, module, Config, $utils, BaseCollapsiblePanelView,
+	VariableTsOptionView, hbTemplate) {
 	"use strict";
 
 	var BASE_URL = module.config().baseUrl;
-	var TIME_SERIES_OPTIONS = [
-		{statName : 'raw', statTitle : 'Raw data', checked: true, timeSpanRequired : false},
-		{statName : 'Min', statTitle : 'Minimum', checked: false, timeSpanRequired : true},
-		{statName : 'Max', statTitle : 'Maximum', checked: false, timeSpanRequired : true},
-		{statName : 'Sum', statTitle : 'Summation', checked: false, timeSpanRequired : true},
-		{statName : 'Diff', statTitle : 'Difference', checked: false, timeSpanRequired : true},
-		{statName : 'MaxDifference', statTitle : 'Max Difference', checked: false, timeSpanRequired : true},
-		{statName : 'StDev', statTitle : 'Standard Deviation', checked: false, timeSpanRequired : true}
-	];
 
 	var ERROR_ALERT_TEMPLATE = Handlebars.compile('<div class="alert alert-danger" role="alert">{{message}}</div>');
 
@@ -70,16 +65,28 @@ define([
 			'click .get-data-btn' : 'getData',
 			//To set the model value from a datetimepicker, hand
 			'dp.change #output-start-date-div' : 'changeOutputStartDate',
-			'dp.change #output-end-date-div' : 'changeOutputEndDate',
-
-			'change .ts-option-div input' : 'removeErrorAlert'
+			'dp.change #output-end-date-div' : 'changeOutputEndDate'
 		},
 
 		render : function() {
+			var self = this;
 			var selectedVarsDateRange = this.model.getSelectedVarsDateRange();
 			var outputDateRange = this.model.get('outputDateRange');
+			var selectedVariableModels = this.model.getSelectedVariables();
 
+			this.context.selectedVariables = _.map(selectedVariableModels, function(varModel) {
+				return {id: varModel.cid};
+			});
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
+			this.variableTsOptionViews = [];
+			_.each(selectedVariableModels, function(variableModel) {
+				var optionView = new VariableTsOptionView({
+					el : $utils.createDivInContainer(self.$('.selected-variable-container[data-id="' + variableModel.cid + '"]')),
+					model : variableModel
+				});
+				optionView.render();
+				self.variableTsOptionViews.push(optionView);
+			});
 
 			//Set up date pickers
 			this.$('#output-start-date-div').datetimepicker({
@@ -98,7 +105,15 @@ define([
 			});
 
 			this.listenTo(this.model, 'change:outputDateRange', this.updateOutputDateRangeInputs);
+
 			return this;
+		},
+
+		remove : function() {
+			_.each(this.variableTsOptionViews, function(view) {
+				view.remove();
+			});
+			BaseCollapsiblePanelView.prototype.remove.apply(this, arguments);
 		},
 
 		/*

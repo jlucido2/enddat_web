@@ -6,10 +6,11 @@ define([
 	'jquery',
 	'underscore',
 	'moment',
+	'utils/VariableParameter',
 	'models/BaseDatasetCollection',
-	'models/PrecipitationVariableCollection',
+	'models/BaseVariableCollection',
 	'utils/jqueryUtils'
-], function(log, module, $, _, moment, BaseDatasetCollection, PrecipitationVariableCollection, $utils) {
+], function(log, module, $, _, moment, VariableParameter, BaseDatasetCollection, BaseVariableCollection, $utils) {
 	"use strict";
 
 	var getInteger = function(str) {
@@ -19,6 +20,9 @@ define([
 	var START_DATE = moment('2002-01-01', 'YYYY-MM-DD');
 	var GET_FEATURE_URL = module.config().precipWFSGetFeatureUrl;
 	var PRECIP_DATA_DDS_URL = 'cidathredds/' + module.config().cidaThreddsPrecipData + '.dds';
+
+	var variableId = 'precip3';
+	var variableName = 'Total precip - 1 hr';
 
 	var getTimeBounds = function(ddsText) {
 		var lines = ddsText.split('\n');
@@ -41,16 +45,23 @@ define([
 			var today = moment();
 			$utils.xmlFind($(xml), 'wfs', 'member').each(function() {
 				var $this = $(this);
+				var x = getInteger($utils.xmlFind($this, 'sb', 'x').text());
+				var y = getInteger($utils.xmlFind($this, 'sb', 'y').text());
 
 				result.push({
 					lon : $utils.xmlFind($this, 'sb', 'X1').text(),
 					lat : $utils.xmlFind($this, 'sb', 'X2').text(),
-					variables : new PrecipitationVariableCollection([
+					variables : new BaseVariableCollection([
 						{
-							x : getInteger($utils.xmlFind($this, 'sb', 'x').text()),
-							y : getInteger($utils.xmlFind($this, 'sb', 'y').text()),
+							x : x,
+							y : y,
 							startDate : START_DATE,
-							endDate : today
+							endDate : today,
+							variableParam : new VariableParameter({
+								name : 'Precip',
+								value : y + ':' + x + ':' + this.timeBounds + ':' + variableId,
+								colName : variableName + ' [' + y + ',' + x + ']',
+							})
 						}
 					])
 				});
@@ -70,7 +81,7 @@ define([
 			var fetchSiteDataDeferred = $.Deferred();
 			var fetchDDSDeferred = $.Deferred();
 			var fetchDeferred = $.Deferred();
-			var parsedXML;
+			var xmlResponse;
 
 			$.ajax({
 				url : GET_FEATURE_URL,
@@ -84,8 +95,7 @@ define([
 						fetchSiteDataDeferred.reject(jqXHR);
 					}
 					else {
-						parsedXML = self.parse(xml);
-						log.debug('Precipitation fetch succeeded, fetched ' + parsedXML.length + ' grid');
+						xmlResponse = xml;
 						fetchSiteDataDeferred.resolve(jqXHR);
 					}
 				},
@@ -109,7 +119,8 @@ define([
 
 			$.when(fetchSiteDataDeferred, fetchDDSDeferred)
 				.done(function() {
-					self.reset(parsedXML);
+					self.reset(self.parse(xmlResponse));
+					log.debug('Precipitation fetch succeeded, fetched ' + this.length + ' grid');
 					fetchDeferred.resolve();
 				})
 				.fail(function() {

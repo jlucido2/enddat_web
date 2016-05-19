@@ -6,10 +6,11 @@ define([
 	'moment',
 	'loglevel',
 	'module',
+	'utils/VariableParameter',
 	'models/BaseDatasetCollection',
-	'models/NWISVariableCollection',
+	'models/BaseVariableCollection',
 	'utils/rdbUtils'
-], function ($, _, moment, log, module, BaseDatasetCollection, NWISVariableCollection, rdbUtils) {
+], function ($, _, moment, log, module, VariableParameter, BaseDatasetCollection, BaseVariableCollection, rdbUtils) {
 	"use strict";
 
 	var parameterCodesPath = module.config().parameterCodesPath;
@@ -84,14 +85,18 @@ define([
 								else {
 									name += ' ' + statCd;
 								}
-								// We are putting the siteNo in the variables collection as it is needed when forming url parameters
 								return {
 									name : name,
 									parameterCd : variable.parm_cd,
 									statCd : statCd,
 									startDate : moment(variable.begin_date, DATE_FORMAT),
 									endDate : moment(variable.end_date, DATE_FORMAT),
-									count : variable.count_nu
+									count : variable.count_nu,
+									variableParameter : new VariableParameter({
+										name : 'NWIS',
+										value : variable.site_no + ':' + variable.parm_cd + statCd,
+										colName : name + ':' + variable.site_no
+									})
 								};
 							};
 							return _.map(rawVariables, parseVariable);
@@ -110,7 +115,7 @@ define([
 								lon : siteParameterData[0].dec_long_va,
 								startDate : moment.min(startDates),
 								endDate : moment.max(endDates),
-								variables : new NWISVariableCollection(variables)
+								variables : new BaseVariableCollection(variables)
 							};
 							return result;
 						});
@@ -135,7 +140,7 @@ define([
 			});
 			return sitesDeferred.promise();
 		},
-		
+
 		/*
 		 * Retrieves the parameter codes and set the parameterCodes property on the collection. If
 		 * the fetch fails the parameterCodes property is assigned undefined.

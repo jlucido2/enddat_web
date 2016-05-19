@@ -1,33 +1,21 @@
 <h4>Time Series Processing Options</h4>
 <div class="time-series-options-container">
-	{{#each timeSeriesOptions}}
-		<div class="form-inline ts-option-div">
-			<div class="form-group ts-option-stat-type-div" id="ts-option-{{statName}}-div">
-				<label>
-					<input type="checkbox" class="stat-type-checkbox" value="{{statName}}" {{#if checked}}checked{{/if}} />
-					{{statTitle}}
-				</label>
-			</div>
-			{{#if timeSpanRequired}}
-				<div class="form-group ts-option-time-span">
-					<input class="form-control time-span-input" min="1" type="number" value=""  />
-					Hours
-				</div>
-			{{/if}}
-		</div>
+	{{#each selectedVariables}}
+	<div class="selected-variable-container" data-id="{{id}}"></div>
 	{{/each}}
+</div>
 </div>
 <div class="form-group">
 	<label>Output Date Range</label>
 	<div class="form-inline">
 		<label for="output-start-date">Start:&nbsp;</label>
 		<div class="input-group date" id="output-start-date-div" >
-			<input type="text" id="output-start-date" class="form-control" size="10" val="{{startDate}}"/>
+			<input type="text" id="output-start-date" class="form-control" size="10"/>
 			<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
 		</div>
 		<label for="output-end-date">End:&nbsp;</label>
 		<div class="input-group date" id="output-end-date-div">
-			<input type="text" id="output-end-date" class="form-control" size="10"val="{{endDate}}"/>
+			<input type="text" id="output-end-date" class="form-control" size="10"/>
 			<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
 		</div>
 	</div>

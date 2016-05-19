@@ -8,9 +8,8 @@ define([
 	'Config',
 	'utils/geoSpatialUtils',
 	'models/NWISCollection',
-	'models/PrecipitationCollection',
-	'models/TimeSeriesOptionCollection'
-], function(_, $, moment, Backbone, Config, geoSpatialUtils, NWISCollection, PrecipitationCollection, TimeSeriesOptionCollection) {
+	'models/PrecipitationCollection'
+], function(_, $, moment, Backbone, Config, geoSpatialUtils, NWISCollection, PrecipitationCollection) {
 	"use strict";
 
 	var DEFAULT_CHOOSE_DATA_RADIUS = 2;
@@ -208,7 +207,7 @@ define([
 					_.each(selectedVars, function(variableModel) {
 						variableModel.set('timeSeriesOptions', [{statistic : 'raw'}]);
 					});
-					
+
 					this.set({
 						outputFileFormat : DEFAULT_OUTPUT_FORMAT,
 						outputTimeZone : DEFAULT_TIME_ZONE,

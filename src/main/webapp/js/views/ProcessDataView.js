@@ -7,10 +7,9 @@ define([
 	'bootstrap-datetimepicker',
 	'module',
 	'Config',
-	'models/TimeSeriesOptionCollection',
 	'views/BaseCollapsiblePanelView',
 	'hbs!hb_templates/processData'
-], function($, moment, Handlebars, datetimepicker, module, Config, TimeSeriesOptionCollection, BaseCollapsiblePanelView, hbTemplate) {
+], function($, moment, Handlebars, datetimepicker, module, Config, BaseCollapsiblePanelView, hbTemplate) {
 	"use strict";
 
 	var BASE_URL = module.config().baseUrl;

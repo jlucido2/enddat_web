@@ -4,9 +4,10 @@
 define([
 	'moment',
 	'underscore',
+	'utils/VariableParameter',
 	'models/BaseDatasetCollection',
 	'models/BaseVariableCollection'
-], function(moment, _, BaseDatasetCollection, BaseVariableCollection) {
+], function(moment, _, VariableParameter, BaseDatasetCollection, BaseVariableCollection) {
 	"use strict";
 
 	fdescribe('models/BaseDatasetCollection', function() {
@@ -122,10 +123,11 @@ define([
 				getSelectedUrlParams : function() {
 					var selectedVars = this.getSelectedVariables();
 					return _.map(selectedVars, function(variableModel) {
-						return {
+						return new VariableParameter({
 							name : 'Test1',
-							value : variableModel.attributes.x + ':' + variableModel.attributes.y
-						};
+							value : variableModel.attributes.x + ':' + variableModel.attributes.y,
+							colName : 'Var' + variableModel.attributes.x
+						});
 					});
 				}
 			});
@@ -157,13 +159,13 @@ define([
 				expect(result.length).toBe(3);
 				expect(_.find(result, function(param) {
 					return (param.name === 'Test1') && (param.value === '1:1');
-				})).toEqual({name : 'Test1', value : '1:1'});
+				})).toBeDefined();
 				expect(_.find(result, function(param) {
 					return (param.name === 'Test1') && (param.value === '20:20');
-				})).toEqual({name : 'Test1', value : '20:20'});
+				})).toBeDefined();
 				expect(_.find(result, function(param) {
 					return (param.name === 'Test1') && (param.value === '30:30');
-				})).toEqual({name : 'Test1', value : '30:30'});
+				})).toBeDefined();
 			});
 		});
 

@@ -24,10 +24,10 @@ define([], function() {
 		this.getUrlParameter = function() {
 			var isRaw = (this.timeSeriesOption.statistic === 'raw');
 			var statParam = (isRaw) ? '' : this.timeSeriesOption.statistic + ':' + this.timeSeriesOption.timeSpan;
-			var statColName = (isRaw) ? '' : this.timeSeriesOption.colName + ': ' + this.timeSeriesOption.timeSpan + 'hr';
+			var statColName = (isRaw) ? '' : this.timeSeriesOption.colName + ' ' + this.timeSeriesOption.timeSpan + ' hr';
 			var value = (statParam) ? this.value + ':' + statParam : this.value;
 			var colName = (statColName) ? this.colName + ' ' + statColName : this.colName;
-			
+
 			return {
 				name : this.name,
 				value : value + '!' + colName

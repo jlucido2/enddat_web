@@ -7,40 +7,33 @@ define([
 	describe('utils/VariableParameter', function() {
 		var testObject;
 
-		beforeEach(function() {
-			testObject = new VariableParameter({
-				name : 'DatasetId',
-				value : '145:88:77',
-				colName : 'Temperature'
-			});
-		});
+		describe('Tests for getUrlParameter', function() {
 
-		describe('Tests for getUrlParameterString', function() {
-			it('Expects the statParam and statColName to be added to the returned string', function() {
-				expect(testObject.getUrlParameter('Min:2', 'Minimum 2 hours')).toEqual({
+			it('Expects the if the timeSeriesOption , nothing gets appended to the value or column name', function() {
+				testObject = new VariableParameter({
 					name : 'DatasetId',
-					value : '145:88:77:Min:2!Temperature Minimum 2 hours'
+					value : '145:88:77',
+					colName : 'Temperature',
+					timeSeriesOption : {statistic : 'raw'}
 				});
-			});
 
-			it('Expects that if statParam is the null string, only the variable value is in the url', function() {
-				expect(testObject.getUrlParameter('', 'Minimum 2 hours')).toEqual({
-					name : 'DatasetId',
-					value : '145:88:77!Temperature Minimum 2 hours'
-				});
-			});
-
-			it('Expects that if statColName is the null string, only the variable colName is in the url', function() {
-				expect(testObject.getUrlParameter('Min:2', '')).toEqual({
-					name : 'DatasetId',
-					value : '145:88:77:Min:2!Temperature'
-				});
-			});
-
-			it('Expects that if both statParam and statColName is the null string, only the variable value and colName will be used in the url', function() {
-				expect(testObject.getUrlParameter('', '')).toEqual({
+				expect(testObject.getUrlParameter()).toEqual({
 					name : 'DatasetId',
 					value : '145:88:77!Temperature'
+				});
+			});
+
+			it('Expects that if the statistic is not raw, the value and col name contain the timeSeriesOption parameters', function() {
+				testObject = new VariableParameter({
+					name : 'DatasetId',
+					value : '145:88:77',
+					colName : 'Temperature',
+					timeSeriesOption : {statistic : 'Min', colName : 'Minimum', timeSpan : 2}
+				});
+
+				expect(testObject.getUrlParameter()).toEqual({
+					name : 'DatasetId',
+					value : '145:88:77:Min:2!Temperature Minimum 2 hr'
 				});
 			});
 		});

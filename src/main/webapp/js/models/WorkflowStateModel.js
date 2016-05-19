@@ -89,6 +89,9 @@ define([
 			return result;
 		},
 
+		/*
+		 * @returns {Array of Backbone.models representing the selected variables}
+		 */
 		getSelectedVariables : function() {
 			var datasetCollections = this.get('datasetCollections');
 			return _.chain(datasetCollections)
@@ -96,7 +99,7 @@ define([
 					return datasetCollection.getSelectedVariables();
 				})
 				.flatten()
-				.value()
+				.value();
 		},
 
 		/*

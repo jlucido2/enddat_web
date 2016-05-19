@@ -22,6 +22,9 @@ define([
 			});
 		},
 
+		/*
+		 * @returns {Array of Backbone.Model representing variables
+		 */
 		getSelectedVariables : function() {
 			return this.chain()
 				.map(function(datasetModel) {

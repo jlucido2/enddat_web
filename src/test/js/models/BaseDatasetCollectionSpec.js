@@ -9,7 +9,7 @@ define([
 ], function(moment, _, BaseDatasetCollection, BaseVariableCollection) {
 	"use strict";
 
-	describe('models/BaseDatasetCollection', function() {
+	fdescribe('models/BaseDatasetCollection', function() {
 
 		var DATE_FORMAT = 'MM-DD-YYYY';
 
@@ -38,6 +38,47 @@ define([
 				]);
 
 				expect(testCollection.hasSelectedVariables()).toBe(true);
+			});
+		});
+
+		describe('Tests for getSelectedVariables', function() {
+			var testCollection;
+
+			it('Expects that an empty collection returns an empty array', function() {
+				testCollection = new BaseDatasetCollection();
+
+				expect(testCollection.getSelectedVariables()).toEqual([]);
+			});
+
+			it('Expects that a collection with no selected variables returns an empty array', function() {
+				testCollection = new BaseDatasetCollection([
+					{id : 1, variables : new BaseVariableCollection([{x : 1}, {x : 2}])},
+					{id : 2, variables : new BaseVariableCollection([{x : 3}])},
+					{id : 3, variables : new BaseVariableCollection([{x : 4}, {x: 5}])}
+				]);
+
+				expect(testCollection.getSelectedVariables()).toEqual([]);
+			});
+
+			it('Expects that a collection with selected variables returns those variables', function() {
+				var result;
+				testCollection = new BaseDatasetCollection([
+					{id : 1, variables : new BaseVariableCollection([{x : 1, selected : true}, {x : 2}])},
+					{id : 2, variables : new BaseVariableCollection([{x : 3}])},
+					{id : 3, variables : new BaseVariableCollection([{x : 4, selected: true}, {x: 5, selected: true}])}
+				]);
+
+				result = testCollection.getSelectedVariables();
+				expect(result.length).toBe(3);
+				expect(_.find(result, function(variableModel) {
+					return variableModel.attributes.x === 1;
+				})).toBeDefined();
+				expect(_.find(result, function(variableModel) {
+					return variableModel.attributes.x === 4;
+				})).toBeDefined();
+				expect(_.find(result, function(variableModel) {
+					return variableModel.attributes.x === 5;
+				})).toBeDefined();
 			});
 		});
 

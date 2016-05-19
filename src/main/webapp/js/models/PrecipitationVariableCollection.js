@@ -21,14 +21,21 @@ define([
 		 */
 		getSelectedUrlParams : function(timeBounds) {
 			var selectedVars = this.getSelectedVariables();
-			return _.map(selectedVars, function(model) {
-				var attrs = model.attributes;
-				return new VariableParameter({
-					name : 'Precip',
-					value : attrs.y + ':' + attrs.x + ':' + timeBounds + ':' + variableId,
-					colName : variableName + ' [' + attrs.y + ',' + attrs.x + ']'
-				});
-			});
+			return _.chain(selectedVars)
+				.map(function(model) {
+					var attrs = model.attributes;
+					var varUrlParams =  _.map(attrs.timeSeriesOptions, function(tsOption) {
+						return new VariableParameter({
+							name : 'Precip',
+							value : attrs.y + ':' + attrs.x + ':' + timeBounds + ':' + variableId,
+							colName : variableName + ' [' + attrs.y + ',' + attrs.x + ']',
+							timeSeriesOption : tsOption
+						});
+					});
+					return varUrlParams;
+				})
+				.flatten()
+				.value();
 		}
 	});
 

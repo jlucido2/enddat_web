@@ -90,6 +90,16 @@ define([
 			return result;
 		},
 
+		getSelectedVariables : function() {
+			var datasetCollections = this.get('datasetCollections');
+			return _.chain(datasetCollections)
+				.map(function(datasetCollection) {
+					return datasetCollection.getSelectedVariables();
+				})
+				.flatten()
+				.value()
+		},
+
 		/*
 		 * For each selected variable, the returned array contains a url string parameter for each time series option and
 		 * selected variable.
@@ -97,23 +107,14 @@ define([
 		 */
 		getSelectedVariablesUrlParameters : function() {
 			var datasetCollections = this.get('datasetCollections');
-			var timeSeriesOptions = this.get('timeSeriesOptions');
-			var variableUrlParams = _.chain(datasetCollections)
+			return _.chain(datasetCollections)
 				.map(function(datasetCollection) {
 					return datasetCollection.getSelectedVariablesUrlParams();
 				})
 				.flatten()
-				.value();
-
-			return timeSeriesOptions.chain()
-				.map(function(timeSeriesOptionModel) {
-					var statParameter = timeSeriesOptionModel.getStatParameter();
-					var statColName = timeSeriesOptionModel.getColName();
-					return _.map(variableUrlParams, function(urlParam) {
-						return urlParam.getUrlParameter(statParameter, statColName);
-					});
+				.map(function(variableParam) {
+					return variableParam.getUrlParameter();
 				})
-				.flatten()
 				.value();
 		},
 
@@ -188,6 +189,7 @@ define([
 					var startDate = this.get('startDate');
 					var endDate = this.get('endDate');
 					var selectedVarsDateRange = this.getSelectedVarsDateRange();
+					var selectedVars = this.getSelectedVariables();
 
 					if ((startDate) && (endDate)) {
 						outputDateRange = {
@@ -201,13 +203,18 @@ define([
 							end : selectedVarsDateRange.end
 						};
 					}
+
+					//Initialize time series options for each selected variable to return raw
+					_.each(selectedVars, function(variableModel) {
+						variableModel.set('timeSeriesOptions', [{statistic : 'raw'}]);
+					});
+					
 					this.set({
 						outputFileFormat : DEFAULT_OUTPUT_FORMAT,
 						outputTimeZone : DEFAULT_TIME_ZONE,
 						outputTimeGapInterval : DEFAULT_TIME_INTERVAL,
 						outputDateFormat : DEFAULT_OUTPUT_DATE_FORMAT,
 						outputDateRange : outputDateRange,
-						timeSeriesOptions : new TimeSeriesOptionCollection([{statistic : 'raw'}])
 					});
 			}
 		},

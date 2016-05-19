@@ -22,6 +22,15 @@ define([
 			});
 		},
 
+		getSelectedVariables : function() {
+			return this.chain()
+				.map(function(datasetModel) {
+					return datasetModel.get('variables').getSelectedVariables();
+				})
+				.flatten()
+				.value();
+		},
+
 		/*
 		 * The startDate and endDate values in each model are assumed to be moment objects
 		 * @param {Moment} startDate

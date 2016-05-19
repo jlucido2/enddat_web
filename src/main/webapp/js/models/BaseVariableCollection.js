@@ -53,17 +53,17 @@ define([
 		getSelectedDateRange : function() {
 			var getStartDate = function(variableModel) {
 				return variableModel.get('startDate');
-			}
+			};
 			var getEndDate = function(variableModel) {
 				return variableModel.get('endDate');
-			}
+			};
 			var selectedVars = this.getSelectedVariables();
 			var result = undefined;
 			if (selectedVars.length > 0) {
 				result = {
 					start : moment.min(_.map(selectedVars, getStartDate)),
 					end : moment.max(_.map(selectedVars, getEndDate))
-				}
+				};
 			}
 
 			return result;

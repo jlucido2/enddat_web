@@ -16,14 +16,21 @@ define([
 		getSelectedUrlParams : function(siteAttributes) {
 			var selectedVars = this.getSelectedVariables();
 
-			return _.map(selectedVars, function(model) {
-				var varAttrs = model.attributes;
-				return new VariableParameter ({
-					name : 'NWIS',
-					value : siteAttributes.siteNo + ':' + varAttrs.parameterCd + ':' + varAttrs.statCd,
-					colName : varAttrs.name + ': ' + siteAttributes.siteNo
-				});
-			});
+			return _.chain(selectedVars)
+				.map(function(model) {
+					var varAttrs = model.attributes;
+					var varUrlParams = _.map(varAttrs.timeSeriesOptions, function(tsOption) {
+						return new VariableParameter ({
+							name : 'NWIS',
+							value : siteAttributes.siteNo + ':' + varAttrs.parameterCd + ':' + varAttrs.statCd,
+							colName : varAttrs.name + ': ' + siteAttributes.siteNo,
+							timeSeriesOption : tsOption
+						});
+					});
+					return varUrlParams;
+				})
+				.flatten()
+				.value();
 		}
 	});
 

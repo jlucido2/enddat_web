@@ -4,37 +4,46 @@
 define([
 	'utils/VariableParameter'
 ], function(VariableParameter) {
-	xdescribe('utils/VariableParameter', function() {
+	describe('utils/VariableParameter', function() {
 		var testObject;
 
-		describe('Tests for getUrlParameter', function() {
+		describe('Tests for getUrlParameters', function() {
 
-			it('Expects the if the timeSeriesOption , nothing gets appended to the value or column name', function() {
+			beforeEach(function() {
 				testObject = new VariableParameter({
 					name : 'DatasetId',
 					value : '145:88:77',
-					colName : 'Temperature',
-					timeSeriesOption : {statistic : 'raw'}
-				});
-
-				expect(testObject.getUrlParameter()).toEqual({
-					name : 'DatasetId',
-					value : '145:88:77!Temperature'
+					colName : 'Temperature'
 				});
 			});
 
-			it('Expects that if the statistic is not raw, the value and col name contain the timeSeriesOption parameters', function() {
-				testObject = new VariableParameter({
-					name : 'DatasetId',
-					value : '145:88:77',
-					colName : 'Temperature',
-					timeSeriesOption : {statistic : 'Min', colName : 'Minimum', timeSpan : 2}
-				});
+			it('Expects that if no timeSeriesOptions are passed, the empty array is returned', function() {
+				expect(testObject.getUrlParameters([])).toEqual([]);
+			});
 
-				expect(testObject.getUrlParameter()).toEqual({
+			it('Expects that if the timeSeriesOptions are passed a single value and the statistic value is raw, no statistic is appended to the value', function() {
+				expect(testObject.getUrlParameters([{statistic : 'raw'}])).toEqual([{
 					name : 'DatasetId',
-					value : '145:88:77:Min:2!Temperature Minimum 2 hr'
-				});
+					value : '145:88:77!Temperature'
+				}]);
+			});
+
+			it('Expects that if the timeSeriesOption is passed a statistic other than raw then the value and col name reflect the statistic', function() {
+				expect(testObject.getUrlParameters([{statistic : 'Min', timeSpan : '24'}])).toEqual([{
+					name : 'DatasetId',
+					value : '145:88:77:Min:24!Temperature Min 24 hr'
+				}]);
+			});
+
+			it('Expects that if more than two time series options are specified the returned array will contain two objects', function() {
+				var tsOptions = [{
+					statistic : 'Min',
+					timeSpan : '2'
+				}, {
+					statistic : 'Max',
+					timeSpan : '24'
+				}];
+				expect(testObject.getUrlParameters(tsOptions).length).toBe(2);
 			});
 		});
 	});

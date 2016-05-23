@@ -4,9 +4,8 @@ define([
 	'jquery',
 	'underscore',
 	'views/BaseView',
-	'hbs!hb_templates/timeSeriesOptionsPopup',
 	'hbs!hb_templates/selectedVariableTsOptions'
-], function($, _, BaseView, popoverTemplate, selectedVariableTsOptions) {
+], function($, _, BaseView, selectedVariableTsOptions) {
 	"use strict";
 
 	var TIME_SERIES_CONTEXT = [

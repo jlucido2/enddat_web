@@ -18,8 +18,6 @@ define([
 
 	var BASE_URL = module.config().baseUrl;
 
-	var ERROR_ALERT_TEMPLATE = Handlebars.compile('<div class="alert alert-danger" role="alert">{{message}}</div>');
-
 	var getUrl = function(workflowModel) {
 		var attrs = workflowModel.attributes;
 		var varParams = _.chain(workflowModel.getSelectedVariables())
@@ -86,11 +84,12 @@ define([
 			this.variableTsOptionViews = [];
 			_.each(selectedVariableModels, function(variableModel) {
 				var $newRow = $('<tr />');
-				$tbody.append($newRow);
 				var optionView = new VariableTsOptionView({
 					el : $newRow,
 					model : variableModel
 				});
+
+				$tbody.append($newRow);
 				optionView.render();
 				self.variableTsOptionViews.push(optionView);
 			});
@@ -120,6 +119,7 @@ define([
 			_.each(this.variableTsOptionViews, function(view) {
 				view.remove();
 			});
+			this.variableTsOptionViews = undefined;
 			BaseCollapsiblePanelView.prototype.remove.apply(this, arguments);
 		},
 

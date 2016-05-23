@@ -1,36 +1,76 @@
 /* jslint browser: true */
-/* global spyOn, expect */
+/* global spyOn, expect, jasmine */
 
 define([
+	'squire',
 	'jquery',
 	'moment',
 	'Config',
+	'bootstrap-datetimepicker',
+	'utils/VariableParameter',
 	'models/WorkflowStateModel',
-	'views/ProcessDataView'
-], function($, moment, Config, WorkflowStateModel, ProcessDataView) {
+	'models/BaseVariableCollection',
+	'views/BaseView'
+], function(Squire, $, moment, Config, datetimepicker, VariableParameter, WorkflowStateModel, BaseVariableCollection, BaseView) {
 	describe('views/ProcessDataView', function() {
-		var testView;
+		var testView, ProcessDataView;
 		var $testDiv;
 		var testModel;
 
-		beforeEach(function() {
+		var setElVariableTsOptionView, renderVariableTsOptionView, removeVariableTsOptionView;
+
+		var injector;
+
+		beforeEach(function(done) {
 			$('body').append('<div id="test-div"></div>');
 			$testDiv = $('#test-div');
-			testModel = new WorkflowStateModel({
-				step : Config.PROCESS_DATA_STEP,
-				outputDateRange : {
-					start : moment('2001-02-05', Config.DATE_FORMAT),
-					end : moment('2005-04-01', Config.DATE_FORMAT)
-				}
-			});
 
-			testView = new ProcessDataView({
-				el : $testDiv,
-				model : testModel
+			setElVariableTsOptionView = jasmine.createSpy('setElVariableTsOptionView');
+			renderVariableTsOptionView = jasmine.createSpy('renderVariableTsOptionView');
+			removeVariableTsOptionView = jasmine.createSpy('removeVariableTsOptionView');
+
+			injector = new Squire();
+
+			injector.mock('views/VariableTsOptionView', BaseView.extend({
+				setElement : setElVariableTsOptionView.and.returnValue({
+					render : renderVariableTsOptionView
+				}),
+				render : renderVariableTsOptionView,
+				remove : removeVariableTsOptionView
+			}));
+
+			injector.mock('jquery', $);
+			injector.mock('bootstrap-datetimepicker', datetimepicker);
+
+			injector.require(['views/ProcessDataView'], function(view) {
+				ProcessDataView = view;
+
+				var variableCollection = new BaseVariableCollection([
+					{x : '2', y: '2', selected : true, variableParameter : new VariableParameter({name : 'DatasetId', value : '2:2', colName : 'Var1'})},
+					{x : '3', y: '3', selected : true, variableParameter : new VariableParameter({name : 'DatasetId', value : '3:3', colName : 'Var1'})}
+				]);
+
+				testModel = new WorkflowStateModel({
+					step : Config.PROCESS_DATA_STEP,
+					outputDateRange : {
+						start : moment('2001-02-05', Config.DATE_FORMAT),
+						end : moment('2005-04-01', Config.DATE_FORMAT)
+					}
+				});
+
+				spyOn(testModel, 'getSelectedVariables').and.returnValue(variableCollection.models);
+
+				testView = new ProcessDataView({
+					el : $testDiv,
+					model : testModel
+				});
+
+				done();
 			});
 		});
 
 		afterEach(function() {
+			injector.remove();
 			testView.remove();
 			$testDiv.remove();
 		});
@@ -57,6 +97,26 @@ define([
 				expect($startDate.data('DateTimePicker').maxDate()).toEqual(moment('2005-04-01', Config.DATE_FORMAT));
 				expect($endDate.data('DateTimePicker').minDate()).toEqual(moment('2001-02-05', Config.DATE_FORMAT));
 				expect($endDate.data('DateTimePicker').maxDate()).toEqual(moment('2005-06-01', Config.DATE_FORMAT));
+			});
+
+			it('Expects that a variableTsOptionView is created for each selected variable', function() {
+				expect(renderVariableTsOptionView.calls.count()).toBe(2);
+				expect(testView.variableTsOptionViews.length).toBe(2);
+			});
+		});
+
+		describe('Tests for remove', function() {
+			beforeEach(function() {
+				spyOn(testModel, 'getSelectedVarsDateRange').and.returnValue({
+					start : moment('2000-01-04', Config.DATE_FORMAT),
+					end : moment('2005-06-01', Config.DATE_FORMAT)
+				});
+				testView.render();
+			});
+
+			it('The variableTsOptionView remove will be called  for all the created sub views', function() {
+				testView.remove();
+				expect(removeVariableTsOptionView.calls.count()).toBe(2);
 			});
 		});
 
@@ -104,7 +164,7 @@ define([
 				expect(result.end.format(Config.DATE_FORMAT)).toEqual('2005-04-01');
 			});
 
-			it('Expects that if end date picer is updated, the model is update', function() {
+			it('Expects that if end date picker is updated, the model is update', function() {
 				var result;
 				$('#output-end-date').val('2004-11-01').trigger('change');
 				result = testModel.get('outputDateRange');

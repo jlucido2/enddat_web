@@ -38,7 +38,7 @@ define([
 			this.context.variableParameter = this.model.attributes.variableParameter;
 			BaseView.prototype.render.apply(this, arguments);
 
-			this.updateTimeSeriesOptions(this.model.get('timeSeriesOptions'));
+			this.updateTimeSeriesOptions(this.model, this.model.get('timeSeriesOptions'));
 			this.listenTo(this.model, 'change:timeSeriesOptions', this.updateTimeSeriesOptions);
 			return this;
 		},

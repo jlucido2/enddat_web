@@ -4,8 +4,8 @@
 
 define([
 	'models/PrecipitationCollection',
-	'models/PrecipitationVariableCollection'
-], function(PrecipitationCollection, PrecipitationVariableCollection) {
+	'models/BaseVariableCollection'
+], function(PrecipitationCollection, BaseVariableCollection) {
 	describe('models/PrecipitationCollection', function() {
 		var fakeServer;
 		var testCollection;
@@ -59,8 +59,8 @@ define([
 				failSpy = jasmine.createSpy('failSpy');
 
 				testCollection.reset([
-					{variables : new PrecipitationVariableCollection([{x : '1', y: '2'}]), lon : '-100', lat : '43.0'},
-					{variables : new PrecipitationVariableCollection([{x : '1', y: '3'}]), lon : '-100', lat : '44.0'}
+					{variables : new BaseVariableCollection([{x : '1', y: '2'}]), lon : '-100', lat : '43.0'},
+					{variables : new BaseVariableCollection([{x : '1', y: '3'}]), lon : '-100', lat : '44.0'}
 				]);
 
 				fetchPromise = testCollection.fetch(bbox).done(successSpy).fail(failSpy);

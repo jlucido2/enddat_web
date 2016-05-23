@@ -8,16 +8,6 @@ define([
 ], function($, _, BaseView, selectedVariableTsOptions) {
 	"use strict";
 
-	var TIME_SERIES_CONTEXT = [
-		{statName : 'raw', statTitle : 'Raw data', timeSpanRequired : false},
-		{statName : 'Min', statTitle : 'Minimum', timeSpanRequired : true},
-		{statName : 'Max', statTitle : 'Maximum', timeSpanRequired : true},
-		{statName : 'Sum', statTitle : 'Summation', timeSpanRequired : true},
-		{statName : 'Diff', statTitle : 'Difference', timeSpanRequired : true},
-		{statName : 'MaxDifference', statTitle : 'Max Difference', timeSpanRequired : true},
-		{statName : 'StDev', statTitle : 'Standard Deviation', timeSpanRequired : true}
-	];
-
 	/*
 	 * @constructs
 	 * @param {Object} options
@@ -33,7 +23,6 @@ define([
 		template : selectedVariableTsOptions,
 
 		render : function() {
-			this.context.id = this.model.cid;
 			this.context.variableParameter = this.model.attributes.variableParameter;
 			BaseView.prototype.render.apply(this, arguments);
 
@@ -55,7 +44,7 @@ define([
 					return tsOption.statistic === stat;
 				});
 				if (stat === 'raw') {
-					$(this).prop('checked', (statTsOption));
+					$(this).prop('checked', (statTsOption) ? true : false);
 				}
 				else {
 					$(this).val((statTsOption) ? statTsOption.timeSpan : '');
@@ -72,18 +61,20 @@ define([
 			var $input = $(ev.currentTarget);
 			var stat = $input.attr('name');
 			var val = $input.val();
-			var isStat = function(tsOption) {
+			var isThisStat = function(tsOption) {
 				return tsOption.statistic === stat;
 			};
-			var thisTsOption = _.find(newTimeSeriesOptions, isStat);
 
-			newTimeSeriesOptions = _.reject(newTimeSeriesOptions, isStat);
+			// Remove the time series option that change from the array if it is present
+			newTimeSeriesOptions = _.reject(newTimeSeriesOptions, isThisStat);
+
+			//Update the timeSeriesOption if it is now active
 			if (stat === 'raw') {
 				if ($input.is(':checked')) {
 					newTimeSeriesOptions.push({'statistic' : 'raw'});
 				}
 			}
-			else {
+			else if (val) {
 				newTimeSeriesOptions.push({
 					statistic : stat,
 					timeSpan : val

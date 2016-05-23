@@ -4,7 +4,7 @@
 define([
 	'utils/VariableParameter'
 ], function(VariableParameter) {
-	describe('utils/VariableParameter', function() {
+	xdescribe('utils/VariableParameter', function() {
 		var testObject;
 
 		describe('Tests for getUrlParameter', function() {

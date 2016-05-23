@@ -57,7 +57,7 @@ define([
 							y : y,
 							startDate : START_DATE,
 							endDate : today,
-							variableParam : new VariableParameter({
+							variableParameter : new VariableParameter({
 								name : 'Precip',
 								value : y + ':' + x + ':' + this.timeBounds + ':' + variableId,
 								colName : variableName + ' [' + y + ',' + x + ']',

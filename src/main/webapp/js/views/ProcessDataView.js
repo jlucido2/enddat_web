@@ -22,7 +22,13 @@ define([
 
 	var getUrl = function(workflowModel) {
 		var attrs = workflowModel.attributes;
-		var varParams = workflowModel.getSelectedVariablesUrlParameters();
+		var varParams = _.chain(workflowModel.getSelectedVariables())
+			.map(function(variable) {
+				return variable.get('variableParameter').getUrlParameters(variable.get('timeSeriesOptions'));
+			})
+			.flatten()
+			.value();
+
 		var params = [
 			{name : 'style', value : attrs.outputFileFormat},
 			{name : 'DateFormat', value : attrs.outputDateFormat},

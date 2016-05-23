@@ -94,7 +94,7 @@ define([
 									count : variable.count_nu,
 									variableParameter : new VariableParameter({
 										name : 'NWIS',
-										value : variable.site_no + ':' + variable.parm_cd + statCd,
+										value : variable.site_no + ':' + variable.parm_cd + ':' +  statCd,
 										colName : name + ':' + variable.site_no
 									})
 								};

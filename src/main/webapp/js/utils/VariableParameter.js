@@ -1,6 +1,8 @@
 /* jslint browser: true */
 
-define([], function() {
+define([
+	'underscore'
+], function(_) {
 	"use strict";
 
 	/*
@@ -22,18 +24,18 @@ define([], function() {
 		 */
 		this.getUrlParameters = function(timeSeriesOptions) {
 			return _.map(timeSeriesOptions, function(tsOption) {
-				var isRaw = (this.timeSeriesOption.statistic === 'raw');
-				var statParam = (isRaw) ? '' : this.timeSeriesOption.statistic + ':' + this.timeSeriesOption.timeSpan;
-				var statColName = (isRaw) ? '' : this.timeSeriesOption.colName + ' ' + this.timeSeriesOption.timeSpan + ' hr';
+				var isRaw = (tsOption.statistic === 'raw');
+				var statParam = (isRaw) ? '' : tsOption.statistic + ':' + tsOption.timeSpan;
+				var statColName = (isRaw) ? '' : tsOption.statistic + ' ' + tsOption.timeSpan + ' hr';
 				var value = (statParam) ? this.value + ':' + statParam : this.value;
 				var colName = (statColName) ? this.colName + ' ' + statColName : this.colName;
 
 				return {
 					name : this.name,
-					value : value + '!' + this.colName
-				}
-			});
-		}
+					value : value + '!' + colName
+				};
+			}, this);
+		};
 	};
 
 	return VariableParameter;

@@ -1,7 +1,7 @@
 <div>
-	{{name}} {{colName}} 
+	{{variableParameter.name}} {{variableParameter.colName}} 
 	{{#each timeSeriesOptions}}
-		{{#if @first}}{{else}}<br /><{{/if}}
+		{{#if @first}}{{else}}<br />{{/if}}
 		{{#if timeSpan}}{{statistic}} {{timeSpan}} hr{{/if}}
 	{{/each}}
 	<button type="button" class="btn btn-default add-ts-btn" data-id="{{id}}">Add</button>

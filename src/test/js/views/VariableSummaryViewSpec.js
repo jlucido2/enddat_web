@@ -11,7 +11,7 @@ define([
 	'models/NWISVariableCollection',
 	'views/VariableSummaryView'
 ], function($, _, moment, Config, WorkflowStateModel, PrecipitationVariableCollection, NWISVariableCollection, VariableSummaryView) {
-	describe('views/VariableSummaryView', function() {
+	xdescribe('views/VariableSummaryView', function() {
 		var testView;
 		var $testDiv;
 		var testModel;

@@ -1,8 +1,21 @@
 <h4>Time Series Processing Options</h4>
 <div class="time-series-options-container">
-	{{#each selectedVariables}}
-	<div class="selected-variable-container" data-id="{{id}}"></div>
-	{{/each}}
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Dataset</th>
+				<th>Variable</th>
+				<th>Raw</th>
+				<th>Min</th>
+				<th>Max</th>
+				<th>Sum</th>
+				<th>Diff</th>
+				<th>Max Diff</th>
+				<th>St Dev</th>
+			</tr>
+		</thead>
+		<tbody></tbody>
+	</table>
 </div>
 </div>
 <div class="form-group">

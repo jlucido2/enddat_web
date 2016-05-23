@@ -1,8 +1,9 @@
-<div>
-	{{variableParameter.name}} {{variableParameter.colName}} 
-	{{#each timeSeriesOptions}}
-		{{#if @first}}{{else}}<br />{{/if}}
-		{{#if timeSpan}}{{statistic}} {{timeSpan}} hr{{/if}}
-	{{/each}}
-	<button type="button" class="btn btn-default add-ts-btn" data-id="{{id}}">Add</button>
-</div>
+<td>{{variableParameter.name}}</td>
+<td>{{variableParameter.colName}}</td>
+<td><input type="checkbox" name="raw" /></td>
+<td><input type="number" min="1" max="9999" size="4" name="Min"/></td>
+<td><input type="number" min="1" max="9999" size="4" name="Max"/></td>
+<td><input type="number" min="1" max="9999" size="4" name="Sum"/></td>
+<td><input type="number" min="1" max="9999" size="4" name="Diff"/></td>
+<td><input type="number" min="1" max="9999" size="4" name="MaxDifference"/></td>
+<td><input type="number" min="1" max="9999" size="4" name="StDev"/></td>

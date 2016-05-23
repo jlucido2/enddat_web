@@ -79,15 +79,16 @@ define([
 			var selectedVarsDateRange = this.model.getSelectedVarsDateRange();
 			var outputDateRange = this.model.get('outputDateRange');
 			var selectedVariableModels = this.model.getSelectedVariables();
+			var $tbody;
 
-			this.context.selectedVariables = _.map(selectedVariableModels, function(varModel) {
-				return {id: varModel.cid};
-			});
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
+			$tbody = this.$('tbody');
 			this.variableTsOptionViews = [];
 			_.each(selectedVariableModels, function(variableModel) {
+				var $newRow = $('<tr />');
+				$tbody.append($newRow);
 				var optionView = new VariableTsOptionView({
-					el : $utils.createDivInContainer(self.$('.selected-variable-container[data-id="' + variableModel.cid + '"]')),
+					el : $newRow,
 					model : variableModel
 				});
 				optionView.render();

@@ -3,11 +3,10 @@
 define([
 	'jquery',
 	'underscore',
-	'bootstrap',
 	'views/BaseView',
 	'hbs!hb_templates/timeSeriesOptionsPopup',
 	'hbs!hb_templates/selectedVariableTsOptions'
-], function($, _, bootstrap, BaseView, popoverTemplate, selectedVariableTsOptions) {
+], function($, _, BaseView, popoverTemplate, selectedVariableTsOptions) {
 	"use strict";
 
 	var TIME_SERIES_CONTEXT = [
@@ -28,46 +27,18 @@ define([
 	 */
 	var view = BaseView.extend({
 
+		events : {
+			'change input' : 'changeTimeSeriesOptions'
+		},
+
 		template : selectedVariableTsOptions,
 
 		render : function() {
-			var self = this;
-			this.context = this.model.attributes;
 			this.context.id = this.model.cid;
+			this.context.variableParameter = this.model.attributes.variableParameter;
 			BaseView.prototype.render.apply(this, arguments);
 
-			//Set up time series popovers
-			$('.add-ts-btn').each(function() {
-				var popupContext = _.map(TIME_SERIES_CONTEXT, function(tsContext) {
-					var tsOption = _.find(self.context.timeSeriesOptions, function(thisOption) {
-						return thisOption.statistic === tsContext.statName;
-					});
-					var result;
-					if (tsOption) {
-						result = _.extend({checked : true, timeSpan : tsOption.timeSpan}, tsContext);
-					}
-					else {
-						result = tsContext;
-					}
-					return result;
-				});
-
-				$(this).popover({
-					placement : 'right',
-					title : 'Select Time Series Processing Options',
-					html : true,
-					content : popoverTemplate({
-						timeSeriesOptions : popupContext,
-						variableModelId : $(this).data('id')
-					})
-				});
-				$(this).on('shown.bs.popover', function() {
-					self.$('.update-time-series').click(function(ev) {
-						self.changeTimeSeriesOptions(ev);
-					});
-				});
-			});
-
+			this.updateTimeSeriesOptions(this.model.get('timeSeriesOptions'));
 			this.listenTo(this.model, 'change:timeSeriesOptions', this.updateTimeSeriesOptions);
 			return this;
 		},
@@ -76,9 +47,21 @@ define([
 		 * Model event listeners
 		 */
 
-		updateTimeSeriesOptions : function() {
-			this.$el.find('>div').remove();
-			this.render();
+		updateTimeSeriesOptions : function(model, timeSeriesOptions) {
+			var $tsInputs = this.$('input');
+
+			$tsInputs.each(function() {
+				var stat = $(this).attr('name');
+				var statTsOption = _.find(timeSeriesOptions, function(tsOption) {
+					return tsOption.statistic === stat;
+				});
+				if (stat === 'raw') {
+					$(this).prop('checked', (statTsOption));
+				}
+				else {
+					$(this).val((statTsOption) ? statTsOption.timeSpan : '');
+				}
+			});
 		},
 
 		/*
@@ -86,21 +69,29 @@ define([
 		 */
 
 		changeTimeSeriesOptions : function(ev) {
-			console.log('In changeTimeSeriesOptions');
-			var $popover = $(ev.currentTarget).parent();
-			var timeSeriesOptions = [];
+			var newTimeSeriesOptions = _.clone(this.model.get('timeSeriesOptions'));
+			var $input = $(ev.currentTarget);
+			var stat = $input.attr('name');
+			var val = $input.val();
+			var isStat = function(tsOption) {
+				return tsOption.statistic === stat;
+			};
+			var thisTsOption = _.find(newTimeSeriesOptions, isStat);
 
-			$popover.find('input:checked').each(function() {
-				var $timeSpan = $(this).parents('.ts-option-div').find('.time-span-input');
-				var tsOption = {statistic : $(this).val()};
-				if ($timeSpan.length > 0) {
-					tsOption.timeSpan = $timeSpan.val();
+			newTimeSeriesOptions = _.reject(newTimeSeriesOptions, isStat);
+			if (stat === 'raw') {
+				if ($input.is(':checked')) {
+					newTimeSeriesOptions.push({'statistic' : 'raw'});
 				}
-				timeSeriesOptions.push(tsOption);
-			});
-			this.model.set('timeSeriesOptions', timeSeriesOptions);
+			}
+			else {
+				newTimeSeriesOptions.push({
+					statistic : stat,
+					timeSpan : val
+				});
+			}
 
-			this.$('.add-ts-btn').popover('hide');
+			this.model.set('timeSeriesOptions', newTimeSeriesOptions);
 		}
 	});
 

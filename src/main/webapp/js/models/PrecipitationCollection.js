@@ -43,6 +43,8 @@ define([
 		parse : function(xml) {
 			var result = [];
 			var today = moment();
+			var self = this;
+
 			$utils.xmlFind($(xml), 'wfs', 'member').each(function() {
 				var $this = $(this);
 				var x = getInteger($utils.xmlFind($this, 'sb', 'x').text());
@@ -59,7 +61,7 @@ define([
 							endDate : today,
 							variableParameter : new VariableParameter({
 								name : 'Precip',
-								value : y + ':' + x + ':' + this.timeBounds + ':' + variableId,
+								value : y + ':' + x + ':' + self.timeBounds + ':' + variableId,
 								colName : variableName + ' [' + y + ',' + x + ']',
 							})
 						}

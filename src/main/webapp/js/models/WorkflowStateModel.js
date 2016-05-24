@@ -198,7 +198,7 @@ define([
 						outputTimeZone : DEFAULT_TIME_ZONE,
 						outputTimeGapInterval : DEFAULT_TIME_INTERVAL,
 						outputDateFormat : DEFAULT_OUTPUT_DATE_FORMAT,
-						outputDateRange : outputDateRange,
+						outputDateRange : outputDateRange
 					});
 			}
 		},

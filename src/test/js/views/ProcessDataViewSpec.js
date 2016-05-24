@@ -39,6 +39,7 @@ define([
 				remove : removeVariableTsOptionView
 			}));
 
+			// Need to inject these so that the jquery and bootstrap datetimepicker is the same instance used in the tests
 			injector.mock('jquery', $);
 			injector.mock('bootstrap-datetimepicker', datetimepicker);
 

@@ -161,10 +161,8 @@ define([
 		},
 
 		showUrl : function(ev) {
-			var url;
-			var $link;
-			url = getUrl(this.model);
-			$link = this.$('.url-container a');
+			var url = getUrl(this.model);
+			var $link = this.$('.url-container a');
 			ev.preventDefault();
 
 			$link.attr('href', url).html(url);

@@ -6,13 +6,14 @@ define([
 	'moment',
 	'handlebars',
 	'bootstrap-datetimepicker',
+	'backbone.stickit',
 	'module',
 	'Config',
 	'utils/jqueryUtils',
 	'views/BaseCollapsiblePanelView',
 	'views/VariableTsOptionView',
 	'hbs!hb_templates/processData'
-], function($, _, moment, Handlebars, datetimepicker, module, Config, $utils, BaseCollapsiblePanelView,
+], function($, _, moment, Handlebars, datetimepicker, stickit, module, Config, $utils, BaseCollapsiblePanelView,
 	VariableTsOptionView, hbTemplate) {
 	"use strict";
 
@@ -32,6 +33,7 @@ define([
 			{name : 'DateFormat', value : attrs.outputDateFormat},
 			{name : 'TZ', value : attrs.outputTimeZone},
 			{name : 'timeInt', value : attrs.outputTimeGapInterval},
+			{name : 'fill', value : attrs.outputMissingValue},
 			{name : 'beginPosition', value : attrs.outputDateRange.start.format(Config.DATE_FORMAT)},
 			{name : 'endPosition', value : attrs.outputDateRange.end.format(Config.DATE_FORMAT)}
 		];
@@ -59,6 +61,14 @@ define([
 			'dp.change #output-end-date-div' : 'changeOutputEndDate'
 		},
 
+		bindings: {
+			'#output-date-format-input' : 'outputDateFormat',
+			'#output-time-zone-input' : 'outputTimeZone',
+			'#acceptable-data-gap-input' : 'outputTimeGapInterval',
+			'#output-file-format-input' : 'outputFileFormat',
+			'#missing-value-input' : 'outputMissingValue'
+		},
+
 		render : function() {
 			var self = this;
 			var selectedVarsDateRange = this.model.getSelectedVarsDateRange();
@@ -67,6 +77,7 @@ define([
 			var $tbody;
 
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
+			this.stickit();
 			$tbody = this.$('tbody');
 			this.variableTsOptionViews = [];
 			_.each(selectedVariableModels, function(variableModel) {

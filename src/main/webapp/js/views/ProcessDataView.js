@@ -19,7 +19,7 @@ define([
 
 	var BASE_URL = module.config().baseUrl;
 
-	var getUrl = function(workflowModel) {
+	var getUrl = function(workflowModel, download) {
 		var attrs = workflowModel.attributes;
 		var varParams = _.chain(workflowModel.getSelectedVariables())
 			.map(function(variable) {
@@ -37,6 +37,9 @@ define([
 			{name : 'beginPosition', value : attrs.outputDateRange.start.format(Config.DATE_FORMAT)},
 			{name : 'endPosition', value : attrs.outputDateRange.end.format(Config.DATE_FORMAT)}
 		];
+		if (download) {
+			params.push({name : 'download', value: 'true'});
+		}
 
 		return BASE_URL + 'service/execute?' + $.param(params.concat(varParams));
 	};
@@ -56,6 +59,7 @@ define([
 		additionalEvents : {
 			'click .show-url-btn' : 'showUrl',
 			'click .get-data-btn' : 'getData',
+			'click .download-data-btn' : 'downloadData',
 			//To set the model value from a datetimepicker, hand
 			'dp.change #output-start-date-div' : 'changeOutputStartDate',
 			'dp.change #output-end-date-div' : 'changeOutputEndDate'
@@ -182,6 +186,11 @@ define([
 		getData : function(ev) {
 			ev.preventDefault();
 			window.open(getUrl(this.model), '_blank');
+		},
+
+		downloadData : function(ev) {
+			ev.preventDefault();
+			window.location.assign(getUrl(this.model, true));
 		}
 	});
 

@@ -155,7 +155,7 @@ define([
 				testView.render();
 			});
 
-			it('Expects that if the start date date time picker is updated, the model is updated', function() {
+			it('Expects that if the start date picker is updated, the model is updated', function() {
 				var result;
 				$('#output-start-date').val('2003-01-04').trigger('change');
 				result = testModel.get('outputDateRange');
@@ -171,6 +171,18 @@ define([
 
 				expect(result.start.format(Config.DATE_FORMAT)).toEqual('2001-02-05');
 				expect(result.end.format(Config.DATE_FORMAT)).toEqual('2004-11-01');
+			});
+
+			it('Expects that if the start date picker is cleared, the model\'s outputDateRange.start is set to the end of the selected variable range', function() {
+				$('#output-start-date').val('2003-01-04').trigger('change');
+				$('#output-start-date').val('').trigger('change');
+				expect(testModel.get('outputDateRange').start.format(Config.DATE_FORMAT)).toEqual('2000-01-04');
+			});
+
+			it('Expects that if the end date picker is cleared, the model\'s outputDateRange.end is set to the end of the selected variable range', function() {
+				$('#output-end-date').val('2004-01-04').trigger('change');
+				$('#output-end-date').val('').trigger('change');
+				expect(testModel.get('outputDateRange').end.format(Config.DATE_FORMAT)).toEqual('2005-06-01');
 			});
 		});
 	});

@@ -39,19 +39,6 @@ define([
 		return BASE_URL + 'service/execute?' + $.param(params.concat(varParams));
 	};
 
-	var validTimeSpan = function($input) {
-		var isValid;
-		var timeSpan;
-		if ($input.length === 0) {
-			isValid = true;
-		}
-		else {
-			timeSpan = $input.val();
-			isValid = ((timeSpan) && (parseFloat(timeSpan) > 0)) ? true : false;
-		}
-		return isValid;
-	};
-
 	/*
 	 * @constructs
 	 * @param {Object} options
@@ -140,15 +127,6 @@ define([
 		/*
 		 * DOM Event Handlers
 		 */
-
-		removeErrorAlert : function(ev) {
-			var $tsContainer = $(ev.currentTarget).parents('.ts-option-div');
-			var isChecked = $tsContainer.find('.stat-type-checkbox').is(':checked');
-			var $timeSpan = $tsContainer.find('.time-span-input');
-			if (validTimeSpan($timeSpan)) {
-				$tsContainer.find('.alert').remove();
-			}
-		},
 
 		changeOutputStartDate : function(ev) {
 			var currentOutputDateRange = this.model.get('outputDateRange');

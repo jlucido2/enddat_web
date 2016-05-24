@@ -80,7 +80,14 @@ define([
 			beforeEach(function() {
 				spyOn(testModel, 'getSelectedVarsDateRange').and.returnValue({
 					start : moment('2000-01-04', Config.DATE_FORMAT),
-					end : moment('2005-06-01', Config.DATE_FORMAT)
+					end : moment('2005-06-01', Config.DATE_FORMAT),
+				});
+				testModel.set({
+					outputFileFormat : 'tab',
+					outputDateFormat : 'Excel',
+					outputTimeZone : '0_GMT',
+					outputTimeGapInterval : '6',
+					outputMissingValue : 'NaN'
 				});
 				testView.render();
 			});
@@ -103,6 +110,14 @@ define([
 			it('Expects that a variableTsOptionView is created for each selected variable', function() {
 				expect(renderVariableTsOptionView.calls.count()).toBe(2);
 				expect(testView.variableTsOptionViews.length).toBe(2);
+			});
+
+			it('Expects the remaining configuration inputs to be initialized', function() {
+				expect($testDiv.find('#output-date-format-input').val()).toEqual('Excel');
+				expect($testDiv.find('#output-time-zone-input').val()).toEqual('0_GMT');
+				expect($testDiv.find('#output-file-format-input').val()).toEqual('tab');
+				expect($testDiv.find('#missing-value-input').val()).toEqual('NaN');
+				expect($testDiv.find('#acceptable-data-gap-input').val()).toEqual('6');
 			});
 		});
 
@@ -145,6 +160,21 @@ define([
 				expect($endDate.data('DateTimePicker').maxDate()).toEqual(moment('2005-06-01', Config.DATE_FORMAT));
 				expect($endDate.data('DateTimePicker').date()).toEqual(moment('2004-01-04', Config.DATE_FORMAT));
 			});
+
+			it('Expects the remaining output configuration DOM elements to be updated when the model is updated', function() {
+				testModel.set({
+					outputFileFormat : 'tab',
+					outputDateFormat : 'Excel',
+					outputTimeZone : '0_GMT',
+					outputTimeGapInterval : '6',
+					outputMissingValue : 'NaN'
+				});
+				expect($testDiv.find('#output-date-format-input').val()).toEqual('Excel');
+				expect($testDiv.find('#output-time-zone-input').val()).toEqual('0_GMT');
+				expect($testDiv.find('#output-file-format-input').val()).toEqual('tab');
+				expect($testDiv.find('#missing-value-input').val()).toEqual('NaN');
+				expect($testDiv.find('#acceptable-data-gap-input').val()).toEqual('6');
+			});
 		});
 
 		describe('DOM event listener tests', function() {
@@ -184,6 +214,23 @@ define([
 				$('#output-end-date').val('2004-01-04').trigger('change');
 				$('#output-end-date').val('').trigger('change');
 				expect(testModel.get('outputDateRange').end.format(Config.DATE_FORMAT)).toEqual('2005-06-01');
+			});
+
+			it('Expects that if an output configuration input is updated the model is updated', function() {
+				$('#output-date-format-input').val('ISO').trigger('change');
+				expect(testModel.get('outputDateFormat')).toEqual('ISO');
+
+				$('#output-time-zone-input').val('-5_CDT').trigger('change');
+				expect(testModel.get('outputTimeZone')).toEqual('-5_CDT');
+
+				$('#output-file-format-input').val('csv').trigger('change');
+				expect(testModel.get('outputFileFormat')).toEqual('csv');
+
+				$('#missing-value-input').val('999').trigger('change');
+				expect(testModel.get('outputMissingValue')).toEqual('999');
+
+				$('#acceptable-data-gap-input').val('12').trigger('change');
+				expect(testModel.get('outputTimeGapInterval')).toEqual('12');
 			});
 		});
 	});

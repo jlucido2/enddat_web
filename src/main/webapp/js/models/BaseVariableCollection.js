@@ -3,9 +3,8 @@
 define([
 	'underscore',
 	'backbone',
-	'moment',
-	'utils/dateUtils'
-], function(_, Backbone, moment, dateUtils) {
+	'moment'
+], function(_, Backbone, moment) {
 	"use strict";
 	/*
 	 * Models are xpected to have startDate and endDate property and to use the selected property to indicate that
@@ -54,17 +53,17 @@ define([
 		getSelectedDateRange : function() {
 			var getStartDate = function(variableModel) {
 				return variableModel.get('startDate');
-			}
+			};
 			var getEndDate = function(variableModel) {
 				return variableModel.get('endDate');
-			}
+			};
 			var selectedVars = this.getSelectedVariables();
 			var result = undefined;
 			if (selectedVars.length > 0) {
 				result = {
 					start : moment.min(_.map(selectedVars, getStartDate)),
 					end : moment.max(_.map(selectedVars, getEndDate))
-				}
+				};
 			}
 
 			return result;

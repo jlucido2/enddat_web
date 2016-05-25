@@ -5,9 +5,9 @@ define([
 	'jquery',
 	'moment',
 	'backbone',
-	'models/PrecipitationVariableCollection',
+	'models/BaseVariableCollection',
 	'views/PrecipDataView'
-], function($, moment, Backbone, PrecipitationVariableCollection, PrecipDataView) {
+], function($, moment, Backbone, BaseVariableCollection, PrecipDataView) {
 
 	describe('views/PrecipDataView', function() {
 		var testView;
@@ -20,7 +20,7 @@ define([
 			testModel = new Backbone.Model({
 				lat : '43.1346',
 				lon : '-100.2121',
-				variables : new PrecipitationVariableCollection([
+				variables : new BaseVariableCollection([
 					{
 						x : '514',
 						y : '720',

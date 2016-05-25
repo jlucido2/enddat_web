@@ -23,6 +23,18 @@ define([
 		},
 
 		/*
+		 * @returns {Array of Backbone.Model representing variables
+		 */
+		getSelectedVariables : function() {
+			return this.chain()
+				.map(function(datasetModel) {
+					return datasetModel.get('variables').getSelectedVariables();
+				})
+				.flatten()
+				.value();
+		},
+
+		/*
 		 * The startDate and endDate values in each model are assumed to be moment objects
 		 * @param {Moment} startDate
 		 * @param {Moment} endDate

@@ -4,8 +4,8 @@
 
 define([
 	'models/PrecipitationCollection',
-	'models/PrecipitationVariableCollection'
-], function(PrecipitationCollection, PrecipitationVariableCollection) {
+	'models/BaseVariableCollection'
+], function(PrecipitationCollection, BaseVariableCollection) {
 	describe('models/PrecipitationCollection', function() {
 		var fakeServer;
 		var testCollection;
@@ -59,8 +59,8 @@ define([
 				failSpy = jasmine.createSpy('failSpy');
 
 				testCollection.reset([
-					{variables : new PrecipitationVariableCollection([{x : '1', y: '2'}]), lon : '-100', lat : '43.0'},
-					{variables : new PrecipitationVariableCollection([{x : '1', y: '3'}]), lon : '-100', lat : '44.0'}
+					{variables : new BaseVariableCollection([{x : '1', y: '2'}]), lon : '-100', lat : '43.0'},
+					{variables : new BaseVariableCollection([{x : '1', y: '3'}]), lon : '-100', lat : '44.0'}
 				]);
 
 				fetchPromise = testCollection.fetch(bbox).done(successSpy).fail(failSpy);
@@ -114,17 +114,22 @@ define([
 			});
 
 			it('Expects that a successful respond for the site and dds services causes the promise to be resolved and the collection to be updated with the contents of the response', function() {
+				var variable0;
 				fakeServer.respondWith(/http:dummyservice\/wfs\//, [200, {'Content-Type' : 'text/xml'}, SITE_RESPONSE]);
 				fakeServer.respondWith('cidathredds/dodsC/fakedata.dds', [200, {'Content-Type' : 'text'}, DDS_RESPONSE]);
 				fakeServer.respond();
 
+				variable0 = testCollection.at(0).attributes.variables.at(0).attributes;
 				expect(successSpy).toHaveBeenCalled();
 				expect(failSpy).not.toHaveBeenCalled();
 				expect(testCollection.length).toBe(2);
 				expect(testCollection.at(0).attributes.lat).toEqual('43.10');
 				expect(testCollection.at(0).attributes.lon).toEqual('-89.53');
-				expect(testCollection.at(0).attributes.variables.at(0).attributes.x).toEqual('689');
-				expect(testCollection.at(0).attributes.variables.at(0).attributes.y).toEqual('557');
+				expect(variable0.x).toEqual('689');
+				expect(variable0.y).toEqual('557');
+				expect(variable0.variableParameter.name).toEqual('Precip');
+				expect(variable0.variableParameter.value).toEqual('557:689:125225:precip3');
+				expect(variable0.variableParameter.colName).toEqual('Total precip - 1 hr [557,689]');
 			});
 		});
 	});

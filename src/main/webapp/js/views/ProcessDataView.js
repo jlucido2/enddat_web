@@ -2,20 +2,31 @@
 
 define([
 	'jquery',
+	'underscore',
 	'moment',
+	'handlebars',
 	'bootstrap-datetimepicker',
 	'module',
 	'Config',
+	'utils/jqueryUtils',
 	'views/BaseCollapsiblePanelView',
+	'views/VariableTsOptionView',
 	'hbs!hb_templates/processData'
-], function($, moment, datetimepicker, module, Config, BaseCollapsiblePanelView, hbTemplate) {
+], function($, _, moment, Handlebars, datetimepicker, module, Config, $utils, BaseCollapsiblePanelView,
+	VariableTsOptionView, hbTemplate) {
 	"use strict";
 
 	var BASE_URL = module.config().baseUrl;
 
-	var getUrl = function(model) {
-		var attrs = model.attributes;
-		var varParams = model.getSelectedVariablesUrlParams();
+	var getUrl = function(workflowModel) {
+		var attrs = workflowModel.attributes;
+		var varParams = _.chain(workflowModel.getSelectedVariables())
+			.map(function(variable) {
+				return variable.get('variableParameter').getUrlParameters(variable.get('timeSeriesOptions'));
+			})
+			.flatten()
+			.value();
+
 		var params = [
 			{name : 'style', value : attrs.outputFileFormat},
 			{name : 'DateFormat', value : attrs.outputDateFormat},
@@ -25,8 +36,7 @@ define([
 			{name : 'endPosition', value : attrs.outputDateRange.end.format(Config.DATE_FORMAT)}
 		];
 
-		return BASE_URL + 'service/execute?' +
-			$.param(params.concat(varParams));
+		return BASE_URL + 'service/execute?' + $.param(params.concat(varParams));
 	};
 
 	/*
@@ -50,10 +60,26 @@ define([
 		},
 
 		render : function() {
+			var self = this;
 			var selectedVarsDateRange = this.model.getSelectedVarsDateRange();
 			var outputDateRange = this.model.get('outputDateRange');
+			var selectedVariableModels = this.model.getSelectedVariables();
+			var $tbody;
 
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
+			$tbody = this.$('tbody');
+			this.variableTsOptionViews = [];
+			_.each(selectedVariableModels, function(variableModel) {
+				var $newRow = $('<tr />');
+				var optionView = new VariableTsOptionView({
+					el : $newRow,
+					model : variableModel
+				});
+
+				$tbody.append($newRow);
+				optionView.render();
+				self.variableTsOptionViews.push(optionView);
+			});
 
 			//Set up date pickers
 			this.$('#output-start-date-div').datetimepicker({
@@ -72,7 +98,16 @@ define([
 			});
 
 			this.listenTo(this.model, 'change:outputDateRange', this.updateOutputDateRangeInputs);
+
 			return this;
+		},
+
+		remove : function() {
+			_.each(this.variableTsOptionViews, function(view) {
+				view.remove();
+			});
+			this.variableTsOptionViews = undefined;
+			BaseCollapsiblePanelView.prototype.remove.apply(this, arguments);
 		},
 
 		/*
@@ -129,6 +164,7 @@ define([
 			var url = getUrl(this.model);
 			var $link = this.$('.url-container a');
 			ev.preventDefault();
+
 			$link.attr('href', url).html(url);
 		},
 

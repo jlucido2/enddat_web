@@ -4,46 +4,42 @@
 define([
 	'squire',
 	'jquery',
-	'backbone',
+	'underscore',
 	'moment',
 	'Config',
 	'utils/geoSpatialUtils',
 	'models/BaseDatasetCollection',
 	'models/BaseVariableCollection'
-], function(Squire, $, Backbone, moment, Config, geoSpatialUtils, BaseDatasetCollection, BaseVariableCollection) {
+], function(Squire, $, _, moment, Config, geoSpatialUtils, BaseDatasetCollection, BaseVariableCollection) {
 	"use strict";
 
 	describe('models/WorkflowStateModel', function() {
 		var injector;
 		var WorkflowStateModel, testModel;
 
-		var fetchPrecipSpy, resetPrecipSpy, hasSelectedVarsPrecipSpy;
-		var fetchSiteSpy, resetSiteSpy, hasSelectedVarsSiteSpy;
+		var fetchPrecipSpy, resetPrecipSpy;
+		var fetchSiteSpy, resetSiteSpy;
 		var fetchPrecipDeferred, fetchSiteDeferred;
 
 		beforeEach(function(done) {
 			fetchPrecipSpy = jasmine.createSpy('fetchPrecipSpy');
 			resetPrecipSpy = jasmine.createSpy('resetPrecipSpy');
-			hasSelectedVarsPrecipSpy = jasmine.createSpy('hasSelectedVarsPrecipSpy');
 
 			fetchSiteSpy = jasmine.createSpy('fetchSiteSpy');
 			resetSiteSpy = jasmine.createSpy('resetSiteSpy');
-			hasSelectedVarsSiteSpy = jasmine.createSpy('hasSelectedVarsSiteSpy');
 
 			fetchPrecipDeferred = $.Deferred();
 			fetchSiteDeferred = $.Deferred();
 
 			injector = new Squire();
 
-			injector.mock('models/PrecipitationCollection', Backbone.Collection.extend({
+			injector.mock('models/PrecipitationCollection', BaseDatasetCollection.extend({
 				fetch : fetchPrecipSpy.and.returnValue(fetchPrecipDeferred.promise()),
-				reset : resetPrecipSpy,
-				hasSelectedVariables : hasSelectedVarsPrecipSpy
+				reset : resetPrecipSpy
 			}));
-			injector.mock('models/NWISCollection', Backbone.Collection.extend({
+			injector.mock('models/NWISCollection', BaseDatasetCollection.extend({
 				fetch : fetchSiteSpy.and.returnValue(fetchSiteDeferred.promise()),
-				reset : resetSiteSpy,
-				hasSelectedVariables : hasSelectedVarsSiteSpy
+				reset : resetSiteSpy
 			}));
 			injector.mock('utils/geoSpatialUtils', geoSpatialUtils);
 			spyOn(geoSpatialUtils, 'getBoundingBox').and.returnValue({
@@ -70,6 +66,68 @@ define([
 
 			expect(testModel.attributes.datasetCollections[Config.NWIS_DATASET]).toBeDefined();
 			expect(testModel.attributes.datasetCollections[Config.PRECIP_DATASET]).toBeDefined();
+		});
+
+		describe('Tests for getSelectedVariables', function() {
+			it('Expects that an empty array is returned if the datasetCollections have not been initialized', function() {
+				expect(testModel.getSelectedVariables()).toEqual([]);
+			});
+
+			it('Expects that if the datasetCollections have been defined but contain empty collections that an empty array is returned', function() {
+				testModel.initializeDatasetCollections();
+
+				expect(testModel.getSelectedVariables()).toEqual([]);
+			});
+
+			it('Expects that if the datasetCollections contains variables but none are selected that the empty array is returned', function() {
+				testModel.set('datasetCollections', {
+					NWIS : new BaseDatasetCollection([
+						{variables : new BaseVariableCollection([
+								{startDate : moment('2001-01-04', Config.DATE_FORMAT), endDate : moment('2007-11-04', Config.DATE_FORMAT)},
+								{startDate : moment('2003-04-03', Config.DATE_FORMAT), endDate : moment('2012-01-04', Config.DATE_FORMAT)}
+						])},
+						{variables : new BaseVariableCollection([
+								{startDate : moment('2006-01-04', Config.DATE_FORMAT), endDate : moment('2008-01-04', Config.DATE_FORMAT)}
+						])}
+					]),
+					PRECIP : new BaseDatasetCollection([
+						{variables : new BaseVariableCollection([
+							{startDate : moment('1998-01-04', Config.DATE_FORMAT), endDate : moment('2007-01-04', Config.DATE_FORMAT)}
+						])}
+					])
+				});
+
+				expect(testModel.getSelectedVariables()).toEqual([]);
+			});
+
+			it('Expects that if some of the variables in the datasetCollections are selected they will be returned', function() {
+				var result;
+				testModel.set('datasetCollections', {
+					NWIS : new BaseDatasetCollection([
+						{variables : new BaseVariableCollection([
+								{selected : true, x : 1},
+								{x: 2}
+						])},
+						{variables : new BaseVariableCollection([
+								{x: 3}
+						])}
+					]),
+					PRECIP : new BaseDatasetCollection([
+						{variables : new BaseVariableCollection([
+							{selected: true, x : 4}
+						])}
+					])
+				});
+				result = testModel.getSelectedVariables();
+
+				expect(result.length).toBe(2);
+				expect(_.find(result, function(variable) {
+					return variable.attributes.x === 1;
+				})).toBeDefined();
+				expect(_.find(result, function(variable) {
+					return variable.attributes.x === 4;
+				})).toBeDefined();
+			});
 		});
 
 		describe('Tests for model event handlers to update the datasets', function() {

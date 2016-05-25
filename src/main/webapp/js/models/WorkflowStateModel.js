@@ -18,7 +18,6 @@ define([
 	// Defaults for processing step
 	var DEFAULT_TIME_INTERVAL = 6;
 	var DEFAULT_TIME_ZONE = '0_GMT';
-	var DEFAULT_PROCESSING_TIME_RANGE_FROM_LATEST = 30; // Days after the latest selected variable's data.
 	var DEFAULT_OUTPUT_DATE_FORMAT = 'Excel';
 	var DEFAULT_OUTPUT_FORMAT = 'tab';
 
@@ -91,15 +90,13 @@ define([
 		},
 
 		/*
-		 * @returns {Array of Objects with name and value properties to be used to form the url parameters for
-		 *		processing requests}
+		 * @returns {Array of Backbone.models representing the selected variables}
 		 */
-		getSelectedVariablesUrlParams : function() {
+		getSelectedVariables : function() {
 			var datasetCollections = this.get('datasetCollections');
-
 			return _.chain(datasetCollections)
 				.map(function(datasetCollection) {
-					return datasetCollection.getSelectedVariablesUrlParams();
+					return datasetCollection.getSelectedVariables();
 				})
 				.flatten()
 				.value();
@@ -147,7 +144,6 @@ define([
 		 */
 		updateModelState : function() {
 			var previousStep = this.previous('step');
-			var dateRange;
 			var outputDateRange = undefined;
 
 			switch(this.get('step')) {
@@ -177,6 +173,7 @@ define([
 					var startDate = this.get('startDate');
 					var endDate = this.get('endDate');
 					var selectedVarsDateRange = this.getSelectedVarsDateRange();
+					var selectedVars = this.getSelectedVariables();
 
 					if ((startDate) && (endDate)) {
 						outputDateRange = {
@@ -190,6 +187,12 @@ define([
 							end : selectedVarsDateRange.end
 						};
 					}
+
+					//Initialize time series options for each selected variable to return raw
+					_.each(selectedVars, function(variableModel) {
+						variableModel.set('timeSeriesOptions', [{statistic : 'raw'}]);
+					});
+
 					this.set({
 						outputFileFormat : DEFAULT_OUTPUT_FORMAT,
 						outputTimeZone : DEFAULT_TIME_ZONE,

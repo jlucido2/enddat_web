@@ -7,10 +7,9 @@ define([
 	'moment',
 	'Config',
 	'models/WorkflowStateModel',
-	'models/PrecipitationVariableCollection',
-	'models/NWISVariableCollection',
+	'models/BaseVariableCollection',
 	'views/VariableSummaryView'
-], function($, _, moment, Config, WorkflowStateModel, PrecipitationVariableCollection, NWISVariableCollection, VariableSummaryView) {
+], function($, _, moment, Config, WorkflowStateModel, BaseVariableCollection, VariableSummaryView) {
 	describe('views/VariableSummaryView', function() {
 		var testView;
 		var $testDiv;
@@ -65,11 +64,11 @@ define([
 				datasetCollections = testModel.get('datasetCollections');
 				testView.render.calls.reset();
 				datasetCollections[Config.PRECIP_DATASET].reset([
-					{variables : new PrecipitationVariableCollection([{x : '1', y : '2'}])},
-					{variables : new PrecipitationVariableCollection([{x : '2', y : '2'}])}
+					{variables : new BaseVariableCollection([{x : '1', y : '2'}])},
+					{variables : new BaseVariableCollection([{x : '2', y : '2'}])}
 				]);
 				datasetCollections[Config.NWIS_DATASET].reset([
-					{siteId : 'S1', variables : new NWISVariableCollection([{name : 'V1'}, {name : 'V2'}])}
+					{siteId : 'S1', variables : new BaseVariableCollection([{name : 'V1'}, {name : 'V2'}])}
 				]);
 
 				expect(testView.render).toHaveBeenCalled();
@@ -89,11 +88,11 @@ define([
 				testModel.initializeDatasetCollections();
 				datasetCollections = testModel.get('datasetCollections');
 				datasetCollections[Config.PRECIP_DATASET].reset([
-					{lat : '43', lon : '-90', variables : new PrecipitationVariableCollection([{x : '1', y : '2', startDate : startDate, endDate : endDate}])},
-					{lat : '44', lon : '-91', variables : new PrecipitationVariableCollection([{x : '2', y : '3', startDate : startDate, endDate : endDate}])}
+					{lat : '43', lon : '-90', variables : new BaseVariableCollection([{x : '1', y : '2', startDate : startDate, endDate : endDate}])},
+					{lat : '44', lon : '-91', variables : new BaseVariableCollection([{x : '2', y : '3', startDate : startDate, endDate : endDate}])}
 				]);
 				datasetCollections[Config.NWIS_DATASET].reset([
-					{siteNo : 'S1', variables : new NWISVariableCollection([
+					{siteNo : 'S1', variables : new BaseVariableCollection([
 							{name : 'V1', startDate : startDate, endDate : endDate},
 							{name : 'V2', startDate : startDate, endDate : endDate}])}
 				]);
@@ -172,11 +171,11 @@ define([
 				testModel.initializeDatasetCollections();
 				datasetCollections = testModel.get('datasetCollections');
 				datasetCollections[Config.PRECIP_DATASET].reset([
-					{lat : '43', lon : '-90', variables : new PrecipitationVariableCollection([{x : '1', y : '2', startDate : startDate, endDate : endDate}])},
-					{lat : '44', lon : '-91', variables : new PrecipitationVariableCollection([{x : '2', y : '3', startDate : startDate, endDate : endDate, selected: true}])}
+					{lat : '43', lon : '-90', variables : new BaseVariableCollection([{x : '1', y : '2', startDate : startDate, endDate : endDate}])},
+					{lat : '44', lon : '-91', variables : new BaseVariableCollection([{x : '2', y : '3', startDate : startDate, endDate : endDate, selected: true}])}
 				]);
 				datasetCollections[Config.NWIS_DATASET].reset([
-					{siteNo : 'S1', variables : new NWISVariableCollection([
+					{siteNo : 'S1', variables : new BaseVariableCollection([
 							{name : 'V1', startDate : startDate, endDate : endDate, selected : true},
 							{name : 'V2', startDate : startDate, endDate : endDate}])}
 				]);

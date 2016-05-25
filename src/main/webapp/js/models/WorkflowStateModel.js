@@ -16,7 +16,6 @@ define([
 	var DEFAULT_CHOSEN_DATASETS = ['NWIS'];
 
 	// Defaults for processing step
-	var DEFAULT_TIME_INTERVAL = 6;
 	var DEFAULT_TIME_ZONE = '0_GMT';
 	var DEFAULT_OUTPUT_DATE_FORMAT = 'Excel';
 	var DEFAULT_OUTPUT_FORMAT = 'tab';
@@ -196,7 +195,6 @@ define([
 					this.set({
 						outputFileFormat : DEFAULT_OUTPUT_FORMAT,
 						outputTimeZone : DEFAULT_TIME_ZONE,
-						outputTimeGapInterval : DEFAULT_TIME_INTERVAL,
 						outputDateFormat : DEFAULT_OUTPUT_DATE_FORMAT,
 						outputDateRange : outputDateRange
 					});

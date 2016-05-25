@@ -47,8 +47,13 @@ define([
 				ProcessDataView = view;
 
 				var variableCollection = new BaseVariableCollection([
-					{x : '2', y: '2', selected : true, variableParameter : new VariableParameter({name : 'DatasetId', value : '2:2', colName : 'Var1'})},
-					{x : '3', y: '3', selected : true, variableParameter : new VariableParameter({name : 'DatasetId', value : '3:3', colName : 'Var1'})}
+					{x : '2', y: '2', selected : true,
+						variableParameter : new VariableParameter({name : 'DatasetId', value : '2:2', colName : 'Var1'}),
+						timeSeriesOptions : [{statistic : 'raw'}]
+					},
+					{x : '3', y: '3', selected : true,
+						variableParameter : new VariableParameter({name : 'DatasetId', value : '3:3', colName : 'Var1'}),
+						timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]}
 				]);
 
 				testModel = new WorkflowStateModel({
@@ -80,7 +85,14 @@ define([
 			beforeEach(function() {
 				spyOn(testModel, 'getSelectedVarsDateRange').and.returnValue({
 					start : moment('2000-01-04', Config.DATE_FORMAT),
-					end : moment('2005-06-01', Config.DATE_FORMAT)
+					end : moment('2005-06-01', Config.DATE_FORMAT),
+				});
+				testModel.set({
+					outputFileFormat : 'tab',
+					outputDateFormat : 'Excel',
+					outputTimeZone : '0_GMT',
+					outputTimeGapInterval : '6',
+					outputMissingValue : 'NaN'
 				});
 				testView.render();
 			});
@@ -103,6 +115,14 @@ define([
 			it('Expects that a variableTsOptionView is created for each selected variable', function() {
 				expect(renderVariableTsOptionView.calls.count()).toBe(2);
 				expect(testView.variableTsOptionViews.length).toBe(2);
+			});
+
+			it('Expects the remaining configuration inputs to be initialized', function() {
+				expect($testDiv.find('#output-date-format-input').val()).toEqual('Excel');
+				expect($testDiv.find('#output-time-zone-input').val()).toEqual('0_GMT');
+				expect($testDiv.find('#output-file-format-input').val()).toEqual('tab');
+				expect($testDiv.find('#missing-value-input').val()).toEqual('NaN');
+				expect($testDiv.find('#acceptable-data-gap-input').val()).toEqual('6');
 			});
 		});
 
@@ -145,6 +165,21 @@ define([
 				expect($endDate.data('DateTimePicker').maxDate()).toEqual(moment('2005-06-01', Config.DATE_FORMAT));
 				expect($endDate.data('DateTimePicker').date()).toEqual(moment('2004-01-04', Config.DATE_FORMAT));
 			});
+
+			it('Expects the remaining output configuration DOM elements to be updated when the model is updated', function() {
+				testModel.set({
+					outputFileFormat : 'tab',
+					outputDateFormat : 'Excel',
+					outputTimeZone : '0_GMT',
+					outputTimeGapInterval : '6',
+					outputMissingValue : 'NaN'
+				});
+				expect($testDiv.find('#output-date-format-input').val()).toEqual('Excel');
+				expect($testDiv.find('#output-time-zone-input').val()).toEqual('0_GMT');
+				expect($testDiv.find('#output-file-format-input').val()).toEqual('tab');
+				expect($testDiv.find('#missing-value-input').val()).toEqual('NaN');
+				expect($testDiv.find('#acceptable-data-gap-input').val()).toEqual('6');
+			});
 		});
 
 		describe('DOM event listener tests', function() {
@@ -184,6 +219,64 @@ define([
 				$('#output-end-date').val('2004-01-04').trigger('change');
 				$('#output-end-date').val('').trigger('change');
 				expect(testModel.get('outputDateRange').end.format(Config.DATE_FORMAT)).toEqual('2005-06-01');
+			});
+
+			it('Expects that if an output configuration input is updated the model is updated', function() {
+				$('#output-date-format-input').val('ISO').trigger('change');
+				expect(testModel.get('outputDateFormat')).toEqual('ISO');
+
+				$('#output-time-zone-input').val('-5_CDT').trigger('change');
+				expect(testModel.get('outputTimeZone')).toEqual('-5_CDT');
+
+				$('#output-file-format-input').val('csv').trigger('change');
+				expect(testModel.get('outputFileFormat')).toEqual('csv');
+
+				$('#missing-value-input').val('999').trigger('change');
+				expect(testModel.get('outputMissingValue')).toEqual('999');
+
+				$('#acceptable-data-gap-input').val('12').trigger('change');
+				expect(testModel.get('outputTimeGapInterval')).toEqual('12');
+			});
+
+			describe('DOM events for processing buttons', function() {
+				var expectedBaseUrl = 'http:fakeservice/enddat/service/execute?';
+				var isExpectedUrl = function(url) {
+					var testUrl = decodeURIComponent(url);
+					return (testUrl.search(expectedBaseUrl) !== -1) &&
+						(testUrl.search('style=tab') !== -1) &&
+						(testUrl.search('DateFormat=Excel') !== -1) &&
+						(testUrl.search('TZ=0_GMT') !== -1) &&
+						(testUrl.search('timeInt=6') !== -1) &&
+						(testUrl.search('fill=NaN') !== -1) &&
+						(testUrl.search('endPosition=2006-06-30') !== -1) &&
+						(testUrl.search('beginPosition=2001-04-05') !== -1) &&
+						(testUrl.search('DatasetId=2:2!Var1') !== -1) &&
+						(testUrl.search('DatasetId=3:3:Min:2!Var1') !== -1);
+				};
+				beforeEach(function() {
+					testModel.set({
+						outputFileFormat : 'tab',
+						outputDateFormat : 'Excel',
+						outputTimeZone : '0_GMT',
+						outputTimeGapInterval : '6',
+						outputMissingValue : 'NaN',
+						outputDateRange : {
+							start : moment('2001-04-05', Config.DATE_FORMAT),
+							end : moment('2006-06-30', Config.DATE_FORMAT)
+						}
+					});
+				});
+				it('Expects that the expected url is shown in the url container', function() {
+					$testDiv.find('.show-url-btn').trigger('click');
+
+					expect(isExpectedUrl($testDiv.find('.url-container a').html())).toBe(true);
+				});
+
+				it('Expects that the expected url is used to open a new window', function() {
+					spyOn(window, 'open');
+					$testDiv.find('.get-data-btn').trigger('click');
+					expect(isExpectedUrl(window.open.calls.argsFor(0)[0])).toBe(true);
+				});
 			});
 		});
 	});

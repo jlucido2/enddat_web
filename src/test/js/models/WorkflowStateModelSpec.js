@@ -299,7 +299,6 @@ define([
 
 				expect(testModel.has('outputDateRange')).toBe(true);
 				expect(testModel.has('outputFileFormat')).toBe(true);
-				expect(testModel.has('outputTimeGapInterval')).toBe(true);
 				expect(testModel.has('outputDateFormat')).toBe(true);
 			});
 

@@ -7,10 +7,11 @@ define([
 	'loglevel',
 	'module',
 	'utils/VariableParameter',
+	'utils/rdbUtils',
+	'utils/stringUtils',
 	'models/BaseDatasetCollection',
-	'models/BaseVariableCollection',
-	'utils/rdbUtils'
-], function ($, _, moment, log, module, VariableParameter, BaseDatasetCollection, BaseVariableCollection, rdbUtils) {
+	'models/BaseVariableCollection'
+], function ($, _, moment, log, module, VariableParameter, rdbUtils, stringUtils, BaseDatasetCollection, BaseVariableCollection) {
 	"use strict";
 
 	var parameterCodesPath = module.config().parameterCodesPath;
@@ -155,7 +156,7 @@ define([
 				dataType: 'text',
 				success: function(data) {
 					var parsedParams = rdbUtils.parseRDB(data);
-					self.parameterCodes = _.object(_.pluck(parsedParams, 'parameter_cd'), _.pluck(parsedParams, 'parameter_nm'))
+					self.parameterCodes = _.object(_.pluck(parsedParams, 'parameter_cd'), _.pluck(parsedParams, 'parameter_nm'));
 					log.debug('Fetched parameter codes ' + _.size(self.parameterCodes));
 					deferred.resolve();
 				},
@@ -185,7 +186,7 @@ define([
 
 					self.statisticCodes = _.object(
 						_.pluck(parsedStats, 'stat_CD'),
-						_.map(_.pluck(parsedStats, 'stat_NM'), rdbUtils.toTitleCase)
+						_.map(_.pluck(parsedStats, 'stat_NM'), stringUtils.toTitleCase)
 					);
 					log.debug('Fetched statistic codes ' + _.size(self.statisticCodes));
 					deferred.resolve();

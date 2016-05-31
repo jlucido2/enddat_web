@@ -14,8 +14,10 @@ define([
 		var testView;
 		var $testDiv;
 		var testModel;
+		var fakeServer;
 
 		beforeEach(function() {
+			fakeServer = sinon.fakeServer.create();
 			$('body').append('<div id="test-div"></div>');
 			$testDiv = $('#test-div');
 
@@ -27,6 +29,7 @@ define([
 				testView.remove();
 			}
 			$testDiv.remove();
+			fakeServer.restore();
 		});
 
 		describe('Tests for model event listener setup if  the model does not contain any datasets at initialization', function() {

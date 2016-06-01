@@ -163,6 +163,18 @@ define([
 
 				expect(tsOptions).toEqual([]);
 			});
+
+			it('Expects that if a numeric stat is assigned a non numeric value, the timeSpan options for that statistic are cleared', function() {
+				var $minInput = $testTable.find('input[name="Min"]');
+				var isMinStat = function(tsOption) {
+					return tsOption.statistic === 'Min';
+				};
+				var tsOptions;
+				$minInput.val('z').trigger('change');
+				tsOptions = _.filter(testModel.get('timeSeriesOptions'), isMinStat);
+
+				expect(tsOptions).toEqual([]);
+			});
 		});
 	});
 });

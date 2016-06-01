@@ -83,10 +83,11 @@ define([
 				var $maxInput = $testTable.find('input[name="Max"]');
 				testModel.set('timeSeriesOptions', [
 					{statistic : 'raw'},
+					{statistic : 'Min', timeSpan : '24'},
 					{statistic : 'Min', timeSpan : '48'}
 				]);
 				expect($rawInput.is(':checked')).toBe(true);
-				expect($minInput.val()).toEqual('48');
+				expect($minInput.val()).toEqual('24, 48');
 				expect($maxInput.val()).toEqual('');
 			});
 
@@ -125,32 +126,42 @@ define([
 			it('Expects that if raw is unchecked and then checked, the model is updated', function() {
 				var $rawInput = $testTable.find('input[name="raw"]');
 				var tsOptions;
+				var isRawStat = function(tsOption) {
+					return tsOption.statistic === 'raw';
+				};
 				$rawInput.prop('checked', false).trigger('change');
-				tsOptions = testModel.get('timeSeriesOptions');
+				tsOptions = _.filter(testModel.get('timeSeriesOptions'), isRawStat);
 
-				expect(_.find(tsOptions, function(tsOption) {return tsOption.statistic === 'raw'; })).toBeUndefined();
+				expect(tsOptions).toEqual([]);
 
 				$rawInput.prop('checked', true).trigger('change');
-				tsOptions = testModel.get('timeSeriesOptions');
+				tsOptions = _.filter(testModel.get('timeSeriesOptions'), isRawStat);
 
-				expect(_.find(tsOptions, function(tsOption) {return tsOption.statistic === 'raw'; })).toEqual({statistic : 'raw'});
+				expect(tsOptions).toEqual([{statistic : 'raw'}]);
 			});
 
 			it('Expects that if Min is  assigned a new value and then the value is cleared, that the model is updated', function() {
 				var $minInput = $testTable.find('input[name="Min"]');
 				var tsOptions;
+				var isMinStat = function(tsOption) {
+					return tsOption.statistic === 'Min';
+				};
 				$minInput.val('48').trigger('change');
-				tsOptions = testModel.get('timeSeriesOptions');
+				tsOptions = _.filter(testModel.get('timeSeriesOptions'), isMinStat);
 
-				expect(_.find(tsOptions, function(tsOption) {return tsOption.statistic === 'Min'; })).toEqual({
-					statistic : 'Min',
-					timeSpan : '48'
-				});
+				expect(tsOptions).toEqual([{statistic : 'Min', timeSpan : '48'}]);
+
+				$minInput.val('24, 48').trigger('change');
+				tsOptions = _.filter(testModel.get('timeSeriesOptions'), isMinStat);
+
+				expect(tsOptions.length).toBe(2);
+				expect(_.find(tsOptions, {statistic : 'Min', timeSpan : '24'})).toBeDefined();
+				expect(_.find(tsOptions, {statistic : 'Min', timeSpan : '48'})).toBeDefined();
 
 				$minInput.val('').trigger('change');
-				tsOptions = testModel.get('timeSeriesOptions');
+				tsOptions = _.filter(testModel.get('timeSeriesOptions'), isMinStat);
 
-				expect(_.find(tsOptions, function(tsOption) {return tsOption.statistic === 'Min'; })).toBeUndefined();
+				expect(tsOptions).toEqual([]);
 			});
 		});
 	});

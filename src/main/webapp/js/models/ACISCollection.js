@@ -29,28 +29,33 @@ define([
 
 	var collection = BaseDatasetCollection.extend({
 
-		url : ENDPOINT + '?meta=name,valid_daterange,ll,sid&elems=' + _.pluck(ELEMS, 'code').join(','),
+		url : ENDPOINT + '?meta=name,valid_daterange,ll,sids&elems=' + _.pluck(ELEMS, 'code').join(','),
 
 		parse : function(response) {
 			var sites = response.meta;
 			var result = _.map(sites, function(site) {
-				var variables = _.map(site.valid_daterange, function(dateRange, varIndex) {
-					var result = ELEMS[varIndex];
-					result.startDate = moment(dateRange[0], Config.DATE_FORMAT);
-					result.endDate = moment(dateRange[1], Config.DATE_FORMAT);
-					result.variableParameter = new VariableParameter({
-						name : 'ACIS',
-						value : site.sid[0] + ':' +  ELEMS[varIndex].code,
-						colName : ELEMS[varIndex].description
-					});
-					return result;
-				});
+				var variables = _.chain(site.valid_daterange)
+					.filter(function(dateRange) {
+						return dateRange.length > 0;
+					})
+					.map(function(dateRange, varIndex) {
+						var result = ELEMS[varIndex];
+						result.startDate = moment(dateRange[0], Config.DATE_FORMAT);
+						result.endDate = moment(dateRange[1], Config.DATE_FORMAT);
+						result.variableParameter = new VariableParameter({
+							name : 'ACIS',
+							value : site.sids[0] + ':' +  result.code,
+							colName : result.description
+						});
+						return result;
+					})
+					.value();
 
 				return {
 					lon : site.ll[0],
 					lat : site.ll[1],
 					name : site.name,
-					sid : site.sid[0],
+					sid : site.sids[0],
 					variables : new BaseVariableCollection(variables)
 				};
 			});
@@ -62,11 +67,15 @@ define([
 			var localOptions = {
 				reset : true,
 				data : {
-					boundingBox : [boundingBox.west,boundingBox.south, boundingBox.east, boundingBox.north].join(',')
+					bbox : [boundingBox.west,boundingBox.south, boundingBox.east, boundingBox.north].join(',')
+				},
+				error : function(collection) {
+					log.debug('Unable to fetch the ACISCollection data');
+					collection.reset([]);
 				}
 			};
 
-			BaseDatasetCollection.prototype.fetch.call(this, localOptions);
+			return BaseDatasetCollection.prototype.fetch.call(this, localOptions);
 		}
 
 	});

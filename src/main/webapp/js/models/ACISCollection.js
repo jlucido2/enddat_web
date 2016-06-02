@@ -11,7 +11,7 @@ define([
 	'models/BaseVariableCollection'
 ], function(log, module, _, moment, Config, VariableParameter, BaseDatasetCollection, BaseVariableCollection) {
 
-	var ENDPOINT = 'http://data.rcc-acis.org/StnMeta';
+	var ENDPOINT = module.config().acisStnMetaUrl;
 	var ELEMS = [
 			{code : 'maxt', description : 'Maximum temperature (F)'},
 			{code : 'mint', description : 'Minimum temperature (F)'},

@@ -37,6 +37,9 @@
 						'precipWFSGetFeatureUrl' : '<%=precipWFSGetFeatureUrl%>',
 						'cidaThreddsPrecipData' : '<%=cidaThreddsPrecipData%>'
 					},
+					'models/ACISCollection' : {
+						'acisStnMetaUrl' : '<%=acisStnMetaUrl%>'
+					},
 					'views/ProcessDataView' : {
 						'baseUrl' : '<%=baseUrl%>'
 					}

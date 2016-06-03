@@ -10,6 +10,7 @@ define([
 	'models/BaseDatasetCollection',
 	'models/BaseVariableCollection'
 ], function(log, module, _, moment, Config, VariableParameter, BaseDatasetCollection, BaseVariableCollection) {
+	"use strict";
 
 	var ENDPOINT = module.config().acisStnMetaUrl;
 	var ELEMS = [

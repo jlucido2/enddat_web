@@ -5,6 +5,8 @@ define([
 	'Config',
 	'models/ACISCollection'
 ], function(Config, ACISCollection) {
+	"use strict";
+	
 	describe('models/ACISCollection', function() {
 		var testCollection;
 		var fakeServer;

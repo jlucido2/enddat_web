@@ -1,25 +1,31 @@
 /* jslint browser: true */
 
 define([
-	'underscore',
-	'Config',
-	'views/BaseCollapsiblePanelView',
-	'hbs!hb_templates/nwisData'
-], function(_, Config, BaseCollapsiblePanelView, hbTemplate) {
+
+	'views/BaseCollapsiblePanelView'
+], function(BaseCollapsiblePanelView) {
+
 	"use strict";
 
 	/*
+	 * The template specified should contain a list of the variables with a checkbox. The checkbox
+	 * input should have a data-id attribute whose value is the variableModel's cid.
+	 *
 	 * @constructs
 	 * @param {Object} options
-	 *		@prop {Jquery selector or element} $el
-	 *		@prop {Backbone.Model} model - represents an NWIS site
+	 *		@prop {Jquery selector element} $el
+	 *		@prop {Backbone.Model} model - represents a single ACIS site
 	 *		@prop {String} distanceToProjectLocation
 	 */
 	var view = BaseCollapsiblePanelView.extend({
-		template : hbTemplate,
+		template : function() {
+			return function(context) {
+				'Replace with the template function for the panel body';
+			};
+		},
 
-		panelHeading : 'NWIS Data Overview',
-		panelBodyId : 'nwis-data-overview-panel-body',
+		panelHeading : 'Data Overview',
+		panelBodyId : 'data-overview-panel-body',
 
 		additionalEvents : {
 			'click input:checkbox' : 'toggleCollectedDataVariable'
@@ -27,7 +33,6 @@ define([
 
 		initialize : function(options) {
 			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
-
 			this.distanceToProjectLocation = options.distanceToProjectLocation;
 			this.model.get('variables').each(function(variableModel) {
 				this.listenTo(variableModel, 'change:selected', this.updateSelectedCheckbox);
@@ -35,19 +40,6 @@ define([
 		},
 
 		render : function() {
-			var getContextForVariable = function (variableModel) {
-				var result = _.clone(variableModel.attributes);
-				result.startDate = variableModel.attributes.startDate.format(Config.DATE_FORMAT);
-				result.endDate = variableModel.attributes.endDate.format(Config.DATE_FORMAT);
-				result.id = variableModel.cid;
-				return result;
-			};
-
-			this.context.name = this.model.get('name');
-			this.context.siteNo = this.model.get('siteNo');
-			this.context.distance = this.distanceToProjectLocation;
-			this.context.variables = this.model.get('variables').map(getContextForVariable);
-
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
 
 			return this;
@@ -68,5 +60,7 @@ define([
 
 	return view;
 });
+
+
 
 

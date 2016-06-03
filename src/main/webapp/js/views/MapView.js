@@ -12,9 +12,11 @@ define([
 	'leafletCustomControls/legendControl',
 	'views/BaseView',
 	'views/PrecipDataView',
+	'views/ACISDataView',
 	'views/NWISDataView',
 	'hbs!hb_templates/mapOps'
-], function(_, L, leafletProviders, log, Config, $utils, geoSpatialUtils, LUtils, legendControl, BaseView, PrecipDataView, NWISDataView, hbTemplate) {
+], function(_, L, leafletProviders, log, Config, $utils, geoSpatialUtils, LUtils, legendControl, BaseView,
+		PrecipDataView, ACISDataView, NWISDataView, hbTemplate) {
 
 	var siteIcons = _.mapObject(Config.DATASET_ICON, function(value) {
 		return L.icon(value);
@@ -30,10 +32,11 @@ define([
 		return model.get('name');
 	};
 
-	var DataViews =_.object(
-		[Config.NWIS_DATASET, Config.PRECIP_DATASET],
-		[NWISDataView, PrecipDataView]
-	);
+	var DataViews =_.object([
+		[Config.NWIS_DATASET, NWISDataView],
+		[Config.PRECIP_DATASET, PrecipDataView],
+		[Config.ACIS_DATASET, ACISDataView]
+	]);
 
 	var siteMarkerOptions = _.object([
 		[Config.NWIS_DATASET, {icon : siteIcons[Config.NWIS_DATASET], getTitle : getNWISTitle}],

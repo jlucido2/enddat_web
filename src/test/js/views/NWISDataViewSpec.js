@@ -59,7 +59,7 @@ define([
 			$testDiv.remove();
 		});
 
-		it('Expects that when the view is initialized the context contains formatted parameters', function() {
+		it('Expects that when the view is rendered the context contains formatted parameters', function() {
 			testView.render();
 
 			expect(testView.context.distance).toEqual('1.344');
@@ -88,42 +88,6 @@ define([
 			testView.render();
 
 			expect(testView.context.variables[0].selected).toBe(true);
-		});
-
-		it('Expects that when the checkbox is checked, the selected property is set to true', function() {
-			var var1 = variables.at(1);
-			testView.render();
-			testView.$('[data-id="' + var1.cid + '"]').trigger('click');
-
-			expect(var1.get('selected')).toBe(true);
-		});
-
-		it('Expects that when the checkbox is checked and then unchecked, the selected property is set to false', function() {
-			var $checkbox;
-			var var1 = variables.at(1);
-			testView.render();
-			$checkbox = testView.$('[data-id="' + var1.cid + '"]');
-			$checkbox.trigger('click');
-
-			expect(var1.get('selected')).toBe(true);
-
-			$checkbox.trigger('click');
-
-			expect(var1.get('selected')).toBe(false);
-		});
-
-		it('Expects that if a variable model\'s selected attributes changes, the checkbox for that variable reflects the change', function() {
-			var $checkbox;
-			var var1 = variables.at(1);
-			testView.render();
-			$checkbox = testView.$('[data-id="' + var1.cid + '"]');
-			var1.set('selected', true);
-
-			expect($checkbox.prop('checked')).toBe(true);
-
-			var1.set('selected', false);
-
-			expect($checkbox.prop('checked')).toBe(false);
 		});
 	});
 });

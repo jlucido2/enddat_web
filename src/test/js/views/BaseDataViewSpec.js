@@ -9,7 +9,7 @@ define([
 	'views/BaseDataView'
 ], function($, _, Backbone, Handlebars, BaseDataView) {
 	"use strict";
-	fdescribe('views/BaseDataView', function() {
+	describe('views/BaseDataView', function() {
 		var TestView;
 		var testView;
 		var $testDiv;

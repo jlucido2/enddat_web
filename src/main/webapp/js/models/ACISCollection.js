@@ -35,19 +35,21 @@ define([
 			var sites = response.meta;
 			var result = _.map(sites, function(site) {
 				var variables = _.chain(site.valid_daterange)
-					.filter(function(dateRange) {
-						return dateRange.length > 0;
-					})
 					.map(function(dateRange, varIndex) {
-						var result = ELEMS[varIndex];
-						result.startDate = moment(dateRange[0], Config.DATE_FORMAT);
-						result.endDate = moment(dateRange[1], Config.DATE_FORMAT);
-						result.variableParameter = new VariableParameter({
-							name : 'ACIS',
-							value : site.sids[0] + ':' +  result.code,
-							colName : result.description
-						});
+						var result = _.clone(ELEMS[varIndex]);
+						if (dateRange.length > 0) {
+							result.startDate = moment(dateRange[0], Config.DATE_FORMAT);
+							result.endDate = moment(dateRange[1], Config.DATE_FORMAT);
+							result.variableParameter = new VariableParameter({
+								name : 'ACIS',
+								value : site.sids[0] + ':' +  result.code,
+								colName : result.description
+							});
+						}
 						return result;
+					})
+					.filter(function(dataVar) {
+						return (_.has(dataVar, 'startDate') && _.has(dataVar, 'endDate'));
 					})
 					.value();
 
@@ -67,7 +69,7 @@ define([
 			var localOptions = {
 				reset : true,
 				data : {
-					bbox : [boundingBox.west,boundingBox.south, boundingBox.east, boundingBox.north].join(',')
+					bbox : [boundingBox.west, boundingBox.south, boundingBox.east, boundingBox.north].join(',')
 				},
 				error : function(collection) {
 					log.debug('Unable to fetch the ACISCollection data');

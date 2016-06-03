@@ -106,16 +106,11 @@ define([
 						var sites = _.map(siteDataBySiteNo, function(siteParameterData) {
 							var variables = parseVariables(siteParameterData);
 
-							var startDates = _.pluck(variables, 'startDate');
-							var endDates = _.pluck(variables, 'endDate');
-
 							var result= {
 								siteNo : siteParameterData[0].site_no,
 								name : siteParameterData[0].station_nm,
 								lat : siteParameterData[0].dec_lat_va,
 								lon : siteParameterData[0].dec_long_va,
-								startDate : moment.min(startDates),
-								endDate : moment.max(endDates),
 								variables : new BaseVariableCollection(variables)
 							};
 							return result;

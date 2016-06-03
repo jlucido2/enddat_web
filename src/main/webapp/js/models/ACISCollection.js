@@ -34,7 +34,8 @@ define([
 
 		parse : function(response) {
 			var sites = response.meta;
-			var result = _.map(sites, function(site) {
+			return _.map(sites, function(site) {
+				var sid = site.sids[0].split(' ')[0];
 				var variables = _.chain(site.valid_daterange)
 					.map(function(dateRange, varIndex) {
 						var result = _.clone(ELEMS[varIndex]);
@@ -43,7 +44,7 @@ define([
 							result.endDate = moment(dateRange[1], Config.DATE_FORMAT);
 							result.variableParameter = new VariableParameter({
 								name : 'ACIS',
-								value : site.sids[0] + ':' +  result.code,
+								value : sid + ':' +  result.code,
 								colName : result.description
 							});
 						}
@@ -58,12 +59,10 @@ define([
 					lon : site.ll[0],
 					lat : site.ll[1],
 					name : site.name,
-					sid : site.sids[0],
+					sid : sid,
 					variables : new BaseVariableCollection(variables)
 				};
 			});
-
-			return result;
 		},
 
 		fetch : function(boundingBox) {

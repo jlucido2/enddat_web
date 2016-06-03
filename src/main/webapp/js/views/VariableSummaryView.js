@@ -30,7 +30,8 @@ define([
 
 			this.selectedDatasets = _.object([
 				[Config.PRECIP_DATASET, []],
-				[Config.NWIS_DATASET, []]
+				[Config.NWIS_DATASET, []],
+				[Config.ACIS_DATASET, []]
 			]);
 			this.hasBeenRendered = false;
 
@@ -114,11 +115,14 @@ define([
 		setupDatasetCollectionsListeners : function(model, datasetCollections) {
 			var precipCollection = datasetCollections[Config.PRECIP_DATASET];
 			var nwisCollection = datasetCollections[Config.NWIS_DATASET];
+			var acisCollection = datasetCollections[Config.ACIS_DATASET];
 			this.listenTo(precipCollection, 'reset', this.setupPrecipModelListeners);
 			this.listenTo(nwisCollection, 'reset', this.setupNWISModelListeners);
+			this.listenTo(acisCollection, 'reset', this.setupACISModelListeners);
 
 			this.setupPrecipModelListeners(precipCollection);
 			this.setupNWISModelListeners(nwisCollection);
+			this.setupACISModelListeners(acisCollection);
 		},
 
 		/*
@@ -135,7 +139,8 @@ define([
 					property : variableModel.attributes.y + ':' + variableModel.attributes.x
 				};
 			};
-			this._updateSelectedVariableContext(this.model.get('datasetCollections')[Config.PRECIP_DATASET], Config.PRECIP_DATASET, getContextVariable);
+			var datasetCollection = this.model.get('datasetCollections')[Config.PRECIP_DATASET];
+			this._updateSelectedVariableContext(datasetCollection, Config.PRECIP_DATASET, getContextVariable);
 		},
 
 		/*
@@ -160,7 +165,8 @@ define([
 					property : variableModel.attributes.name
 				};
 			};
-			this._updateSelectedVariableContext(this.model.get('datasetCollections')[Config.NWIS_DATASET], Config.NWIS_DATASET, getContextVariable);
+			var datasetCollection = this.model.get('datasetCollections')[Config.NWIS_DATASET]
+			this._updateSelectedVariableContext(datasetCollection, Config.NWIS_DATASET, getContextVariable);
 		},
 
 		/*
@@ -169,6 +175,32 @@ define([
 		 */
 		setupNWISModelListeners : function(collection) {
 			this._setupDatasetVariableListeners(collection, this.updateSelectedNWISVariables);
+		},
+
+		/*
+		 * Updates the selectedDatasets for ACIS sites
+		 */
+		updateSelectedACISVariables : function() {
+			var getContextVariable = function(variableModel, acisModel) {
+				return {
+					modelId : acisModel.cid,
+					variableId : variableModel.cid,
+					siteId : acisModel.attributes.name,
+					startDate : variableModel.attributes.startDate.format(Config.DATE_FORMAT),
+					endDate : variableModel.attributes.endDate.format(Config.DATE_FORMAT),
+					property : variableModel.attributes.description
+				};
+			};
+			var datasetCollection = this.model.get('datasetCollections')[Config.ACIS_DATASET];
+			this._updateSelectedVariableContext(datasetCollection, Config.ACIS_DATASET, getContextVariable);
+		},
+
+		/*
+		 * Sets up the event listeners for changes in the selected property for each site's variable for the ACIS dataset
+		 * @param {BaseDatasetCollection} collection
+		 */
+		setupACISModelListeners : function(collection) {
+			this._setupDatasetVariableListeners(collection, this.updateSelectedACISVariables);
 		},
 
 		/*

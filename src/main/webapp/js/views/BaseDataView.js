@@ -8,13 +8,15 @@ define([
 	"use strict";
 
 	/*
+	 * This view is intended to be extended, specifying a template attribute and extending the render function
+	 * to pass in the context generated from the model and distanceToProjectLocation
 	 * The template specified should contain a list of the variables with a checkbox. The checkbox
 	 * input should have a data-id attribute whose value is the variableModel's cid.
 	 *
 	 * @constructs
 	 * @param {Object} options
 	 *		@prop {Jquery selector element} $el
-	 *		@prop {Backbone.Model} model - represents a single ACIS site
+	 *		@prop {Backbone.Model} model - represents a single site
 	 *		@prop {String} distanceToProjectLocation
 	 */
 	var view = BaseCollapsiblePanelView.extend({

@@ -214,12 +214,7 @@ define([
 			var datasetCollection = this.model.get('datasetCollections')[datasetKind];
 			var datasetModel = datasetCollection.get(id);
 
-			if (id === variableId) {
-				datasetModel.set('selected', false);
-			}
-			else {
-				datasetModel.get('variables').get(variableId).set('selected', false);
-			}
+			datasetModel.get('variables').get(variableId).set('selected', false);
 		}
 	});
 

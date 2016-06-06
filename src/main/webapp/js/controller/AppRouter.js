@@ -54,7 +54,7 @@ define([
 		},
 
 		specifyProjectLocationState: function () {
-			this.workflowState.set('step', Config.PROJ_LOC_STEP);
+			this.workflowState.set('step', Config.SPECIFY_AOI_STEP);
 			this.createView(DataDiscoveryView, {
 				model : this.workflowState
 			}).render();

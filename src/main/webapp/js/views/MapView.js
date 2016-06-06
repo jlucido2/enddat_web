@@ -81,11 +81,9 @@ define([
 			});
 			this.projLocationMarker.on('dragend', function() {
 				var latlng = this.projLocationMarker.getLatLng();
-				this.model.set({
-					location : {
-						latitude : latlng.lat,
-						longitude : latlng.lng
-					}
+				this.model.get('aoi').set({
+					latitude : latlng.lat,
+					longitude : latlng.lng
 				});
 			}, this);
 
@@ -99,6 +97,7 @@ define([
 
 		render : function() {
 			var self = this;
+			var aoiModel = this.model.get('aoi');
 			BaseView.prototype.render.apply(this, arguments);
 
 			if (_.has(this, 'map')) {
@@ -119,9 +118,8 @@ define([
 			this.listenTo(this.model, 'change:step', this.updateWorkflowStep);
 			this.updateWorkflowStep(this.model, this.model.get('step'));
 
-			this.updateLocationMarkerAndExtent(this.model, this.model.get('location'));
-			this.listenTo(this.model, 'change:location', this.updateLocationMarkerAndExtent);
-			this.listenTo(this.model, 'change:radius', this.updateExtent);
+			this.updateLocationMarkerAndExtent(aoiModel);
+			this.listenTo(aoiModel, 'change', this.updateLocationMarkerAndExtent);
 
 			// If the dataset collection models have already been created, then setup their listeners. Otherwise
 			// wait until they have been created.
@@ -225,20 +223,19 @@ define([
 		 * Updates or adds a marker at location if location is valid and removes the single click handler
 		 * to create the marker. Otherwise remove the marker and set up the single click handler so that
 		 * a marker can be added.
-		 * @param {WorkflowStateModel} model
+		 * @param {AOIModel} aoiModel
 		 * @param {Object} location - has properties latitude and longitude in order to be a valid location
 		 *
 		 */
-		updateLocationMarkerAndExtent : function(model, location) {
+		updateLocationMarkerAndExtent : function(aoiModel) {
 			var mapHasMarker = this.map.hasLayer(this.projLocationMarker);
-			if (model.hasValidLocation()) {
+			if (aoiModel.usingProjectLocation() && (aoiModel.attributes.latitude) && aoiModel.attributes.longitude) {
 				if (!mapHasMarker) {
 					this.map.addLayer(this.projLocationMarker);
 				}
-				this.projLocationMarker.setLatLng([location.latitude, location.longitude]);
+				this.projLocationMarker.setLatLng([aoiModel.attributes.latitude, aoiModel.attributes.longitude]);
 				this.removeSingleClickHandler();
-				this.updateExtent(model, model.get('radius'));
-				this.$('#' + this.mapDivId).css('cursor', '');
+				this.updateExtent(aoiModel);
 			}
 			else {
 				if (mapHasMarker) {
@@ -247,19 +244,14 @@ define([
 				this.setUpSingleClickHandlerToCreateMarker();
 				this.$('#' + this.mapDivId).css('cursor', 'pointer');
 			}
+			//TODO: Handle AOI Box
 		},
 
-		updateExtent : function(model, radius) {
-			if (radius && model.has('location')) {
-				var location = model.get('location');
-				if ((location.latitude) && (location.longitude)) {
-					var bbox = geoSpatialUtils.getBoundingBox(location.latitude, location.longitude, radius);
-
-					var southwest = L.latLng(bbox.south, bbox.west);
-					var northeast = L.latLng(bbox.north, bbox.east);
-					this.map.fitBounds(L.latLngBounds(southwest, northeast));
-				}
-			}
+		updateExtent : function(aoiModel) {
+			var bbox = aoiModel.getBoundingBox();
+			var southwest = L.latLng(bbox.south, bbox.west);
+			var northeast = L.latLng(bbox.north, bbox.east);
+			this.map.fitBounds(L.latLngBounds(southwest, northeast));
 		},
 
 		setupDatasetListeners : function(model, datasetCollections) {

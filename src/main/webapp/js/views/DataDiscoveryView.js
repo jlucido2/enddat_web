@@ -101,11 +101,11 @@ define([
 
 			this.alertView.closeAlert();
 			switch(step) {
-				case Config.PROJ_LOC_STEP:
+				case Config.SPECIFY_AOI_STEP:
 					if (!this.locationView) {
 						this.locationView = new LocationView({
 							el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
-							model : model,
+							model : model.get('aoi'),
 							opened : true
 						});
 						this.locationView.render();
@@ -228,19 +228,28 @@ define([
 
 		_filterMsg : function() {
 			var state = this.model.attributes;
-			var latitude = (_.has(state, 'location') && _.has(state.location, 'latitude')) ? parseFloat(state.location.latitude).toFixed(3) : '';
-			var longitude = (_.has(state, 'location') && _.has(state.location, 'longitude')) ? parseFloat(state.location.longitude).toFixed(3) : '';
+			var aoi = state.aoi;
 
-			var radius = (state.radius) ? state.radius : '';
 			var startDate = (state.startDate) ? state.startDate.format(Config.DATE_FORMAT) : '';
 			var endDate = (state.endDate) ? state.endDate.format(Config.DATE_FORMAT) : '';
-			var chosenDatasets = (state.datasets) ? state.datasets : [];
-
 			var dateFilterMsg = (startDate && endDate) ? 'date filter from ' + startDate + ' to ' + endDate : 'no date filter';
 
+			var chosenDatasets = (state.datasets) ? state.datasets : [];
+
+			var aoiFragment = '';
+			if (aoi.usingProjectLocation()) {
+				var latitude = (aoi.attributes.latitude) ? parseFloat(aoi.attributes.latitude) : '';
+				var longitude = (aoi.attributes.longitude) ? parseFloat(aoi.attributes.longitude) : '';
+				var radius = (aoi.attributes.radius) ? aoi.attributes.radius : '';
+
+				aoiFragment = ' at location ' + latitude + ' ' + longitude + ', radius ' + radius + ' mi';
+			}
+			else if (aoi.usingAOIBox()) {
+				//TODO add code for aoi box
+			}
+
 			return 'Successfully fetched data of type(s): ' + chosenDatasets.join(', ') +
-				' at location ' + latitude + ' ' + longitude +
-				', radius ' + radius + ' mi and ' + dateFilterMsg;
+				aoiFragment + ' and ' + dateFilterMsg;
 		},
 
 		showSuccessfulFetchAlert : function() {

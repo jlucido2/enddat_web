@@ -5,6 +5,8 @@ define([
 	'Config',
 	'models/ACISCollection'
 ], function(Config, ACISCollection) {
+	"use strict";
+
 	describe('models/ACISCollection', function() {
 		var testCollection;
 		var fakeServer;
@@ -83,13 +85,13 @@ define([
 
 				expect(testCollection.length).toBe(2);
 				expect(testCollection.find(function(model) {
-					return (model.attributes.sid === '475471 2') &&
+					return (model.attributes.sid === '475471') &&
 						(model.attributes.lat === 43.08528) &&
 						(model.attributes.lon === -89.51722) &&
 						(model.attributes.name === 'MIDDLETON');
 				})).toBeDefined();
 				expect(testCollection.find(function(model) {
-					return (model.attributes.sid === 'US1WIDA0002 6') &&
+					return (model.attributes.sid === 'US1WIDA0002') &&
 						(model.attributes.lat === 43.1022) &&
 						(model.attributes.lon === -89.4961) &&
 						(model.attributes.name === 'MIDDLETON 0.5 E');
@@ -102,10 +104,10 @@ define([
 				fakeServer.respond();
 
 				vars1 = testCollection.find(function(model) {
-					 return (model.attributes.sid === '475471 2');
+					 return (model.attributes.sid === '475471');
 				}).attributes.variables;
 				vars2 = testCollection.find(function(model) {
-					return (model.attributes.sid === 'US1WIDA0002 6');
+					return (model.attributes.sid === 'US1WIDA0002');
 				}).attributes.variables;
 
 				expect(vars1.length).toBe(2);

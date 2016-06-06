@@ -5,9 +5,9 @@ define([
 	'underscore',
 	'moment',
 	'Config',
-	'views/BaseCollapsiblePanelView',
+	'views/BaseDataView',
 	'hbs!hb_templates/precipData'
-], function(_, moment, Config, BaseCollapsiblePanelView, hbTemplate) {
+], function(_, moment, Config, BaseDataView, hbTemplate) {
 	"use strict";
 
 	/* @construct
@@ -16,22 +16,11 @@ define([
 	 *		@prop {Backbone.Model representing precipitation grid data} model
 	 *		@prop {String} distanceToProjectLocation
 	 */
-	var view = BaseCollapsiblePanelView.extend({
+	var view = BaseDataView.extend({
 		template : hbTemplate,
 
 		panelHeading : 'Precipitation Data Overview',
 		panelBodyId : 'precipitation-data-overview-panel-body',
-
-		additionalEvents : {
-			'click input:checkbox' : 'toggleCollectedDataVariable'
-		},
-
-		initialize : function(options) {
-			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
-
-			this.distanceToProjectLocation = options.distanceToProjectLocation;
-			this.listenTo(this.model.get('variables').at(0), 'change:selected', this.updateSelectedCheckbox);
-		},
 
 		render : function() {
 			var attributes = this.model.attributes;
@@ -43,19 +32,11 @@ define([
 			this.context.endDate = variable.endDate.format(Config.DATE_FORMAT);
 			this.context.x = variable.x;
 			this.context.y = variable.y;
+			this.context.id = attributes.variables.at(0).cid;
 			this.context.distance = this.distanceToProjectLocation;
 
-			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
+			BaseDataView.prototype.render.apply(this, arguments);
 			return this;
-		},
-
-		toggleCollectedDataVariable : function() {
-			var variable = this.model.get('variables').at(0);
-			variable.set('selected', !variable.get('selected'));
-		},
-
-		updateSelectedCheckbox : function(variableModel) {
-			this.$('table input:checkbox').prop('checked', variableModel.has('selected') && variableModel.get('selected'));
 		}
 	});
 

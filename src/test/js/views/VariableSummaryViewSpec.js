@@ -1,5 +1,5 @@
 /* jslint browser: true */
-/* global expect, spyOn */
+/* global expect, spyOn, sinon */
 
 define([
 	'jquery',
@@ -10,6 +10,8 @@ define([
 	'models/BaseVariableCollection',
 	'views/VariableSummaryView'
 ], function($, _, moment, Config, WorkflowStateModel, BaseVariableCollection, VariableSummaryView) {
+	"use strict";
+
 	describe('views/VariableSummaryView', function() {
 		var testView;
 		var $testDiv;
@@ -85,6 +87,17 @@ define([
 		describe('Tests for model event listener setup if the model does contain datasets at initialization', function() {
 
 			var datasetCollections;
+
+			var isPrecip = function(selectedDataset) {
+				return selectedDataset.datasetName === Config.PRECIP_DATASET;
+			};
+			var isNWIS = function(selectedDataset) {
+				return selectedDataset.datasetName === Config.NWIS_DATASET;
+			};
+			var isACIS = function(selectedDataset) {
+				return selectedDataset.datasetName === Config.ACIS_DATASET;
+			};
+
 			beforeEach(function() {
 				var startDate = moment('2002-04-11', 'YYYY-MM-DD');
 				var endDate = moment('2006-11-23', 'YYYY-MM-DD');
@@ -99,6 +112,11 @@ define([
 							{name : 'V1', startDate : startDate, endDate : endDate},
 							{name : 'V2', startDate : startDate, endDate : endDate}])}
 				]);
+				datasetCollections[Config.ACIS_DATASET].reset([
+					{name : 'ACIS Dataset 1', variables : new BaseVariableCollection([
+							{startDate : startDate, endDate : endDate, description : 'ACIS Variable 1'}
+					])}
+				]);
 
 				testView = new VariableSummaryView({
 					$el : $testDiv,
@@ -111,17 +129,14 @@ define([
 
 
 			it('Expects that if a precip variable is selected the view is rendered with the appropriate context', function() {
-				var precipSelected;
-				var nwisSelected;
+				var precipSelected, nwisSelected, acisSelected;
 				var precipModelToUpdate = datasetCollections[Config.PRECIP_DATASET].at(1);
 				var precipVariableToUpdate = precipModelToUpdate.get('variables').at(0);
+
 				precipVariableToUpdate.set('selected', true);
-				precipSelected = _.find(testView.context.selectedDatasets, function(d) {
-					return d.datasetName === Config.PRECIP_DATASET;
-				});
-				nwisSelected = _.find(testView.context.selectedDatasets, function(d) {
-					return d.datasetName === Config.NWIS_DATASET;
-				});
+				precipSelected = _.find(testView.context.selectedDatasets, isPrecip);
+				nwisSelected = _.find(testView.context.selectedDatasets, isNWIS);
+				acisSelected = _.find(testView.context.selectedDatasets, isACIS);
 
 				expect(testView.render).toHaveBeenCalled();
 				expect(testView.context.hasSelectedVariables).toBe(true);
@@ -135,24 +150,22 @@ define([
 					property : '3:2'
 				});
 				expect(nwisSelected.variables.length).toBe(0);
+				expect(acisSelected.variables.length).toBe(0);
 			});
 
 			it('Expects that if a nwis variable is selected the view is rendered with the appropriate context', function() {
-				var precipSelected;
-				var nwisSelected;
+				var precipSelected, nwisSelected, acisSelected;
 				var nwisModelToUpdate = datasetCollections[Config.NWIS_DATASET].at(0);
 				var nwisVariableToUpdate = nwisModelToUpdate.get('variables').at(1);
 				nwisVariableToUpdate.set('selected', true);
-				precipSelected = _.find(testView.context.selectedDatasets, function(d) {
-					return d.datasetName === Config.PRECIP_DATASET;
-				});
-				nwisSelected = _.find(testView.context.selectedDatasets, function(d) {
-					return d.datasetName === Config.NWIS_DATASET;
-				});
+				precipSelected = _.find(testView.context.selectedDatasets, isPrecip);
+				nwisSelected = _.find(testView.context.selectedDatasets, isNWIS);
+				acisSelected = _.find(testView.context.selectedDatasets, isACIS);
 
 				expect(testView.render).toHaveBeenCalled();
 				expect(testView.context.hasSelectedVariables).toBe(true);
 				expect(precipSelected.variables.length).toBe(0);
+				expect(acisSelected.variables.length).toBe(0);
 				expect(nwisSelected.variables.length).toBe(1);
 				expect(nwisSelected.variables[0]).toEqual({
 					modelId : nwisModelToUpdate.cid,
@@ -161,6 +174,31 @@ define([
 					startDate : '2002-04-11',
 					endDate : '2006-11-23',
 					property : 'V2'
+				});
+			});
+
+			it('Expects that if a acis variable is selected the view is rendered with the appropriate context', function() {
+				var precipSelected, nwisSelected, acisSelected;
+				var acisModelToUpdate = datasetCollections[Config.ACIS_DATASET].at(0);
+				var acisVariableToUpdate = acisModelToUpdate.get('variables').at(0);
+
+				acisVariableToUpdate.set('selected', true);
+				precipSelected = _.find(testView.context.selectedDatasets, isPrecip);
+				nwisSelected = _.find(testView.context.selectedDatasets, isNWIS);
+				acisSelected = _.find(testView.context.selectedDatasets, isACIS);
+
+				expect(testView.render).toHaveBeenCalled();
+				expect(testView.context.hasSelectedVariables).toBe(true);
+				expect(precipSelected.variables.length).toBe(0);
+				expect(nwisSelected.variables.length).toBe(0);
+				expect(acisSelected.variables.length).toBe(1);
+				expect(acisSelected.variables[0]).toEqual({
+					modelId : acisModelToUpdate.cid,
+					variableId : acisVariableToUpdate.cid,
+					siteId : 'ACIS Dataset 1',
+					startDate : '2002-04-11',
+					endDate : '2006-11-23',
+					property : 'ACIS Variable 1'
 				});
 			});
 		});
@@ -182,6 +220,11 @@ define([
 							{name : 'V1', startDate : startDate, endDate : endDate, selected : true},
 							{name : 'V2', startDate : startDate, endDate : endDate}])}
 				]);
+				datasetCollections[Config.ACIS_DATASET].reset([
+					{name : 'ACIS Dataset 1', variables : new BaseVariableCollection([
+							{selected : true, startDate : startDate, endDate : endDate, description : 'ACIS Variable 1'}
+					])}
+				]);
 
 				testView = new VariableSummaryView({
 					$el : $testDiv,
@@ -193,6 +236,7 @@ define([
 			it('Expects that clicking a variables remove button unselects that variable', function(){
 				var selectedPrecipVariableModel = datasetCollections[Config.PRECIP_DATASET].at(1).get('variables').at(0);
 				var selectedNWISVariableModel = datasetCollections[Config.NWIS_DATASET].at(0).get('variables').at(0);
+				var selectedACISVariableModel = datasetCollections[Config.ACIS_DATASET].at(0).get('variables').at(0);
 
 				testView.$('button[data-variable-id="' + selectedPrecipVariableModel.cid + '"]').trigger('click');
 
@@ -201,6 +245,10 @@ define([
 				testView.$('button[data-variable-id="' + selectedNWISVariableModel.cid + '"]').trigger('click');
 
 				expect(selectedNWISVariableModel.get('selected')).toBe(false);
+
+				testView.$('button[data-variable-id="' + selectedACISVariableModel.cid + '"]').trigger('click');
+
+				expect(selectedACISVariableModel.get('selected')).toBe(false);
 			});
 		});
 	});

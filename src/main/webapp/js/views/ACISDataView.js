@@ -4,25 +4,26 @@ define([
 	'underscore',
 	'Config',
 	'views/BaseDataView',
-	'hbs!hb_templates/nwisData'
+	'hbs!hb_templates/acisData'
 ], function(_, Config, BaseDataView, hbTemplate) {
+
 	"use strict";
 
 	/*
 	 * @constructs
 	 * @param {Object} options
-	 *		@prop {Jquery selector or element} $el
-	 *		@prop {Backbone.Model} model - represents an NWIS site
+	 *		@prop {Jquery selector element} $el
+	 *		@prop {Backbone.Model} model - represents a single ACIS site
 	 *		@prop {String} distanceToProjectLocation
 	 */
 	var view = BaseDataView.extend({
 		template : hbTemplate,
 
-		panelHeading : 'NWIS Data Overview',
-		panelBodyId : 'nwis-data-overview-panel-body',
+		panelHeading : 'ACIS Data Overview',
+		panelBodyId : 'acis-data-overview-panel-body',
 
 		render : function() {
-			var getContextForVariable = function (variableModel) {
+			var getContextForVariable = function(variableModel) {
 				var result = _.clone(variableModel.attributes);
 				result.startDate = variableModel.attributes.startDate.format(Config.DATE_FORMAT);
 				result.endDate = variableModel.attributes.endDate.format(Config.DATE_FORMAT);
@@ -31,7 +32,6 @@ define([
 			};
 
 			this.context.name = this.model.get('name');
-			this.context.siteNo = this.model.get('siteNo');
 			this.context.distance = this.distanceToProjectLocation;
 			this.context.variables = this.model.get('variables').map(getContextForVariable);
 
@@ -43,5 +43,4 @@ define([
 
 	return view;
 });
-
 

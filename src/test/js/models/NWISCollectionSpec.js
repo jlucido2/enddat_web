@@ -81,7 +81,7 @@ define([
 			expect(testCollection.statisticCodes['00012']).toEqual('Equivalent Mean');
 		});
 
-		it('Expects that a failed statistic codes ste the statisticCOdes to undefined', function() {
+		it('Expects that a failed statistic codes ste the statisticCodes to undefined', function() {
 			fakeServer.respondWith('stcodes/?fmt=rdb', [500, {'Content-Type' :'text'}, 'Internal server error']);
 			fakeServer.respond();
 
@@ -119,7 +119,7 @@ define([
 				expect(failSpy).not.toHaveBeenCalled();
 			});
 
-			it('Expects that a failed response clears the collection and reects the promise', function() {
+			it('Expects that a failed response clears the collection and rejects the promise', function() {
 				expect(testCollection.length).toBe(1);
 
 				fakeServer.respondWith(/waterService/, [500, {'Content-Type' : 'text'}, 'Internal server error']);
@@ -163,18 +163,6 @@ define([
 				expect(result.attributes.name).toEqual('S FK PHEASANT BRANCH AT HWY 14 NEAR MIDDLETON, WI');
 				expect(result.attributes.lat).toEqual('43.0966617');
 				expect(result.attributes.lon).toEqual('-89.5284545');
-			});
-
-			it('Expects the start and end date properties to be the union of the variables start and end date', function() {
-				var result;
-				fakeServer.respondWith(/waterService/, [200, {'Content-Type' : 'text'}, SITE_INFO]);
-				fakeServer.respond();
-				result = testCollection.find(function(model) {
-					return model.attributes.siteNo === '05427945';
-				});
-
-				expect(result.attributes.startDate.format(Config.DATE_FORMAT)).toEqual('1977-10-01');
-				expect(result.attributes.endDate.format(Config.DATE_FORMAT)).toEqual('1991-09-30');
 			});
 
 			it('Expects that the correct number of variable models are added to each site model', function() {

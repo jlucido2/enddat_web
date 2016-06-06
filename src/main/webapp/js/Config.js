@@ -7,7 +7,8 @@ define([], function() {
 	var config = {
 		NWIS_DATASET : 'NWIS',
 		PRECIP_DATASET : 'PRECIP',
-		ALL_DATASETS : ['NWIS', 'PRECIP'],
+		ACIS_DATASET : 'ACIS',
+		ALL_DATASETS : ['NWIS', 'PRECIP', 'ACIS'],
 
 		PROJ_LOC_ICON_URL : 'bower_components/leaflet/dist/images/marker-icon.png',
 		DATASET_ICON : {
@@ -18,6 +19,10 @@ define([], function() {
 			'PRECIP' : {
 				iconUrl : 'img/national-precipitation.png',
 				iconSize : [14, 14]
+			},
+			'ACIS' : {
+				iconUrl : 'img/acis.png',
+				iconSize : [10, 10]
 			}
 		},
 

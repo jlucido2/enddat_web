@@ -21,6 +21,9 @@ require.config({
 		},
 		'models/NWISCollection' : {
 			parameterCodesPath : 'http:dummyservice/nwis/info/'
+		},
+		'models/ACISCollection' : {
+			acisStnMetaUrl : 'http:dummyservice/acis/StnMeta'
 		}
 	},
 

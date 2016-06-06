@@ -8,8 +8,9 @@ define([
 	'Config',
 	'utils/geoSpatialUtils',
 	'models/NWISCollection',
-	'models/PrecipitationCollection'
-], function(_, $, moment, Backbone, Config, geoSpatialUtils, NWISCollection, PrecipitationCollection) {
+	'models/PrecipitationCollection',
+	'models/ACISCollection'
+], function(_, $, moment, Backbone, Config, geoSpatialUtils, NWISCollection, PrecipitationCollection, ACISCollection) {
 	"use strict";
 
 	var DEFAULT_CHOOSE_DATA_RADIUS = 2;
@@ -51,7 +52,8 @@ define([
 			else {
 				datasetCollections = _.object([
 					[Config.NWIS_DATASET, new NWISCollection()],
-					[Config.PRECIP_DATASET, new PrecipitationCollection()]
+					[Config.PRECIP_DATASET, new PrecipitationCollection()],
+					[Config.ACIS_DATASET, new ACISCollection()]
 				]);
 				this.set('datasetCollections', datasetCollections);
 				this.on('change:radius', this.updateDatasetCollections, this);

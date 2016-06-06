@@ -14,7 +14,7 @@ define([
 		var testView;
 		var $testDiv;
 		var testModel;
-		var testSiteCollection, testPrecipCollection;
+		var testSiteCollection, testPrecipCollection, testACISCollection;
 		var fakeServer;
 		var addLayerSpy, removeLayerSpy, addControlSpy, hasLayerSpy, removeMapSpy, fitBoundsSpy;
 
@@ -52,6 +52,7 @@ define([
 			testModel.initializeDatasetCollections();
 			testSiteCollection = testModel.get('datasetCollections')[Config.NWIS_DATASET];
 			testPrecipCollection = testModel.get('datasetCollections')[Config.PRECIP_DATASET];
+			testACISCollection = testModel.get('datasetCollections')[Config.ACIS_DATASET];
 
 			testView = new MapView({
 				el : '#test-div',
@@ -84,6 +85,7 @@ define([
 			expect(testView.siteLayerGroups).toBeDefined();
 			expect(testView.siteLayerGroups[Config.NWIS_DATASET]).toBeDefined();
 			expect(testView.siteLayerGroups[Config.PRECIP_DATASET]).toBeDefined();
+			expect(testView.siteLayerGroups[Config.ACIS_DATASET]).toBeDefined();
 		});
 
 		describe('Tests for render', function() {
@@ -105,6 +107,7 @@ define([
 				});
 				expect(_.contains(layersAdded, testView.siteLayerGroups[Config.NWIS_DATASET])).toBe(true);
 				expect(_.contains(layersAdded, testView.siteLayerGroups[Config.PRECIP_DATASET])).toBe(true);
+				expect(_.contains(layersAdded, testView.siteLayerGroups[Config.ACIS_DATASET])).toBe(true);
 			});
 
 			it('Expects that the project location marker is not added to the map if location is not defined in the workflow state', function() {
@@ -310,7 +313,23 @@ define([
 				testPrecipCollection.reset([]);
 				expect(testView.siteLayerGroups[Config.PRECIP_DATASET].getLayers().length).toBe(0);
 			});
-		});
 
+			it('Expects that if the ACIS collection is updated, ACIS markers will be added to the map', function() {
+				testACISCollection.reset([
+					{name : 'Name1', lon : '-100', lat : '43.0'},
+					{name : 'Name2', lon : '-100', lat : '44.0'}
+				]);
+				expect(testView.siteLayerGroups[Config.ACIS_DATASET].getLayers().length).toBe(2);
+			});
+
+			it('Expects that if the ACIS collection is updated then cleared, no ACIS markers will be on the map', function() {
+				testACISCollection.reset([
+					{x : '1', y: '2', lon : '-100', lat : '43.0'},
+					{x : '1', y: '3', lon : '-100', lat : '44.0'}
+				]);
+				testACISCollection.reset([]);
+				expect(testView.siteLayerGroups[Config.ACIS_DATASET].getLayers().length).toBe(0);
+			});
+		});
 	});
 });

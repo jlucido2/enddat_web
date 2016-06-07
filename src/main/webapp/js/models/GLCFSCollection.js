@@ -13,11 +13,19 @@ define([
 ], function(log, module, $, _, moment, VariableParameter, BaseDatasetCollection, BaseVariableCollection, $utils) {
 	"use strict";
 
+	var START_DATE = moment('2016-01-01', 'YYYY-MM-DD');
 	var GET_FEATURE_URL = module.config().GLCFSWFSGetFeatureUrl;
-	var GLCFS_DATA_DDS_URL = 'glosthredds/' + module.config().glosThreddsGLCFSData + '.dds';
-
 	var variableId = 'glcfstempVariableId';
 	var variableName = 'GLCFStemp';
+
+	var getInteger = function(str) {
+		return str.split('.')[0];
+	};
+
+	var getDDSURL = function(lake) {
+		var url = 'glosthredds/' + module.config().glosThreddsGLCFSData + lake.toLowerCase() + '/fcfmrc-2d/Lake_' + lake + '_-_2D_best.ncd.dds'
+		return url;
+	};
 
 	var getTimeBounds = function(ddsText) {
 		var lines = ddsText.split('\n');
@@ -88,7 +96,7 @@ define([
 			$.ajax({
 				url : GET_FEATURE_URL,
 				data : {
-					typeName : this.lake.toLowerCase(),
+					typeName : 'sb:' + this.lake.toLowerCase(),
 					srsName : 'EPSG:4269',
 					bbox : [boundingBox.south, boundingBox.west, boundingBox.north, boundingBox.east].join(',')
 				},
@@ -109,7 +117,7 @@ define([
 			});
 
 			$.ajax({
-				url : GLCFS_DATA_DDS_URL + this.lake.toLowerCase() + '/fcfmrc-2d/Lake_' + this.lake + '_-_2D_best.ncd.dds',
+				url : getDDSURL(this.lake),
 				success : function (response, textStatus, jqXHR) {
 					self.timeBounds = getTimeBounds(response);
 					fetchDDSDeferred.resolve(jqXHR);

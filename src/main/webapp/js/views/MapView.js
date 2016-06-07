@@ -282,6 +282,11 @@ define([
 			this.listenTo(datasetCollections[Config.NWIS_DATASET], 'reset', this.updateNWISMarker);
 			this.listenTo(datasetCollections[Config.PRECIP_DATASET], 'reset', this.updatePrecipGridPoints);
 			this.listenTo(datasetCollections[Config.ACIS_DATASET], 'reset', this.updateACISMarker);
+			this.listenTo(datasetCollections[Config.GLCFS_ERIE_DATASET], 'reset', this.updateGLCFSErieMarker);
+			this.listenTo(datasetCollections[Config.GLCFS_HURON_DATASET], 'reset', this.updateGLCFSHuronMarker);
+			this.listenTo(datasetCollections[Config.GLCFS_MICHIGAN_DATASET], 'reset', this.updateGLCFSMichiganMarker);
+			this.listenTo(datasetCollections[Config.GLCFS_ONTARIO_DATASET], 'reset', this.updateGLCFSOntarioMarker);
+			this.listenTo(datasetCollections[Config.GLCFS_SUPERIOR_DATASET], 'reset', this.updateGLCFSSuperiorMarker);
 		},
 
 		updateSiteMarkerLayer : function(datasetKind) {
@@ -377,7 +382,27 @@ define([
 
 		updateACISMarker : function() {
 			this.updateSiteMarkerLayer(Config.ACIS_DATASET);
-		}
+		},
+		
+		updateGLCFSErieMarker : function() {
+			this.updateSiteMarkerLayer(Config.GLCFS_ERIE_DATASET);
+		},
+
+		updateGLCFSHuronMarker : function() {
+			this.updateSiteMarkerLayer(Config.GLCFS_HURON_DATASET);
+		},
+
+		updateGLCFSMichiganMarker : function() {
+			this.updateSiteMarkerLayer(Config.GLCFS_MICHIGAN_DATASET);
+		},
+
+		updateGLCFSOntarioMarker : function() {
+			this.updateSiteMarkerLayer(Config.GLCFS_ONTARIO_DATASET);
+		},
+
+		updateGLCFSSuperiorMarker : function() {
+			this.updateSiteMarkerLayer(Config.GLCFS_SUPERIOR_DATASET);
+		},
 	});
 
 	return view;

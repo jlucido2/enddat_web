@@ -249,9 +249,9 @@ define([
 
 		updateExtent : function(aoiModel) {
 			var bbox = aoiModel.getBoundingBox();
-			var southwest = L.latLng(bbox.south, bbox.west);
-			var northeast = L.latLng(bbox.north, bbox.east);
-			this.map.fitBounds(L.latLngBounds(southwest, northeast));
+			if (bbox) {
+				this.map.fitBounds(LUtils.getLatLngBounds(bbox));
+			}
 		},
 
 		setupDatasetListeners : function(model, datasetCollections) {
@@ -288,7 +288,8 @@ define([
 			};
 
 			var updateDataView = function(siteModel, siteLatLng) {
-				var projectLocation = L.latLng(self.model.attributes.location.latitude, self.model.attributes.location.longitude);
+				var bounds = LUtils.getLatLngBounds(self.model.get('aoi').getBoundingBox());
+				var	projectLocation = bounds.getCenter();
 
 				self.removeDataView();
 				self.selectedSite = {

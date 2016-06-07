@@ -13,6 +13,12 @@ define([
 		self.milesBetween = function(latlng1, latlng2) {
 			return latlng1.distanceTo(latlng2) * MILES_PER_METER;
 		};
+
+		self.getLatLngBounds = function(bbox) {
+			var southwest = L.latLng(bbox.south, bbox.west);
+			var northeast = L.latLng(bbox.north, bbox.east);
+			return L.latLngBounds(southwest, northeast);
+		};
 		return self;
 	})();
 

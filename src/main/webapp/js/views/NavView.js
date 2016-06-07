@@ -10,6 +10,29 @@ define([
 ], function(_, bootstrap, log, Config, BaseView, hb_template) {
 	"use strict";
 
+	var getChooseDataUrl = function(model) {
+		var state = model.attributes;
+		var aoi = model.attributes.aoi;
+
+		var startDate = (state.startDate) ? '/startdate/' + state.startDate.format(Config.DATE_FORMAT_URL) : '';
+		var endDate = (state.endDate) ? '/enddate/' + state.endDate.format(Config.DATE_FORMAT_URL) : '';
+		var datasets = (state.datasets) ? '/dataset/' + state.datasets.join('/') : '';
+
+		var aoiFragment = '';
+		if (aoi.usingProjectLocation()) {
+			var latitude = (aoi.attributes.latitude) ? aoi.attributes.latitude : '';
+			var longitude = (aoi.attributes.longitude) ? aoi.attributes.longitude : '';
+			var radius = (aoi.attributes.radius) ? aoi.attributes.radius : '';
+			aoiFragment = 'lat/' + latitude + '/lng/' + longitude + '/radius/' + radius;
+		}
+		else if (aoi.usingAOIBox()) {
+			//TODO ADD aoiFragment for AOI Box
+			aoiFragment = '';
+		}
+
+		return aoiFragment + startDate + endDate + datasets;
+	};
+
 	var view = BaseView.extend({
 		template : hb_template,
 
@@ -77,29 +100,6 @@ define([
 			}
 		},
 
-		_getChooseDataUrl : function(model) {
-			var state = model.attributes;
-			var aoi = model.attributes.aoi;
-
-			var startDate = (state.startDate) ? '/startdate/' + state.startDate.format(Config.DATE_FORMAT_URL) : '';
-			var endDate = (state.endDate) ? '/enddate/' + state.endDate.format(Config.DATE_FORMAT_URL) : '';
-			var datasets = (state.datasets) ? '/dataset/' + state.datasets.join('/') : '';
-
-			var aoiFragment = '';
-			if (aoi.usingProjectLocation()) {
-				var latitude = (aoi.attributes.latitude) ? aoi.attributes.latitude : '';
-				var longitude = (aoi.attributes.longitude) ? aoi.attributes.longitude : '';
-				var radius = (aoi.attributes.radius) ? aoi.attributes.radius : '';
-				aoiFragment = 'lat/' + latitude + '/lng/' + longitude + '/radius/' + radius;
-			}
-			else if (aoi.usingAOIBox()) {
-				//TODO ADD aoiFragment for AOI Box
-				aoiFragment = '';
-			}
-
-			return aoiFragment + startDate + endDate + datasets;
-		},
-
 		updateNavigation : function(model, isRendering) {
 			var stepHasChanged = isRendering ? true : model.hasChanged('step');
 			var newStep = model.get('step');
@@ -135,7 +135,7 @@ define([
 						$processDataBtn.addClass('disabled');
 					}
 
-					this.router.navigate(this._getChooseDataUrl(model));
+					this.router.navigate(getChooseDataUrl(model));
 					break;
 
 				case Config.PROCESS_DATA_STEP:
@@ -146,16 +146,22 @@ define([
 		updateAOI : function() {
 			var $chooseDataBtn = this.$(this.navSelector[Config.CHOOSE_DATA_FILTERS_STEP]);
 
-			if (this.model.get('step') === Config.SPECIFY_AOI_STEP) {
-				if (this.model.get('aoi').hasValidAOI()) {
-						$chooseDataBtn.removeClass('disabled');
-				}
-				else {
-					$chooseDataBtn.addClass('disabled');
-				}
+			switch(this.model.get('step')) {
+				case Config.SPECIFY_AOI_STEP:
+					if (this.model.get('aoi').hasValidAOI()) {
+							$chooseDataBtn.removeClass('disabled');
+					}
+					else {
+						$chooseDataBtn.addClass('disabled');
+					}
+					break;
+
+				case Config.CHOOSE_DATA_FILTERS_STEP:
+				case Config.CHOOSE_DATA_VARIABLES_STEP:
+					this.router.navigate(getChooseDataUrl(this.model));
+					break;
 			}
 		}
-
 	});
 
 	return view;

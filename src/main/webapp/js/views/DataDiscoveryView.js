@@ -140,7 +140,7 @@ define([
 					if (!this.locationView) {
 						this.locationView = new LocationView({
 							el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
-							model : model,
+							model : model.get('aoi'),
 							opened : true
 						});
 						this.locationView.render();

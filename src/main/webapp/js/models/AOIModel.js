@@ -30,11 +30,13 @@ define([
 		getBoundingBox : function() {
 			var result = undefined;
 			if (this.usingProjectLocation()) {
-				result = geoSpatialUtils.getBoundingBox(
-					this.attributes.latitude,
-					this.attributes.longitude,
-					this.attributes.radius
-				);
+				if ((this.attributes.latitude) && (this.attributes.longitude) && (this.attributes.radius)) {
+					result = geoSpatialUtils.getBoundingBox(
+						this.attributes.latitude,
+						this.attributes.longitude,
+						this.attributes.radius
+					);
+				}
 			}
 			else if (this.usingAOIBox()) {
 				result = this.attributes.aoiBox;

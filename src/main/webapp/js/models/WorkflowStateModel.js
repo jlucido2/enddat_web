@@ -11,7 +11,7 @@ define([
 	'models/NWISCollection',
 	'models/PrecipitationCollection',
 	'models/ACISCollection'
-], function(_, $, moment, Backbone, Config, geoSpatialUtils, NWISCollection, PrecipitationCollection, ACISCollection) {
+], function(_, $, moment, Backbone, Config, geoSpatialUtils, GLCFSCollection, NWISCollection, PrecipitationCollection, ACISCollection) {
 	"use strict";
 
 	var DEFAULT_CHOOSE_DATA_RADIUS = 2;

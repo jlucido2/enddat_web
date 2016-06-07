@@ -32,6 +32,8 @@ define([
 			};
 
 			this.context.name = this.model.get('name');
+			this.context.siteId = this.model.get('sid');
+			this.context.networks = this.model.get('networks');
 			this.context.distance = this.distanceToProjectLocation;
 			this.context.variables = this.model.get('variables').map(getContextForVariable);
 

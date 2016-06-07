@@ -6,6 +6,7 @@
 				<th>Dataset</th>
 				<th>Variable</th>
 				<th>Raw</th>
+				<th>Mean</th>
 				<th>Min</th>
 				<th>Max</th>
 				<th>Sum</th>
@@ -17,24 +18,66 @@
 		<tbody></tbody>
 	</table>
 </div>
+<div class="output-data-inputs-container">
+	<h4>Data Processing Filters</h4>
+	<div class="form-group">
+		<label>Output Date Range</label>
+		<div class="form-inline">
+			<label for="output-start-date">Start:&nbsp;</label>
+			<div class="input-group date" id="output-start-date-div" >
+				<input type="text" id="output-start-date" class="form-control" size="10"/>
+				<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+			</div>
+			<label for="output-end-date">End:&nbsp;</label>
+			<div class="input-group date" id="output-end-date-div">
+				<input type="text" id="output-end-date" class="form-control" size="10"/>
+				<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+			</div>
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="acceptable-data-gap-input">Acceptable Data Gap (in hours)</label>
+		<input type="number" min="1" size="4" class="form-control" id="acceptable-data-gap-input" />
+	</div>
 </div>
-<div class="form-group">
-	<label>Output Date Range</label>
-	<div class="form-inline">
-		<label for="output-start-date">Start:&nbsp;</label>
-		<div class="input-group date" id="output-start-date-div" >
-			<input type="text" id="output-start-date" class="form-control" size="10"/>
-			<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-		</div>
-		<label for="output-end-date">End:&nbsp;</label>
-		<div class="input-group date" id="output-end-date-div">
-			<input type="text" id="output-end-date" class="form-control" size="10"/>
-			<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-		</div>
+<div class="output-file-inputs-container">
+	<h4>Output File Configuration</h4>
+	<div class="form-group">
+		<label for="output-date-format-input">Output Date Format</label>
+		<select class="form-control" id="output-date-format-input">
+			<option value="Excel">MM/DD/YYYY HH:MM</option>
+			<option value="ISO">YYYY-MM-DDTHH:MM:SS</option>
+		</select>
+	</div>
+	<div class="form-group">
+		<label for="output-time-zone-input">Output Time Zone</label>
+		<select class="form-control" id="output-time-zone-input">
+			<option value="0_GMT">GMT</option>
+			<option value="-6_CST">CST (-6:00 GMT)</option>
+			<option value="-5_CDT">CDT (-5:00 GMT)</option>
+			<option value="-5_EST">EST (-5:00 GMT)</option>
+			<option value="-4_EDT">EDT (-4:00 GMT)</option>
+			<option value="-7_MST">MST (-7:00 GMT)</option>
+			<option value="-6_MDT">MDT (-6:00 GMT)</option>
+			<option value="-8_PST">CST (-8:00 GMT)</option>
+			<option value="-7_PDT">CST (-7:00 GMT)</option>
+		</select>
+	</div>
+	<div class="form-group">
+		<label for="output-file-format-input">Output File Format</label>
+		<select class="form-control" id="output-file-format-input">
+			<option value="tab">Tab Delimited Text</option>
+			<option value="csv">Comma Delimited Text</option>
+		</select>
+	</div>
+	<div class="form-group">
+		<label for="missing-value-input">Missing Value</label>
+		<input type="text" class="form-control" id="missing-value-input" />
 	</div>
 </div>
 <div class ="op-buttons-container">
 	<button class="btn btn-info show-url-btn" type="button">Show data processing url</button>
-	<button class="btn btn-primary get-data-btn" type="button">Get data (opens new tab)</button>
+	<button class="btn btn-info get-data-btn" type="button">Get data (opens new tab)</button>
+	<button class="btn btn-primary download-data-btn" type="button">Download</button>
 	<div class="url-container"><a href="#" target="_blank"></a></div>
 </div>

@@ -12,9 +12,11 @@ define([
 	'leafletCustomControls/legendControl',
 	'views/BaseView',
 	'views/PrecipDataView',
+	'views/ACISDataView',
 	'views/NWISDataView',
 	'hbs!hb_templates/mapOps'
-], function(_, L, leafletProviders, log, Config, $utils, geoSpatialUtils, LUtils, legendControl, BaseView, PrecipDataView, NWISDataView, hbTemplate) {
+], function(_, L, leafletProviders, log, Config, $utils, geoSpatialUtils, LUtils, legendControl, BaseView,
+		PrecipDataView, ACISDataView, NWISDataView, hbTemplate) {
 
 	var siteIcons = _.mapObject(Config.DATASET_ICON, function(value) {
 		return L.icon(value);
@@ -26,14 +28,20 @@ define([
 		return model.get('y') + ':' + model.get('x');
 	};
 
-	var DataViews =_.object(
-		[Config.NWIS_DATASET, Config.PRECIP_DATASET],
-		[NWISDataView, PrecipDataView]
-	);
+	var getACISTitle = function(model) {
+		return model.get('name');
+	};
+
+	var DataViews =_.object([
+		[Config.NWIS_DATASET, NWISDataView],
+		[Config.PRECIP_DATASET, PrecipDataView],
+		[Config.ACIS_DATASET, ACISDataView]
+	]);
 
 	var siteMarkerOptions = _.object([
 		[Config.NWIS_DATASET, {icon : siteIcons[Config.NWIS_DATASET], getTitle : getNWISTitle}],
-		[Config.PRECIP_DATASET, {icon : siteIcons[Config.PRECIP_DATASET], getTitle : getPrecipTitle}]
+		[Config.PRECIP_DATASET, {icon : siteIcons[Config.PRECIP_DATASET], getTitle : getPrecipTitle}],
+		[Config.ACIS_DATASET, {icon : siteIcons[Config.ACIS_DATASET], getTitle : getACISTitle}]
 	]);
 
 	var MAP_WIDTH_CLASS = 'col-md-6';
@@ -82,8 +90,8 @@ define([
 			}, this);
 
 			this.siteLayerGroups = _.object(
-				[Config.GLCFS_ERIE_DATASET, Config.GLCFS_HURON_DATASET, Config.GLCFS_MICHIGAN_DATASET, Config.GLCFS_ONTARIO_DATASET, Config.GLCFS_SUPERIOR_DATASET, Config.NWIS_DATASET, Config.PRECIP_DATASET],
-				[L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup()]
+				[Config.GLCFS_ERIE_DATASET, Config.GLCFS_HURON_DATASET, Config.GLCFS_MICHIGAN_DATASET, Config.GLCFS_ONTARIO_DATASET, Config.GLCFS_SUPERIOR_DATASET, Config.NWIS_DATASET, Config.PRECIP_DATASET, Config.ACIS_DATASET],
+				[L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup()]
 			);
 
 			this.selectedSite = undefined;
@@ -262,6 +270,7 @@ define([
 
 			this.listenTo(datasetCollections[Config.NWIS_DATASET], 'reset', this.updateNWISMarker);
 			this.listenTo(datasetCollections[Config.PRECIP_DATASET], 'reset', this.updatePrecipGridPoints);
+			this.listenTo(datasetCollections[Config.ACIS_DATASET], 'reset', this.updateACISMarker);
 		},
 
 		updateSiteMarkerLayer : function(datasetKind) {
@@ -353,6 +362,10 @@ define([
 		 */
 		updatePrecipGridPoints : function() {
 			this.updateSiteMarkerLayer(Config.PRECIP_DATASET);
+		},
+
+		updateACISMarker : function() {
+			this.updateSiteMarkerLayer(Config.ACIS_DATASET);
 		}
 	});
 

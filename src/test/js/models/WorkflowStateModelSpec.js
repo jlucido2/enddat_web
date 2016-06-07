@@ -66,6 +66,7 @@ define([
 
 			expect(testModel.attributes.datasetCollections[Config.NWIS_DATASET]).toBeDefined();
 			expect(testModel.attributes.datasetCollections[Config.PRECIP_DATASET]).toBeDefined();
+			expect(testModel.attributes.datasetCollections[Config.ACIS_DATASET]).toBeDefined();
 		});
 
 		describe('Tests for getSelectedVariables', function() {
@@ -299,7 +300,6 @@ define([
 
 				expect(testModel.has('outputDateRange')).toBe(true);
 				expect(testModel.has('outputFileFormat')).toBe(true);
-				expect(testModel.has('outputTimeGapInterval')).toBe(true);
 				expect(testModel.has('outputDateFormat')).toBe(true);
 			});
 

@@ -6,19 +6,20 @@ define([
 	'moment',
 	'handlebars',
 	'bootstrap-datetimepicker',
+	'backbone.stickit',
 	'module',
 	'Config',
 	'utils/jqueryUtils',
 	'views/BaseCollapsiblePanelView',
 	'views/VariableTsOptionView',
 	'hbs!hb_templates/processData'
-], function($, _, moment, Handlebars, datetimepicker, module, Config, $utils, BaseCollapsiblePanelView,
+], function($, _, moment, Handlebars, datetimepicker, stickit, module, Config, $utils, BaseCollapsiblePanelView,
 	VariableTsOptionView, hbTemplate) {
 	"use strict";
 
 	var BASE_URL = module.config().baseUrl;
 
-	var getUrl = function(workflowModel) {
+	var getUrl = function(workflowModel, download) {
 		var attrs = workflowModel.attributes;
 		var varParams = _.chain(workflowModel.getSelectedVariables())
 			.map(function(variable) {
@@ -32,9 +33,13 @@ define([
 			{name : 'DateFormat', value : attrs.outputDateFormat},
 			{name : 'TZ', value : attrs.outputTimeZone},
 			{name : 'timeInt', value : attrs.outputTimeGapInterval},
+			{name : 'fill', value : attrs.outputMissingValue},
 			{name : 'beginPosition', value : attrs.outputDateRange.start.format(Config.DATE_FORMAT)},
 			{name : 'endPosition', value : attrs.outputDateRange.end.format(Config.DATE_FORMAT)}
 		];
+		if (download) {
+			params.push({name : 'download', value: 'true'});
+		}
 
 		return BASE_URL + 'service/execute?' + $.param(params.concat(varParams));
 	};
@@ -54,9 +59,18 @@ define([
 		additionalEvents : {
 			'click .show-url-btn' : 'showUrl',
 			'click .get-data-btn' : 'getData',
+			'click .download-data-btn' : 'downloadData',
 			//To set the model value from a datetimepicker, hand
 			'dp.change #output-start-date-div' : 'changeOutputStartDate',
 			'dp.change #output-end-date-div' : 'changeOutputEndDate'
+		},
+
+		bindings: {
+			'#output-date-format-input' : 'outputDateFormat',
+			'#output-time-zone-input' : 'outputTimeZone',
+			'#acceptable-data-gap-input' : 'outputTimeGapInterval',
+			'#output-file-format-input' : 'outputFileFormat',
+			'#missing-value-input' : 'outputMissingValue'
 		},
 
 		render : function() {
@@ -67,6 +81,7 @@ define([
 			var $tbody;
 
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
+			this.stickit();
 			$tbody = this.$('tbody');
 			this.variableTsOptionViews = [];
 			_.each(selectedVariableModels, function(variableModel) {
@@ -171,6 +186,11 @@ define([
 		getData : function(ev) {
 			ev.preventDefault();
 			window.open(getUrl(this.model), '_blank');
+		},
+
+		downloadData : function(ev) {
+			ev.preventDefault();
+			window.location.assign(getUrl(this.model, true));
 		}
 	});
 

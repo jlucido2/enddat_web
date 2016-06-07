@@ -40,6 +40,9 @@
 					'models/GLCFSCollection' : {
 						'GLCFSWFSGetFeatureUrl' : '<%=GLCFSWFSGetFeatureUrl%>',
 					},
+					'models/ACISCollection' : {
+						'acisStnMetaUrl' : '<%=acisStnMetaUrl%>'
+					},
 					'views/ProcessDataView' : {
 						'baseUrl' : '<%=baseUrl%>'
 					}

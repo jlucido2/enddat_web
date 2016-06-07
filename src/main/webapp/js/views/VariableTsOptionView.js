@@ -40,14 +40,14 @@ define([
 
 			$tsInputs.each(function() {
 				var stat = $(this).attr('name');
-				var statTsOption = _.find(timeSeriesOptions, function(tsOption) {
+				var statTsOptions = _.filter(timeSeriesOptions, function(tsOption) {
 					return tsOption.statistic === stat;
 				});
 				if (stat === 'raw') {
-					$(this).prop('checked', (statTsOption) ? true : false);
+					$(this).prop('checked', (statTsOptions.length > 0) ? true : false);
 				}
 				else {
-					$(this).val((statTsOption) ? statTsOption.timeSpan : '');
+					$(this).val((statTsOptions.length > 0) ? _.pluck(statTsOptions, 'timeSpan').join(', ') : '');
 				}
 			});
 		},
@@ -75,10 +75,18 @@ define([
 				}
 			}
 			else if (val) {
-				newTimeSeriesOptions.push({
-					statistic : stat,
-					timeSpan : val
-				});
+				$input.parent().find('div').remove();
+				if (val.search(/^[\d, ]+$/) === -1) {
+					$input.parent().append('<div class="alert alert-danger">Must enter comma separated integers</div>');
+				}
+				else {
+					_.each(val.split(','), function(timeSpan) {
+						newTimeSeriesOptions.push({
+							statistic : stat,
+							timeSpan : timeSpan.trim()
+						});
+					});
+				}
 			}
 
 			this.model.set('timeSeriesOptions', newTimeSeriesOptions);

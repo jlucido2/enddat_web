@@ -67,36 +67,5 @@ define([
 
 			expect(testView.$('input:checkbox').is(':checked')).toBe(true);
 		});
-
-		it('Expects that if the checkbox is checked, the selected property is set to true', function() {
-			testView.render();
-			testView.$('input:checkbox').trigger('click');
-
-			expect(testModel.get('variables').at(0).get('selected')).toBe(true);
-		});
-
-		it('Expects that if the checkbox is clicked twice, the selected property is set back to false', function() {
-			testView.render();
-			testView.$('input:checkbox').trigger('click');
-			testView.$('input:checkbox').trigger('click');
-
-			expect(testModel.get('variables').at(0).get('selected')).toBe(false);
-		});
-
-		it('Expects that if the model\'s selected attribute is updated the variable checkbox reflects it\'s state', function() {
-			var $checkbox;
-			var variableModel = testModel.get('variables').at(0);
-			testView.render();
-			$checkbox = testView.$('input:checkbox');
-			variableModel.set('selected', false);
-
-			expect($checkbox.prop('checked')).toBe(false);
-
-			variableModel.set('selected', true);
-			expect($checkbox.prop('checked')).toBe(true);
-
-			variableModel.unset('selected');
-			expect($checkbox.prop('checked')).toBe(false);
-		});
 	});
 });

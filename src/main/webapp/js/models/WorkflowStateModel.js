@@ -9,15 +9,15 @@ define([
 	'utils/geoSpatialUtils',
 	'models/GLCFSCollection',
 	'models/NWISCollection',
-	'models/PrecipitationCollection'
-], function(_, $, moment, Backbone, Config, geoSpatialUtils, GLCFSCollection, NWISCollection, PrecipitationCollection) {
+	'models/PrecipitationCollection',
+	'models/ACISCollection'
+], function(_, $, moment, Backbone, Config, geoSpatialUtils, NWISCollection, PrecipitationCollection, ACISCollection) {
 	"use strict";
 
 	var DEFAULT_CHOOSE_DATA_RADIUS = 2;
 	var DEFAULT_CHOSEN_DATASETS = ['NWIS'];
 
 	// Defaults for processing step
-	var DEFAULT_TIME_INTERVAL = 6;
 	var DEFAULT_TIME_ZONE = '0_GMT';
 	var DEFAULT_OUTPUT_DATE_FORMAT = 'Excel';
 	var DEFAULT_OUTPUT_FORMAT = 'tab';
@@ -58,7 +58,8 @@ define([
 				    [Config.GLCFS_ONTARIO_DATASET, new GLCFSCollection([],{lake:'Ontario'})],
 				    [Config.GLCFS_SUPERIOR_DATASET, new GLCFSCollection([],{lake:'Superior'})],
 					[Config.NWIS_DATASET, new NWISCollection()],
-					[Config.PRECIP_DATASET, new PrecipitationCollection()]
+					[Config.PRECIP_DATASET, new PrecipitationCollection()],
+					[Config.ACIS_DATASET, new ACISCollection()]
 				]);
 				this.set('datasetCollections', datasetCollections);
 				this.on('change:radius', this.updateDatasetCollections, this);
@@ -202,7 +203,6 @@ define([
 					this.set({
 						outputFileFormat : DEFAULT_OUTPUT_FORMAT,
 						outputTimeZone : DEFAULT_TIME_ZONE,
-						outputTimeGapInterval : DEFAULT_TIME_INTERVAL,
 						outputDateFormat : DEFAULT_OUTPUT_DATE_FORMAT,
 						outputDateRange : outputDateRange
 					});

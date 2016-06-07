@@ -41,15 +41,5 @@ define([
 		});
 	};
 
-	/* @param	{Object} string
-	 * returns	{Object} string - Removes special characters and capitalizes each character which follows a space.
-	 */
-	self.toTitleCase = function (str) {
-		var lowerCase = str.toLowerCase();
-	    return lowerCase.replace(/(?:^|\s)\w/g, function(match) {
-	        return match.toUpperCase();
-	    });
-	};
-
 	return self;
 });

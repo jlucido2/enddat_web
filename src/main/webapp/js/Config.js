@@ -12,7 +12,8 @@ define([], function() {
 		GLCFS_SUPERIOR_DATASET : 'GLCFS_SUPERIOR',
 		NWIS_DATASET : 'NWIS',
 		PRECIP_DATASET : 'PRECIP',
-		ALL_DATASETS : ['GLCFS_ERIE', 'GLCFS_HURON', 'GLCFS_MICHIGAN', 'GLCFS_ONTARIO', 'GLCFS_SUPERIOR', 'NWIS', 'PRECIP'],
+		ACIS_DATASET : 'ACIS',
+		ALL_DATASETS : ['GLCFS_ERIE', 'GLCFS_HURON', 'GLCFS_MICHIGAN', 'GLCFS_ONTARIO', 'GLCFS_SUPERIOR', 'NWIS', 'PRECIP', 'ACIS'],
 
 		PROJ_LOC_ICON_URL : 'bower_components/leaflet/dist/images/marker-icon.png',
 		DATASET_ICON : {
@@ -43,6 +44,10 @@ define([], function() {
 			'PRECIP' : {
 				iconUrl : 'img/national-precipitation.png',
 				iconSize : [14, 14]
+			},
+			'ACIS' : {
+				iconUrl : 'img/acis.png',
+				iconSize : [10, 10]
 			}
 		},
 

@@ -55,8 +55,8 @@ define([
 
 			$utils.xmlFind($(xml), 'wfs', 'member').each(function() {
 				var $this = $(this);
-				var x = getInteger($utils.xmlFind($this, 'sb', 'x').text());
-				var y = getInteger($utils.xmlFind($this, 'sb', 'y').text());
+				var x = getInteger($utils.xmlFind($this, 'sb', 'nx').text());
+				var y = getInteger($utils.xmlFind($this, 'sb', 'ny').text());
 
 				result.push({
 					lon : $utils.xmlFind($this, 'sb', 'X1').text(),
@@ -142,6 +142,17 @@ define([
 			return fetchDeferred.promise();
 		}
 
+		/*
+		 * @override
+		 * Need to pass the collection's timeBounds attribute to the getSelectedUrlParams method.
+		 */
+		getSelectedVariablesUrlParams : function() {
+			var params = [];
+			params = this.map(function(siteModel) {
+				return siteModel.get('variables').getSelectedUrlParams(this.timeBounds);
+			}, this);
+			return _.flatten(params);
+		}
 	});
 
 	return collection;

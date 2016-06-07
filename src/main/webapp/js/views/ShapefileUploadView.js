@@ -1,0 +1,2 @@
+/* jslint browswer: true */
+

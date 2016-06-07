@@ -27,8 +27,19 @@ define([
 	var ALERTVIEW_SELECTOR = '.alert-container';
 	var LOADING_SELECTOR = '.loading-indicator';
 
+	var removeSubView = function(view) {
+		if (view) {
+			view.remove();
+		}
+		return undefined;
+	};
+
 	var view = BaseView.extend({
 		template: hbTemplate,
+
+		events : {
+			'change .workflow-start-container select' : 'selectAOIDefinition'
+		},
 
 		/*
 		 * @constructs
@@ -102,38 +113,14 @@ define([
 			this.alertView.closeAlert();
 			switch(step) {
 				case Config.SPECIFY_AOI_STEP:
-					if (!this.locationView) {
-						this.locationView = new LocationView({
-							el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
-							model : model.get('aoi'),
-							opened : true
-						});
-						this.locationView.render();
-					}
-					else {
-						this.locationView.expand();
-					}
-					if (!this.mapView) {
-						this.mapView = new MapView({
-							el : $utils.createDivInContainer(this.$(MAPVIEW_SELECTOR)),
-							mapDivId : 'map-div',
-							model : model
-						});
-						this.mapView.render();
-					}
+					this.$('.workflow-start-container select').val('');
+					this.$('.workflow-start-container').addClass('in');
+					this.locationView = removeSubView(this.locationView);
+					this.mapView = removeSubView(this.mapView);
+					this.chooseView = removeSubView(this.chooseView);
+					this.variableSummaryView = removeSubView(this.variableSummaryView);
+					this.processDataView = removeSubView(this.processDataView);
 
-					if (this.chooseView) {
-						this.chooseView.remove();
-						this.chooseView = undefined;
-					}
-					if (this.variableSummaryView) {
-						this.variableSummaryView.remove();
-						this.variableSummaryView = undefined;
-					}
-					if (this.processDataView) {
-						this.processDataView.remove();
-						this.processDataView = undefined;
-					}
 					break;
 
 				case Config.CHOOSE_DATA_FILTERS_STEP:
@@ -169,10 +156,7 @@ define([
 						});
 						this.variableSummaryView.render();
 					}
-					if (this.processDataView) {
-						this.processDataView.remove();
-						this.processDataView = undefined;
-					}
+					this.processDataView = removeSubView(this.processDataView);
 
 					this.variableSummaryView.expand();
 
@@ -206,19 +190,9 @@ define([
 						this.variableSummaryView.collapse();
 					}
 
-					if (this.locationView) {
-						this.locationView.remove();
-						this.locationView = undefined;
-					}
-					if (this.chooseView) {
-						this.chooseView.remove();
-						this.chooseView = undefined;
-					}
-					if (this.mapView) {
-						this.mapView.remove();
-						this.mapView = undefined;
-					}
-
+					this.locationView = removeSubView(this.locationView);
+					this.chooseView = removeSubView(this.chooseView);
+					this.mapView = removeSubView(this.mapView);
 			}
 		},
 
@@ -273,6 +247,41 @@ define([
 		closeAlert : function() {
 			if (null === this.model.get('datasets')) {
 				this.alertView.closeAlert();
+			}
+		},
+
+		/*
+		 * DOM Event Handlers
+		 */
+
+		selectAOIDefinition : function(ev) {
+			var kind = $(ev.currentTarget).val();
+			this.$('.workflow-start-container').removeClass('in');
+			switch(kind) {
+				case 'location':
+					if (!this.locationView) {
+						this.locationView = new LocationView({
+							el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
+							model : this.model.get('aoi'),
+							opened : true
+						});
+						this.locationView.render();
+					}
+					else {
+						this.locationView.expand();
+					}
+					if (!this.mapView) {
+						this.mapView = new MapView({
+							el : $utils.createDivInContainer(this.$(MAPVIEW_SELECTOR)),
+							mapDivId : 'map-div',
+							model : this.model
+						});
+						this.mapView.render();
+					}
+					break;
+
+				case 'aoiBox':
+					break;
 			}
 		}
 	});

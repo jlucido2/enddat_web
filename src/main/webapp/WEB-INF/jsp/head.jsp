@@ -23,6 +23,7 @@
 	String parameterCodesUrl = props.getProperty("enddat.endpoint.nwis.pmcodes");
 	String precipWFSGetFeatureUrl = props.getProperty("enddat.endpoint.precip.wfsgetfeature");
 	String cidaThreddsPrecipData = props.getProperty("enddat.cidathredds.precipdata");
+	String GLCFSWFSGetFeatureUrl = props.getProperty("enddat.endpoint.glcfs.wfsgetfeature");
 %>
 
 <link rel="shortcut icon" type="image/ico" href="img/favicon.ico">

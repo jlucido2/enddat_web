@@ -7,9 +7,10 @@ define([
 	'backbone',
 	'Config',
 	'utils/geoSpatialUtils',
+	'models/GLCFSCollection',
 	'models/NWISCollection',
 	'models/PrecipitationCollection'
-], function(_, $, moment, Backbone, Config, geoSpatialUtils, NWISCollection, PrecipitationCollection) {
+], function(_, $, moment, Backbone, Config, geoSpatialUtils, GLCFSCollection, NWISCollection, PrecipitationCollection) {
 	"use strict";
 
 	var DEFAULT_CHOOSE_DATA_RADIUS = 2;
@@ -51,6 +52,11 @@ define([
 			}
 			else {
 				datasetCollections = _.object([
+				    [Config.GLCFS_ERIE_DATASET, new GLCFSCollection([],{lake:'Erie'})],
+				    [Config.GLCFS_HURON_DATASET, new GLCFSCollection([],{lake:'Huron'})],
+				    [Config.GLCFS_MICHIGAN_DATASET, new GLCFSCollection([],{lake:'Michigan'})],
+				    [Config.GLCFS_ONTARIO_DATASET, new GLCFSCollection([],{lake:'Ontario'})],
+				    [Config.GLCFS_SUPERIOR_DATASET, new GLCFSCollection([],{lake:'Superior'})],
 					[Config.NWIS_DATASET, new NWISCollection()],
 					[Config.PRECIP_DATASET, new PrecipitationCollection()]
 				]);

@@ -82,8 +82,8 @@ define([
 			}, this);
 
 			this.siteLayerGroups = _.object(
-				[Config.NWIS_DATASET, Config.PRECIP_DATASET],
-				[L.layerGroup(), L.layerGroup()]
+				[Config.GLCFS_ERIE_DATASET, Config.GLCFS_HURON_DATASET, Config.GLCFS_MICHIGAN_DATASET, Config.GLCFS_ONTARIO_DATASET, Config.GLCFS_SUPERIOR_DATASET, Config.NWIS_DATASET, Config.PRECIP_DATASET],
+				[L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup()]
 			);
 
 			this.selectedSite = undefined;
@@ -340,6 +340,7 @@ define([
 				this.updateSiteMarkerLayer(datasetKind);
 			}, this);
 		},
+		
 		/*
 		 * Updates the NWIS layerGroup to reflect the sites in the nwis collection
 		 */
@@ -357,4 +358,3 @@ define([
 
 	return view;
 });
-

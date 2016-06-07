@@ -37,6 +37,9 @@
 						'precipWFSGetFeatureUrl' : '<%=precipWFSGetFeatureUrl%>',
 						'cidaThreddsPrecipData' : '<%=cidaThreddsPrecipData%>'
 					},
+					'models/GLCFSCollection' : {
+						'GLCFSWFSGetFeatureUrl' : '<%=GLCFSWFSGetFeatureUrl%>',
+					},
 					'views/ProcessDataView' : {
 						'baseUrl' : '<%=baseUrl%>'
 					}

@@ -15,6 +15,9 @@ require.config({
 		'models/PrecipitationCollection' : {
 			precipWFSGetFeatureUrl : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',
 			cidaThreddsPrecipData : 'dodsC/fakedata'
+		},
+		'models/GLCFSCollection' : {
+			GLCFSWFSGetFeatureUrl : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',
 		}
 	},
 

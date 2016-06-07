@@ -27,6 +27,18 @@ define([
 			{code : 'hdd', description : 'Degree days below base (default base 65)'},
 			{code : 'gdd', description : 'Degree days above base (default base 50)'}
 	];
+	var NETWORKS = [
+		{code : '1', name : 'WBAN'},
+		{code : '2', name : 'COOP'},
+		{code : '3', name : 'FAA'},
+		{code : '4', name : 'WMO'},
+		{code : '5', name : 'ICAO'},
+		{code : '6', name : 'GHCN'},
+		{code : '7', name : 'NWSLI'},
+		{code : '8', name : 'RCC'},
+		{code : '9', name : 'ThreadEx'},
+		{code : '10', name : 'CoCoRaHS'}
+	];
 
 	var collection = BaseDatasetCollection.extend({
 
@@ -35,6 +47,7 @@ define([
 		parse : function(response) {
 			var sites = response.meta;
 			return _.map(sites, function(site) {
+				// Use first sid when retrieving information.
 				var sid = site.sids[0].split(' ')[0];
 				var variables = _.chain(site.valid_daterange)
 					.map(function(dateRange, varIndex) {
@@ -45,7 +58,7 @@ define([
 							result.variableParameter = new VariableParameter({
 								name : 'ACIS',
 								value : sid + ':' +  result.code,
-								colName : result.description
+								colName : result.description + ':' + sid
 							});
 						}
 						return result;
@@ -54,12 +67,21 @@ define([
 						return (_.has(dataVar, 'startDate') && _.has(dataVar, 'endDate'));
 					})
 					.value();
+				var getNetwork = function(sid) {
+					var parsedSid = sid.split(' ');
+					return {
+						id : parsedSid[0],
+						code : parsedSid[1],
+						name : _.find(NETWORKS, function(n) { return n.code === parsedSid[1]; }).name
+					};
+				};
 
 				return {
 					lon : site.ll[0],
 					lat : site.ll[1],
 					name : site.name,
 					sid : sid,
+					networks : _.map(site.sids, getNetwork),
 					variables : new BaseVariableCollection(variables)
 				};
 			});

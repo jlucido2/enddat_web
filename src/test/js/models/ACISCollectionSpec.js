@@ -80,22 +80,32 @@ define([
 			});
 
 			it('Expects that a successful response creates a model for each station in the response', function() {
+				var siteModel;
 				fakeServer.respondWith([200, {'Content-Type' : 'application/json'}, ACIS_RESPONSE]);
 				fakeServer.respond();
 
 				expect(testCollection.length).toBe(2);
-				expect(testCollection.find(function(model) {
+				siteModel = testCollection.find(function(model) {
 					return (model.attributes.sid === '475471') &&
 						(model.attributes.lat === 43.08528) &&
 						(model.attributes.lon === -89.51722) &&
 						(model.attributes.name === 'MIDDLETON');
-				})).toBeDefined();
-				expect(testCollection.find(function(model) {
+				});
+				expect(siteModel).toBeDefined();
+				expect(siteModel.attributes.networks.length).toBe(3);
+				expect(siteModel.attributes.networks[0]).toEqual({
+					id : '475471',
+					code : '2',
+					name : 'COOP'
+				});
+				siteModel = testCollection.find(function(model) {
 					return (model.attributes.sid === 'US1WIDA0002') &&
 						(model.attributes.lat === 43.1022) &&
 						(model.attributes.lon === -89.4961) &&
 						(model.attributes.name === 'MIDDLETON 0.5 E');
-				})).toBeDefined();
+				})
+				expect(siteModel).toBeDefined();
+				expect(siteModel.attributes.networks.length).toBe(1);
 			});
 
 			it('Expects that the variables are parsed for each model created', function() {

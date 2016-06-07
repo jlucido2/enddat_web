@@ -200,7 +200,7 @@ define([
 		updateWorkflowStep: function (model, newStep) {
 			var $map = this.$('#' + this.mapDivId);
 			switch (newStep) {
-				case Config.PROJ_LOC_STEP:
+				case Config.SPECIFY_AOI_STEP:
 					this.removeDataView();
 
 					if (this.map.hasLayer(this.circleMarker)) {

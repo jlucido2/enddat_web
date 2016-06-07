@@ -140,11 +140,8 @@ define([
 
 				testModel.initializeDatasetCollections();
 
-				testModel.set({
-					location : {latitude : '43.0', longitude : '-100.0'},
-					radius : '5',
-					datasets : ['NWIS']
-				});
+				testModel.get('aoi').set({latitude : '43.0', longitude : '-100.0', radius : '5'}),
+				testModel.set('datasets', ['NWIS']);
 
 				testModel.on('dataset:updateStart', updateStartSpy);
 				testModel.on('dataset:updateFinished', updateFinishedSpy);
@@ -161,7 +158,7 @@ define([
 			});
 
 			it('Expects the dataset models to be cleared and not fetched if there is not a valid bounding box', function() {
-				testModel.set('radius', '');
+				testModel.get('aoi').set('radius', '');
 
 				expect(fetchSiteSpy).not.toHaveBeenCalled();
 				expect(fetchPrecipSpy).not.toHaveBeenCalled();
@@ -243,45 +240,45 @@ define([
 		});
 
 		describe('Tests for event handlers for updating the workflow step', function() {
-			it('Expects that if the step changes to PROJ_LOC_STEP the location, radius, dates and datasets properties are unset', function() {
+			it('Expects that if the step changes to SPECIFY_AOI_STEP the dates and datasets properties are unset and the aoiModel properties are cleared', function() {
+				var aoiModel = testModel.get('aoi');
+				aoiModel.set({latitude : '43.0', longitude : '-100.0', radius : '6'});
 				testModel.set({
-					location : {latitude : '43.0', longitude : '-100.0'},
-					radius : '6',
 					startDate : moment('2010-04-11', 'YYYY-MM-DD'),
 					endDate : moment('2016-04-15', 'YYYY-MM-DD'),
 					datasets : [Config.NWIS_DATASET, Config.PRECIP_DATASET]
 				});
-				testModel.set('step', Config.PROJ_LOC_STEP);
+				testModel.set('step', Config.SPECIFY_AOI_STEP);
 
-				expect(testModel.has('location')).toBe(false);
-				expect(testModel.has('radius')).toBe(false);
+				expect(aoiModel.get('latitude')).toEqual('');
+				expect(aoiModel.get('longitude')).toEqual('');
+				expect(aoiModel.get('radius')).not.toEqual('');
 				expect(testModel.has('datasets')).toBe(false);
 				expect(testModel.has('startDate')).toBe(false);
 				expect(testModel.has('endDate')).toBe(false);
 			});
 
-			it('Expects that if the step changes to PROJ_LOC_STEP the datasetCollections will be cleared', function() {
+			it('Expects that if the step changes to SPECIFY_AOI_STEP the datasetCollections will be cleared', function() {
 				testModel.initializeDatasetCollections();
 				resetSiteSpy.calls.reset();
 				resetPrecipSpy.calls.reset();
-				testModel.set('step', Config.PROJ_LOC_STEP);
+				testModel.set('step', Config.SPECIFY_AOI_STEP);
 
 				expect(resetSiteSpy).toHaveBeenCalled();
 				expect(resetPrecipSpy).toHaveBeenCalled();
 			});
 
-			it('Expects that if the step changes to CHOOSE_DATA_FILTERS_STEP and the previous step was PROJ_LOC_STEP that the default radius and chosen datasets are set', function() {
-				testModel.set('step', Config.PROJ_LOC_STEP);
-				testModel.set('location', {latitude : '43.0', longitude : '-100.0'});
+			it('Expects that if the step changes to CHOOSE_DATA_FILTERS_STEP and the previous step was SPECIFY_AOI_STEP that the chosen datasets are set', function() {
+				testModel.set('step', Config.SPECIFY_AOI_STEP);
+				testModel.get('aoi').set({latitude : '43.0', longitude : '-100.0'});
 				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
 
-				expect(testModel.get('radius')).toEqual(2);
 				expect(testModel.get('datasets')).toEqual(['NWIS']);
 			});
 
-			it('Expects that if the step changes to CHOOSE_DATA_FILTERS_STEP and the previous step was PROJ_LOC_STEP, the chosen datasets are fetched', function() {
-				testModel.set('step', Config.PROJ_LOC_STEP);
-				testModel.set('location', {latitude : '43.0', longitude : '-100.0'});
+			it('Expects that if the step changes to CHOOSE_DATA_FILTERS_STEP and the previous step was SPECIFY_AOI_STEP, the chosen datasets are fetched', function() {
+				testModel.set('step', Config.SPECIFY_AOI_STEP);
+				testModel.get('aoi').set({latitude : '43.0', longitude : '-100.0'});
 				fetchPrecipSpy.calls.reset();
 				fetchSiteSpy.calls.reset();
 				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
@@ -341,72 +338,6 @@ define([
 
 				expect(result.start.format(Config.DATE_FORMAT)).toEqual('2007-12-04');
 				expect(result.end.format(Config.DATE_FORMAT)).toEqual('2008-01-04');
-			});
-		});
-
-		describe('Tests for hasValidLocation', function() {
-			it('Expects that if the model has location defined with a latitude and longitude property, true is returned', function() {
-				testModel.set('location', {latitude : '43.0', longitude : '-100.0'});
-
-				expect(testModel.hasValidLocation()).toBe(true);
-			});
-
-			it('Expects that if the model has location defined but latitude is missing or empty, false is returned', function() {
-				testModel.set('location', {longitude : '-100.0'});
-				expect(testModel.hasValidLocation()).toBe(false);
-
-				testModel.set('location', {latitude : '', longitude : '-100.0'});
-				expect(testModel.hasValidLocation()).toBe(false);
-			});
-
-			it('Expects that if the model has location defined, but longitude is missing or empty, false is returned', function() {
-				testModel.set('location', {latitude : '43.0'});
-				expect(testModel.hasValidLocation()).toBe(false);
-
-				testModel.set('location', {latitude : '43.0', longitude : ''});
-				expect(testModel.hasValidLocation()).toBe(false);
-			});
-
-			it('Expects that if the location property is missing or empty, false is returned', function() {
-				expect(testModel.hasValidLocation()).toBe(false);
-
-				testModel.set('location', {});
-				expect(testModel.hasValidLocation()).toBe(false);
-			});
-		});
-
-		describe('Tests for getBoundingBox', function() {
-			it('Expects that if the model does not contain a valid bounding box, this function returns undefined', function() {
-				testModel.set({
-					radius : '5'
-				});
-				expect(testModel.getBoundingBox()).toBeUndefined();
-
-				testModel.set({
-					location : {latitude : '43.0', longitude : ''},
-					radius : '5'
-				});
-				expect(testModel.getBoundingBox()).toBeUndefined();
-
-				testModel.set({
-					location : {latitude : '43.0', longitude : '-100.0'},
-					radius : ''
-				});
-				expect(testModel.getBoundingBox()).toBeUndefined();
-			});
-
-			it('Expects that if the model does contain a valid bounding box then the function returns the bounding box', function() {
-				testModel.set({
-					location : {latitude : '43.0', longitude : '-100.0'},
-					radius : '5'
-				});
-				expect(testModel.getBoundingBox()).toEqual({
-					west : -100.0,
-					south : 43.0,
-					east : -99.0,
-					north : 44.0
-				});
-				expect(geoSpatialUtils.getBoundingBox).toHaveBeenCalled();
 			});
 		});
 

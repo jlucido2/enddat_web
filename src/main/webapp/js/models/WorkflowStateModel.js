@@ -129,6 +129,8 @@ define([
 						});
 					};
 					this.unset('datasets');
+					this.unset('startDate');
+					this.unset('endDate');
 					//TODO add code to allow switching between project location and aoi box.
 					this.get('aoi').set({
 						'latitude' : '',

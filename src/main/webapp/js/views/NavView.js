@@ -135,7 +135,9 @@ define([
 						$processDataBtn.addClass('disabled');
 					}
 
-					this.router.navigate(getChooseDataUrl(model));
+					if (model.get('aoi').hasValidAOI()) {
+						this.router.navigate(getChooseDataUrl(model));
+					}
 					break;
 
 				case Config.PROCESS_DATA_STEP:
@@ -158,7 +160,9 @@ define([
 
 				case Config.CHOOSE_DATA_FILTERS_STEP:
 				case Config.CHOOSE_DATA_VARIABLES_STEP:
-					this.router.navigate(getChooseDataUrl(this.model));
+					if (this.model.get('aoi').hasValidAOI()) {
+						this.router.navigate(getChooseDataUrl(this.model));
+					}
 					break;
 			}
 		}

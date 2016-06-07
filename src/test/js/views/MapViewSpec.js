@@ -10,6 +10,7 @@ define([
 	'views/BaseView',
 	'views/MapView'
 ], function($, _, L, Config, WorkflowStateModel, BaseView, MapView) {
+	"use strict";
 	describe('views/MapView', function() {
 		var testView;
 		var $testDiv;
@@ -48,6 +49,11 @@ define([
 			spyOn(BaseView.prototype, 'remove').and.callThrough();
 
 			testModel = new WorkflowStateModel();
+			testModel.get('aoi').set({
+				latitude : '',
+				longitude : '',
+				radius : ''
+			});
 			testModel.set('step', Config.CHOOSE_DATA_STEP);
 			testModel.initializeDatasetCollections();
 			testSiteCollection = testModel.get('datasetCollections')[Config.NWIS_DATASET];
@@ -121,7 +127,7 @@ define([
 
 			it('Expect that the project location marker is added to the map if the location is defined in the workflow state', function() {
 				var layersAdded;
-				testModel.set('location', {latitude : 43.0, longitude : -100.0});
+				testModel.get('aoi').set({latitude : 43.0, longitude : -100.0});
 				testView.render();
 				layersAdded = _.map(addLayerSpy.calls.allArgs(), function(args) {
 					return args[0];
@@ -130,8 +136,9 @@ define([
 			});
 
 			it('Expects that the map extent is updated if both location and radius are defined', function() {
-				testModel.set({
-					location :  {latitude : 43.0, longitude : -100.0},
+				testModel.get('aoi').set({
+					latitude : 43.0,
+					longitude : -100.0,
 					radius : '2'
 				});
 				testView.render();
@@ -139,20 +146,21 @@ define([
 			});
 
 			it('Expects that the map extent is not updated if location is not defined', function() {
-				testModel.set('radius', '2');
+				testModel.get('aoi').set('radius', '2');
 				testView.render();
 				expect(fitBoundsSpy).not.toHaveBeenCalled();
 			});
 
 			it('Expect that the map extent is not updated if the radius is not defined', function() {
-				testModel.set('location', {latitude : 43.0, longitude : -100.0});
+				testModel.get('aoi').set({latitude : 43.0, longitude : -100.0});
 				testView.render();
 				expect(fitBoundsSpy).not.toHaveBeenCalled();
 			});
 
 			it('Expects that the map extent is not updated if latitude is not defined in location', function() {
-				testModel.set({
-					location :  {latitude : '', longitude : -100.0},
+				testModel.get('aoi').set({
+					latitude : '',
+					longitude : -100.0,
 					radius : '2'
 				});
 				testView.render();
@@ -160,8 +168,9 @@ define([
 			});
 
 			it('Expects that the map extent is not updated if longitude is not defined in location', function() {
-				testModel.set({
-					location :  {latitude : 43.0, longitude : ''},
+				testModel.get('aoi').set({
+					latitude : 43.0,
+					longitude : '',
 					radius : '2'
 				});
 				testView.render();
@@ -228,7 +237,7 @@ define([
 				testView.render();
 			});
 
-			it('Expects that if the testModel changes the step to PROJ_LOC_STEP, that the dataViews are removed and assigned undefined', function() {
+			it('Expects that if the testModel changes the step to SPECIFY_AOI_STEP, that the dataViews are removed and assigned undefined', function() {
 				var dataViewRemoveSpy = jasmine.createSpy('nwisRemoveSpy');
 				testView.selectedSite = {
 					dataView : {
@@ -236,7 +245,7 @@ define([
 					}
 				};
 
-				testModel.set('step', Config.PROJ_LOC_STEP);
+				testModel.set('step', Config.SPECIFY_AOI_STEP);
 
 				expect(dataViewRemoveSpy).toHaveBeenCalled();
 				expect(testView.selectedSite).toBeUndefined();
@@ -244,17 +253,19 @@ define([
 
 			it('Expects that if location goes from unset to set the marker is added to the map and it\'s location is set', function() {
 				hasLayerSpy.and.returnValue(false);
-				testModel.set('location', {latitude : 43.0, longitude : -100.0});
+				testModel.get('aoi').set({latitude : 43.0, longitude : -100.0});
 				expect(addLayerSpy.calls.mostRecent().args[0]).toEqual(testView.projLocationMarker);
 				expect(testView.projLocationMarker.getLatLng()).toEqual(L.latLng(43.0, -100.0));
 			});
 
 			it('Expects that if the location is changed once the marker is on the map, that its location is updated', function() {
+				var aoiModel = testModel.get('aoi');
 				addLayerSpy.calls.reset();
 				hasLayerSpy.and.returnValue(false);
-				testModel.set('location', {latitude : 43.0, longitude : -100.0});
+				aoiModel.set({latitude : 43.0, longitude : -100.0});
 				hasLayerSpy.and.returnValue(true);
-				testModel.set('location', {latitude: 42.0, longitude : -101.0});
+				aoiModel.set({latitude: 42.0, longitude : -101.0});
+
 				expect(addLayerSpy.calls.count()).toBe(1);
 				expect(testView.projLocationMarker.getLatLng()).toEqual(L.latLng(42.0, -101.0));
 			});
@@ -262,25 +273,23 @@ define([
 			it('Expects that if the map has the marker and the location is not set, the marker will be removed from the map', function() {
 				hasLayerSpy.and.returnValue(true);
 				expect(removeLayerSpy).not.toHaveBeenCalled();
-				testModel.set('location', {});
+				testModel.get('aoi').set({radius : '5'});
 				expect(removeLayerSpy).toHaveBeenCalled();
 			});
 
 			it('Expect that the extent will only be updated when location and radius are defined', function() {
+				var aoiModel = testModel.get('aoi');
 				fitBoundsSpy.calls.reset();
-				testModel.set('location', {});
-				expect(fitBoundsSpy).not.toHaveBeenCalled();
-
-				testModel.set('location', {
+				aoiModel.set({
 					latitude : '',
 					longitude : '-100.0'
 				});
 				expect(fitBoundsSpy).not.toHaveBeenCalled();
 
-				testModel.set('radius', '2');
+				aoiModel.set('radius', '2');
 				expect(fitBoundsSpy).not.toHaveBeenCalled();
 
-				testModel.set('location', {latitude : '43.0', longitude : '-100.0'});
+				aoiModel.set({latitude : '43.0', longitude : '-100.0'});
 				expect(fitBoundsSpy).toHaveBeenCalled();
 			});
 

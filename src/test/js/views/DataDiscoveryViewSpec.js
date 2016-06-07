@@ -148,7 +148,7 @@ define([
 
 				testModel = new WorkflowStateModel();
 				spyOn(testModel, 'updateDatasetCollections');
-				testModel.set('step', Config.PROJ_LOC_STEP);
+				testModel.set('step', Config.SPECIFY_AOI_STEP);
 
 				done();
 			});
@@ -225,8 +225,8 @@ define([
 				expect(renderNavViewSpy.calls.count()).toBe(3);
 			});
 
-			it('Expects that if the workflow step is PROJ_LOC_STEP, the location and map views are created and rendered but not the choose data view', function() {
-				testModel.set('step', Config.PROJ_LOC_STEP);
+			it('Expects that if the workflow step is SPECIFY_AOI_STEP, the location and map views are created and rendered but not the choose data view', function() {
+				testModel.set('step', Config.SPECIFY_AOI_STEP);
 				testView.render();
 
 				expect(setElMapViewSpy).toHaveBeenCalled();
@@ -278,7 +278,7 @@ define([
 			});
 
 			it('Expects that the location and map subviews are removed if they have been created', function() {
-				testModel.set('step', Config.PROJ_LOC_STEP);
+				testModel.set('step', Config.SPECIFY_AOI_STEP);
 				testView.render();
 				testView.remove();
 
@@ -363,19 +363,19 @@ define([
 				expect(showSuccessAlertSpy).toHaveBeenCalled();
 			});
 
-			it('Expects that if the step changes from CHOOSE_DATA_FILTERS_STEP to PROJ_LOC_STEP, the choose view and summary view are removed and the location view is expanded', function() {
+			it('Expects that if the step changes from CHOOSE_DATA_FILTERS_STEP to SPECIFY_AOI_STEP, the choose view and summary view are removed and the location view is expanded', function() {
 				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
 				removeChooseViewSpy.calls.reset();
 				removeSummaryViewSpy.calls.reset();
-				testModel.set('step', Config.PROJ_LOC_STEP);
+				testModel.set('step', Config.SPECIFY_AOI_STEP);
 
 				expect(removeChooseViewSpy).toHaveBeenCalled();
 				expect(removeSummaryViewSpy).toHaveBeenCalled();
 				expect(expandLocationViewSpy).toHaveBeenCalled();
 			});
 
-			it('Expects that if the step changes from PROJ_LOC_STEP to CHOOSE_DATA_FILTERS_STEP, the choose view and summary views are created and rendered', function() {
-				testModel.set('step', Config.PROJ_LOC_STEP);
+			it('Expects that if the step changes from SPECIFY_AOI_STEP to CHOOSE_DATA_FILTERS_STEP, the choose view and summary views are created and rendered', function() {
+				testModel.set('step', Config.SPECIFY_AOI_STEP);
 				setElChooseViewSpy.calls.reset();
 				renderChooseViewSpy.calls.reset();
 				setElSummaryViewSpy.calls.reset();
@@ -441,7 +441,7 @@ define([
 				expect(removeProcessDataViewSpy).toHaveBeenCalled();
 			});
 
-			it('Expects that if the step is PROCESS_DATA_STEP and changes to PROJ_LOC_STEP, the process data and summary views are removed, and the location view is created', function() {
+			it('Expects that if the step is PROCESS_DATA_STEP and changes to SPECIFY_AOI_STEP, the process data and summary views are removed, and the location view is created', function() {
 				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
 				testModel.set('step', Config.CHOOSE_DATA_VARIABLES_STEP);
 				testModel.set({
@@ -452,7 +452,7 @@ define([
 				removeProcessDataViewSpy.calls.reset();
 				removeSummaryViewSpy.calls.reset();
 				renderLocationViewSpy.calls.reset();
-				testModel.set('step', Config.PROJ_LOC_STEP);
+				testModel.set('step', Config.SPECIFY_AOI_STEP);
 
 				expect(removeProcessDataViewSpy).toHaveBeenCalled();
 				expect(removeSummaryViewSpy).toHaveBeenCalled();
@@ -461,7 +461,7 @@ define([
 
 			it('Expects that if the step changes, the alert view is closed', function() {
 				closeAlertSpy.calls.reset();
-				testModel.set('step', Config.PROJ_LOC_STEP);
+				testModel.set('step', Config.SPECIFY_AOI_STEP);
 
 				expect(closeAlertSpy).toHaveBeenCalled();
 			});

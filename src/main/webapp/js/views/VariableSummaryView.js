@@ -165,7 +165,7 @@ define([
 					property : variableModel.attributes.name
 				};
 			};
-			var datasetCollection = this.model.get('datasetCollections')[Config.NWIS_DATASET]
+			var datasetCollection = this.model.get('datasetCollections')[Config.NWIS_DATASET];
 			this._updateSelectedVariableContext(datasetCollection, Config.NWIS_DATASET, getContextVariable);
 		},
 
@@ -185,7 +185,7 @@ define([
 				return {
 					modelId : acisModel.cid,
 					variableId : variableModel.cid,
-					siteId : acisModel.attributes.name,
+					siteId : acisModel.attributes.sid,
 					startDate : variableModel.attributes.startDate.format(Config.DATE_FORMAT),
 					endDate : variableModel.attributes.endDate.format(Config.DATE_FORMAT),
 					property : variableModel.attributes.description

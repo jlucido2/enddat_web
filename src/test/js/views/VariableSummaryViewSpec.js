@@ -113,7 +113,7 @@ define([
 							{name : 'V2', startDate : startDate, endDate : endDate}])}
 				]);
 				datasetCollections[Config.ACIS_DATASET].reset([
-					{name : 'ACIS Dataset 1', variables : new BaseVariableCollection([
+					{name : 'ACIS Dataset 1', sid : 'SID1', variables : new BaseVariableCollection([
 							{startDate : startDate, endDate : endDate, description : 'ACIS Variable 1'}
 					])}
 				]);
@@ -195,7 +195,7 @@ define([
 				expect(acisSelected.variables[0]).toEqual({
 					modelId : acisModelToUpdate.cid,
 					variableId : acisVariableToUpdate.cid,
-					siteId : 'ACIS Dataset 1',
+					siteId : 'SID1',
 					startDate : '2002-04-11',
 					endDate : '2006-11-23',
 					property : 'ACIS Variable 1'

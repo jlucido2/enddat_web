@@ -13,8 +13,9 @@ define([
 ], function(log, module, $, _, moment, VariableParameter, BaseDatasetCollection, BaseVariableCollection, $utils) {
 	"use strict";
 
-	var START_DATE = moment('2016-01-01', 'YYYY-MM-DD');
-	var GET_FEATURE_URL = module.config().GLCFSWFSGetFeatureUrl;
+	var startDate = moment('2016-01-01', 'YYYY-MM-DD');
+	var GLCFSWFSGetFeatureUrls = module.config().GLCFSWFSGetFeatureUrls;
+	
 	var variableId = 'glcfstempVariableId';
 	var variableName = 'GLCFStemp';
 
@@ -65,7 +66,7 @@ define([
 						{
 							x : x,
 							y : y,
-							startDate : START_DATE,
+							startDate : startDate,
 							endDate : today,
 							variableParameter : new VariableParameter({
 								name : 'GLCFS',
@@ -80,8 +81,8 @@ define([
 		},
 		
 		/*
-		 * Fetches the precipitation grid data for the specified bounding box and updates the collection contents.
-		 * If the fetch fails the collection is reset. The .dds document is also fetched using the precipitation service
+		 * Fetches the GLCFS grid data for the specified bounding box and updates the collection contents.
+		 * If the fetch fails the collection is reset. The .dds document is also fetched using the GLCFS service
 		 * to determine the time_bounds parameter
 		 * @param {Object} boundingBox - west, east, north, and south properties
 		 * @returns a promise. Both rejected and resolved return the original jqXHR
@@ -94,7 +95,7 @@ define([
 			var xmlResponse;
 
 			$.ajax({
-				url : GET_FEATURE_URL,
+				url : GLCFSWFSGetFeatureUrls[this.lake],
 				data : {
 					typeName : 'sb:' + this.lake.toLowerCase(),
 					srsName : 'EPSG:4269',
@@ -131,7 +132,7 @@ define([
 			$.when(fetchSiteDataDeferred, fetchDDSDeferred)
 				.done(function() {
 					self.reset(self.parse(xmlResponse));
-					log.debug('CLCFS fetch succeeded, fetched ' + this.length + ' grid');
+					log.debug('CLCFS fetch succeeded, fetched ' + self.length + ' grid');
 					fetchDeferred.resolve();
 				})
 				.fail(function() {
@@ -140,7 +141,7 @@ define([
 				});
 
 			return fetchDeferred.promise();
-		}
+		},
 
 		/*
 		 * @override

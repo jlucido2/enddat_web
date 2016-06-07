@@ -21,9 +21,15 @@ define([
 	var siteIcons = _.mapObject(Config.DATASET_ICON, function(value) {
 		return L.icon(value);
 	});
+	
+	var getGLCFSTitle = function(model) {
+		return model.get('name');
+	};
+	
 	var getNWISTitle = function(model) {
 		return model.get('name');
 	};
+	
 	var getPrecipTitle = function(model) {
 		return model.get('y') + ':' + model.get('x');
 	};
@@ -39,6 +45,11 @@ define([
 	]);
 
 	var siteMarkerOptions = _.object([
+  		[Config.GLCFS_ERIE_DATASET, {icon : siteIcons[Config.GLCFS_ERIE_DATASET], getTitle : getGLCFSTitle}],
+  		[Config.GLCFS_HURON_DATASET, {icon : siteIcons[Config.GLCFS_HURON_DATASET], getTitle : getGLCFSTitle}],
+  		[Config.GLCFS_MICHIGAN_DATASET, {icon : siteIcons[Config.GLCFS_MICHIGAN_DATASET], getTitle : getGLCFSTitle}],
+  		[Config.GLCFS_ONTARIO_DATASET, {icon : siteIcons[Config.GLCFS_ONTARIO_DATASET], getTitle : getGLCFSTitle}],
+  		[Config.GLCFS_SUPERIOR_DATASET, {icon : siteIcons[Config.GLCFS_SUPERIOR_DATASET], getTitle : getGLCFSTitle}],
 		[Config.NWIS_DATASET, {icon : siteIcons[Config.NWIS_DATASET], getTitle : getNWISTitle}],
 		[Config.PRECIP_DATASET, {icon : siteIcons[Config.PRECIP_DATASET], getTitle : getPrecipTitle}],
 		[Config.ACIS_DATASET, {icon : siteIcons[Config.ACIS_DATASET], getTitle : getACISTitle}]

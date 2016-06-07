@@ -13,10 +13,11 @@ define([
 ], function(log, module, $, _, moment, VariableParameter, BaseDatasetCollection, BaseVariableCollection, $utils) {
 	"use strict";
 
-	var GET_FEATURE_URL = module.config().GLFCSWFSGetFeatureUrl;
-	var GLCFS_DATA_DDS_URL = 'http://tds.glos.us/thredds/dodsC/glos/glcfs/';
-	var variableId = 'glcfs187';
-	var variableName = 'GLCFS';
+	var GET_FEATURE_URL = module.config().GLCFSWFSGetFeatureUrl;
+	var GLCFS_DATA_DDS_URL = 'glosthredds/' + module.config().glosThreddsGLCFSData + '.dds';
+
+	var variableId = 'glcfstempVariableId';
+	var variableName = 'GLCFStemp';
 
 	var getTimeBounds = function(ddsText) {
 		var lines = ddsText.split('\n');
@@ -87,6 +88,7 @@ define([
 			$.ajax({
 				url : GET_FEATURE_URL,
 				data : {
+					typeName : this.lake.toLowerCase(),
 					srsName : 'EPSG:4269',
 					bbox : [boundingBox.south, boundingBox.west, boundingBox.north, boundingBox.east].join(',')
 				},

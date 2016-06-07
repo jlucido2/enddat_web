@@ -24,6 +24,7 @@
 	String precipWFSGetFeatureUrl = props.getProperty("enddat.endpoint.precip.wfsgetfeature");
 	String cidaThreddsPrecipData = props.getProperty("enddat.cidathredds.precipdata");
 	String GLCFSWFSGetFeatureUrl = props.getProperty("enddat.endpoint.glcfs.wfsgetfeature");
+	String glosThreddsGLCFSData = props.getProperty("enddat.glosthredds.glcfsdata");
 	String acisStnMetaUrl = props.getProperty("enddat.endpoint.acis.stnmeta");
 %>
 

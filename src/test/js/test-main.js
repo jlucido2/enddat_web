@@ -18,6 +18,7 @@ require.config({
 		},
 		'models/GLCFSCollection' : {
 			GLCFSWFSGetFeatureUrl : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',
+			glosThreddsGLCFSData : 'dodsC/fakedata'
 		}
 		'views/ProcessDataView' : {
 			baseUrl : 'http:fakeservice/enddat/'

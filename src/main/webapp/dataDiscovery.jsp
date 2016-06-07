@@ -39,6 +39,7 @@
 					},
 					'models/GLCFSCollection' : {
 						'GLCFSWFSGetFeatureUrl' : '<%=GLCFSWFSGetFeatureUrl%>',
+						'glosThreddsGLCFSData' : '<%=glosThreddsGLCFSData%>'
 					},
 					'models/ACISCollection' : {
 						'acisStnMetaUrl' : '<%=acisStnMetaUrl%>'

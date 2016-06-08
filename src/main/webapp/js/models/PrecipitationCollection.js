@@ -122,7 +122,7 @@ define([
 			$.when(fetchSiteDataDeferred, fetchDDSDeferred)
 				.done(function() {
 					self.reset(self.parse(xmlResponse));
-					log.debug('Precipitation fetch succeeded, fetched ' + this.length + ' grid');
+					log.debug('Precipitation fetch succeeded, fetched ' + self.length + ' grid');
 					fetchDeferred.resolve();
 				})
 				.fail(function() {
@@ -131,22 +131,8 @@ define([
 				});
 
 			return fetchDeferred.promise();
-		},
-
-		/*
-		 * @override
-		 * Need to pass the collection's timeBounds attribute to the getSelectedUrlParams method.
-		 */
-		getSelectedVariablesUrlParams : function() {
-			var params = [];
-			params = this.map(function(siteModel) {
-				return siteModel.get('variables').getSelectedUrlParams(this.timeBounds);
-			}, this);
-			return _.flatten(params);
 		}
 	});
 
 	return collection;
 });
-
-

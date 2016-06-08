@@ -23,11 +23,11 @@
 	String parameterCodesUrl = props.getProperty("enddat.endpoint.nwis.pmcodes");
 	String precipWFSGetFeatureUrl = props.getProperty("enddat.endpoint.precip.wfsgetfeature");
 	String cidaThreddsPrecipData = props.getProperty("enddat.cidathredds.precipdata");
-	String GLCFSWFSGetFeatureUrlErie = props.getProperty("enddat.endpoint.glcfs.wfsgetfeature.erie");
-	String GLCFSWFSGetFeatureUrlHuron = props.getProperty("enddat.endpoint.glcfs.wfsgetfeature.huron");
-	String GLCFSWFSGetFeatureUrlMichigan = props.getProperty("enddat.endpoint.glcfs.wfsgetfeature.michigan");
-	String GLCFSWFSGetFeatureUrlOntario = props.getProperty("enddat.endpoint.glcfs.wfsgetfeature.ontario");
-	String GLCFSWFSGetFeatureUrlSuperior = props.getProperty("enddat.endpoint.glcfs.wfsgetfeature.superior");
+	String glcfsWFSGetFeatureUrlErie = props.getProperty("enddat.endpoint.glcfs.wfsgetfeature.erie");
+	String glcfsWFSGetFeatureUrlHuron = props.getProperty("enddat.endpoint.glcfs.wfsgetfeature.huron");
+	String glcfsWFSGetFeatureUrlMichigan = props.getProperty("enddat.endpoint.glcfs.wfsgetfeature.michigan");
+	String glcfsWFSGetFeatureUrlOntario = props.getProperty("enddat.endpoint.glcfs.wfsgetfeature.ontario");
+	String glcfsWFSGetFeatureUrlSuperior = props.getProperty("enddat.endpoint.glcfs.wfsgetfeature.superior");
 	String glosThreddsGLCFSData = props.getProperty("enddat.glosthredds.glcfsdata");
 	String acisStnMetaUrl = props.getProperty("enddat.endpoint.acis.stnmeta");
 %>

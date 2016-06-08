@@ -14,7 +14,7 @@ define([
 	"use strict";
 
 	var startDate = moment('2016-01-01', 'YYYY-MM-DD');
-	var GLCFSWFSGetFeatureUrls = module.config().GLCFSWFSGetFeatureUrls;
+	var glcfsWFSGetFeatureUrls = module.config().glcfsWFSGetFeatureUrls;
 	
 	var variableId = 'glcfstempVariableId';
 	var variableName = 'GLCFStemp';
@@ -28,13 +28,6 @@ define([
 		return url;
 	};
 
-	var getTimeBounds = function(ddsText) {
-		var lines = ddsText.split('\n');
-		var timeBoundsLine = lines[18];
-		var timeBounds = /(\d+])/.exec(timeBoundsLine)[0];
-		return timeBounds.replace(/]/, '');
-	};
-
 	var collection = BaseDatasetCollection.extend({
 
 		initialize : function(attributes, options) {
@@ -44,8 +37,6 @@ define([
 		
 		/*
 		 * Parse the xml document and returns a json object which can be used to create the collection.
-		 * Each precipitation site represents a single variable so the variables property will
-		 * contain a collection with a single model.
 		 * @param {Document} xml
 		 * @returns {Array of Objects}
 		 */
@@ -82,20 +73,18 @@ define([
 		
 		/*
 		 * Fetches the GLCFS grid data for the specified bounding box and updates the collection contents.
-		 * If the fetch fails the collection is reset. The .dds document is also fetched using the GLCFS service
-		 * to determine the time_bounds parameter
+		 * If the fetch fails the collection is reset.
 		 * @param {Object} boundingBox - west, east, north, and south properties
 		 * @returns a promise. Both rejected and resolved return the original jqXHR
 		 */
 		fetch : function (boundingBox) {
 			var self = this;
 			var fetchSiteDataDeferred = $.Deferred();
-			var fetchDDSDeferred = $.Deferred();
 			var fetchDeferred = $.Deferred();
 			var xmlResponse;
 
 			$.ajax({
-				url : GLCFSWFSGetFeatureUrls[this.lake],
+				url : glcfsWFSGetFeatureUrls[this.lake],
 				data : {
 					typeName : 'sb:' + this.lake.toLowerCase(),
 					srsName : 'EPSG:4269',
@@ -103,7 +92,7 @@ define([
 				},
 				success : function(xml, textStatus, jqXHR) {
 					if ($utils.xmlFind($(xml), 'ows', 'ExceptionReport').length > 0) {
-						log.debug('CLCFS GetFeature fetch failed with Exception from service');
+						log.debug('GLCFS GetFeature fetch failed with Exception from service');
 						fetchSiteDataDeferred.reject(jqXHR);
 					}
 					else {
@@ -112,27 +101,15 @@ define([
 					}
 				},
 				error : function(jqXHR) {
-					log.debug('CLCFS GetFeature fetch failed');
+					log.debug('GLCFS GetFeature fetch failed');
 					fetchSiteDataDeferred.reject(jqXHR);
 				}
 			});
 
-			$.ajax({
-				url : getDDSURL(this.lake),
-				success : function (response, textStatus, jqXHR) {
-					self.timeBounds = getTimeBounds(response);
-					fetchDDSDeferred.resolve(jqXHR);
-				},
-				error : function(jqXHR) {
-					log.debug('Unable to retrieve the glcfs service\'s dds');
-					fetchDDSDeferred.reject(jqXHR);
-				}
-			});
-
-			$.when(fetchSiteDataDeferred, fetchDDSDeferred)
+			$.when(fetchSiteDataDeferred)
 				.done(function() {
 					self.reset(self.parse(xmlResponse));
-					log.debug('CLCFS fetch succeeded, fetched ' + self.length + ' grid');
+					log.debug('GLCFS fetch succeeded, fetched ' + self.length + ' grid');
 					fetchDeferred.resolve();
 				})
 				.fail(function() {
@@ -141,18 +118,6 @@ define([
 				});
 
 			return fetchDeferred.promise();
-		},
-
-		/*
-		 * @override
-		 * Need to pass the collection's timeBounds attribute to the getSelectedUrlParams method.
-		 */
-		getSelectedVariablesUrlParams : function() {
-			var params = [];
-			params = this.map(function(siteModel) {
-				return siteModel.get('variables').getSelectedUrlParams(this.timeBounds);
-			}, this);
-			return _.flatten(params);
 		}
 	});
 

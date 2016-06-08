@@ -23,7 +23,7 @@ define([
 	});
 	
 	var getGLCFSTitle = function(model) {
-		return model.get('name');
+		return model.get('y') + ':' + model.get('x');
 	};
 	
 	var getNWISTitle = function(model) {

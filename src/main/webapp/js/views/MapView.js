@@ -134,6 +134,15 @@ define([
 				self.map.addLayer(layerGroup);
 			});
 
+			// Set up the map event handlers for the draw control to update the aoi model.
+			this.map.on('draw:created', function(ev) {
+				this.model.get('aoi').set('aoiBox', LUtils.getBbox(ev.layer.getBounds()));
+			}, this);
+			this.map.on('draw:edited', function(ev) {
+				this.model.get('aoi').set('aoiBox', LUtils.getBbox(ev.layers.getLayers()[0].getBounds()));
+			}, this);
+
+			// Set up model event listeners and update the map state to match the current state of the workflow model.
 			this.listenTo(this.model, 'change:step', this.updateWorkflowStep);
 			this.updateWorkflowStep(this.model, this.model.get('step'));
 
@@ -180,11 +189,9 @@ define([
 			var clickTimeout;
 			this.createMarkClickHandler = function(ev) {
 				var clickToAddMarkerToMap = function() {
-					self.model.set({
-						location : {
-							latitude : ev.latlng.lat,
-							longitude : ev.latlng.lng
-						}
+					self.model.get('aoi').set({
+						latitude : ev.latlng.lat,
+						longitude : ev.latlng.lng
 					});
 				};
 
@@ -269,14 +276,7 @@ define([
 				// Assuming that once the drawAOIFeature is on the map, it can only be changed via the map.
 				if (!mapHasAOIBox) {
 					this.map.addLayer(this.drawnAOIFeature);
-					// TODO: Need to add code to add the AOI box if already defined
 					this.map.addControl(this.drawAOIControl);
-					this.map.on('draw:created', function(ev) {
-						this.model.get('aoi').set('aoiBox', LUtils.getBbox(ev.layer.getBounds()));
-					}, this);
-					this.map.on('draw:edited', function(ev) {
-						this.model.get('aoi').set('aoiBox', LUtils.getBbox(ev.layers.getLayers()[0].getBounds()));
-					}, this);
 				}
 				if (aoiModel.hasValidAOI()) {
 					var aoiLayers = this.drawnAOIFeature.getLayers();

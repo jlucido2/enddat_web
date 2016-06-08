@@ -26,8 +26,8 @@ define([
 			aoiFragment = 'lat/' + latitude + '/lng/' + longitude + '/radius/' + radius;
 		}
 		else if (aoi.usingAOIBox()) {
-			//TODO ADD aoiFragment for AOI Box
-			aoiFragment = '';
+			var aoiBox = aoi.attributes.aoiBox;
+			aoiFragment = 'aoiBbox/' + aoiBox.south + ',' + aoiBox.west + ',' + aoiBox.north + ',' + aoiBox.east;
 		}
 
 		return aoiFragment + startDate + endDate + datasets;

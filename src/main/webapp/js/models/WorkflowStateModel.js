@@ -6,12 +6,11 @@ define([
 	'moment',
 	'backbone',
 	'Config',
-	'utils/geoSpatialUtils',
 	'models/NWISCollection',
 	'models/PrecipitationCollection',
 	'models/ACISCollection',
 	'models/AOIModel'
-], function(_, $, moment, Backbone, Config, geoSpatialUtils, NWISCollection, PrecipitationCollection, ACISCollection, AOIModel) {
+], function(_, $, moment, Backbone, Config, NWISCollection, PrecipitationCollection, ACISCollection, AOIModel) {
 	"use strict";
 
 	var DEFAULT_CHOSEN_DATASETS = ['NWIS'];

@@ -58,6 +58,30 @@ define([
 							y : y,
 							startDate : today,
 							endDate : today,
+
+//http://tds.glos.us/thredds/dodsC/glos/glcfs/archivecurrent/michigan/ncfmrc-2d/Lake_Michigan_-_Nowcast_-_2D_-_Current_Year_best.ncd.html
+//	ci (fraction) = Ice concentration = ice_concentration
+//	depth (meters) = Bathymetry = depth
+//	eta (meters) = Height Above Model Sea Level = sea_surface_elevation
+//	hi (meters) = Ice thickness = ice_thickness
+//	uc (m/s) = Eastward Water Velocity at Surface = eastward_sea_water_velocity
+//	ui (m/s) = Ice u-velocity = ice_u_veloctiy
+//	utm (m/s) = Depth-Averaged Eastward Water Velocity = eastward_sea_water_velocity
+//	vc (m/s) = Northward Water Velocity at Surface = northward_sea_water_velocity
+//	vi (m/s) = Ice v-velocity = ice_v_veloctiy
+//	vtm (m/s) = Depth-Averaged Northward Water Velocity = northward_sea_water_velocity
+//	wvd (Degrees, Oceanographic Convention, 0=toward N, 90=toward E) = Wave Direction = wave_direction_to
+//	wvh (meters) = Significant Wave Height = wave_height
+//	wvp (seconds) = Wave Period = wave_period
+
+//http://tds.glos.us/thredds/dodsC/glos/glcfs/archivecurrent/michigan/nowcast-forcing-fmrc-2d/Lake_Michigan_-_Nowcast_Forcing_-_2D_-_Current_Year_best.ncd.html
+//	air_u (m/s) = Eastward Air Velocity = eastward_wind
+//	air_v (m/s) = Northward Air Velocity = northward_wind
+//	at (Celsius) = Air Temperature = air_temperature
+//	cl (fraction) = Cloud cover = cloud_cover
+//	depth (meters) = Bathymetry = depth
+//	dp (Celsius) = Dew Point = dew_point
+
 							variableParameter : new VariableParameter({
 								name : 'GLCFS',
 								value : y + ':' + x + ':' + self.timeBounds + ':' + variableId,

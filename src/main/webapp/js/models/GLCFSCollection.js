@@ -13,7 +13,6 @@ define([
 ], function(log, module, $, _, moment, VariableParameter, BaseDatasetCollection, BaseVariableCollection, $utils) {
 	"use strict";
 
-	var startDate = moment('2016-01-01', 'YYYY-MM-DD');
 	var glcfsWFSGetFeatureUrls = module.config().glcfsWFSGetFeatureUrls;
 	
 	var variableId = 'glcfstempVariableId';
@@ -57,7 +56,7 @@ define([
 						{
 							x : x,
 							y : y,
-							startDate : startDate,
+							startDate : today,
 							endDate : today,
 							variableParameter : new VariableParameter({
 								name : 'GLCFS',

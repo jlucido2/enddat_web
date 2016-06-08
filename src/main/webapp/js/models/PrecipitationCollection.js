@@ -53,6 +53,8 @@ define([
 				result.push({
 					lon : $utils.xmlFind($this, 'sb', 'X1').text(),
 					lat : $utils.xmlFind($this, 'sb', 'X2').text(),
+					x : x,
+					y : y,
 					variables : new BaseVariableCollection([
 						{
 							x : x,

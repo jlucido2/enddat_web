@@ -23,7 +23,7 @@ define([
 	});
 	
 	var getGLCFSTitle = function(model) {
-		return model.get('y') + ':' + model.get('x');
+		return model.get('variables').at(0).get('y') + ':' + model.get('variables').at(0).get('x');
 	};
 	
 	var getNWISTitle = function(model) {
@@ -31,7 +31,7 @@ define([
 	};
 	
 	var getPrecipTitle = function(model) {
-		return model.get('y') + ':' + model.get('x');
+		return model.get('variables').at(0).get('y') + ':' + model.get('variables').at(0).get('x');
 	};
 
 	var getACISTitle = function(model) {

@@ -19,6 +19,15 @@ define([
 			var northeast = L.latLng(bbox.north, bbox.east);
 			return L.latLngBounds(southwest, northeast);
 		};
+
+		self.getBbox = function(latLngBounds) {
+			return {
+				west : latLngBounds.getWest(),
+				south : latLngBounds.getSouth(),
+				east : latLngBounds.getEast(),
+				north : latLngBounds.getNorth()
+			};
+		};
 		return self;
 	})();
 

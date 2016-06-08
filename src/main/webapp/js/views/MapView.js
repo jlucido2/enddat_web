@@ -96,8 +96,18 @@ define([
 			// Initialize draw control
 			this.drawnAOIFeature = L.featureGroup();
 			this.drawAOIControl = new L.Control.Draw({
+				draw : {
+					polyline : false,
+					polygon : false,
+					rectangle : {
+						repeatMode : false
+					},
+					circle : false,
+					marker : false
+				},
 				edit : {
-					featureGroup : this.drawnAOIFeature
+					featureGroup : this.drawnAOIFeature,
+					remove : false
 				}
 			});
 
@@ -261,6 +271,22 @@ define([
 					this.map.addLayer(this.drawnAOIFeature);
 					// TODO: Need to add code to add the AOI box if already defined
 					this.map.addControl(this.drawAOIControl);
+					this.map.on('draw:created', function(ev) {
+						this.model.get('aoi').set('aoiBox', LUtils.getBbox(ev.layer.getBounds()));
+					}, this);
+					this.map.on('draw:edited', function(ev) {
+						this.model.get('aoi').set('aoiBox', LUtils.getBbox(ev.layers.getLayers()[0].getBounds()));
+					}, this);
+				}
+				if (aoiModel.hasValidAOI()) {
+					var aoiLayers = this.drawnAOIFeature.getLayers();
+					var newLatLngBounds = LUtils.getLatLngBounds(aoiModel.get('aoiBox'));
+					if (aoiLayers.length === 0) {
+						this.drawnAOIFeature.addLayer(L.rectangle(newLatLngBounds, {}));
+					}
+					else {
+						aoiLayers[0].setBounds(newLatLngBounds);
+					}
 				}
 			}
 			else {

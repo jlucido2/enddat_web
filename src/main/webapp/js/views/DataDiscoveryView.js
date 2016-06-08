@@ -18,6 +18,8 @@ define([
 		VariableSummaryView, ProcessDataView, hbTemplate) {
 	"use strict";
 
+	var DEFAULT_RADIUS = 2;
+
 	var NAVVIEW_SELECTOR = '.workflow-nav';
 	var LOCATION_SELECTOR = '.location-panel';
 	var CHOOSE_SELECTOR = '.choose-panel';
@@ -256,9 +258,15 @@ define([
 
 		selectAOIDefinition : function(ev) {
 			var kind = $(ev.currentTarget).val();
+			var aoiModel = this.model.get('aoi');
 			this.$('.workflow-start-container').removeClass('in');
 			switch(kind) {
 				case 'location':
+					aoiModel.set({
+						latitude : '',
+						longitude : '',
+						radius : DEFAULT_RADIUS
+					});
 					if (!this.locationView) {
 						this.locationView = new LocationView({
 							el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
@@ -281,6 +289,17 @@ define([
 					break;
 
 				case 'aoiBox':
+					aoiModel.set({
+						aoiBox : {}
+					});
+					if (!this.mapView) {
+						this.mapView = new MapView({
+							el : $utils.createDivInContainer(this.$(MAPVIEW_SELECTOR)),
+							mapDivId : 'map-div',
+							model : this.model
+						});
+						this.mapView.render();
+					}
 					break;
 			}
 		}

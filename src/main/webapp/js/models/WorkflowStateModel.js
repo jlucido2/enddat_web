@@ -14,7 +14,6 @@ define([
 ], function(_, $, moment, Backbone, Config, geoSpatialUtils, NWISCollection, PrecipitationCollection, ACISCollection, AOIModel) {
 	"use strict";
 
-	var DEFAULT_CHOOSE_DATA_RADIUS = 2;
 	var DEFAULT_CHOSEN_DATASETS = ['NWIS'];
 
 	// Defaults for processing step
@@ -132,11 +131,7 @@ define([
 					this.unset('startDate');
 					this.unset('endDate');
 					//TODO add code to allow switching between project location and aoi box.
-					this.get('aoi').set({
-						'latitude' : '',
-						'longitude' : '',
-						'radius' : DEFAULT_CHOOSE_DATA_RADIUS
-					});
+					this.get('aoi').unset();
 					break;
 
 				case Config.CHOOSE_DATA_FILTERS_STEP:

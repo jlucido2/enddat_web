@@ -1,9 +1,10 @@
 /* jslint browser: true */
 
 define([
+	'underscore',
 	'backbone',
 	'utils/geoSpatialUtils'
-], function(Backbone, geoSpatialUtils) {
+], function(_, Backbone, geoSpatialUtils) {
 	"use strict";
 
 	var model = Backbone.Model.extend({
@@ -13,7 +14,7 @@ define([
 		},
 
 		usingAOIBox : function() {
-			return this.has('aoiBox')
+			return this.has('aoiBox');
 		},
 
 		hasValidAOI : function() {
@@ -22,7 +23,7 @@ define([
 				result =  ((this.attributes.latitude) && (this.attributes.longitude) && (this.attributes.radius)) ? true : false;
 			}
 			else if (this.usingAOIBox()) {
-				result = (this.attributes.aoiBox) ? true : false;
+				result = !_.isEmpty(this.attributes.aoiBox);
 			}
 			return result;
 		},
@@ -39,7 +40,9 @@ define([
 				}
 			}
 			else if (this.usingAOIBox()) {
-				result = this.attributes.aoiBox;
+				if (!_.isEmpty(this.attributes.aoiBox)) {
+					result = this.attributes.aoiBox;
+				}
 			}
 			return result;
 		}

@@ -6,6 +6,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<link rel="stylesheet" type="text/css" href="<%=baseUrl%>bower_components/select2/dist/css/select2.min.css" />
 		<link rel="stylesheet" type="text/css" href="<%=baseUrl%>bower_components/leaflet/dist/leaflet.css" />
+		<link rel="stylesheet" type="text/css" href="<%=baseUrl%>bower_components/leaflet-draw/dist/leaflet.draw.css" />
 		<link rel="stylesheet" type="text/css" href="css/custom.css" />
 	</head>
 	<body>
@@ -56,6 +57,7 @@
 					"hbs" : '<%=baseUrl%>bower_components/requirejs-hbs/hbs',
 					'leaflet' : '<%=baseUrl%>bower_components/leaflet/dist/leaflet',
 					'leaflet-providers' : '<%=baseUrl%>bower_components/leaflet-providers/leaflet-providers',
+					'leaflet-draw' : '<%=baseUrl%>bower_components/leaflet-draw/dist/leaflet.draw',
 					'loglevel' : '<%=baseUrl%>bower_components/loglevel/dist/loglevel<%= development ? "" : ".min"%>',
 					'backbone.stickit' : '<%=baseUrl%>bower_components/backbone.stickit/backbone.stickit',
 					'moment' : '<%=baseUrl%>bower_components/moment/<%=development ? "" : "min/"%>moment<%=development ? "" : ".min"%>',
@@ -66,6 +68,7 @@
 					'leaflet' : {
 						exports: 'L'
 					},
+					'leaflet-draw' : ['leaflet'],
 					'leaflet-providers' : ['leaflet'],
 					'backbone' : {
 						deps : ['jquery', 'underscore'],

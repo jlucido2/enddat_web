@@ -3,6 +3,7 @@
 define([
 	'underscore',
 	'leaflet',
+	'leaflet-draw',
 	'leaflet-providers',
 	'loglevel',
 	'Config',
@@ -15,7 +16,7 @@ define([
 	'views/ACISDataView',
 	'views/NWISDataView',
 	'hbs!hb_templates/mapOps'
-], function(_, L, leafletProviders, log, Config, $utils, geoSpatialUtils, LUtils, legendControl, BaseView,
+], function(_, L, leafletDraw, leafletProviders, log, Config, $utils, geoSpatialUtils, LUtils, legendControl, BaseView,
 		PrecipDataView, ACISDataView, NWISDataView, hbTemplate) {
 
 	var siteIcons = _.mapObject(Config.DATASET_ICON, function(value) {
@@ -70,7 +71,7 @@ define([
 			};
 
 			this.legendControl = legendControl({opened : false});
-			this.controls = [
+			this.defaultControls = [
 				L.control.layers(this.baseLayers, {}),
 				this.legendControl
 			];
@@ -92,6 +93,14 @@ define([
 				[L.layerGroup(), L.layerGroup(), L.layerGroup()]
 			);
 
+			// Initialize draw control
+			this.drawnAOIFeature = L.featureGroup();
+			this.drawAOIControl = new L.Control.Draw({
+				edit : {
+					featureGroup : this.drawnAOIFeature
+				}
+			});
+
 			this.selectedSite = undefined;
 		},
 
@@ -108,7 +117,7 @@ define([
 				zoom : 4,
 				layers : [this.baseLayers['World Street']]
 			});
-			_.each(this.controls, function(control) {
+			_.each(this.defaultControls, function(control) {
 				self.map.addControl(control);
 			}, this);
 			_.each(this.siteLayerGroups, function(layerGroup) {
@@ -118,8 +127,8 @@ define([
 			this.listenTo(this.model, 'change:step', this.updateWorkflowStep);
 			this.updateWorkflowStep(this.model, this.model.get('step'));
 
-			this.updateLocationMarkerAndExtent(aoiModel);
-			this.listenTo(aoiModel, 'change', this.updateLocationMarkerAndExtent);
+			this.updateAOILayerAndExtent(aoiModel);
+			this.listenTo(aoiModel, 'change', this.updateAOILayerAndExtent);
 
 			// If the dataset collection models have already been created, then setup their listeners. Otherwise
 			// wait until they have been created.
@@ -227,24 +236,43 @@ define([
 		 * @param {Object} location - has properties latitude and longitude in order to be a valid location
 		 *
 		 */
-		updateLocationMarkerAndExtent : function(aoiModel) {
+		updateAOILayerAndExtent : function(aoiModel) {
 			var mapHasMarker = this.map.hasLayer(this.projLocationMarker);
-			if (aoiModel.usingProjectLocation() && (aoiModel.attributes.latitude) && aoiModel.attributes.longitude) {
-				if (!mapHasMarker) {
-					this.map.addLayer(this.projLocationMarker);
+			var mapHasAOIBox = this.map.hasLayer(this.drawnAOIFeature);
+			if (aoiModel.usingProjectLocation()) {
+				if ((aoiModel.attributes.latitude) && (aoiModel.attributes.longitude)) {
+					if (!mapHasMarker) {
+						this.map.addLayer(this.projLocationMarker);
+					}
+					this.projLocationMarker.setLatLng([aoiModel.attributes.latitude, aoiModel.attributes.longitude]);
+					this.removeSingleClickHandler();
 				}
-				this.projLocationMarker.setLatLng([aoiModel.attributes.latitude, aoiModel.attributes.longitude]);
-				this.removeSingleClickHandler();
-				this.updateExtent(aoiModel);
+				else {
+					if (mapHasMarker) {
+						this.map.removeLayer(this.projLocationMarker);
+					}
+					this.setUpSingleClickHandlerToCreateMarker();
+					this.$('#' + this.mapDivId).css('cursor', 'pointer');
+				}
+			}
+			else if (aoiModel.usingAOIBox()) {
+				// Assuming that once the drawAOIFeature is on the map, it can only be changed via the map.
+				if (!mapHasAOIBox) {
+					this.map.addLayer(this.drawnAOIFeature);
+					// TODO: Need to add code to add the AOI box if already defined
+					this.map.addControl(this.drawAOIControl);
+				}
 			}
 			else {
+				if (mapHasAOIBox) {
+					this.map.removeControl(this.drawAOIControl);
+					this.map.removeLayer (this.drawnAOIFeature);
+				}
 				if (mapHasMarker) {
 					this.map.removeLayer(this.projLocationMarker);
 				}
-				this.setUpSingleClickHandlerToCreateMarker();
-				this.$('#' + this.mapDivId).css('cursor', 'pointer');
 			}
-			//TODO: Handle AOI Box
+			this.updateExtent(aoiModel);
 		},
 
 		updateExtent : function(aoiModel) {

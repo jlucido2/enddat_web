@@ -13,18 +13,19 @@ define([
 ], function(log, module, $, _, moment, VariableParameter, BaseDatasetCollection, BaseVariableCollection, $utils) {
 	"use strict";
 
-	var glcfsWFSGetFeatureUrls = module.config().glcfsWFSGetFeatureUrls;
+	var GLCFS_WFS_GETFEATURE_URLS = module.config().glcfsWFSGetFeatureUrls;
 	
-	var variableId = 'glcfstempVariableId';
-	var variableName = 'GLCFStemp';
+	var GLCFS_DDS_URL = 'glosthredds/' + module.config().glosThreddsGLCFSData;
 
 	var getInteger = function(str) {
 		return str.split('.')[0];
 	};
 
-	var getDDSURL = function(lake) {
-		var url = 'glosthredds/' + module.config().glosThreddsGLCFSData + lake.toLowerCase() + '/fcfmrc-2d/Lake_' + lake + '_-_2D_best.ncd.dds'
-		return url;
+	var getTimeBounds = function(ddsText) {
+		var lines = ddsText.split('\n');
+		var timeBoundsLine = lines[11];
+		var timeBounds = /(\d+])/.exec(timeBoundsLine)[0];
+		return timeBounds.replace(/]/, '');
 	};
 
 	var collection = BaseDatasetCollection.extend({
@@ -83,9 +84,9 @@ define([
 //	dp (Celsius) = Dew Point = dew_point
 
 							variableParameter : new VariableParameter({
-								name : 'GLCFS',
-								value : y + ':' + x + ':' + self.timeBounds + ':' + variableId,
-								colName : variableName + ' [' + y + ',' + x + ']',
+								name : 'A GLCFS Variable',
+								value : y + ':' + x + ':' + self.timeBounds + ':variableId',
+								colName : 'columnName [' + y + ',' + x + ']',
 							})
 						}
 					])
@@ -103,11 +104,12 @@ define([
 		fetch : function (boundingBox) {
 			var self = this;
 			var fetchSiteDataDeferred = $.Deferred();
+			var fetchDDSDeferred = $.Deferred();
 			var fetchDeferred = $.Deferred();
 			var xmlResponse;
 
 			$.ajax({
-				url : glcfsWFSGetFeatureUrls[this.lake],
+				url : GLCFS_WFS_GETFEATURE_URLS[this.lake],
 				data : {
 					typeName : 'sb:' + this.lake.toLowerCase(),
 					srsName : 'EPSG:4269',
@@ -126,6 +128,18 @@ define([
 				error : function(jqXHR) {
 					log.debug('GLCFS GetFeature fetch failed');
 					fetchSiteDataDeferred.reject(jqXHR);
+				}
+			});
+
+			$.ajax({
+				url : GLCFS_DDS_URL,
+				success : function (response, textStatus, jqXHR) {
+					self.timeBounds = getTimeBounds(response);
+					fetchDDSDeferred.resolve(jqXHR);
+				},
+				error : function(jqXHR) {
+					log.debug('Unable to retrieve the GLCFS service\'s dds');
+					fetchDDSDeferred.reject(jqXHR);
 				}
 			});
 

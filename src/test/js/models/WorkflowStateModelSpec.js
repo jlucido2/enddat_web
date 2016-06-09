@@ -250,9 +250,7 @@ define([
 				});
 				testModel.set('step', Config.SPECIFY_AOI_STEP);
 
-				expect(aoiModel.get('latitude')).toEqual('');
-				expect(aoiModel.get('longitude')).toEqual('');
-				expect(aoiModel.get('radius')).not.toEqual('');
+				expect(aoiModel.attributes).toEqual({});
 				expect(testModel.has('datasets')).toBe(false);
 				expect(testModel.has('startDate')).toBe(false);
 				expect(testModel.has('endDate')).toBe(false);
@@ -270,7 +268,7 @@ define([
 
 			it('Expects that if the step changes to CHOOSE_DATA_FILTERS_STEP and the previous step was SPECIFY_AOI_STEP that the chosen datasets are set', function() {
 				testModel.set('step', Config.SPECIFY_AOI_STEP);
-				testModel.get('aoi').set({latitude : '43.0', longitude : '-100.0'});
+				testModel.get('aoi').set({latitude : '43.0', longitude : '-100.0', radius : 2});
 				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
 
 				expect(testModel.get('datasets')).toEqual(['NWIS']);
@@ -278,7 +276,7 @@ define([
 
 			it('Expects that if the step changes to CHOOSE_DATA_FILTERS_STEP and the previous step was SPECIFY_AOI_STEP, the chosen datasets are fetched', function() {
 				testModel.set('step', Config.SPECIFY_AOI_STEP);
-				testModel.get('aoi').set({latitude : '43.0', longitude : '-100.0'});
+				testModel.get('aoi').set({latitude : '43.0', longitude : '-100.0', radius : 2});
 				fetchPrecipSpy.calls.reset();
 				fetchSiteSpy.calls.reset();
 				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);

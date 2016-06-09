@@ -465,6 +465,7 @@ define([
 
 			it('Expects that if the step changes from SPECIFY_AOI_STEP to CHOOSE_DATA_FILTERS_STEP, the choose view and summary views are created and rendered', function() {
 				testModel.set('step', Config.SPECIFY_AOI_STEP);
+				$testDiv.find('.workflow-start-container select').val('location').trigger('change');
 				setElChooseViewSpy.calls.reset();
 				renderChooseViewSpy.calls.reset();
 				setElSummaryViewSpy.calls.reset();

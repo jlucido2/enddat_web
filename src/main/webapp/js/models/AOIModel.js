@@ -7,6 +7,13 @@ define([
 ], function(_, Backbone, geoSpatialUtils) {
 	"use strict";
 
+	/*
+	 * This model will represent the area of interest that will be used in the application. The AOI
+	 * can be defined in several ways. Currently, it can be a model with latitude, longitude, and radius
+	 * properties or an aoiBox property that contains a bounding box object. In general, unless a view is
+	 * setting or displaying model properties, the user should use the methods defined here to access
+	 * information.
+	 */
 	var model = Backbone.Model.extend({
 
 		/*

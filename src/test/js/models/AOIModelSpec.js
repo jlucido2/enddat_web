@@ -7,7 +7,7 @@ define([
 ], function(geoSpatialUtils, AOIModel) {
 	"use strict";
 
-	fdescribe('models/AOIModel', function() {
+	describe('models/AOIModel', function() {
 
 		var testModel;
 

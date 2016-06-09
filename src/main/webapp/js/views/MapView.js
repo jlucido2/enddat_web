@@ -8,7 +8,6 @@ define([
 	'loglevel',
 	'Config',
 	'utils/jqueryUtils',
-	'utils/geoSpatialUtils',
 	'utils/LUtils',
 	'leafletCustomControls/legendControl',
 	'views/BaseView',
@@ -16,7 +15,7 @@ define([
 	'views/ACISDataView',
 	'views/NWISDataView',
 	'hbs!hb_templates/mapOps'
-], function(_, L, leafletDraw, leafletProviders, log, Config, $utils, geoSpatialUtils, LUtils, legendControl, BaseView,
+], function(_, L, leafletDraw, leafletProviders, log, Config, $utils, LUtils, legendControl, BaseView,
 		PrecipDataView, ACISDataView, NWISDataView, hbTemplate) {
 
 	var siteIcons = _.mapObject(Config.DATASET_ICON, function(value) {
@@ -287,6 +286,9 @@ define([
 					else {
 						aoiLayers[0].setBounds(newLatLngBounds);
 					}
+				}
+				else {
+					this.drawnAOIFeature.clearLayers();
 				}
 			}
 			else {

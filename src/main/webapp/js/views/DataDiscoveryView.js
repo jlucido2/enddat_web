@@ -178,7 +178,6 @@ define([
 				case Config.CHOOSE_DATA_VARIABLES_STEP:
 					// You can only get to this step from CHOOSE_DATA_FILTER_STEP
 					if (prevStep === Config.CHOOSE_DATA_FILTERS_STEP) {
-						if (this.location)
 						this.aoiView.collapse();
 						this.chooseView.collapse();
 					}
@@ -204,7 +203,7 @@ define([
 						this.variableSummaryView.collapse();
 					}
 
-					this.aoiView = removeSubView(this.locationView);
+					this.aoiView = removeSubView(this.aoiView);
 					this.chooseView = removeSubView(this.chooseView);
 					this.mapView = removeSubView(this.mapView);
 			}

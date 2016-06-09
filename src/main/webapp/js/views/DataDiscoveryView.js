@@ -132,18 +132,20 @@ define([
 						if (aoiModel.usingProjectLocation()) {
 							this.aoiView = new LocationView({
 								el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
-								model : model.get('aoi'),
+								model : aoiModel,
 								opened : true
 							});
 						}
 						else if (aoiModel.usingAOIBox()) {
 							this.aoiView = new AOIBoxView({
 								el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
-								model : model.get('aoi'),
+								model : aoiModel,
 								opened : true
 							});
 						}
-						this.aoiView.render();
+						if (this.aoiView) {
+							this.aoiView.render();
+						}
 					}
 					if (!this.mapView) {
 						this.mapView = new MapView({

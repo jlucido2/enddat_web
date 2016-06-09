@@ -27,7 +27,7 @@ define([
 			return {
 				step : 'unknown',
 				hasSelectedVariables : false,
-				aoi : new AOIModel
+				aoi : new AOIModel()
 			};
 		},
 

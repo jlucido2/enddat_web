@@ -1,0 +1,14 @@
+<div class="hint-div">
+	<em>
+		Use the controls on the map below the Legend to draw a rectangle and to update the rectangle.
+		This will be the area of interest for data discovery.
+	</em>
+</div>
+<div class="form-group">
+	<label>Southwest</label>
+	<input type="text" readonly class="form-control" {{#if south}}value="{{south}}, {{west}}"{{/if}} />
+</div>
+<div class="form-group">
+	<label>Northeast</label>
+	<input type="text" readonly class="form-control" {{#if north}}value="{{north}}, {{east}}"{{/if}} />
+</div>

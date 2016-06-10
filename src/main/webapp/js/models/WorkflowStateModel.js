@@ -6,14 +6,13 @@ define([
 	'moment',
 	'backbone',
 	'Config',
-	'utils/geoSpatialUtils',
 	'models/NWISCollection',
 	'models/PrecipitationCollection',
-	'models/ACISCollection'
-], function(_, $, moment, Backbone, Config, geoSpatialUtils, NWISCollection, PrecipitationCollection, ACISCollection) {
+	'models/ACISCollection',
+	'models/AOIModel'
+], function(_, $, moment, Backbone, Config, NWISCollection, PrecipitationCollection, ACISCollection, AOIModel) {
 	"use strict";
 
-	var DEFAULT_CHOOSE_DATA_RADIUS = 2;
 	var DEFAULT_CHOSEN_DATASETS = ['NWIS'];
 
 	// Defaults for processing step
@@ -27,7 +26,8 @@ define([
 		defaults : function() {
 			return {
 				step : 'unknown',
-				hasSelectedVariables : false
+				hasSelectedVariables : false,
+				aoi : new AOIModel()
 			};
 		},
 
@@ -39,7 +39,7 @@ define([
 
 		/*
 		 * Instantiates the datasetModels and sets up the model event listeners which will fetch new
-		 * dataset model information if the datasetCollections have not yet been instantiated. If they
+		 * dataset model information when needed. If they
 		 * have already been created, empty the contents of the collections
 		 */
 		initializeDatasetCollections : function() {
@@ -56,38 +56,10 @@ define([
 					[Config.ACIS_DATASET, new ACISCollection()]
 				]);
 				this.set('datasetCollections', datasetCollections);
-				this.on('change:radius', this.updateDatasetCollections, this);
-				this.on('change:location', this.updateDatasetCollections, this);
+
+				this.get('aoi').on('change', this.changeAOI, this);
 				this.on('change:datasets', this.updateDatasetCollections, this);
 			}
-		},
-
-		/*
-		 * @returns {Boolean} - Returns true if the model contains a location property that contains
-		 * an object with non empty latitude and longitude properties
-		 */
-		hasValidLocation : function() {
-			return (this.has('location') &&
-				((this.attributes.location.latitude) ? true : false) &&
-				((this.attributes.location.longitude) ? true : false));
-
-		},
-
-		/*
-		 * Returns the bounding box as an object with west, east, north, and south properties.
-		 * Return undefined if the model's properties do not contain a valid bounding box
-		 * @return {Object} - has west, east, north, south properties or undefined
-		 */
-		getBoundingBox : function() {
-			var result = undefined;
-			if ((this.attributes.radius) && this.hasValidLocation()) {
-				result = geoSpatialUtils.getBoundingBox(
-					this.attributes.location.latitude,
-					this.attributes.location.longitude,
-					this.attributes.radius
-				);
-			}
-			return result;
 		},
 
 		/*
@@ -107,37 +79,37 @@ define([
 		 * Model event handlers
 		 */
 
-		 /*  If the radius or location has changed, all datasets are either fetched (if chosen) or cleared.
-		  *  If the dataset has changed, then the previous datasets or compared to the current. Datasets added to the
+		 /*
+		  *  The previous datasets are compared to the current. Datasets added to the
 		  *  current datasets are fetched and datasets removed from the current datasets are cleared.
 		  */
 		updateDatasetCollections : function() {
 			var previousAttributes = this.previousAttributes();
-			var boundingBox = this.getBoundingBox();
+			var boundingBox = this.get('aoi').getBoundingBox();
 			var chosenDatasets = this.has('datasets') ? this.get('datasets') : [];
 			var previousChosenDatasets = _.has(previousAttributes, 'datasets') ? previousAttributes.datasets : [];
 
-			var datasetsToFetch = {};
-			var datasetsToClear = {};
-
-			if (this.hasChanged('radius') || this.hasChanged('location')) {
-				//Need to fetch/clear all dataset collections
-				if (boundingBox) {
-					datasetsToFetch = chosenDatasets;
-					datasetsToClear = _.difference(Config.ALL_DATASETS, chosenDatasets);
-				}
-				else {
-					datasetsToClear = Config.ALL_DATASETS;
-				}
-			}
-			else {
-				//Update only datasets that have been added or removed from the chosen datasets
-				datasetsToFetch = _.difference(chosenDatasets, previousChosenDatasets);
-				datasetsToClear =  _.difference(previousChosenDatasets, chosenDatasets);
-			}
+			//Update only datasets that have been added or removed from the chosen datasets
+			var datasetsToFetch = _.difference(chosenDatasets, previousChosenDatasets);
+			var datasetsToClear =  _.difference(previousChosenDatasets, chosenDatasets);
 
 			this.fetchDatasets(datasetsToFetch, boundingBox);
 			this.clearDatasets(datasetsToClear);
+		},
+
+		/*
+		 * If the aoi property contains a model with a defined bounding box, then
+		 * fetch all chosen datasets. Otherwise clear all datasets.
+		 */
+		changeAOI : function() {
+			var boundingBox = this.get('aoi').getBoundingBox();
+			var chosenDatasets = this.has('datasets') ? this.get('datasets') : [];
+			if (boundingBox) {
+				this.fetchDatasets(chosenDatasets, boundingBox);
+			}
+			else {
+				this.clearDatasets(Config.ALL_DATASETS);
+			}
 		},
 
 		/*
@@ -148,24 +120,23 @@ define([
 			var outputDateRange = undefined;
 
 			switch(this.get('step')) {
-				case Config.PROJ_LOC_STEP:
+				case Config.SPECIFY_AOI_STEP:
 					if (this.has('datasetCollections')) {
 						_.each(this.get('datasetCollections'), function(collection) {
 							collection.reset();
 						});
 					};
 					this.unset('datasets');
-					this.unset('location');
-					this.unset('radius');
 					this.unset('startDate');
 					this.unset('endDate');
+					//TODO add code to allow switching between project location and aoi box.
+					this.get('aoi').clear();
 					break;
 
 				case Config.CHOOSE_DATA_FILTERS_STEP:
-					if (previousStep === Config.PROJ_LOC_STEP) {
+					if (previousStep === Config.SPECIFY_AOI_STEP) {
 						this.initializeDatasetCollections();
 						this.set('datasets', DEFAULT_CHOSEN_DATASETS);
-						this.set('radius', DEFAULT_CHOOSE_DATA_RADIUS);
 					}
 					break;
 

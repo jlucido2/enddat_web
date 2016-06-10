@@ -10,11 +10,34 @@ define([
 ], function(_, bootstrap, log, Config, BaseView, hb_template) {
 	"use strict";
 
+	var getChooseDataUrl = function(model) {
+		var state = model.attributes;
+		var aoi = model.attributes.aoi;
+
+		var startDate = (state.startDate) ? '/startdate/' + state.startDate.format(Config.DATE_FORMAT_URL) : '';
+		var endDate = (state.endDate) ? '/enddate/' + state.endDate.format(Config.DATE_FORMAT_URL) : '';
+		var datasets = (state.datasets) ? '/dataset/' + state.datasets.join('/') : '';
+
+		var aoiFragment = '';
+		if (aoi.usingProjectLocation()) {
+			var latitude = (aoi.attributes.latitude) ? aoi.attributes.latitude : '';
+			var longitude = (aoi.attributes.longitude) ? aoi.attributes.longitude : '';
+			var radius = (aoi.attributes.radius) ? aoi.attributes.radius : '';
+			aoiFragment = 'lat/' + latitude + '/lng/' + longitude + '/radius/' + radius;
+		}
+		else if (aoi.usingAOIBox()) {
+			var aoiBox = aoi.attributes.aoiBox;
+			aoiFragment = 'aoiBbox/' + aoiBox.south + ',' + aoiBox.west + ',' + aoiBox.north + ',' + aoiBox.east;
+		}
+
+		return aoiFragment + startDate + endDate + datasets;
+	};
+
 	var view = BaseView.extend({
 		template : hb_template,
 
 		events : {
-			'click .nav-project-loc a' : 'showWarning',
+			'click .nav-specify-aoi a' : 'showWarning',
 			'click .nav-choose-data a' : 'goToChooseDataStep',
 			'click .nav-process-data a' : 'goToProcessDataStep',
 			'click .nav-warning-modal .ok-button' : 'goToProjectLocationStep'
@@ -30,12 +53,13 @@ define([
 			BaseView.prototype.initialize.apply(this, arguments);
 
 			this.navSelector = {};
-			this.navSelector[Config.PROJ_LOC_STEP] = '.nav-project-loc';
+			this.navSelector[Config.SPECIFY_AOI_STEP] = '.nav-specify-aoi';
 			this.navSelector[Config.CHOOSE_DATA_FILTERS_STEP] = '.nav-choose-data';
 			this.navSelector[Config.CHOOSE_DATA_VARIABLES_STEP] = '.nav-choose-data';
 			this.navSelector[Config.PROCESS_DATA_STEP] = '.nav-process-data';
 
 			this.listenTo(this.model, 'change', this.updateNavigation);
+			this.listenTo(this.model.get('aoi'), 'change', this.updateAOI);
 		},
 
 		render : function() {
@@ -50,15 +74,15 @@ define([
 		 */
 		showWarning : function(ev) {
 			ev.preventDefault();
-			if (this.model.get('step') !== Config.PROJ_LOC_STEP) {
+			if (this.model.get('step') !== Config.SPECIFY_AOI_STEP) {
 				this.$('.nav-warning-modal').modal('show');
 			}
 		},
 
 		goToProjectLocationStep : function(ev) {
 			ev.preventDefault();
-			if (this.model.get('step') !== Config.PROJ_LOC_STEP) {
-				this.model.set('step', Config.PROJ_LOC_STEP);
+			if (this.model.get('step') !== Config.SPECIFY_AOI_STEP) {
+				this.model.set('step', Config.SPECIFY_AOI_STEP);
 				this.$('.nav-warning-modal').modal('hide');
 			}
 		},
@@ -76,23 +100,9 @@ define([
 			}
 		},
 
-		_getChooseDataUrl : function(model) {
-			var state = model.attributes;
-			var latitude = (_.has(state, 'location') && _.has(state.location, 'latitude')) ? state.location.latitude : '';
-			var longitude = (_.has(state, 'location') && _.has(state.location, 'longitude')) ? state.location.longitude : '';
-
-			var location = 'lat/' + latitude + '/lng/' + longitude;
-			var radius = (state.radius) ? '/radius/' + state.radius : '';
-			var startDate = (state.startDate) ? '/startdate/' + state.startDate.format(Config.DATE_FORMAT_URL) : '';
-			var endDate = (state.endDate) ? '/enddate/' + state.endDate.format(Config.DATE_FORMAT_URL) : '';
-			var datasets = (state.datasets) ? '/dataset/' + state.datasets.join('/') : '';
-			return location + radius + startDate + endDate + datasets;
-		},
-
 		updateNavigation : function(model, isRendering) {
 			var stepHasChanged = isRendering ? true : model.hasChanged('step');
 			var newStep = model.get('step');
-			var location = model.get('location');
 
 			var $chooseDataBtn = this.$(this.navSelector[Config.CHOOSE_DATA_FILTERS_STEP]);
 			var $processDataBtn= this.$(this.navSelector[Config.PROCESS_DATA_STEP]);
@@ -104,9 +114,8 @@ define([
 				this.$(currentStepSelector).addClass('active');
 			}
 			switch(newStep) {
-				case Config.PROJ_LOC_STEP:
-					if ((location) && _.has(location, 'latitude') && (location.latitude) &&
-						_.has(location, 'longitude') && (location.longitude)) {
+				case Config.SPECIFY_AOI_STEP:
+					if (model.get('aoi').hasValidAOI()) {
 						$chooseDataBtn.removeClass('disabled');
 					}
 					else {
@@ -126,19 +135,37 @@ define([
 						$processDataBtn.addClass('disabled');
 					}
 
-					if (model.has('location') &&
-						_.has(model.attributes.location, 'latitude') && (model.attributes.location.latitude) &&
-						_.has(model.attributes.location, 'longitude') && (model.attributes.location.longitude)) {
-						this.router.navigate(this._getChooseDataUrl(model));
+					if (model.get('aoi').hasValidAOI()) {
+						this.router.navigate(getChooseDataUrl(model));
 					}
 					break;
 
 				case Config.PROCESS_DATA_STEP:
-					//TODO: probably will need to add things here as we figure out this step.
+					break;
+			}
+		},
+
+		updateAOI : function() {
+			var $chooseDataBtn = this.$(this.navSelector[Config.CHOOSE_DATA_FILTERS_STEP]);
+
+			switch(this.model.get('step')) {
+				case Config.SPECIFY_AOI_STEP:
+					if (this.model.get('aoi').hasValidAOI()) {
+							$chooseDataBtn.removeClass('disabled');
+					}
+					else {
+						$chooseDataBtn.addClass('disabled');
+					}
+					break;
+
+				case Config.CHOOSE_DATA_FILTERS_STEP:
+				case Config.CHOOSE_DATA_VARIABLES_STEP:
+					if (this.model.get('aoi').hasValidAOI()) {
+						this.router.navigate(getChooseDataUrl(this.model));
+					}
 					break;
 			}
 		}
-
 	});
 
 	return view;

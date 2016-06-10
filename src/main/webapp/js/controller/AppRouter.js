@@ -11,13 +11,12 @@ define([
 ], function ($, Backbone, log, moment, Config, WorkflowStateModel, DataDiscoveryView) {
 	"use strict";
 
-	var DATE_FORMAT = 'DMMMYYYY';
-
 	var appRouter = Backbone.Router.extend({
 		routes: {
 			'': 'specifyProjectLocationState',
-			'lat/:lat/lng/:lng(/radius/:radius)(/startdate/:startDate)(/enddate/:endDate)(/dataset/*datasets)' : 'chooseDataState'
-		},
+			'lat/:lat/lng/:lng/radius/:radius(/startdate/:startDate)(/enddate/:endDate)(/dataset/*datasets)' : 'chooseDataStateProjLoc',
+			'aoiBbox/:bbox(/startdate/:startDate)(/enddate/:endDate)(/dataset/*datasets)' : 'chooseDataStateAOIBox'
+	},
 
 		initialize : function(options) {
 			Backbone.Router.prototype.initialize.apply(this, arguments);
@@ -54,26 +53,46 @@ define([
 		},
 
 		specifyProjectLocationState: function () {
-			this.workflowState.set('step', Config.PROJ_LOC_STEP);
+			this.workflowState.set('step', Config.SPECIFY_AOI_STEP);
 			this.createView(DataDiscoveryView, {
 				model : this.workflowState
 			}).render();
 		},
 
-		chooseDataState : function(lat, lng, radius, startDate, endDate, datasets) {
+		chooseDataState : function(aoi, startDate, endDate, datasets) {
 			this.workflowState.initializeDatasetCollections();
+			this.workflowState.get('aoi').set(aoi);
 			this.workflowState.set({
-				'location' : {latitude : lat, longitude : lng},
-				'radius' : radius,
-				'startDate' : (startDate) ? moment(startDate, DATE_FORMAT) : '',
-				'endDate' : (endDate) ? moment(endDate, DATE_FORMAT) : ''
+				'startDate' : (startDate) ? moment(startDate, Config.DATE_FORMAT_URL) : '',
+				'endDate' : (endDate) ? moment(endDate, Config.DATE_FORMAT_URL) : ''
 			});
 			this.workflowState.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
 			this.createView(DataDiscoveryView, {
 				model : this.workflowState
 			}).render();
 			this.workflowState.set('datasets', datasets ? datasets.split('/') : []);
+		},
 
+		chooseDataStateProjLoc : function(lat, lng, radius, startDate, endDate, datasets) {
+			var aoi = {
+				latitude : lat,
+				longitude : lng,
+				radius : radius
+			};
+			this.chooseDataState(aoi, startDate, endDate, datasets);
+		},
+
+		chooseDataStateAOIBox : function(bboxStr, startDate, endDate, datasets) {
+			var bboxArr = bboxStr.split(',');
+			var aoi = {
+				aoiBox : {
+					south : parseFloat(bboxArr[0]),
+					west : parseFloat(bboxArr[1]),
+					north : parseFloat(bboxArr[2]),
+					east : parseFloat(bboxArr[3])
+				}
+			};
+			this.chooseDataState(aoi, startDate, endDate, datasets);
 		}
 	});
 

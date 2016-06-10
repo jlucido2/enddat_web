@@ -10,13 +10,16 @@ define([
 	'views/AlertView',
 	'views/MapView',
 	'views/LocationView',
+	'views/AOIBoxView',
 	'views/ChooseView',
 	'views/VariableSummaryView',
 	'views/ProcessDataView',
 	'hbs!hb_templates/dataDiscovery'
-], function (_, Config, $utils, BaseView, NavView, AlertView, MapView, LocationView, ChooseView,
+], function (_, Config, $utils, BaseView, NavView, AlertView, MapView, LocationView, AOIBoxView, ChooseView,
 		VariableSummaryView, ProcessDataView, hbTemplate) {
 	"use strict";
+
+	var DEFAULT_RADIUS = 2;
 
 	var NAVVIEW_SELECTOR = '.workflow-nav';
 	var LOCATION_SELECTOR = '.location-panel';
@@ -27,8 +30,19 @@ define([
 	var ALERTVIEW_SELECTOR = '.alert-container';
 	var LOADING_SELECTOR = '.loading-indicator';
 
+	var removeSubView = function(view) {
+		if (view) {
+			view.remove();
+		}
+		return undefined;
+	};
+
 	var view = BaseView.extend({
 		template: hbTemplate,
+
+		events : {
+			'change .workflow-start-container select' : 'selectAOIDefinition'
+		},
 
 		/*
 		 * @constructs
@@ -76,8 +90,8 @@ define([
 			if (this.mapView) {
 				this.mapView.remove();
 			}
-			if (this.locationView) {
-				this.locationView.remove();
+			if (this.aoiView) {
+				this.aoiView.remove();
 			}
 			if (this.chooseView) {
 				this.chooseView.remove();
@@ -101,49 +115,37 @@ define([
 
 			this.alertView.closeAlert();
 			switch(step) {
-				case Config.PROJ_LOC_STEP:
-					if (!this.locationView) {
-						this.locationView = new LocationView({
-							el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
-							model : model,
-							opened : true
-						});
-						this.locationView.render();
-					}
-					else {
-						this.locationView.expand();
-					}
-					if (!this.mapView) {
-						this.mapView = new MapView({
-							el : $utils.createDivInContainer(this.$(MAPVIEW_SELECTOR)),
-							mapDivId : 'map-div',
-							model : model
-						});
-						this.mapView.render();
-					}
+				case Config.SPECIFY_AOI_STEP:
+					this.$('.workflow-start-container select').val('');
+					this.$('.workflow-start-container').addClass('in');
+					this.aoiView = removeSubView(this.aoiView);
+					this.mapView = removeSubView(this.mapView);
+					this.chooseView = removeSubView(this.chooseView);
+					this.variableSummaryView = removeSubView(this.variableSummaryView);
+					this.processDataView = removeSubView(this.processDataView);
 
-					if (this.chooseView) {
-						this.chooseView.remove();
-						this.chooseView = undefined;
-					}
-					if (this.variableSummaryView) {
-						this.variableSummaryView.remove();
-						this.variableSummaryView = undefined;
-					}
-					if (this.processDataView) {
-						this.processDataView.remove();
-						this.processDataView = undefined;
-					}
 					break;
 
 				case Config.CHOOSE_DATA_FILTERS_STEP:
-					if (!this.locationView) {
-						this.locationView = new LocationView({
-							el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
-							model : model,
-							opened : true
-						});
-						this.locationView.render();
+					var aoiModel = this.model.get('aoi');
+					if (!this.aoiView) {
+						if (aoiModel.usingProjectLocation()) {
+							this.aoiView = new LocationView({
+								el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
+								model : aoiModel,
+								opened : true
+							});
+						}
+						else if (aoiModel.usingAOIBox()) {
+							this.aoiView = new AOIBoxView({
+								el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
+								model : aoiModel,
+								opened : true
+							});
+						}
+						if (this.aoiView) {
+							this.aoiView.render();
+						}
 					}
 					if (!this.mapView) {
 						this.mapView = new MapView({
@@ -169,10 +171,7 @@ define([
 						});
 						this.variableSummaryView.render();
 					}
-					if (this.processDataView) {
-						this.processDataView.remove();
-						this.processDataView = undefined;
-					}
+					this.processDataView = removeSubView(this.processDataView);
 
 					this.variableSummaryView.expand();
 
@@ -181,7 +180,7 @@ define([
 				case Config.CHOOSE_DATA_VARIABLES_STEP:
 					// You can only get to this step from CHOOSE_DATA_FILTER_STEP
 					if (prevStep === Config.CHOOSE_DATA_FILTERS_STEP) {
-						this.locationView.collapse();
+						this.aoiView.collapse();
 						this.chooseView.collapse();
 					}
 					break;
@@ -206,19 +205,9 @@ define([
 						this.variableSummaryView.collapse();
 					}
 
-					if (this.locationView) {
-						this.locationView.remove();
-						this.locationView = undefined;
-					}
-					if (this.chooseView) {
-						this.chooseView.remove();
-						this.chooseView = undefined;
-					}
-					if (this.mapView) {
-						this.mapView.remove();
-						this.mapView = undefined;
-					}
-
+					this.aoiView = removeSubView(this.aoiView);
+					this.chooseView = removeSubView(this.chooseView);
+					this.mapView = removeSubView(this.mapView);
 			}
 		},
 
@@ -228,19 +217,29 @@ define([
 
 		_filterMsg : function() {
 			var state = this.model.attributes;
-			var latitude = (_.has(state, 'location') && _.has(state.location, 'latitude')) ? parseFloat(state.location.latitude).toFixed(3) : '';
-			var longitude = (_.has(state, 'location') && _.has(state.location, 'longitude')) ? parseFloat(state.location.longitude).toFixed(3) : '';
+			var aoi = state.aoi;
 
-			var radius = (state.radius) ? state.radius : '';
 			var startDate = (state.startDate) ? state.startDate.format(Config.DATE_FORMAT) : '';
 			var endDate = (state.endDate) ? state.endDate.format(Config.DATE_FORMAT) : '';
-			var chosenDatasets = (state.datasets) ? state.datasets : [];
-
 			var dateFilterMsg = (startDate && endDate) ? 'date filter from ' + startDate + ' to ' + endDate : 'no date filter';
 
+			var chosenDatasets = (state.datasets) ? state.datasets : [];
+
+			var aoiFragment = '';
+			if (aoi.usingProjectLocation()) {
+				var latitude = (aoi.attributes.latitude) ? parseFloat(aoi.attributes.latitude) : '';
+				var longitude = (aoi.attributes.longitude) ? parseFloat(aoi.attributes.longitude) : '';
+				var radius = (aoi.attributes.radius) ? aoi.attributes.radius : '';
+
+				aoiFragment = ' at location ' + latitude + ' ' + longitude + ', radius ' + radius + ' mi';
+			}
+			else if (aoi.usingAOIBox()) {
+				var aoiBox = aoi.attributes.aoiBox;
+				aoiFragment = ' within bbox ' + aoiBox.south + ', ' + aoiBox.west + ', ' + aoiBox.north + ', ' + aoiBox.east;
+			}
+
 			return 'Successfully fetched data of type(s): ' + chosenDatasets.join(', ') +
-				' at location ' + latitude + ' ' + longitude +
-				', radius ' + radius + ' mi and ' + dateFilterMsg;
+				aoiFragment + ' and ' + dateFilterMsg;
 		},
 
 		showSuccessfulFetchAlert : function() {
@@ -264,6 +263,62 @@ define([
 		closeAlert : function() {
 			if (null === this.model.get('datasets')) {
 				this.alertView.closeAlert();
+			}
+		},
+
+		/*
+		 * DOM Event Handlers
+		 */
+
+		selectAOIDefinition : function(ev) {
+			var kind = $(ev.currentTarget).val();
+			var aoiModel = this.model.get('aoi');
+			this.$('.workflow-start-container').removeClass('in');
+			switch(kind) {
+				case 'location':
+					aoiModel.set({
+						latitude : '',
+						longitude : '',
+						radius : DEFAULT_RADIUS
+					});
+					if (!this.aoiView) {
+						this.aoiView = new LocationView({
+							el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
+							model : this.model.get('aoi'),
+							opened : true
+						});
+						this.aoiView.render();
+					}
+					else {
+						this.aoiView.expand();
+					}
+					break;
+
+				case 'aoiBox':
+					aoiModel.set({
+						aoiBox : {}
+					});
+					if (!this.aoiView) {
+						this.aoiView = new AOIBoxView({
+							el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
+							model : this.model.get('aoi'),
+							opened : true
+						});
+						this.aoiView.render();
+					}
+					else {
+						this.aoiView.expand();
+					}
+					break;
+			}
+
+			if (!this.mapView) {
+				this.mapView = new MapView({
+					el : $utils.createDivInContainer(this.$(MAPVIEW_SELECTOR)),
+					mapDivId : 'map-div',
+					model : this.model
+				});
+				this.mapView.render();
 			}
 		}
 	});

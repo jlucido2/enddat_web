@@ -3,11 +3,11 @@
 define([
 	'underscore',
 	'leaflet',
+	'leaflet-draw',
 	'leaflet-providers',
 	'loglevel',
 	'Config',
 	'utils/jqueryUtils',
-	'utils/geoSpatialUtils',
 	'utils/LUtils',
 	'leafletCustomControls/legendControl',
 	'views/BaseView',
@@ -15,7 +15,7 @@ define([
 	'views/ACISDataView',
 	'views/NWISDataView',
 	'hbs!hb_templates/mapOps'
-], function(_, L, leafletProviders, log, Config, $utils, geoSpatialUtils, LUtils, legendControl, BaseView,
+], function(_, L, leafletDraw, leafletProviders, log, Config, $utils, LUtils, legendControl, BaseView,
 		PrecipDataView, ACISDataView, NWISDataView, hbTemplate) {
 
 	var siteIcons = _.mapObject(Config.DATASET_ICON, function(value) {
@@ -70,7 +70,7 @@ define([
 			};
 
 			this.legendControl = legendControl({opened : false});
-			this.controls = [
+			this.defaultControls = [
 				L.control.layers(this.baseLayers, {}),
 				this.legendControl
 			];
@@ -81,11 +81,9 @@ define([
 			});
 			this.projLocationMarker.on('dragend', function() {
 				var latlng = this.projLocationMarker.getLatLng();
-				this.model.set({
-					location : {
-						latitude : latlng.lat,
-						longitude : latlng.lng
-					}
+				this.model.get('aoi').set({
+					latitude : latlng.lat,
+					longitude : latlng.lng
 				});
 			}, this);
 
@@ -94,11 +92,30 @@ define([
 				[L.layerGroup(), L.layerGroup(), L.layerGroup()]
 			);
 
+			// Initialize draw control
+			this.drawnAOIFeature = L.featureGroup();
+			this.drawAOIControl = new L.Control.Draw({
+				draw : {
+					polyline : false,
+					polygon : false,
+					rectangle : {
+						repeatMode : false
+					},
+					circle : false,
+					marker : false
+				},
+				edit : {
+					featureGroup : this.drawnAOIFeature,
+					remove : false
+				}
+			});
+
 			this.selectedSite = undefined;
 		},
 
 		render : function() {
 			var self = this;
+			var aoiModel = this.model.get('aoi');
 			BaseView.prototype.render.apply(this, arguments);
 
 			if (_.has(this, 'map')) {
@@ -109,19 +126,27 @@ define([
 				zoom : 4,
 				layers : [this.baseLayers['World Street']]
 			});
-			_.each(this.controls, function(control) {
+			_.each(this.defaultControls, function(control) {
 				self.map.addControl(control);
 			}, this);
 			_.each(this.siteLayerGroups, function(layerGroup) {
 				self.map.addLayer(layerGroup);
 			});
 
+			// Set up the map event handlers for the draw control to update the aoi model.
+			this.map.on('draw:created', function(ev) {
+				this.model.get('aoi').set('aoiBox', LUtils.getBbox(ev.layer.getBounds()));
+			}, this);
+			this.map.on('draw:edited', function(ev) {
+				this.model.get('aoi').set('aoiBox', LUtils.getBbox(ev.layers.getLayers()[0].getBounds()));
+			}, this);
+
+			// Set up model event listeners and update the map state to match the current state of the workflow model.
 			this.listenTo(this.model, 'change:step', this.updateWorkflowStep);
 			this.updateWorkflowStep(this.model, this.model.get('step'));
 
-			this.updateLocationMarkerAndExtent(this.model, this.model.get('location'));
-			this.listenTo(this.model, 'change:location', this.updateLocationMarkerAndExtent);
-			this.listenTo(this.model, 'change:radius', this.updateExtent);
+			this.updateAOILayerAndExtent(aoiModel);
+			this.listenTo(aoiModel, 'change', this.updateAOILayerAndExtent);
 
 			// If the dataset collection models have already been created, then setup their listeners. Otherwise
 			// wait until they have been created.
@@ -163,11 +188,9 @@ define([
 			var clickTimeout;
 			this.createMarkClickHandler = function(ev) {
 				var clickToAddMarkerToMap = function() {
-					self.model.set({
-						location : {
-							latitude : ev.latlng.lat,
-							longitude : ev.latlng.lng
-						}
+					self.model.get('aoi').set({
+						latitude : ev.latlng.lat,
+						longitude : ev.latlng.lng
 					});
 				};
 
@@ -202,7 +225,7 @@ define([
 		updateWorkflowStep: function (model, newStep) {
 			var $map = this.$('#' + this.mapDivId);
 			switch (newStep) {
-				case Config.PROJ_LOC_STEP:
+				case Config.SPECIFY_AOI_STEP:
 					this.removeDataView();
 
 					if (this.map.hasLayer(this.circleMarker)) {
@@ -225,40 +248,65 @@ define([
 		 * Updates or adds a marker at location if location is valid and removes the single click handler
 		 * to create the marker. Otherwise remove the marker and set up the single click handler so that
 		 * a marker can be added.
-		 * @param {WorkflowStateModel} model
+		 * @param {AOIModel} aoiModel
 		 * @param {Object} location - has properties latitude and longitude in order to be a valid location
 		 *
 		 */
-		updateLocationMarkerAndExtent : function(model, location) {
+		updateAOILayerAndExtent : function(aoiModel) {
 			var mapHasMarker = this.map.hasLayer(this.projLocationMarker);
-			if (model.hasValidLocation()) {
-				if (!mapHasMarker) {
-					this.map.addLayer(this.projLocationMarker);
+			var mapHasAOIBox = this.map.hasLayer(this.drawnAOIFeature);
+			if (aoiModel.usingProjectLocation()) {
+				if ((aoiModel.attributes.latitude) && (aoiModel.attributes.longitude)) {
+					if (!mapHasMarker) {
+						this.map.addLayer(this.projLocationMarker);
+					}
+					this.projLocationMarker.setLatLng([aoiModel.attributes.latitude, aoiModel.attributes.longitude]);
+					this.removeSingleClickHandler();
 				}
-				this.projLocationMarker.setLatLng([location.latitude, location.longitude]);
-				this.removeSingleClickHandler();
-				this.updateExtent(model, model.get('radius'));
-				this.$('#' + this.mapDivId).css('cursor', '');
+				else {
+					if (mapHasMarker) {
+						this.map.removeLayer(this.projLocationMarker);
+					}
+					this.setUpSingleClickHandlerToCreateMarker();
+					this.$('#' + this.mapDivId).css('cursor', 'pointer');
+				}
+			}
+			else if (aoiModel.usingAOIBox()) {
+				// Assuming that once the drawAOIFeature is on the map, it can only be changed via the map.
+				if (!mapHasAOIBox) {
+					this.map.addLayer(this.drawnAOIFeature);
+					this.map.addControl(this.drawAOIControl);
+				}
+				if (aoiModel.hasValidAOI()) {
+					var aoiLayers = this.drawnAOIFeature.getLayers();
+					var newLatLngBounds = LUtils.getLatLngBounds(aoiModel.get('aoiBox'));
+					if (aoiLayers.length === 0) {
+						this.drawnAOIFeature.addLayer(L.rectangle(newLatLngBounds, {}));
+					}
+					else {
+						aoiLayers[0].setBounds(newLatLngBounds);
+					}
+				}
+				else {
+					this.drawnAOIFeature.clearLayers();
+				}
 			}
 			else {
+				if (mapHasAOIBox) {
+					this.map.removeControl(this.drawAOIControl);
+					this.map.removeLayer (this.drawnAOIFeature);
+				}
 				if (mapHasMarker) {
 					this.map.removeLayer(this.projLocationMarker);
 				}
-				this.setUpSingleClickHandlerToCreateMarker();
-				this.$('#' + this.mapDivId).css('cursor', 'pointer');
 			}
+			this.updateExtent(aoiModel);
 		},
 
-		updateExtent : function(model, radius) {
-			if (radius && model.has('location')) {
-				var location = model.get('location');
-				if ((location.latitude) && (location.longitude)) {
-					var bbox = geoSpatialUtils.getBoundingBox(location.latitude, location.longitude, radius);
-
-					var southwest = L.latLng(bbox.south, bbox.west);
-					var northeast = L.latLng(bbox.north, bbox.east);
-					this.map.fitBounds(L.latLngBounds(southwest, northeast));
-				}
+		updateExtent : function(aoiModel) {
+			var bbox = aoiModel.getBoundingBox();
+			if (bbox) {
+				this.map.fitBounds(LUtils.getLatLngBounds(bbox));
 			}
 		},
 
@@ -296,7 +344,8 @@ define([
 			};
 
 			var updateDataView = function(siteModel, siteLatLng) {
-				var projectLocation = L.latLng(self.model.attributes.location.latitude, self.model.attributes.location.longitude);
+				var bounds = LUtils.getLatLngBounds(self.model.get('aoi').getBoundingBox());
+				var	projectLocation = bounds.getCenter();
 
 				self.removeDataView();
 				self.selectedSite = {

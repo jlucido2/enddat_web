@@ -44,6 +44,7 @@ require.config({
 		'hbs' : '/base/src/main/webapp/bower_components/requirejs-hbs/hbs',
 		'leaflet' : '/base/src/main/webapp/bower_components/leaflet/dist/leaflet',
 		'leaflet-providers' : '/base/src/main/webapp/bower_components/leaflet-providers/leaflet-providers',
+		'leaflet-draw' : '/base/src/main/webapp/bower_components/leaflet-draw/dist/leaflet.draw',
 		'loglevel' : '/base/src/main/webapp/bower_components/loglevel/dist/loglevel',
 		'backbone.stickit' : '/base/src/main/webapp/bower_components/backbone.stickit/backbone.stickit',
 		'moment' : '/base/src/main/webapp/bower_components/moment/moment',
@@ -54,6 +55,7 @@ require.config({
 		'leaflet' : {
 			exports: 'L'
 		},
+		'leaflet-draw' : ['leaflet'],
 		'leaflet-providers' : ['leaflet'],
 		'backbone': {
 			deps: ['jquery', 'underscore'],

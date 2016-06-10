@@ -28,60 +28,16 @@ define([
 
 		bindings : {
 			'#latitude' : {
-				observe : 'location',
-				onGet : function(value) {
-					if (value && _.has(value, 'latitude')) {
-						return value.latitude;
-					}
-					else {
-						return '';
-					}
-				},
-				events : ['change'],
-				onSet : function(value) {
-					var result;
-					if (this.model.has('location')) {
-						result = {
-							latitude : value,
-							longitude : this.model.get('location').longitude
-						};
-					}
-					else {
-						result = {
-							latitude : value,
-							longitude : ''
-						};
-					}
-					return result;
-				}
+				observe : 'latitude',
+				events : ['change']
 			},
 			'#longitude' : {
-				observe : 'location',
-				events : ['change'],
-				onGet : function(value) {
-					if (value && _.has(value, 'longitude')) {
-						return value.longitude;
-					}
-					else {
-						return '';
-					}
-				},
-				onSet : function(value) {
-					var result;
-					if (this.model.has('location')) {
-						result = {
-							latitude : this.model.get('location').latitude,
-							longitude : value,
-						};
-					}
-					else {
-						result = {
-							latitude : '',
-							longitude : value
-						};
-					}
-					return result;
-				}
+				observe : 'longitude',
+				events : ['change']
+			},
+			'#radius' : {
+				observe : 'radius',
+				events : ['change']
 			}
 		},
 
@@ -97,7 +53,7 @@ define([
 		getMyLocation : function(ev) {
 			var self = this;
 			var updateModel = function(position) {
-				self.model.set('location', {
+				self.model.set({
 					latitude : position.coords.latitude,
 					longitude : position.coords.longitude
 				});

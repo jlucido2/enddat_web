@@ -25,7 +25,7 @@ define([
 			$testDiv = $('#test-div');
 
 			testModel = new WorkflowStateModel();
-			testModel.set('step', Config.PROJ_LOC_STEP);
+			testModel.set('step', Config.SPECIFY_AOI_STEP);
 
 			testView = new ChooseView({
 				el : $testDiv,
@@ -51,13 +51,11 @@ define([
 
 			it('Expects the inputs to reflect the values in the model', function() {
 				testModel.set({
-					radius : '2',
 					startDate : moment('2001-01-01', DATE_FORMAT),
 					endDate : moment('2010-01-01', DATE_FORMAT),
 					datasets : [Config.NWIS_DATASET]
 				});
 				testView.render();
-				expect($testDiv.find('#radius').val()).toEqual('2');
 				expect($testDiv.find('#start-date').val()).toEqual('2001-01-01');
 				expect($testDiv.find('#end-date').val()).toEqual('2010-01-01');
 				expect($testDiv.find('#datasets-select').val()).toEqual([Config.NWIS_DATASET]);
@@ -68,16 +66,10 @@ define([
 			var $rad, $datasets, $startDate, $endDate;
 			beforeEach(function() {
 				testView.render();
-				$rad = $testDiv.find('#radius');
 				$datasets = $testDiv.find('#datasets-select');
 				$startDate = $testDiv.find('#start-date');
 				$endDate = $testDiv.find('#end-date');
 
-			});
-
-			it('Expects that changing the radius updates the model\'s radius property', function() {
-				$rad.val('5').trigger('change');
-				expect(testModel.get('radius')).toEqual('5');
 			});
 
 			// Have to call the select2 event handlers directly
@@ -109,15 +101,9 @@ define([
 			var $rad, $datasets, $startDate, $endDate;
 			beforeEach(function() {
 				testView.render();
-				$rad = $testDiv.find('#radius');
 				$datasets = $testDiv.find('#datasets-select');
 				$startDate = $testDiv.find('#start-date-div');
 				$endDate = $testDiv.find('#end-date-div');
-			});
-
-			it('Expects that if the model\'s radius property is updated the radius field is updated', function() {
-				testModel.set('radius', '5');
-				expect($rad.val()).toEqual('5');
 			});
 
 			it('Expects that if the model\'s datasets property is updated the datasets field is updated', function() {

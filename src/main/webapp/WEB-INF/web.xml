@@ -89,4 +89,53 @@
 		<servlet-name>CidaThreddsServlet</servlet-name>
 		<url-pattern>/cidathredds/*</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>shapefile-upload-servlet</servlet-name>
+		<servlet-class>gov.usgs.cida.geoutils.geoserver.servlet.ShapefileUploadServlet</servlet-class>
+		<init-param>
+			<param-name>application.name</param-name>
+			<param-value>enddat_web</param-value>
+		</init-param>
+		<init-param>
+			<param-name>max.upload.file</param-name>
+			<param-value>0</param-value>
+		</init-param>
+		<init-param>
+			<param-name>geoserver.endpoint</param-name>
+			<param-value>http://localhost:8081/geoserver/</param-value>
+		</init-param>
+		<init-param>
+			<param-name>geoserver.username</param-name>
+			<param-value>admin</param-value>
+		</init-param>
+		<init-param>
+			<param-name>default.upload.workspace</param-name>
+			<param-value>upload</param-value>
+		</init-param>
+		<init-param>
+			<param-name>default.upload.storename</param-name>
+			<param-value/>
+		</init-param>
+		<init-param>
+			<param-name>default.srs</param-name>
+			<param-value>EPSG:4326</param-value>
+		</init-param>
+		<init-param>
+			<param-name>filename.param</param-name>
+			<param-value/>
+		</init-param>
+		<init-param>
+			<param-name>overwrite.existing.layer</param-name>
+			<param-value/>
+		</init-param>
+		<init-param>
+			<param-name>use.crs.failover</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>projection.policy</param-name>
+			<param-value>reproject</param-value>
+		</init-param>
+	</servlet>
 </web-app>

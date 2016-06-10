@@ -14,8 +14,8 @@ define([
 	"use strict";
 
 	var GLCFS_WFS_GETFEATURE_URLS = module.config().glcfsWFSGetFeatureUrls;
-	
 	var GLCFS_DDS_URL = 'glosthredds/' + module.config().glosThreddsGLCFSData;
+	var START_DATE = moment('2006-01-01', 'YYYY-MM-DD');
 
 	var getInteger = function(str) {
 		return str.split('.')[0];
@@ -57,7 +57,7 @@ define([
 						{
 							x : x,
 							y : y,
-							startDate : today,
+							startDate : START_DATE,
 							endDate : today,
 
 //http://tds.glos.us/thredds/dodsC/glos/glcfs/archivecurrent/michigan/ncfmrc-2d/Lake_Michigan_-_Nowcast_-_2D_-_Current_Year_best.ncd.html

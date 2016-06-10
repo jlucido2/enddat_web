@@ -4,6 +4,7 @@
 define([
 	'underscore',
 	'Config',
+	'loglevel',
 	'utils/jqueryUtils',
 	'views/BaseView',
 	'views/NavView',
@@ -14,13 +15,14 @@ define([
 	'views/ChooseView',
 	'views/VariableSummaryView',
 	'views/ProcessDataView',
+	'views/ShapefileUploadView',
 	'hbs!hb_templates/dataDiscovery'
-], function (_, Config, $utils, BaseView, NavView, AlertView, MapView, LocationView, AOIBoxView, ChooseView,
-		VariableSummaryView, ProcessDataView, hbTemplate) {
+], function (_, Config, log, $utils, BaseView, NavView, AlertView, MapView, LocationView, AOIBoxView, ChooseView,
+		VariableSummaryView, ProcessDataView, ShapefileUploadView, hbTemplate) {
 	"use strict";
 
 	var DEFAULT_RADIUS = 2;
-
+	
 	var NAVVIEW_SELECTOR = '.workflow-nav';
 	var LOCATION_SELECTOR = '.location-panel';
 	var CHOOSE_SELECTOR = '.choose-panel';
@@ -29,7 +31,6 @@ define([
 	var PROCESS_DATA_SELECTOR = '.process-data-container';
 	var ALERTVIEW_SELECTOR = '.alert-container';
 	var LOADING_SELECTOR = '.loading-indicator';
-
 	var removeSubView = function(view) {
 		if (view) {
 			view.remove();
@@ -53,7 +54,7 @@ define([
 		 */
 		initialize: function (options) {
 			BaseView.prototype.initialize.apply(this, arguments);
-
+			log.info('Initializing...')
 			this.navView = new NavView({
 				el : this.$(NAVVIEW_SELECTOR),
 				model : this.model,
@@ -128,6 +129,7 @@ define([
 
 				case Config.CHOOSE_DATA_FILTERS_STEP:
 					var aoiModel = this.model.get('aoi');
+					log.info("Here is the AOI model:");
 					if (!this.aoiView) {
 						if (aoiModel.usingProjectLocation()) {
 							this.aoiView = new LocationView({
@@ -300,6 +302,21 @@ define([
 					});
 					if (!this.aoiView) {
 						this.aoiView = new AOIBoxView({
+							el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
+							model : this.model.get('aoi'),
+							opened : true
+						});
+						this.aoiView.render();
+					}
+					else {
+						this.aoiView.expand();
+					}
+					break;
+				
+				case 'aoiShpFile':
+					log.info('In the shapefile upload section');
+					if (!this.aoiView) {
+						this.aoiView = new ShapefileUploadView({
 							el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
 							model : this.model.get('aoi'),
 							opened : true

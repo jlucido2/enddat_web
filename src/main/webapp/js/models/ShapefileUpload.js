@@ -7,8 +7,10 @@ define([
 ], function(_, Backbone) {
 	"user strict";
 	var shapefile = Backbone.Collection.extend({
-		initialize: function() {
-			alert("shapefile model initialized...");
+		defaults: {
+			shapefileName: '',
+			srs: 'EPSG:4326',
+			projectionPolicy: 'REPROJECT_TO_DECLARED'
 		}
 	});
 });

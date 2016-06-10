@@ -26,7 +26,7 @@ define([], function() {
 			}
 		},
 
-		PROJ_LOC_STEP : 'specifyProjectLocation',
+		SPECIFY_AOI_STEP : 'specifyAOI',
 		CHOOSE_DATA_FILTERS_STEP : 'chooseDataFilters',
 		CHOOSE_DATA_VARIABLES_STEP : 'chooseDataVariables',
 		PROCESS_DATA_STEP :'processData',

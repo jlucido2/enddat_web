@@ -6,11 +6,10 @@ define([
 	'select2',
 	'moment',
 	'bootstrap-datetimepicker',
-	'backbone.stickit',
 	'Config',
 	'views/BaseCollapsiblePanelView',
 	'hbs!hb_templates/choose'
-], function(_, $, select2, moment, datetimepicker, stickit, Config, BaseCollapsiblePanelView, hbTemplate) {
+], function(_, $, select2, moment, datetimepicker, Config, BaseCollapsiblePanelView, hbTemplate) {
 	"use strict";
 
 	/*
@@ -34,19 +33,10 @@ define([
 			'dp.change #end-date-div' : 'changeEndDate'
 		},
 
-		bindings : {
-			'#radius' : {
-				observe : 'radius',
-				events : ['change']
-			}
-		},
-
-
 		render : function() {
 			var now = new Date();
 
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
-			this.stickit();
 
 			//Set up date pickers
 			this.$('#start-date-div').datetimepicker({

@@ -95,7 +95,7 @@
 		<servlet-class>gov.usgs.cida.geoutils.geoserver.servlet.ShapefileUploadServlet</servlet-class>
 		<init-param>
 			<param-name>application.name</param-name>
-			<param-value>enddat_web</param-value>
+			<param-value>gdp</param-value>
 		</init-param>
 		<init-param>
 			<param-name>max.upload.file</param-name>

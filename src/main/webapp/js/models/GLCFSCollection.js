@@ -60,7 +60,8 @@ define([
 							startDate : START_DATE,
 							endDate : today,
 
-//http://tds.glos.us/thredds/dodsC/glos/glcfs/archivecurrent/michigan/ncfmrc-2d/Lake_Michigan_-_Nowcast_-_2D_-_Current_Year_best.ncd.html
+//	THIS IS DATASET ID 0
+//	http://tds.glos.us/thredds/dodsC/glos/glcfs/archivecurrent/michigan/ncfmrc-2d/Lake_Michigan_-_Nowcast_-_2D_-_Current_Year_best.ncd.html
 //	ci (fraction) = Ice concentration = ice_concentration
 //	depth (meters) = Bathymetry = depth
 //	eta (meters) = Height Above Model Sea Level = sea_surface_elevation
@@ -75,7 +76,8 @@ define([
 //	wvh (meters) = Significant Wave Height = wave_height
 //	wvp (seconds) = Wave Period = wave_period
 
-//http://tds.glos.us/thredds/dodsC/glos/glcfs/archivecurrent/michigan/nowcast-forcing-fmrc-2d/Lake_Michigan_-_Nowcast_Forcing_-_2D_-_Current_Year_best.ncd.html
+//	THIS IS DATASET ID 1
+//	http://tds.glos.us/thredds/dodsC/glos/glcfs/archivecurrent/michigan/nowcast-forcing-fmrc-2d/Lake_Michigan_-_Nowcast_Forcing_-_2D_-_Current_Year_best.ncd.html
 //	air_u (m/s) = Eastward Air Velocity = eastward_wind
 //	air_v (m/s) = Northward Air Velocity = northward_wind
 //	at (Celsius) = Air Temperature = air_temperature

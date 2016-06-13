@@ -52,11 +52,11 @@ define([
 			}
 			else {
 				datasetCollections = _.object([
-					[Config.GLCFS_ERIE_DATASET, new GLCFSCollection([],{lake:'Erie'})],
-					[Config.GLCFS_HURON_DATASET, new GLCFSCollection([],{lake:'Huron'})],
-					[Config.GLCFS_MICHIGAN_DATASET, new GLCFSCollection([],{lake:'Michigan'})],
-					[Config.GLCFS_ONTARIO_DATASET, new GLCFSCollection([],{lake:'Ontario'})],
-					[Config.GLCFS_SUPERIOR_DATASET, new GLCFSCollection([],{lake:'Superior'})],
+					[Config.GLCFS_DATASET_ERIE, new GLCFSCollection([],{lake:'Erie'})],
+					[Config.GLCFS_DATASET_HURON, new GLCFSCollection([],{lake:'Huron'})],
+					[Config.GLCFS_DATASET_MICHIGAN, new GLCFSCollection([],{lake:'Michigan'})],
+					[Config.GLCFS_DATASET_ONTARIO, new GLCFSCollection([],{lake:'Ontario'})],
+					[Config.GLCFS_DATASET_SUPERIOR, new GLCFSCollection([],{lake:'Superior'})],
 					[Config.NWIS_DATASET, new NWISCollection()],
 					[Config.PRECIP_DATASET, new PrecipitationCollection()],
 					[Config.ACIS_DATASET, new ACISCollection()]

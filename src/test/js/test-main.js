@@ -17,9 +17,15 @@ require.config({
 			cidaThreddsPrecipData : 'dodsC/fakedata'
 		},
 		'models/GLCFSCollection' : {
-			GLCFSWFSGetFeatureUrl : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',
+			glcfsWFSGetFeatureUrls : {
+				'Erie' : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',							
+				'Huron' : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',							
+				'Michigan' : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',							
+				'Ontario' : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',							
+				'Superior' : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',							
+			},
 			glosThreddsGLCFSData : 'dodsC/fakedata'
-		}
+		},
 		'views/ProcessDataView' : {
 			baseUrl : 'http:fakeservice/enddat/'
 		},

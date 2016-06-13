@@ -264,8 +264,8 @@ define([
 
 			it('Expects that the precipitation layer group contains markers for each grid', function() {
 				testPrecipCollection.reset([
-					{lon : '-100', lat : '43.0', variables : [{x : '1', y: '2', }]},
-					{lon : '-100', lat : '44.0', variables : [{x : '1', y: '2', }]}
+					{lon : '-100', lat : '43.0', variables : new Backbone.Collection([{x : '1', y: '2', }])},
+					{lon : '-100', lat : '44.0', variables : new Backbone.Collection([{x : '1', y: '3', }])}
 				]);
 				spyOn(testView.siteLayerGroups[Config.PRECIP_DATASET], 'addLayer').and.callThrough();
 				testView.render();
@@ -389,16 +389,16 @@ define([
 
 			it('Expects that if the precipitation collection is updated, precipitation grid points will be on the map', function() {
 				testPrecipCollection.reset([
-					{x : '1', y: '2', lon : '-100', lat : '43.0'},
-					{x : '1', y: '3', lon : '-100', lat : '44.0'}
+					{lon : '-100', lat : '43.0', variables : new Backbone.Collection([{x : '1', y: '2'}])},
+					{lon : '-100', lat : '44.0', variables : new Backbone.Collection([{x : '1', y: '3'}])}
 				]);
 				expect(testView.siteLayerGroups[Config.PRECIP_DATASET].getLayers().length).toBe(2);
 			});
 
 			it('Expects that if the precipitation collection is updated then cleared, no precipitation grid points will be on the map', function() {
 				testPrecipCollection.reset([
-					{x : '1', y: '2', lon : '-100', lat : '43.0'},
-					{x : '1', y: '3', lon : '-100', lat : '44.0'}
+					{lon : '-100', lat : '43.0', variables : new Backbone.Collection([{x : '1', y: '2'}])},
+					{lon : '-100', lat : '44.0', variables : new Backbone.Collection([{x : '1', y: '3'}])}
 				]);
 				testPrecipCollection.reset([]);
 				expect(testView.siteLayerGroups[Config.PRECIP_DATASET].getLayers().length).toBe(0);

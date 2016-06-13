@@ -16,9 +16,16 @@ define([
 	var GLCFS_WFS_GETFEATURE_URLS = module.config().glcfsWFSGetFeatureUrls;
 	var GLCFS_DDS_URL = 'glosthredds/' + module.config().glosThreddsGLCFSData;
 	var START_DATE = moment('2006-01-01', 'YYYY-MM-DD');
-
-	var VARS = [
-		//http://tds.glos.us/thredds/dodsC/glos/glcfs/archivecurrent/michigan/ncfmrc-2d/Lake_Michigan_-_Nowcast_-_2D_-_Current_Year_best.ncd.html
+	
+	/* The dataset property is hard coded in the services to know which thredds endpoint to hit for that data
+	 * 
+	 * dataset 0
+	 * http://tds.glos.us/thredds/dodsC/glos/glcfs/archivecurrent/michigan/ncfmrc-2d/Lake_Michigan_-_Nowcast_-_2D_-_Current_Year_best.ncd.html
+	 * 
+	 * dataset 1
+	 * http://tds.glos.us/thredds/dodsC/glos/glcfs/archivecurrent/michigan/nowcast-forcing-fmrc-2d/Lake_Michigan_-_Nowcast_Forcing_-_2D_-_Current_Year_best.ncd.html 
+	 */
+	var DATA_VARS = [
 		{dataset : 0, code : 'ci', description : 'Ice Concentration (fraction)'},
 		{dataset : 0, code : 'depth', description : 'Bathymetry (meters)'},
 		{dataset : 0, code : 'eta', description : 'Height Above Model Sea Level (meters)'},
@@ -32,13 +39,12 @@ define([
 		{dataset : 0, code : 'wvd', description : 'Wave Direction (Degrees, Oceanographic Convention, 0=toward N, 90=toward E)'},
 		{dataset : 0, code : 'wvh', description : 'Significant Wave Height (meters)'},
 		{dataset : 0, code : 'wvp', description : 'Wave Period (seconds)'},
-		//http://tds.glos.us/thredds/dodsC/glos/glcfs/archivecurrent/michigan/nowcast-forcing-fmrc-2d/Lake_Michigan_-_Nowcast_Forcing_-_2D_-_Current_Year_best.ncd.html
 		{dataset : 1, code : 'air_u', description : 'Eastward Air Velocity (m/s)'},
 		{dataset : 1, code : 'air_v', description : 'Northward Air Velocity (m/s)'},
 		{dataset : 1, code : 'at', description : 'Air Temperature (Celsius)'},
 		{dataset : 1, code : 'cl', description : 'Cloud Cover (fraction)'},
 		{dataset : 1, code : 'depth', description : 'Bathymetry (meters)'},
-		{dataset : 1, code : 'dp', description : 'Dew Point (Celsius)'},
+		{dataset : 1, code : 'dp', description : 'Dew Point (Celsius)'}
 	];
 
 	var getInteger = function(str) {
@@ -74,20 +80,20 @@ define([
 				var x = getInteger($utils.xmlFind($this, 'sb', 'nx').text());
 				var y = getInteger($utils.xmlFind($this, 'sb', 'ny').text());
 				
-				var variables = _.map(VARS, function(varIndex) {
-					var variable = _.clone(VARS[varIndex]);
-					variable.startDate = START_DATE;
-					variable.endDate = today;
-					variable.x = x;
-					variable.y = y;
-//						self.timeBounds;
-					variable.variableParameter = new VariableParameter({
+				var variables = _.map(DATA_VARS, function(dataVar) {
+					var siteVar = _.clone(dataVar);
+					siteVar.startDate = START_DATE;
+					siteVar.endDate = today;
+					siteVar.x = x;
+					siteVar.y = y;
+//					self.timeBounds;
+					siteVar.variableParameter = new VariableParameter({
 						name : 'GRID',
-						value : y + ':' + x + ':' + variable.dataset + ':' + variable.code,
-						colName : variable.description
+						value : y + ':' + x + ':' + siteVar.dataset + ':' + siteVar.code,
+						colName : siteVar.description
 					});
-					return variable;
-				})
+					return siteVar;
+				});
 				
 				result.push({
 					lon : $utils.xmlFind($this, 'sb', 'X1').text(),

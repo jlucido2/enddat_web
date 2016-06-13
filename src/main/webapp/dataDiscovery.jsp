@@ -61,7 +61,8 @@
 					'loglevel' : '<%=baseUrl%>bower_components/loglevel/dist/loglevel<%= development ? "" : ".min"%>',
 					'backbone.stickit' : '<%=baseUrl%>bower_components/backbone.stickit/backbone.stickit',
 					'moment' : '<%=baseUrl%>bower_components/moment/<%=development ? "" : "min/"%>moment<%=development ? "" : ".min"%>',
-					'bootstrap-datetimepicker' : '<%=baseUrl%>bower_components/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker'
+					'bootstrap-datetimepicker' : '<%=baseUrl%>bower_components/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker',
+					'blueimp-file-upload': '<%=baseUrl%>bower_components/blueimp-file-upload/js'
 				},
 				shim: {
 					"bootstrap": [ "jquery" ],

@@ -24,6 +24,7 @@
 	String precipWFSGetFeatureUrl = props.getProperty("enddat.endpoint.precip.wfsgetfeature");
 	String cidaThreddsPrecipData = props.getProperty("enddat.cidathredds.precipdata");
 	String acisStnMetaUrl = props.getProperty("enddat.endpoint.acis.stnmeta");
+	String gdpGeoServerUrl = props.getProperty("gdp.default.upload.workspace");
 %>
 
 <link rel="shortcut icon" type="image/ico" href="img/favicon.ico">

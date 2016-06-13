@@ -17,6 +17,30 @@ define([
 	var GLCFS_DDS_URL = 'glosthredds/' + module.config().glosThreddsGLCFSData;
 	var START_DATE = moment('2006-01-01', 'YYYY-MM-DD');
 
+	var VARS = [
+		//http://tds.glos.us/thredds/dodsC/glos/glcfs/archivecurrent/michigan/ncfmrc-2d/Lake_Michigan_-_Nowcast_-_2D_-_Current_Year_best.ncd.html
+		{dataset : 0, code : 'ci', description : 'Ice Concentration (fraction)'},
+		{dataset : 0, code : 'depth', description : 'Bathymetry (meters)'},
+		{dataset : 0, code : 'eta', description : 'Height Above Model Sea Level (meters)'},
+		{dataset : 0, code : 'hi', description : 'Ice Thickness (meters)'},
+		{dataset : 0, code : 'uc', description : 'Eastward Water Velocity at Surface (m/s)'},
+		{dataset : 0, code : 'ui', description : 'Ice u-velocity (m/s)'},
+		{dataset : 0, code : 'utm', description : 'Depth-Averaged Eastward Water Velocity (m/s)'},
+		{dataset : 0, code : 'vc', description : 'Northward Water Velocity at Surface (m/s)'},
+		{dataset : 0, code : 'vi', description : 'Ice v-velocity (m/s)'},
+		{dataset : 0, code : 'vtm', description : 'Depth-Averaged Northward Water Velocity (m/s)'},
+		{dataset : 0, code : 'wvd', description : 'Wave Direction (Degrees, Oceanographic Convention, 0=toward N, 90=toward E)'},
+		{dataset : 0, code : 'wvh', description : 'Significant Wave Height (meters)'},
+		{dataset : 0, code : 'wvp', description : 'Wave Period (seconds)'},
+		//http://tds.glos.us/thredds/dodsC/glos/glcfs/archivecurrent/michigan/nowcast-forcing-fmrc-2d/Lake_Michigan_-_Nowcast_Forcing_-_2D_-_Current_Year_best.ncd.html
+		{dataset : 1, code : 'air_u', description : 'Eastward Air Velocity (m/s)'},
+		{dataset : 1, code : 'air_v', description : 'Northward Air Velocity (m/s)'},
+		{dataset : 1, code : 'at', description : 'Air Temperature (Celsius)'},
+		{dataset : 1, code : 'cl', description : 'Cloud Cover (fraction)'},
+		{dataset : 1, code : 'depth', description : 'Bathymetry (meters)'},
+		{dataset : 1, code : 'dp', description : 'Dew Point (Celsius)'},
+	];
+
 	var getInteger = function(str) {
 		return str.split('.')[0];
 	};
@@ -35,8 +59,8 @@ define([
 			this.lake = options.lake;
 		},
 		
-		/*
-		 * Parse the xml document and returns a json object which can be used to create the collection.
+		
+		/* Parse the xml document and returns a json object which can be used to create the collection.
 		 * @param {Document} xml
 		 * @returns {Array of Objects}
 		 */
@@ -49,56 +73,33 @@ define([
 				var $this = $(this);
 				var x = getInteger($utils.xmlFind($this, 'sb', 'nx').text());
 				var y = getInteger($utils.xmlFind($this, 'sb', 'ny').text());
-
+				
+				var variables = _.map(VARS, function(varIndex) {
+					var variable = _.clone(VARS[varIndex]);
+					variable.startDate = START_DATE;
+					variable.endDate = today;
+					variable.x = x;
+					variable.y = y;
+//						self.timeBounds;
+					variable.variableParameter = new VariableParameter({
+						name : 'GRID',
+						value : y + ':' + x + ':' + variable.dataset + ':' + variable.code,
+						colName : variable.description
+					});
+					return variable;
+				})
+				
 				result.push({
 					lon : $utils.xmlFind($this, 'sb', 'X1').text(),
 					lat : $utils.xmlFind($this, 'sb', 'X2').text(),
-					variables : new BaseVariableCollection([
-						{
-							x : x,
-							y : y,
-							startDate : START_DATE,
-							endDate : today,
-
-//	THIS IS DATASET ID 0
-//	http://tds.glos.us/thredds/dodsC/glos/glcfs/archivecurrent/michigan/ncfmrc-2d/Lake_Michigan_-_Nowcast_-_2D_-_Current_Year_best.ncd.html
-//	ci (fraction) = Ice concentration = ice_concentration
-//	depth (meters) = Bathymetry = depth
-//	eta (meters) = Height Above Model Sea Level = sea_surface_elevation
-//	hi (meters) = Ice thickness = ice_thickness
-//	uc (m/s) = Eastward Water Velocity at Surface = eastward_sea_water_velocity
-//	ui (m/s) = Ice u-velocity = ice_u_veloctiy
-//	utm (m/s) = Depth-Averaged Eastward Water Velocity = eastward_sea_water_velocity
-//	vc (m/s) = Northward Water Velocity at Surface = northward_sea_water_velocity
-//	vi (m/s) = Ice v-velocity = ice_v_veloctiy
-//	vtm (m/s) = Depth-Averaged Northward Water Velocity = northward_sea_water_velocity
-//	wvd (Degrees, Oceanographic Convention, 0=toward N, 90=toward E) = Wave Direction = wave_direction_to
-//	wvh (meters) = Significant Wave Height = wave_height
-//	wvp (seconds) = Wave Period = wave_period
-
-//	THIS IS DATASET ID 1
-//	http://tds.glos.us/thredds/dodsC/glos/glcfs/archivecurrent/michigan/nowcast-forcing-fmrc-2d/Lake_Michigan_-_Nowcast_Forcing_-_2D_-_Current_Year_best.ncd.html
-//	air_u (m/s) = Eastward Air Velocity = eastward_wind
-//	air_v (m/s) = Northward Air Velocity = northward_wind
-//	at (Celsius) = Air Temperature = air_temperature
-//	cl (fraction) = Cloud cover = cloud_cover
-//	depth (meters) = Bathymetry = depth
-//	dp (Celsius) = Dew Point = dew_point
-
-							variableParameter : new VariableParameter({
-								name : 'A GLCFS Variable',
-								value : y + ':' + x + ':' + self.timeBounds + ':variableId',
-								colName : 'columnName [' + y + ',' + x + ']',
-							})
-						}
-					])
+					variables : new BaseVariableCollection(variables)
 				});
 			});
+
 			return result;
 		},
 		
-		/*
-		 * Fetches the GLCFS grid data for the specified bounding box and updates the collection contents.
+		/* Fetches the GLCFS grid data for the specified bounding box and updates the collection contents.
 		 * If the fetch fails the collection is reset.
 		 * @param {Object} boundingBox - west, east, north, and south properties
 		 * @returns a promise. Both rejected and resolved return the original jqXHR
@@ -145,7 +146,7 @@ define([
 				}
 			});
 
-			$.when(fetchSiteDataDeferred)
+			$.when(fetchSiteDataDeferred, fetchDDSDeferred)
 				.done(function() {
 					self.reset(self.parse(xmlResponse));
 					log.debug('GLCFS fetch succeeded, fetched ' + self.length + ' grid');

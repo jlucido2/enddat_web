@@ -12,7 +12,7 @@ define([
 
 		beforeEach(function() {
 			fakeServer = sinon.fakeServer.create();
-			testCollection = new GLCFSCollection();
+			testCollection = new GLCFSCollection([],{lake:'Erie'});
 		});
 
 		afterEach(function() {
@@ -71,7 +71,7 @@ define([
 			});
 
 			it('Expects the url used in the dds service call is retrieved from the module configuration', function() {
-				expect(fakeServer.requests[1].url).toContain('cidathredds/dodsC/fakedata');
+				expect(fakeServer.requests[1].url).toContain('glosthredds/dodsC/fakedata');
 			});
 
 			it('Expects that the site url will contain the urlencoded bbox parameter', function() {
@@ -80,7 +80,7 @@ define([
 
 			it('Expects that failed ajax response for the site service causes the promise to be rejected and the collection cleared', function() {
 				fakeServer.respondWith(/http:dummyservice\/wfs\//, [500, {'Content-Type' : 'text'}, 'Internal server error']);
-				fakeServer.respondWith('cidathredds/dodsC/fakedata.dds', [200, {'Content-Type' : 'text'}, DDS_RESPONSE]);
+				fakeServer.respondWith('glosthredds/dodsC/fakedata.dds', [200, {'Content-Type' : 'text'}, DDS_RESPONSE]);
 				fakeServer.respond();
 
 				expect(successSpy).not.toHaveBeenCalled();
@@ -90,7 +90,7 @@ define([
 
 			it('Expects that failed ajax response for the dds service causes the promise to be rejected and the collection cleared', function() {
 				fakeServer.respondWith(/http:dummyservice\/wfs\//, [200, {'Content-Type' : 'text/xml'}, SITE_RESPONSE]);
-				fakeServer.respondWith('cidathredds/dodsC/fakedata.dds', [500, {'Content-Type' : 'text'}, 'Internal server error']);
+				fakeServer.respondWith('glosthredds/dodsC/fakedata.dds', [500, {'Content-Type' : 'text'}, 'Internal server error']);
 				fakeServer.respond();
 
 				expect(successSpy).not.toHaveBeenCalled();
@@ -105,7 +105,7 @@ define([
 					'null</ows:ExceptionText>' +
 					'</ows:Exception>' +
 					'</ows:ExceptionReport>']);
-				fakeServer.respondWith('cidathredds/dodsC/fakedata.dds', [200, {'Content-Type' : 'text'}, DDS_RESPONSE]);
+				fakeServer.respondWith('glosthredds/dodsC/fakedata.dds', [200, {'Content-Type' : 'text'}, DDS_RESPONSE]);
 				fakeServer.respond();
 
 				expect(successSpy).not.toHaveBeenCalled();
@@ -116,7 +116,7 @@ define([
 			it('Expects that a successful respond for the site and dds services causes the promise to be resolved and the collection to be updated with the contents of the response', function() {
 				var variable0;
 				fakeServer.respondWith(/http:dummyservice\/wfs\//, [200, {'Content-Type' : 'text/xml'}, SITE_RESPONSE]);
-				fakeServer.respondWith('cidathredds/dodsC/fakedata.dds', [200, {'Content-Type' : 'text'}, DDS_RESPONSE]);
+				fakeServer.respondWith('glosthredds/dodsC/fakedata.dds', [200, {'Content-Type' : 'text'}, DDS_RESPONSE]);
 				fakeServer.respond();
 
 				variable0 = testCollection.at(0).attributes.variables.at(0).attributes;

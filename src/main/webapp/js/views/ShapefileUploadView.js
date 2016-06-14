@@ -1,12 +1,18 @@
 /* jslint browswer: true */
 
+var GDP = {};
+
 define([
     'underscore',
+    'jquery',
+    'jquery-ui',
+    'jquery.ui.widget',
+    'blueimp-file-upload',
     'module',
     'loglevel',
     'views/BaseCollapsiblePanelView',
     'hbs!hb_templates/shpfileUpload'
-], function(_, module, log, BaseCollapsiblePanelView, hbTemplate){
+], function(_, $, ju, juw, bfu, module, log, BaseCollapsiblePanelView, hbTemplate){
 	"use strict";
 	
    var view = BaseCollapsiblePanelView.extend({
@@ -16,13 +22,14 @@ define([
 	   
 		initialize : function(options) {
 			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
-			//this._createFileUploader($('#fileInput'));
 			this.listenTo(this.model, 'change', this.updatePanelContents);
 		},
 
 		render : function() {
 			this.context = this.model.attributes.aoiBox;
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
+			log.info($('#fileInput'));
+			this._createFileUploader($('#fileInput'));
 			return this;
 		},
 

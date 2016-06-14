@@ -16,7 +16,7 @@ define([
 		var testView;
 		var $testDiv;
 		var testModel;
-		var testSiteCollection, testPrecipCollection, testACISCollection;
+		var testSiteCollection, testPrecipCollection, testACISCollection, testGLCFSErieCollection;
 		var fakeServer;
 		var addLayerSpy, removeLayerSpy, addControlSpy, hasLayerSpy, removeMapSpy, fitBoundsSpy;
 
@@ -60,6 +60,7 @@ define([
 			testSiteCollection = testModel.get('datasetCollections')[Config.NWIS_DATASET];
 			testPrecipCollection = testModel.get('datasetCollections')[Config.PRECIP_DATASET];
 			testACISCollection = testModel.get('datasetCollections')[Config.ACIS_DATASET];
+			testGLCFSErieCollection = testModel.get('datasetCollections')[Config.GLCFS_DATASET_ERIE];
 
 			testView = new MapView({
 				el : '#test-div',
@@ -98,6 +99,7 @@ define([
 			expect(testView.siteLayerGroups[Config.NWIS_DATASET]).toBeDefined();
 			expect(testView.siteLayerGroups[Config.PRECIP_DATASET]).toBeDefined();
 			expect(testView.siteLayerGroups[Config.ACIS_DATASET]).toBeDefined();
+			expect(testView.siteLayerGroups[Config.GLCFS_DATASET_ERIE]).toBeDefined();
 		});
 
 		describe('Tests for render', function() {
@@ -120,6 +122,7 @@ define([
 				expect(_.contains(layersAdded, testView.siteLayerGroups[Config.NWIS_DATASET])).toBe(true);
 				expect(_.contains(layersAdded, testView.siteLayerGroups[Config.PRECIP_DATASET])).toBe(true);
 				expect(_.contains(layersAdded, testView.siteLayerGroups[Config.ACIS_DATASET])).toBe(true);
+				expect(_.contains(layersAdded, testView.siteLayerGroups[Config.GLCFS_DATASET_ERIE])).toBe(true);
 			});
 
 			it('Expects that the project location marker is not added to the map if location is not defined in the workflow state', function() {
@@ -270,6 +273,16 @@ define([
 				spyOn(testView.siteLayerGroups[Config.PRECIP_DATASET], 'addLayer').and.callThrough();
 				testView.render();
 				expect(testView.siteLayerGroups[Config.PRECIP_DATASET].addLayer.calls.count()).toBe(2);
+			});
+
+			it('Expects that the GLCFS layer group contains markers for each grid', function() {
+				testGLCFSErieCollection.reset([
+					{lon : '-100', lat : '43.0', variables : new Backbone.Collection([{x : '1', y: '2', }])},
+					{lon : '-100', lat : '44.0', variables : new Backbone.Collection([{x : '1', y: '3', }])}
+				]);
+				spyOn(testView.siteLayerGroups[Config.GLCFS_DATASET_ERIE], 'addLayer').and.callThrough();
+				testView.render();
+				expect(testView.siteLayerGroups[Config.GLCFS_DATASET_ERIE].addLayer.calls.count()).toBe(2);
 			});
 
 			it('Expects that the ACIS layer group contains markers for each site in collection', function() {

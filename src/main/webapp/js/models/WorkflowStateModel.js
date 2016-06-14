@@ -6,11 +6,12 @@ define([
 	'moment',
 	'backbone',
 	'Config',
+	'models/GLCFSCollection',
 	'models/NWISCollection',
 	'models/PrecipitationCollection',
 	'models/ACISCollection',
 	'models/AOIModel'
-], function(_, $, moment, Backbone, Config, NWISCollection, PrecipitationCollection, ACISCollection, AOIModel) {
+], function(_, $, moment, Backbone, Config, GLCFSCollection, NWISCollection, PrecipitationCollection, ACISCollection, AOIModel) {
 	"use strict";
 
 	var DEFAULT_CHOSEN_DATASETS = ['NWIS'];
@@ -51,6 +52,11 @@ define([
 			}
 			else {
 				datasetCollections = _.object([
+					[Config.GLCFS_DATASET_ERIE, new GLCFSCollection([],{lake:'Erie'})],
+					[Config.GLCFS_DATASET_HURON, new GLCFSCollection([],{lake:'Huron'})],
+					[Config.GLCFS_DATASET_MICHIGAN, new GLCFSCollection([],{lake:'Michigan'})],
+					[Config.GLCFS_DATASET_ONTARIO, new GLCFSCollection([],{lake:'Ontario'})],
+					[Config.GLCFS_DATASET_SUPERIOR, new GLCFSCollection([],{lake:'Superior'})],
 					[Config.NWIS_DATASET, new NWISCollection()],
 					[Config.PRECIP_DATASET, new PrecipitationCollection()],
 					[Config.ACIS_DATASET, new ACISCollection()]

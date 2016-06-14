@@ -7,7 +7,7 @@ define([
 ], function(_, Backbone, moment) {
 	"use strict";
 	/*
-	 * Models are xpected to have startDate and endDate property and to use the selected property to indicate that
+	 * Models are expected to have startDate and endDate property and to use the selected property to indicate that
 	 * this model has been chosen (for further processing)
 	 */
 	var collection = Backbone.Collection.extend({

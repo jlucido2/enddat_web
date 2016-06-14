@@ -89,4 +89,22 @@
 		<servlet-name>CidaThreddsServlet</servlet-name>
 		<url-pattern>/cidathredds/*</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>GlosThreddsServlet</servlet-name>
+		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
+		<init-param>
+			<param-name>forward-url-param</param-name>
+			<param-value>enddat.endpoint.glosthredds</param-value>
+		</init-param>
+		<init-param>
+			<param-name>readTimeout</param-name>
+			<param-value>300000</param-value>
+		</init-param>	
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>GlosThreddsServlet</servlet-name>
+		<url-pattern>/glosthredds/*</url-pattern>
+	</servlet-mapping>
 </web-app>

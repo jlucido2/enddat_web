@@ -17,22 +17,31 @@ define([
 		var injector;
 		var WorkflowStateModel, testModel;
 
+		var fetchGLCFSSpy, resetGLCFSSpy;
 		var fetchPrecipSpy, resetPrecipSpy;
 		var fetchSiteSpy, resetSiteSpy;
-		var fetchPrecipDeferred, fetchSiteDeferred;
+		var fetchGLCFSDeferred, fetchPrecipDeferred, fetchSiteDeferred;
 
 		beforeEach(function(done) {
+			fetchGLCFSSpy = jasmine.createSpy('fetchGLCFSSpy');
+			resetGLCFSSpy = jasmine.createSpy('resetGLCFSSpy');
+
 			fetchPrecipSpy = jasmine.createSpy('fetchPrecipSpy');
 			resetPrecipSpy = jasmine.createSpy('resetPrecipSpy');
 
 			fetchSiteSpy = jasmine.createSpy('fetchSiteSpy');
 			resetSiteSpy = jasmine.createSpy('resetSiteSpy');
 
+			fetchGLCFSDeferred = $.Deferred();
 			fetchPrecipDeferred = $.Deferred();
 			fetchSiteDeferred = $.Deferred();
 
 			injector = new Squire();
 
+			injector.mock('models/GLCFSCollection', BaseDatasetCollection.extend({
+				fetch : fetchGLCFSSpy.and.returnValue(fetchGLCFSDeferred.promise()),
+				reset : resetGLCFSSpy
+			}));
 			injector.mock('models/PrecipitationCollection', BaseDatasetCollection.extend({
 				fetch : fetchPrecipSpy.and.returnValue(fetchPrecipDeferred.promise()),
 				reset : resetPrecipSpy
@@ -67,6 +76,11 @@ define([
 			expect(testModel.attributes.datasetCollections[Config.NWIS_DATASET]).toBeDefined();
 			expect(testModel.attributes.datasetCollections[Config.PRECIP_DATASET]).toBeDefined();
 			expect(testModel.attributes.datasetCollections[Config.ACIS_DATASET]).toBeDefined();
+			expect(testModel.attributes.datasetCollections[Config.GLCFS_DATASET_ERIE]).toBeDefined();
+			expect(testModel.attributes.datasetCollections[Config.GLCFS_DATASET_HURON]).toBeDefined();
+			expect(testModel.attributes.datasetCollections[Config.GLCFS_DATASET_MICHIGAN]).toBeDefined();
+			expect(testModel.attributes.datasetCollections[Config.GLCFS_DATASET_ONTARIO]).toBeDefined();
+			expect(testModel.attributes.datasetCollections[Config.GLCFS_DATASET_SUPERIOR]).toBeDefined();
 		});
 
 		describe('Tests for getSelectedVariables', function() {

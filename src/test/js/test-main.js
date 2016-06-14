@@ -16,6 +16,16 @@ require.config({
 			precipWFSGetFeatureUrl : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',
 			cidaThreddsPrecipData : 'dodsC/fakedata'
 		},
+		'models/GLCFSCollection' : {
+			glcfsWFSGetFeatureUrls : {
+				'Erie' : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',							
+				'Huron' : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',							
+				'Michigan' : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',							
+				'Ontario' : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',							
+				'Superior' : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',							
+			},
+			glosThreddsGLCFSData : 'dodsC/fakedata.dds'
+		},
 		'views/ProcessDataView' : {
 			baseUrl : 'http:fakeservice/enddat/'
 		},

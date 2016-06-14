@@ -38,6 +38,16 @@
 						'precipWFSGetFeatureUrl' : '<%=precipWFSGetFeatureUrl%>',
 						'cidaThreddsPrecipData' : '<%=cidaThreddsPrecipData%>'
 					},
+					'models/GLCFSCollection' : {
+						'glcfsWFSGetFeatureUrls' : {
+							'Erie' : '<%=glcfsWFSGetFeatureUrlErie%>',							
+							'Huron' : '<%=glcfsWFSGetFeatureUrlHuron%>',							
+							'Michigan' : '<%=glcfsWFSGetFeatureUrlMichigan%>',							
+							'Ontario' : '<%=glcfsWFSGetFeatureUrlOntario%>',							
+							'Superior' : '<%=glcfsWFSGetFeatureUrlSuperior%>',							
+						},
+						'glosThreddsGLCFSData' : '<%=glosThreddsGLCFSData%>'
+					},
 					'models/ACISCollection' : {
 						'acisStnMetaUrl' : '<%=acisStnMetaUrl%>'
 					},

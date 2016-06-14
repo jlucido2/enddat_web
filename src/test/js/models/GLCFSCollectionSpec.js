@@ -39,7 +39,7 @@ define([
 				'<wfs:member><sb:michigan gml:id="michigan.4036"><gml:boundedBy><gml:Envelope srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4269">' +
 				'<gml:lowerCorner>-87.5999984741211 41.95234298706055</gml:lowerCorner><gml:upperCorner>-87.5999984741211 41.95234298706055</gml:upperCorner></gml:Envelope></gml:boundedBy>' +
 				'<sb:the_geom><gml:Point srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4269"><gml:pos>-87.5999984741211 41.95234298706055</gml:pos></gml:Point></sb:the_geom>' +
-				'<sb:nx>16.0</sb:nx><sb:ny>19.0</sb:ny><sb:X1>-87.5999984741211</sb:X1><sb:X2>41.95234298706055</sb:X2></sb:michigan></wfs:member></wfs:FeatureCollection>';
+				'<sb:nx>16.0</sb:nx><sb:ny>19.0</sb:ny><sb:X1>-87</sb:X1><sb:X2>42</sb:X2></sb:michigan></wfs:member></wfs:FeatureCollection>';
 			
 			var DDS_RESPONSE = 'Dataset {\n' +
 				'Float32 air_u[time = 91248][ny = 87][nx = 193];\n' +
@@ -117,24 +117,26 @@ define([
 				expect(testCollection.length).toBe(0);
 			});
 
-//			it('Expects that a successful respond for the site and dds services causes the promise to be resolved and the collection to be updated with the contents of the response', function() {
-//				fakeServer.respondWith(/http:dummyservice\/wfs\//, [200, {'Content-Type' : 'text/xml'}, SITE_RESPONSE]);
-//				fakeServer.respondWith('glosthredds/dodsC/fakedata.dds', [200, {'Content-Type' : 'text'}, DDS_RESPONSE]);
-//				fakeServer.respond();
-//
-//				expect(failSpy).not.toHaveBeenCalled();
-//				expect(successSpy).toHaveBeenCalled();
-//				expect(testCollection.length).toBe(2);
+			it('Expects that a successful respond for the site and dds services causes the promise to be resolved and the collection to be updated with the contents of the response', function() {
+				fakeServer.respondWith(/http:dummyservice\/wfs\//, [200, {'Content-Type' : 'text/xml'}, SITE_RESPONSE]);
+				fakeServer.respondWith('glosthredds/dodsC/fakedata.dds', [200, {'Content-Type' : 'text'}, DDS_RESPONSE]);
+				fakeServer.respond();
+
+				expect(failSpy).not.toHaveBeenCalled();
+				expect(successSpy).toHaveBeenCalled();
+				expect(testCollection.length).toBe(1);
 				
-//				var variable0 = testCollection.at(0).get('variables').at(0);
-//				expect(variable0.lat).toEqual('43.10');
-//				expect(variable0.lon).toEqual('-89.53');
-//				expect(variable0.x).toEqual('689');
-//				expect(variable0.y).toEqual('557');
-//				expect(variable0.variableParameter.name).toEqual('Precip');
-//				expect(variable0.variableParameter.value).toEqual('557:689:125225:precip3');
-//				expect(variable0.variableParameter.colName).toEqual('Total precip - 1 hr [557,689]');
-//			});
+				var variableCollection0 = testCollection.at(0);
+				expect(variableCollection0.attributes.lat).toEqual('42');
+				expect(variableCollection0.attributes.lon).toEqual('-87');
+				
+				var variable0 = variableCollection0.get('variables').at(0);
+				expect(variable0.attributes.x).toEqual('16');
+				expect(variable0.attributes.y).toEqual('19');
+				expect(variable0.attributes.variableParameter.name).toEqual('GRID');
+				expect(variable0.attributes.variableParameter.value).toEqual('19:16:0:ci');
+				expect(variable0.attributes.variableParameter.colName).toEqual('Ice Concentration (fraction)');
+			});
 		});
 	});
 });

@@ -24,7 +24,7 @@ require.config({
 				'Ontario' : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',							
 				'Superior' : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',							
 			},
-			glosThreddsGLCFSData : 'dodsC/fakedata'
+			glosThreddsGLCFSData : 'dodsC/fakedata.dds'
 		},
 		'views/ProcessDataView' : {
 			baseUrl : 'http:fakeservice/enddat/'

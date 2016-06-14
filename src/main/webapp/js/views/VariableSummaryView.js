@@ -126,6 +126,12 @@ define([
 			var precipCollection = datasetCollections[Config.PRECIP_DATASET];
 			var nwisCollection = datasetCollections[Config.NWIS_DATASET];
 			var acisCollection = datasetCollections[Config.ACIS_DATASET];
+
+			this.listenTo(glcfsCollectionErie, 'reset', this.setupGLCFSErieModelListeners);
+			this.listenTo(glcfsCollectionHuron, 'reset', this.setupGLCFSHuronModelListeners);
+			this.listenTo(glcfsCollectionMichigan, 'reset', this.setupGLCFSMichiganModelListeners);
+			this.listenTo(glcfsCollectionOntario, 'reset', this.setupGLCFSOntarioModelListeners);
+			this.listenTo(glcfsCollectionSuperior, 'reset', this.setupGLCFSSuperiorModelListeners);
 			this.listenTo(precipCollection, 'reset', this.setupPrecipModelListeners);
 			this.listenTo(nwisCollection, 'reset', this.setupNWISModelListeners);
 			this.listenTo(acisCollection, 'reset', this.setupACISModelListeners);

@@ -16,24 +16,11 @@ define([], function() {
 		ALL_DATASETS : ['GLCFS_ERIE', 'GLCFS_HURON', 'GLCFS_MICHIGAN', 'GLCFS_ONTARIO', 'GLCFS_SUPERIOR', 'NWIS', 'PRECIP', 'ACIS'],
 
 		PROJ_LOC_ICON_URL : 'bower_components/leaflet/dist/images/marker-icon.png',
+		
+		GLCFS_DATASET_ICON : 'GLCFS',
+		
 		DATASET_ICON : {
-			'GLCFS_ERIE' : {
-				iconUrl : 'img/forecast-system.png',
-				iconSize : [10, 10]
-			},
-			'GLCFS_HURON' : {
-				iconUrl : 'img/forecast-system.png',
-				iconSize : [10, 10]
-			},
-			'GLCFS_MICHIGAN' : {
-				iconUrl : 'img/forecast-system.png',
-				iconSize : [10, 10]
-			},
-			'GLCFS_ONTARIO' : {
-				iconUrl : 'img/forecast-system.png',
-				iconSize : [10, 10]
-			},
-			'GLCFS_SUPERIOR' : {
+			'GLCFS' : {
 				iconUrl : 'img/forecast-system.png',
 				iconSize : [10, 10]
 			},

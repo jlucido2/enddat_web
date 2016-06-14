@@ -65,7 +65,6 @@ define([
 			this.lake = options.lake;
 		},
 		
-		
 		/* Parse the xml document and returns a json object which can be used to create the collection.
 		 * @param {Document} xml
 		 * @returns {Array of Objects}

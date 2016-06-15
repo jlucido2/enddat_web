@@ -6,9 +6,10 @@ define([
     'backbone'
 ], function(_, Backbone) {
 	"user strict";
-	var shapefile = Backbone.Collection.extend({
+	var shapefile = Backbone.model.extend({
 		defaults: {
 			shapefileName: '',
+			encodedData: '',
 			srs: 'EPSG:4326',
 			projectionPolicy: 'REPROJECT_TO_DECLARED'
 		}

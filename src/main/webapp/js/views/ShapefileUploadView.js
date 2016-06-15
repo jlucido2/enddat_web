@@ -28,8 +28,8 @@ define([
 		render : function() {
 			this.context = this.model.attributes.aoiBox;
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
-			log.info($('#fileInput'));
-			this._createFileUploader($('#fileInput'));
+			log.info($('#shpFileInput'));
+			this._createFileUploader($('#shpFileInput'));
 			return this;
 		},
 
@@ -41,6 +41,7 @@ define([
 		_createFileUploader : function($fileUploaderInput
 				//$uploadIndicator
 				) {
+			log.info('in create file uploader');
 			var self = this;
 			var params = {
 					'maxfilesize': 167772160,
@@ -50,11 +51,12 @@ define([
 					'projection.policy': 'reproject'
 			};
 			$fileUploaderInput.fileupload({
-				url : GDP.BASE_URL + 'uploadhandler?' +  $.param(params),
+				url : 'uploadhandler?' +  $.param(params),
 				type: 'POST',
 				dataType: 'xml',
 				send : function(e, data) {
-					data.url = data.url + '&shpFileInput=' + data.files[0].name;
+					data.url = data.url + '&shpFileInputs=' + data.files[0].name;
+					log.info('Data URL: ' + data.url);
 					//$uploadIndicator.show();
 				},
 				done : function(e, data) {
@@ -76,7 +78,7 @@ define([
 
 						self.getAvailableFeatures().then(function() {
 							$('#select-aoi').val(layer);
-							self.model.set('aoiExtent', GDP.util.mapUtils.transformWGS84ToMercator(GDP.OGC.WFS.getBoundsFromCache(layer)));
+							//self.model.set('aoiExtent', GDP.util.mapUtils.transformWGS84ToMercator(GDP.OGC.WFS.getBoundsFromCache(layer)));
 							self.model.set('aoiName', layer);
 						},
 						function() {

@@ -138,4 +138,8 @@
 			<param-value>reproject</param-value>
 		</init-param>
 	</servlet>
+	<servlet-mapping>
+        <servlet-name>shapefile-upload-servlet</servlet-name>
+        <url-pattern>/uploadhandler</url-pattern>
+    </servlet-mapping>
 </web-app>

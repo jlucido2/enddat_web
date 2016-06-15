@@ -21,11 +21,17 @@ define([
 	var siteIcons = _.mapObject(Config.DATASET_ICON, function(value) {
 		return L.icon(value);
 	});
+	
+	var getGLCFSTitle = function(model) {
+		return model.get('variables').at(0).get('y') + ':' + model.get('variables').at(0).get('x');
+	};
+	
 	var getNWISTitle = function(model) {
 		return model.get('name');
 	};
+	
 	var getPrecipTitle = function(model) {
-		return model.get('y') + ':' + model.get('x');
+		return model.get('variables').at(0).get('y') + ':' + model.get('variables').at(0).get('x');
 	};
 
 	var getACISTitle = function(model) {
@@ -39,6 +45,11 @@ define([
 	]);
 
 	var siteMarkerOptions = _.object([
+  		[Config.GLCFS_DATASET_ERIE, {icon : siteIcons[Config.GLCFS_DATASET_ERIE], getTitle : getGLCFSTitle}],
+  		[Config.GLCFS_DATASET_HURON, {icon : siteIcons[Config.GLCFS_DATASET_HURON], getTitle : getGLCFSTitle}],
+  		[Config.GLCFS_DATASET_MICHIGAN, {icon : siteIcons[Config.GLCFS_DATASET_MICHIGAN], getTitle : getGLCFSTitle}],
+  		[Config.GLCFS_DATASET_ONTARIO, {icon : siteIcons[Config.GLCFS_DATASET_ONTARIO], getTitle : getGLCFSTitle}],
+  		[Config.GLCFS_DATASET_SUPERIOR, {icon : siteIcons[Config.GLCFS_DATASET_SUPERIOR], getTitle : getGLCFSTitle}],
 		[Config.NWIS_DATASET, {icon : siteIcons[Config.NWIS_DATASET], getTitle : getNWISTitle}],
 		[Config.PRECIP_DATASET, {icon : siteIcons[Config.PRECIP_DATASET], getTitle : getPrecipTitle}],
 		[Config.ACIS_DATASET, {icon : siteIcons[Config.ACIS_DATASET], getTitle : getACISTitle}]
@@ -88,8 +99,8 @@ define([
 			}, this);
 
 			this.siteLayerGroups = _.object(
-				[Config.NWIS_DATASET, Config.PRECIP_DATASET, Config.ACIS_DATASET],
-				[L.layerGroup(), L.layerGroup(), L.layerGroup()]
+				[Config.GLCFS_DATASET_ERIE, Config.GLCFS_DATASET_HURON, Config.GLCFS_DATASET_MICHIGAN, Config.GLCFS_DATASET_ONTARIO, Config.GLCFS_DATASET_SUPERIOR, Config.NWIS_DATASET, Config.PRECIP_DATASET, Config.ACIS_DATASET],
+				[L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup()]
 			);
 
 			// Initialize draw control
@@ -319,6 +330,11 @@ define([
 			this.listenTo(datasetCollections[Config.NWIS_DATASET], 'reset', this.updateNWISMarker);
 			this.listenTo(datasetCollections[Config.PRECIP_DATASET], 'reset', this.updatePrecipGridPoints);
 			this.listenTo(datasetCollections[Config.ACIS_DATASET], 'reset', this.updateACISMarker);
+			this.listenTo(datasetCollections[Config.GLCFS_DATASET_ERIE], 'reset', this.updateGLCFSErieMarker);
+			this.listenTo(datasetCollections[Config.GLCFS_DATASET_HURON], 'reset', this.updateGLCFSHuronMarker);
+			this.listenTo(datasetCollections[Config.GLCFS_DATASET_MICHIGAN], 'reset', this.updateGLCFSMichiganMarker);
+			this.listenTo(datasetCollections[Config.GLCFS_DATASET_ONTARIO], 'reset', this.updateGLCFSOntarioMarker);
+			this.listenTo(datasetCollections[Config.GLCFS_DATASET_SUPERIOR], 'reset', this.updateGLCFSSuperiorMarker);
 		},
 
 		updateSiteMarkerLayer : function(datasetKind) {
@@ -398,6 +414,7 @@ define([
 				this.updateSiteMarkerLayer(datasetKind);
 			}, this);
 		},
+		
 		/*
 		 * Updates the NWIS layerGroup to reflect the sites in the nwis collection
 		 */
@@ -414,9 +431,28 @@ define([
 
 		updateACISMarker : function() {
 			this.updateSiteMarkerLayer(Config.ACIS_DATASET);
-		}
+		},
+		
+		updateGLCFSErieMarker : function() {
+			this.updateSiteMarkerLayer(Config.GLCFS_DATASET_ERIE);
+		},
+
+		updateGLCFSHuronMarker : function() {
+			this.updateSiteMarkerLayer(Config.GLCFS_DATASET_HURON);
+		},
+
+		updateGLCFSMichiganMarker : function() {
+			this.updateSiteMarkerLayer(Config.GLCFS_DATASET_MICHIGAN);
+		},
+
+		updateGLCFSOntarioMarker : function() {
+			this.updateSiteMarkerLayer(Config.GLCFS_DATASET_ONTARIO);
+		},
+
+		updateGLCFSSuperiorMarker : function() {
+			this.updateSiteMarkerLayer(Config.GLCFS_DATASET_SUPERIOR);
+		},
 	});
 
 	return view;
 });
-

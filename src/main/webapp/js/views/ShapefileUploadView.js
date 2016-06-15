@@ -46,7 +46,7 @@ define([
 			var params = {
 					'maxfilesize': 167772160,
 					'response.encoding': 'xml',
-					'filename.param': 'shpFileInput',
+					'filename.param': 'qqfile',
 					'use.crs.failover': 'true',
 					'projection.policy': 'reproject'
 			};
@@ -55,7 +55,7 @@ define([
 				type: 'POST',
 				dataType: 'xml',
 				send : function(e, data) {
-					data.url = data.url + '&shpFileInputs=' + data.files[0].name;
+					data.url = data.url + '&qqfile=' + data.files[0].name;
 					log.info('Data URL: ' + data.url);
 					//$uploadIndicator.show();
 				},
@@ -78,7 +78,7 @@ define([
 
 						self.getAvailableFeatures().then(function() {
 							$('#select-aoi').val(layer);
-							//self.model.set('aoiExtent', GDP.util.mapUtils.transformWGS84ToMercator(GDP.OGC.WFS.getBoundsFromCache(layer)));
+							self.model.set('aoiExtent', GDP.util.mapUtils.transformWGS84ToMercator(GDP.OGC.WFS.getBoundsFromCache(layer)));
 							self.model.set('aoiName', layer);
 						},
 						function() {

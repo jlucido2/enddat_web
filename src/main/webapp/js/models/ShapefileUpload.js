@@ -11,7 +11,12 @@ define([
 			shapefileName: '',
 			encodedData: '',
 			srs: 'EPSG:4326',
-			projectionPolicy: 'REPROJECT_TO_DECLARED'
+			projectionPolicy: 'REPROJECT_TO_DECLARED',
+			aoiName: '',
+			aoiExtent: null,
+			aoiAttribute: '',
+			aoiAttributeValues: [],
+			aoiAttributeFeatureIds: []
 		}
 	});
 });

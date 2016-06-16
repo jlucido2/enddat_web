@@ -63,6 +63,7 @@ define([
 					//$uploadIndicator.hide();
 
 					var $resp = $(data.result);
+					log.info($resp);
 					// Determine if the response indicated an error
 					var success = $resp.find('success').first().text();
 					if (success === 'true') {
@@ -78,7 +79,8 @@ define([
 
 						self.getAvailableFeatures().then(function() {
 							$('#select-aoi').val(layer);
-							self.model.set('aoiExtent', GDP.util.mapUtils.transformWGS84ToMercator(GDP.OGC.WFS.getBoundsFromCache(layer)));
+							self.model.set('aoiExtent', 0);
+							//self.model.set('aoiExtent', GDP.util.mapUtils.transformWGS84ToMercator(GDP.OGC.WFS.getBoundsFromCache(layer)));
 							self.model.set('aoiName', layer);
 						},
 						function() {

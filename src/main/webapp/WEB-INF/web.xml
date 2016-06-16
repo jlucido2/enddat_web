@@ -95,7 +95,7 @@
 		<servlet-class>gov.usgs.cida.geoutils.geoserver.servlet.ShapefileUploadServlet</servlet-class>
 		<init-param>
 			<param-name>application.name</param-name>
-			<param-value>gdp</param-value>
+			<param-value>enddat</param-value>
 		</init-param>
 		<init-param>
 			<param-name>max.upload.file</param-name>
@@ -103,7 +103,7 @@
 		</init-param>
 		<init-param>
 			<param-name>geoserver.endpoint</param-name>
-			<param-value>http://localhost:8081/geoserver/</param-value>
+			<param-value>http://cida-eros-gdpdev.er.usgs.gov:8082/geoserver</param-value>
 		</init-param>
 		<init-param>
 			<param-name>geoserver.username</param-name>

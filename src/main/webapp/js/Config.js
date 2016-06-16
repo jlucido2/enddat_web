@@ -47,7 +47,7 @@ define([], function() {
 			},
 			'ACIS' : {
 				iconUrl : 'img/acis.png',
-				iconSize : [10, 10]
+				iconSize : [12, 12]
 			}
 		},
 

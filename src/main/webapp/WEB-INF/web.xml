@@ -110,6 +110,10 @@
 			<param-value>admin</param-value>
 		</init-param>
 		<init-param>
+			<param-name>geoserver.password</param-name>
+			<param-value/>
+		</init-param>
+		<init-param>
 			<param-name>default.upload.workspace</param-name>
 			<param-value>upload</param-value>
 		</init-param>

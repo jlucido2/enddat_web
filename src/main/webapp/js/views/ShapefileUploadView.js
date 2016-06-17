@@ -1,6 +1,5 @@
 /* jslint browswer: true */
 
-var GDP = {};
 
 define([
     'underscore',
@@ -79,7 +78,7 @@ define([
 
 						self.getAvailableFeatures().then(function() {
 							$('#select-aoi').val(layer);
-							self.model.set('aoiExtent', 0);
+							self.model.set('aoiExtent', 0);  // hard code a fake value here...
 							//self.model.set('aoiExtent', GDP.util.mapUtils.transformWGS84ToMercator(GDP.OGC.WFS.getBoundsFromCache(layer)));
 							self.model.set('aoiName', layer);
 						},

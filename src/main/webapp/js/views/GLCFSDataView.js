@@ -31,7 +31,7 @@ define([
 				return result;
 			};
 
-			this.context.name = this.model.get('name');
+			this.context.lake = this.model.get('lake');
 			this.context.distance = this.distanceToProjectLocation;
 			this.context.variables = this.model.get('variables').map(getContextForVariable);
 

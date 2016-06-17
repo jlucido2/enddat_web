@@ -81,6 +81,7 @@ define([
 				
 				var variables = _.map(DATA_VARS, function(dataVar) {
 					var siteVar = _.clone(dataVar);
+					siteVar.lake = self.lake;
 					siteVar.startDate = START_DATE;
 					siteVar.endDate = today;
 					siteVar.x = x;

@@ -1,26 +1,78 @@
-<table class="layout-grid">
-    <tr>
-	<td class="left-nav">
-            <dl class="demos-nav">
-				<dt>EnDDaT Resources</dt>
-                    <dd><a href="dataDiscovery.jsp" target="_blank" title="Opens start page in new window">Data Discovery</a></dd>
-					<dd><a href="Intro.jsp" target="_blank" title="Opens EnDDaT introduction in new window">Introduction</a></dd>
-                    <dd><a href="UserGuide.jsp" target="_blank" title="Opens user guide in new window">User Guide</a></dd>
-                    <!--<dd><a href="DischargePlot.jsp" target="_blank" title="Opens plotting tool in new window">NWIS Plotting Tool</a></dd>-->
-					<dd><a href="VersionUpdates.jsp" target="_blank" title="Opens a list of version updates in new window">Version Updates</a></dd>
-                 <dt>Data Sources</dt>
-                    <dd><a href="http://waterdata.usgs.gov/nwis" target="_blank" title="National Water Information System. Opens in new window">NWIS Web</a></dd>
-					<!--<dd><a href="http://webvastage6.er.usgs.gov/ogc-swie/" target="_blank" title="NWIS WaterML2 source. Opens in new window">NWIS WaterML2</a></dd>-->
-					<dd><a href="http://data.glos.us/glcfs/" target="_blank" title="Great Lakes Coastal Forecasting System. Opens in new window">GLCFS Data</a></dd>
-                    <dd><a href="http://www.waterqualitydata.us/" target="_blank" title="Water Quality Portal. Opens in new window">Water Quality Portal</a></dd>
-                    <!--<dd><a href="http://sdf.ndbc.noaa.gov/sos/" target="_blank" title="National Data Buoy Center. Opens in new window">NDBC</a></dd>-->
-                    <!--<dd><a href="http://gis.ncdc.noaa.gov/web/" target="_blank" title="National Climate Data Center. Opens in new window">NCDC</a></dd>-->					
-                    <dd><a href="http://cida.usgs.gov/gdp/" target="_blank" title="Geo-Data Portal. Opens in new window">GDP</a></dd>
-					<dd><a href="http://www.hpc.ncep.noaa.gov/npvu/" target="_blank" title="National Precipitation Verification Unit. Opens in new window">Precipitation</a></dd>
-				<dt>Related Resources</dt>	
-					<dd><a href="http://cida.usgs.gov/glri/" target="_blank" title="Great Lakes Restoration Initiative. Opens in new window">GLRI</a></dd>
-					<dd><a href="http://data.glos.us/obs/" target="_blank" title="Great Lakes Observing System. Opens in new window">GLOS</a></dd>
-            </dl>
-        </td>
-    </tr>
-</table>
+
+<div id="sidebar">
+    <h3 id="mobileMenuText">Menu</h3>
+    <i id="hamburger" class="fa fa-bars" aria-hidden="true"></i>
+    
+    <div id="sidebarMenu">
+        
+        <div class="accordion">
+            
+            <div class="accordion-section">
+                <a class="accordion-section-title" href="#accordion-1">Resources</a>
+                
+                <div id="accordion-1" class="accordion-section-content">
+                    <p><a href="UserGuide.jsp" target="_blank">User Guide</a></p>
+                    <p><a href="VersionUpdates.jsp" target="_blank">Version Updates</a></p>
+                </div><!--end .accordion-section-content-->
+            </div><!--accordion section-->
+            
+            <div class="accordion-section">
+                <a class="accordion-section-title" href="#accordion-2">Data Sources</a>
+                
+                <div id="accordion-2" class="accordion-section-content">
+                    <p><a href="http://waterdata.usgs.gov/nwis" target="_blank">NWIS</a></p>
+                    <p><a href="http://data.glos.us/glcfs/" target="_blank">GLCFS</a></p>
+                    <p><a href="http://www.waterqualitydata.us/" target="_blank">Water Quality Portal</a></p>
+                    <p><a href="http://cida.usgs.gov/gdp/" target="_blank">Geo Data Portal</a></p>
+                    <p><a href="http://www.hpc.ncep.noaa.gov/npvu/" target="_blank">Precipitation</a></p>
+                </div><!--end .accordion-section-content-->
+            </div><!--accordion section-->
+            
+            <div class="accordion-section">
+                <a class="accordion-section-title" href="#accordion-3">Partners</a>
+                
+                <div id="accordion-3" class="accordion-section-content">
+                    <p><a href="http://cida.usgs.gov/glri/" target="_blank">GLRI</a></p>
+                    <p><a href="http://data.glos.us/obs/" target="_blank">GLOS</a></p>
+                </div><!--end .accordion-section-content-->
+            </div><!--accordion section-->
+            
+        </div><!--accordion-->
+        
+    </div><!--sidebar-->
+    
+</div>
+
+<script>
+$(document).ready(function() {
+    //Accordion Code
+    function close_accordion_section() {
+        $('.accordion .accordion-section-title').removeClass('active');
+        $('.accordion .accordion-section-content').slideUp(300).removeClass('open');
+    }
+ 
+    $('.accordion-section-title').click(function(e) {
+        // Grab current anchor value
+        var currentAttrValue = $(this).attr('href');
+ 
+        if($(e.target).is('.active')) {
+            close_accordion_section();
+        }else {
+            close_accordion_section();
+ 
+            // Add active class to section title
+            $(this).addClass('active');
+            // Open up the hidden content panel
+            $('.accordion ' + currentAttrValue).slideDown(300).addClass('open'); 
+        }
+ 
+        e.preventDefault();
+    });
+    
+    //Mobile menu toggle
+    $('#hamburger').on('click', function(){
+        $('#sidebarMenu').toggle('slow');
+    });
+});
+    
+</script>

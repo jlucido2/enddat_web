@@ -30,7 +30,6 @@
 	String glcfsWFSGetFeatureUrlSuperior = props.getProperty("enddat.endpoint.glcfs.wfsgetfeature.superior");
 	String glosThreddsGLCFSData = props.getProperty("enddat.glosthredds.glcfsdata");
 	String acisStnMetaUrl = props.getProperty("enddat.endpoint.acis.stnmeta");
-	String gdpGeoServerUrl = props.getProperty("gdp.default.upload.workspace");
 %>
 
 <link rel="shortcut icon" type="image/ico" href="img/favicon.ico">

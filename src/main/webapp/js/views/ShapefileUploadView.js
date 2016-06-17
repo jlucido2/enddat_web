@@ -1,6 +1,3 @@
-/* jslint browswer: true */
-
-
 define([
     'underscore',
     'jquery',
@@ -56,47 +53,27 @@ define([
 				send : function(e, data) {
 					data.url = data.url + '&qqfile=' + data.files[0].name;
 					log.info('Data URL: ' + data.url);
-					//$uploadIndicator.show();
 				},
 				done : function(e, data) {
 					//$uploadIndicator.hide();
-
 					var $resp = $(data.result);
 					log.info($resp);
 					// Determine if the response indicated an error
 					var success = $resp.find('success').first().text();
 					if (success === 'true') {
-						var warning = $resp.find('warning').first().text();
-						var layer = $resp.find('name').first().text();
-
-						if (warning) {
-							self.alertView.show('alert-warning', 'Upload succeeded with warning ' + warning);
-						}
-						else {
-							self.alertView.show('alert-success', 'Upload was successful.');
-						}
-
-						self.getAvailableFeatures().then(function() {
-							$('#select-aoi').val(layer);
-							self.model.set('aoiExtent', 0);  // hard code a fake value here...
-							//self.model.set('aoiExtent', GDP.util.mapUtils.transformWGS84ToMercator(GDP.OGC.WFS.getBoundsFromCache(layer)));
-							self.model.set('aoiName', layer);
-						},
-						function() {
-							self.alertView('alert-danger', 'Unable to read uploaded shapefile attributes.');
-						});
+						log.info('Upload Successful!')
 
 					}
 					else {
 						var error = $resp.find('error').first().text();
 						var exception = $resp.find('exception').first().text();
-						self.alertView.show('alert-danger', 'File Upload error: ' + error + '. ' + exception);
+						log.info('Success reported as false with this message: ' + exception);
 					}
 
 				},
 				fail : function(e, data) {
 					//$uploadIndicator.hide();
-					self.alertView.show('alert-danger', 'Upload failed');
+					log.warn('Upload failed');
 				}
 			});
 		}

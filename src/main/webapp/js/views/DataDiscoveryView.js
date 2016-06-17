@@ -311,21 +311,7 @@ define([
 						this.aoiView.expand();
 					}
 					break;
-				
-				case 'aoiShpFile':
-					log.info('In the shapefile upload section');
-					if (!this.aoiView) {
-						this.aoiView = new ShapefileUploadView({
-							el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
-							model : this.model.get('aoi'),
-							opened : true
-						});
-						this.aoiView.render();
-					}
-					else {
-						this.aoiView.expand();
-					}
-					break;
+					
 			}
 
 			if (!this.mapView) {

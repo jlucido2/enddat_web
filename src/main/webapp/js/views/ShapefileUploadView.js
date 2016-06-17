@@ -1,3 +1,6 @@
+/* jslint browser: true */
+
+
 define([
     'underscore',
     'jquery',

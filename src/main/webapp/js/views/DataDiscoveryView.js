@@ -17,7 +17,7 @@ define([
 	'views/ProcessDataView',
 	'views/ShapefileUploadView',
 	'hbs!hb_templates/dataDiscovery'
-], function (_, Config, log, $utils, BaseView, NavView, AlertView, MapView, LocationView, AOIBoxView, ChooseView,
+], function (_, Config, $utils, BaseView, NavView, AlertView, MapView, LocationView, AOIBoxView, ChooseView,
 		VariableSummaryView, ProcessDataView, ShapefileUploadView, hbTemplate) {
 	"use strict";
 
@@ -54,7 +54,6 @@ define([
 		 */
 		initialize: function (options) {
 			BaseView.prototype.initialize.apply(this, arguments);
-			log.info('Initializing...')
 			this.navView = new NavView({
 				el : this.$(NAVVIEW_SELECTOR),
 				model : this.model,

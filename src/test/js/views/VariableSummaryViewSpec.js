@@ -84,7 +84,7 @@ define([
 			});
 		});
 
-		fdescribe('Tests for model event listener setup if the model does contain datasets at initialization', function() {
+		describe('Tests for model event listener setup if the model does contain datasets at initialization', function() {
 
 			var datasetCollections;
 

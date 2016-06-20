@@ -12,11 +12,12 @@ define([
 	'leafletCustomControls/legendControl',
 	'views/BaseView',
 	'views/PrecipDataView',
+	'views/GLCFSDataView',
 	'views/ACISDataView',
 	'views/NWISDataView',
 	'hbs!hb_templates/mapOps'
 ], function(_, L, leafletDraw, leafletProviders, log, Config, $utils, LUtils, legendControl, BaseView,
-		PrecipDataView, ACISDataView, NWISDataView, hbTemplate) {
+		PrecipDataView, GLCFSDataView, ACISDataView, NWISDataView, hbTemplate) {
 
 	var siteIcons = _.mapObject(Config.DATASET_ICON, function(value) {
 		return L.icon(value);
@@ -39,17 +40,22 @@ define([
 	};
 
 	var DataViews =_.object([
+  		[Config.GLCFS_DATASET_ERIE, GLCFSDataView],
+ 		[Config.GLCFS_DATASET_HURON, GLCFSDataView],
+ 		[Config.GLCFS_DATASET_MICHIGAN, GLCFSDataView],
+ 		[Config.GLCFS_DATASET_ONTARIO, GLCFSDataView],
+ 		[Config.GLCFS_DATASET_SUPERIOR, GLCFSDataView],
 		[Config.NWIS_DATASET, NWISDataView],
 		[Config.PRECIP_DATASET, PrecipDataView],
 		[Config.ACIS_DATASET, ACISDataView]
 	]);
 
 	var siteMarkerOptions = _.object([
-  		[Config.GLCFS_DATASET_ERIE, {icon : siteIcons[Config.GLCFS_DATASET_ERIE], getTitle : getGLCFSTitle}],
-  		[Config.GLCFS_DATASET_HURON, {icon : siteIcons[Config.GLCFS_DATASET_HURON], getTitle : getGLCFSTitle}],
-  		[Config.GLCFS_DATASET_MICHIGAN, {icon : siteIcons[Config.GLCFS_DATASET_MICHIGAN], getTitle : getGLCFSTitle}],
-  		[Config.GLCFS_DATASET_ONTARIO, {icon : siteIcons[Config.GLCFS_DATASET_ONTARIO], getTitle : getGLCFSTitle}],
-  		[Config.GLCFS_DATASET_SUPERIOR, {icon : siteIcons[Config.GLCFS_DATASET_SUPERIOR], getTitle : getGLCFSTitle}],
+  		[Config.GLCFS_DATASET_ERIE, {icon : siteIcons[Config.GLCFS_DATASET_ICON], getTitle : getGLCFSTitle}],
+  		[Config.GLCFS_DATASET_HURON, {icon : siteIcons[Config.GLCFS_DATASET_ICON], getTitle : getGLCFSTitle}],
+  		[Config.GLCFS_DATASET_MICHIGAN, {icon : siteIcons[Config.GLCFS_DATASET_ICON], getTitle : getGLCFSTitle}],
+  		[Config.GLCFS_DATASET_ONTARIO, {icon : siteIcons[Config.GLCFS_DATASET_ICON], getTitle : getGLCFSTitle}],
+  		[Config.GLCFS_DATASET_SUPERIOR, {icon : siteIcons[Config.GLCFS_DATASET_ICON], getTitle : getGLCFSTitle}],
 		[Config.NWIS_DATASET, {icon : siteIcons[Config.NWIS_DATASET], getTitle : getNWISTitle}],
 		[Config.PRECIP_DATASET, {icon : siteIcons[Config.PRECIP_DATASET], getTitle : getPrecipTitle}],
 		[Config.ACIS_DATASET, {icon : siteIcons[Config.ACIS_DATASET], getTitle : getACISTitle}]

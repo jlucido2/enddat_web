@@ -65,7 +65,6 @@ define([
 			this.lake = options.lake;
 		},
 		
-		
 		/* Parse the xml document and returns a json object which can be used to create the collection.
 		 * @param {Document} xml
 		 * @returns {Array of Objects}
@@ -82,6 +81,7 @@ define([
 				
 				var variables = _.map(DATA_VARS, function(dataVar) {
 					var siteVar = _.clone(dataVar);
+					siteVar.lake = self.lake;
 					siteVar.startDate = START_DATE;
 					siteVar.endDate = today;
 					siteVar.x = x;

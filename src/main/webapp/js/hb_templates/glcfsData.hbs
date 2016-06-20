@@ -1,0 +1,24 @@
+<ul class="data-view-info">
+	<li><b>{{lake}}</b></li>
+	<li><b>Distance to project location:&nbsp;</b>{{distance}} miles</li>
+</ul>
+<table class="table">
+	<thead>
+		<tr>
+			<th></th>
+			<th>Property</th>
+			<th>Start Date</th>
+			<th>End Date</th>
+		</tr>
+	</thead>
+	<tbody>
+		{{#each variables}}
+			<tr>
+				<td><input type="checkbox" {{#if selected}}checked{{/if}} data-id="{{id}}" /></td>
+				<td>{{description}}</td>
+				<td>{{startDate}}</td>
+				<td>{{endDate}}</td>
+			</tr>
+		{{/each}}
+	</tbody>
+</table>

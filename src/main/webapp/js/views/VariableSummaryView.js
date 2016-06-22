@@ -153,8 +153,6 @@ define([
 			this._setupDatasetVariableListeners(collection, this.updateSelectedGLCFSEriePoints);
 		},
 
-		/*
-		 */
 		updateSelectedGLCFSEriePoints : function() {
 			var getContextVariable = function(variableModel, glcfsModel) {
 				return {
@@ -170,15 +168,10 @@ define([
 			this._updateSelectedVariableContext(datasetCollection, Config.GLCFS_DATASET_ERIE, getContextVariable);
 		},
 
-		/*
-		 * @param {BaseDatasetCollection} collection
-		 */
 		setupGLCFSHuronModelListeners : function(collection) {
 			this._setupDatasetVariableListeners(collection, this.updateSelectedGLCFSHuronPoints);
 		},
 
-		/*
-		 */
 		updateSelectedGLCFSHuronPoints : function() {
 			var getContextVariable = function(variableModel, glcfsModel) {
 				return {
@@ -194,15 +187,10 @@ define([
 			this._updateSelectedVariableContext(datasetCollection, Config.GLCFS_DATASET_HURON, getContextVariable);
 		},
 
-		/*
-		 * @param {BaseDatasetCollection} collection
-		 */
 		setupGLCFSMichiganModelListeners : function(collection) {
 			this._setupDatasetVariableListeners(collection, this.updateSelectedGLCFSMichiganPoints);
 		},
 
-		/*
-		 */
 		updateSelectedGLCFSMichiganPoints : function() {
 			var getContextVariable = function(variableModel, glcfsModel) {
 				return {
@@ -218,15 +206,10 @@ define([
 			this._updateSelectedVariableContext(datasetCollection, Config.GLCFS_DATASET_MICHIGAN, getContextVariable);
 		},
 
-		/*
-		 * @param {BaseDatasetCollection} collection
-		 */
 		setupGLCFSOntarioModelListeners : function(collection) {
 			this._setupDatasetVariableListeners(collection, this.updateSelectedGLCFSOntarioPoints);
 		},
 
-		/*
-		 */
 		updateSelectedGLCFSOntarioPoints : function() {
 			var getContextVariable = function(variableModel, glcfsModel) {
 				return {
@@ -242,15 +225,10 @@ define([
 			this._updateSelectedVariableContext(datasetCollection, Config.GLCFS_DATASET_ONTARIO, getContextVariable);
 		},
 
-		/*
-		 * @param {BaseDatasetCollection} collection
-		 */
 		setupGLCFSSuperiorModelListeners : function(collection) {
 			this._setupDatasetVariableListeners(collection, this.updateSelectedGLCFSSuperiorPoints);
 		},
 
-		/*
-		 */
 		updateSelectedGLCFSSuperiorPoints : function() {
 			var getContextVariable = function(variableModel, glcfsModel) {
 				return {

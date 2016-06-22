@@ -15,14 +15,13 @@ define([
 	'views/ChooseView',
 	'views/VariableSummaryView',
 	'views/ProcessDataView',
-	'views/ShapefileUploadView',
 	'hbs!hb_templates/dataDiscovery'
-], function (_, Config, $utils, BaseView, NavView, AlertView, MapView, LocationView, AOIBoxView, ChooseView,
-		VariableSummaryView, ProcessDataView, ShapefileUploadView, hbTemplate) {
+], function (_, Config, log, $utils, BaseView, NavView, AlertView, MapView, LocationView, AOIBoxView, ChooseView,
+		VariableSummaryView, ProcessDataView, hbTemplate) {
 	"use strict";
 
 	var DEFAULT_RADIUS = 2;
-	
+
 	var NAVVIEW_SELECTOR = '.workflow-nav';
 	var LOCATION_SELECTOR = '.location-panel';
 	var CHOOSE_SELECTOR = '.choose-panel';
@@ -311,7 +310,7 @@ define([
 						this.aoiView.expand();
 					}
 					break;
-					
+
 			}
 
 			if (!this.mapView) {

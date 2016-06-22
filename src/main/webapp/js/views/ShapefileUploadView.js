@@ -5,20 +5,19 @@ define([
     'underscore',
     'jquery',
     'jquery-ui',
-    'jquery.ui.widget',
     'blueimp-file-upload',
     'module',
     'loglevel',
     'views/BaseCollapsiblePanelView',
     'hbs!hb_templates/shpfileUpload'
-], function(_, $, ju, juw, bfu, module, log, BaseCollapsiblePanelView, hbTemplate){
+], function(_, $, ju, bfu, module, log, BaseCollapsiblePanelView, hbTemplate){
 	"use strict";
-	
+
    var view = BaseCollapsiblePanelView.extend({
 	   template: hbTemplate,
 	   panelHeading: 'Upload a Shapefile',
 	   panelBodyId: 'upload-shapefile-panel-body',
-	   
+
 		initialize : function(options) {
 			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
 			this.listenTo(this.model, 'change', this.updatePanelContents);
@@ -36,7 +35,7 @@ define([
 			//Don't want to re-render the whole panel just the contents
 			this.$('.panel-body').html(this.template(this.model.attributes.aoiBox));
 		},
-		
+
 		_createFileUploader : function($fileUploaderInput
 				//$uploadIndicator
 				) {

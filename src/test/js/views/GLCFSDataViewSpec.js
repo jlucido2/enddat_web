@@ -74,7 +74,6 @@ define([
 				startDate : '2002-01-01',
 				endDate : '2016-04-18'
 			});
-			expect(testView.context.name).toEqual('GLCFS Test Site');
 		});
 
 		it('Expects that a variables checkbox is checked if the variable has selected set to true', function() {

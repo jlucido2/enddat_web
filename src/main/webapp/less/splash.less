@@ -1,0 +1,157 @@
+@import "../bower_components/font-awesome/less/font-awesome.less";
+
+@blue:#335280;
+@gray:#eeeeee;
+
+body,
+html{
+    background:@gray;
+    height:100%;
+}
+
+a{
+    font-weight:normal !important;
+}
+
+#tagline{
+    padding:10px;
+}
+
+#sidebar{
+    background:@blue;
+    height:40px;
+    color:#fff;
+    position:relative;
+    border-bottom:1px solid #fff;
+    
+    h3{
+        margin:0;
+        padding:6px 0 0 10px;
+    }
+    
+    i{
+        font-size:2em;
+        position:absolute;
+        right:10px;
+        top:6px;
+    }
+}
+
+#sidebarMenu{
+    display:none;
+    min-height:300px;
+    width:100%;
+    position:absolute;
+    right:0px;
+    top:40px;
+    z-index:9000;
+}
+
+/*----- Accordion -----*/
+.accordion, .accordion * {
+    -webkit-box-sizing:border-box; 
+    -moz-box-sizing:border-box; 
+    box-sizing:border-box;
+}
+ 
+.accordion {
+    overflow:hidden;
+    background:#f7f7f7;
+}
+ 
+/*----- Section Titles -----*/
+.accordion-section-title {
+    width:100%;
+    padding:15px;
+    display:inline-block;
+    border-bottom:1px solid #fff !important;
+    background:@blue;
+    transition:all linear 0.15s;
+    /* Type */
+    font-size:1.200em;
+    color:#fff !important;
+}
+ 
+.accordion-section-title.active, .accordion-section-title:hover {
+    background:#fff;
+    /* Type */
+    text-decoration:none;
+    color:@blue !important;
+}
+ 
+.accordion-section:last-child .accordion-section-title {
+    border-bottom:none;
+}
+ 
+/*----- Section Content -----*/
+.accordion-section-content {
+    padding:15px;
+    display:none;
+}
+
+/*Splash Content*/
+#splashContent{
+    min-height:300px;
+    padding:10px 15px;
+    
+    h2:first-child{
+        margin-top:0;
+    }
+}
+
+.splashButton{
+    background:#fff;
+    color:@blue;
+    border-radius:5px;
+    border:1px solid rgb(190,190,190);
+    padding:10px;
+    font-size:1.3em;
+    
+    &:hover{
+        background:@blue;
+        color:#fff;
+    }
+}
+
+@media screen and (min-width:768px){
+    
+    #hamburger,
+    #mobileMenuText{
+        display:none;
+    }
+    
+    #tagline{
+        float:right;
+        width:80%;
+        padding:10px 15px 0 15px;
+    }
+    
+    #sidebar{
+        width:20%;
+        float:left;
+        height:100%;
+        top:0;
+    }
+    
+    #sidebarMenu{
+        display:block !important;
+        top:0;
+    }
+    
+    #splashContent{
+        float:right;
+        width:80%;
+        
+        h2{
+            margin:5px 0 10px 0;
+        }
+        
+        p{
+            max-width:960px;
+        }
+    }
+    
+    .splashButton{
+        margin:0 10px 10px 0;
+    }
+}

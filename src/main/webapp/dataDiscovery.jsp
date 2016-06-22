@@ -60,7 +60,6 @@
 					"bootstrap" :  '<%=baseUrl%>bower_components/bootstrap/dist/js/bootstrap<%= development ? "" : ".min"%>',
 					"jquery": '<%=baseUrl%>bower_components/jquery/dist/jquery<%= development ? "" : ".min"%>',
 					"jquery-ui": '<%=baseUrl%>bower_components/jquery-ui/ui/jquery-ui',
-					"jquery.ui.widget": '<%=baseUrl%>bower_components/jquery-ui/ui/jquery.ui.widget',
 					'blueimp-file-upload': '<%=baseUrl%>bower_components/blueimp-file-upload/js/jquery.fileupload',
 					"backbone": '<%=baseUrl%>bower_components/backbone/backbone<%= development ? "" : "-min"%>',
 					"underscore": '<%=baseUrl%>bower_components/underscore/underscore<%= development ? "" : "-min"%>',

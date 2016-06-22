@@ -23,6 +23,7 @@ define([
 		panelBodyId : 'glcfs-data-overview-panel-body',
 
 		render : function() {
+
 			var getContextForVariable = function(variableModel) {
 				var result = _.clone(variableModel.attributes);
 				result.startDate = variableModel.attributes.startDate.format(Config.DATE_FORMAT);

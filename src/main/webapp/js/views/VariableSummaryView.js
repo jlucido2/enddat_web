@@ -237,7 +237,7 @@ define([
 					siteId : (parseFloat(glcfsModel.attributes.lat)).toFixed(3) + ', ' + (parseFloat(glcfsModel.attributes.lon)).toFixed(3),
 					startDate : variableModel.attributes.startDate.format(Config.DATE_FORMAT),
 					endDate : variableModel.attributes.endDate.format(Config.DATE_FORMAT),
-					property : variableModel.attributes.y + ':' + variableModel.attributes.x
+					property : variableModel.attributes.description
 				};
 			};
 			var datasetCollection = this.model.get('datasetCollections')[Config.GLCFS_DATASET_SUPERIOR];

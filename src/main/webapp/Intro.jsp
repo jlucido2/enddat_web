@@ -26,11 +26,14 @@
 		<jsp:param name="site-title" value="Environmental Data Discovery and Transformation" />
 	</jsp:include>
         
-	<div id="tagline">Access and Integrate Environmental Observations for Coastal Decision Support</div>      
+	 
 	
 	<jsp:include page="WEB-INF/jsp/sidebar.jsp"></jsp:include>
 	
         <div id="splashContent">
+            
+            <div id="tagline">Access and Integrate Environmental Observations for Coastal Decision Support</div>     
+            
             <h2>Overview</h2>
             <p>
                 Welcome to the Environmental Data Discovery and Transformation (EnDDaT) service.  

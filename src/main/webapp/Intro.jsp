@@ -32,7 +32,7 @@
 	
         <div id="splashContent">
             
-            <div id="tagline">Access and Integrate Environmental Observations for Coastal Decision Support</div>     
+            <div id="tagline">Access and Integrate Environmental Time Series Observations</div>     
             
             <h2>Overview</h2>
             <p>
@@ -72,7 +72,7 @@
             <p>
                 EnDDaT is not the owner or provider of any data.  Instead, EnDDaT gathers data from a variety of data providers. 
                 The data providers are listed on the left side bar. 
-                EnDDaT has been designed especially to gather data that uses recognized web standards such as SOS, WQX, and Thredds.  
+                EnDDaT has been designed especially to gather data that uses recognized web standards such as SOS, WQX, and THREDDs.  
                 However, if data is deemed useful for environmental modeling, custom data gathering tools and data parsers can be 
                 included.
             </p>

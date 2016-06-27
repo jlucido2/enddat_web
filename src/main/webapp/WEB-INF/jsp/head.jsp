@@ -28,7 +28,6 @@
 	String glcfsWFSGetFeatureUrlMichigan = props.getProperty("enddat.endpoint.glcfs.wfsgetfeature.michigan");
 	String glcfsWFSGetFeatureUrlOntario = props.getProperty("enddat.endpoint.glcfs.wfsgetfeature.ontario");
 	String glcfsWFSGetFeatureUrlSuperior = props.getProperty("enddat.endpoint.glcfs.wfsgetfeature.superior");
-	String glosThreddsGLCFSData = props.getProperty("enddat.glosthredds.glcfsdata");
 	String acisStnMetaUrl = props.getProperty("enddat.endpoint.acis.stnmeta");
 %>
 

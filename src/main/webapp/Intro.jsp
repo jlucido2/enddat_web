@@ -32,7 +32,7 @@
 	
         <div id="splashContent">
             
-            <div id="tagline">Access and Integrate Environmental Observations for Coastal Decision Support</div>     
+            <div id="tagline"><h4>Access and Integrate Environmental Observations for Coastal Decision Support</h4></div>     
             
             <h2>Overview</h2>
             <p>

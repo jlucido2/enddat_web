@@ -2,8 +2,9 @@
 
 define([
 	'views/BaseCollapsiblePanelView',
+	'views/ShapefileUploadView',
 	'hbs!hb_templates/aoiBox'
-], function(BaseCollapsiblePanelView, hbTemplate) {
+], function(BaseCollapsiblePanelView, ShapefileUploadView, hbTemplate) {
 	"use strict";
 
 	/*
@@ -22,12 +23,23 @@ define([
 		initialize : function(options) {
 			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
 			this.listenTo(this.model, 'change', this.updatePanelContents);
+
+			this.shapefileUploadView = new ShapefileUploadView({
+				$el : this.$('.shapefile-upload-div')
+			});
 		},
 
 		render : function() {
 			this.context = this.model.attributes.aoiBox;
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
+			this.shapefileUploadView.setElement(this.$('.shapefile-upload-div')).render();
+
 			return this;
+		},
+
+		remove : function() {
+			this.shapefileUploadView.remove();
+			BaseCollapsiblePanelView.prototype.remove.apply(this, arguments);
 		},
 
 		updatePanelContents : function() {

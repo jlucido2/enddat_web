@@ -24,7 +24,6 @@ define([
 		},
 
 		render : function() {
-			this.context = this.model.attributes.aoiBox;
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
 			log.info($('#shpFileInput'));
 			this._createFileUploader($('#shpFileInput'));

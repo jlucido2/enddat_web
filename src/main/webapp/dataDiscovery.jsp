@@ -62,6 +62,9 @@
 					},
 					'views/ProcessDataView' : {
 						'baseUrl' : '<%=baseUrl%>'
+					},
+					'views/MapView' : {
+						'uploadGeoserverUrl' : '<%=shapefileuploadGeoserverUrl%>'
 					}
 				},
 				baseUrl: "<%=baseUrl%>js/",

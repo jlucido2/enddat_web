@@ -95,7 +95,7 @@
 		<servlet-class>gov.usgs.cida.geoutils.geoserver.servlet.ShapefileUploadServlet</servlet-class>
 		<init-param>
 			<param-name>application.name</param-name>
-			<param-value>enddat</param-value>
+			<param-value>enddat.shapefileupload</param-value>
 		</init-param>
 		<init-param>
 		<!-- [OPTIONAL] max upload size in bytes. 0 = Integer.MAX_VALUE -->
@@ -105,7 +105,7 @@
 		<init-param>
 			<!-- URL of the geoserver instances receiving the upload. -->
 			<param-name>geoserver.endpoint</param-name>
-			<param-value>http://cida-eros-gdpdev.er.usgs.gov:8082/geoserver</param-value>
+			<param-value></param-value>
 		</init-param>
 		<init-param>
 		<!-- geoserver username -->
@@ -159,7 +159,7 @@
 			there is no way to recover the previous layer.
 		 -->
 			<param-name>overwrite.existing.layer</param-name>
-			<param-value/>
+			<param-value>true</param-value>
 		</init-param>
 		<init-param>
 		<!-- 

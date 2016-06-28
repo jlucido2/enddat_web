@@ -23,8 +23,7 @@ require.config({
 				'Michigan' : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',							
 				'Ontario' : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',							
 				'Superior' : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',							
-			},
-			glosThreddsGLCFSData : 'dodsC/fakedata.dds'
+			}
 		},
 		'views/ProcessDataView' : {
 			baseUrl : 'http:fakeservice/enddat/'
@@ -36,7 +35,6 @@ require.config({
 			acisStnMetaUrl : 'http:dummyservice/acis/StnMeta'
 		}
 	},
-
 
 	paths: {
 		'squire': '/base/src/main/webapp/bower_components/Squire.js/src/Squire',

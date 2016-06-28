@@ -41,20 +41,6 @@ define([
 				'<sb:the_geom><gml:Point srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4269"><gml:pos>-87.5999984741211 41.95234298706055</gml:pos></gml:Point></sb:the_geom>' +
 				'<sb:nx>16.0</sb:nx><sb:ny>19.0</sb:ny><sb:X1>-87</sb:X1><sb:X2>42</sb:X2></sb:michigan></wfs:member></wfs:FeatureCollection>';
 			
-			var DDS_RESPONSE = 'Dataset {\n' +
-				'Float32 air_u[time = 91248][ny = 87][nx = 193];\n' +
-				'Float32 air_v[time = 91248][ny = 87][nx = 193];\n' +
-				'Float32 at[time = 91248][ny = 87][nx = 193];\n' +
-				'Float32 cl[time = 91248][ny = 87][nx = 193];\n' +
-				'Float32 dp[time = 91248][ny = 87][nx = 193];\n' +
-				'Float64 time_offset[time = 91248];\n' +
-				'Float32 depth[ny = 87][nx = 193];\n' +
-				'Float32 lat[ny = 87][nx = 193];\n' +
-				'Float32 lon[ny = 87][nx = 193];\n' +
-				'Float32 sigma[nsigma = 20];\n' +
-				'Float64 time[time = 91248];\n' +
-				'Float64 time_run[time = 91248];\n' +
-				'} glos/glcfs/archiveall/erie/nowcast-forcing-fmrc-2d/Lake_Erie_-_Nowcast_Forcing_-_2D_-_All_Years_best.ncd;';
 			var fetchPromise;
 			var successSpy, failSpy;
 			
@@ -74,27 +60,12 @@ define([
 				expect(fakeServer.requests[0].url).toContain('http:dummyservice/wfs/?service=wfs&amp;version=2.0.0');
 			});
 
-			it('Expects the url used in the dds service call is retrieved from the module configuration', function() {
-				expect(fakeServer.requests[1].url).toContain('glosthredds/dodsC/fakedata');
-			});
-
 			it('Expects that the site url will contain the urlencoded bbox parameter', function() {
 				expect(fakeServer.requests[0].url).toContain('bbox=' + encodeURIComponent(bbox.south + ',' + bbox.west + ',' + bbox.north + ',' + bbox.east));
 			});
 
 			it('Expects that failed ajax response for the site service causes the promise to be rejected and the collection cleared', function() {
 				fakeServer.respondWith(/http:dummyservice\/wfs\//, [500, {'Content-Type' : 'text'}, 'Internal server error']);
-				fakeServer.respondWith('glosthredds/dodsC/fakedata.dds', [200, {'Content-Type' : 'text'}, DDS_RESPONSE]);
-				fakeServer.respond();
-
-				expect(successSpy).not.toHaveBeenCalled();
-				expect(failSpy).toHaveBeenCalled();
-				expect(testCollection.length).toBe(0);
-			});
-
-			it('Expects that failed ajax response for the dds service causes the promise to be rejected and the collection cleared', function() {
-				fakeServer.respondWith(/http:dummyservice\/wfs\//, [200, {'Content-Type' : 'text/xml'}, SITE_RESPONSE]);
-				fakeServer.respondWith('glosthredds/dodsC/fakedata.dds', [500, {'Content-Type' : 'text'}, 'Internal server error']);
 				fakeServer.respond();
 
 				expect(successSpy).not.toHaveBeenCalled();
@@ -109,7 +80,6 @@ define([
 					'null</ows:ExceptionText>' +
 					'</ows:Exception>' +
 					'</ows:ExceptionReport>']);
-				fakeServer.respondWith('glosthredds/dodsC/fakedata.dds', [200, {'Content-Type' : 'text'}, DDS_RESPONSE]);
 				fakeServer.respond();
 
 				expect(successSpy).not.toHaveBeenCalled();
@@ -119,7 +89,6 @@ define([
 
 			it('Expects that a successful respond for the site and dds services causes the promise to be resolved and the collection to be updated with the contents of the response', function() {
 				fakeServer.respondWith(/http:dummyservice\/wfs\//, [200, {'Content-Type' : 'text/xml'}, SITE_RESPONSE]);
-				fakeServer.respondWith('glosthredds/dodsC/fakedata.dds', [200, {'Content-Type' : 'text'}, DDS_RESPONSE]);
 				fakeServer.respond();
 
 				expect(failSpy).not.toHaveBeenCalled();

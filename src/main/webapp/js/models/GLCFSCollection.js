@@ -14,7 +14,6 @@ define([
 	"use strict";
 
 	var GLCFS_WFS_GETFEATURE_URLS = module.config().glcfsWFSGetFeatureUrls;
-	var GLCFS_DDS_URL = 'glosthredds/' + module.config().glosThreddsGLCFSData;
 	var START_DATE = moment('2006-01-01', 'YYYY-MM-DD');
 	
 	/* The dataset property is hard coded in the services to know which thredds endpoint to hit for that data
@@ -51,13 +50,6 @@ define([
 		return str.split('.')[0];
 	};
 
-	var getTimeBounds = function(ddsText) {
-		var lines = ddsText.split('\n');
-		var timeBoundsLine = lines[11];
-		var timeBounds = /(\d+])/.exec(timeBoundsLine)[0];
-		return timeBounds.replace(/]/, '');
-	};
-
 	var collection = BaseDatasetCollection.extend({
 
 		initialize : function(attributes, options) {
@@ -86,7 +78,6 @@ define([
 					siteVar.endDate = today;
 					siteVar.x = x;
 					siteVar.y = y;
-//					self.timeBounds;
 					var sigma = -1; // not using any 3D datasets currently
 					var vectorOpts = ':::0'; // not doing any vector options currently
 					siteVar.variableParameter = new VariableParameter({
@@ -115,7 +106,6 @@ define([
 		fetch : function (boundingBox) {
 			var self = this;
 			var fetchSiteDataDeferred = $.Deferred();
-			var fetchDDSDeferred = $.Deferred();
 			var fetchDeferred = $.Deferred();
 			var xmlResponse;
 
@@ -142,19 +132,7 @@ define([
 				}
 			});
 
-			$.ajax({
-				url : GLCFS_DDS_URL,
-				success : function (response, textStatus, jqXHR) {
-					self.timeBounds = getTimeBounds(response);
-					fetchDDSDeferred.resolve(jqXHR);
-				},
-				error : function(jqXHR) {
-					log.debug('Unable to retrieve the GLCFS service\'s dds');
-					fetchDDSDeferred.reject(jqXHR);
-				}
-			});
-
-			$.when(fetchSiteDataDeferred, fetchDDSDeferred)
+			$.when(fetchSiteDataDeferred)
 				.done(function() {
 					self.reset(self.parse(xmlResponse));
 					log.debug('GLCFS fetch succeeded, fetched ' + self.length + ' grid');

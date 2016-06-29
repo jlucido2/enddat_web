@@ -5,14 +5,19 @@ define([
     'underscore',
     'jquery',
     'blueimp-file-upload',
-    'module',
     'loglevel',
     'views/BaseView',
     'hbs!hb_templates/shpfileUpload'
-], function(_, $, bfu, module, log, BaseView, hbTemplate){
+], function(_, $, bfu, log, BaseView, hbTemplate){
 	"use strict";
 
-   var view = BaseView.extend({
+	/*
+	 * @constructs
+	 * @param {Object} options
+	 *		@prop {Jquery selector} el - where this view will be rendered
+	 *		@prop {WorkflowStateModel} model
+	 */
+	var view = BaseView.extend({
 	   template: hbTemplate,
 
 		initialize : function(options) {

@@ -25,7 +25,7 @@ define([
 			this.listenTo(this.model.get('aoi'), 'change', this.updatePanelContents);
 
 			this.shapefileUploadView = new ShapefileUploadView({
-				$el : this.$('.shapefile-upload-div'),
+				el : '.shapefile-upload-div',
 				model : this.model
 			});
 		},

@@ -18,7 +18,6 @@ define([
 		var testModel;
 		var $testDiv;
 
-		var initializeBaseViewSpy, renderBaseViewSpy, removeBaseViewSpy;
 		var setElNavViewSpy, renderNavViewSpy, removeNavViewSpy;
 		var setElMapViewSpy, renderMapViewSpy, removeMapViewSpy;
 		var setElLocationViewSpy, renderLocationViewSpy, removeLocationViewSpy, collapseLocationViewSpy, expandLocationViewSpy;
@@ -34,10 +33,6 @@ define([
 			sinon.stub($, "ajax");
 			$('body').append('<div id="test-div"></div>');
 			$testDiv = $('#test-div');
-
-			initializeBaseViewSpy = jasmine.createSpy('initializeBaseViewSpy');
-			renderBaseViewSpy = jasmine.createSpy('renderBaseViewSpy');
-			removeBaseViewSpy = jasmine.createSpy('removeBaseViewSpy');
 
 			setElNavViewSpy = jasmine.createSpy('setElNavViewSpy');
 			renderNavViewSpy = jasmine.createSpy('renderNavViewSpy');

@@ -13,7 +13,7 @@ define([
 	'views/MapView'
 ], function($, _, L, Backbone, Config, LUtils, WorkflowStateModel, BaseView, MapView) {
 	"use strict";
-	fdescribe('views/MapView', function() {
+	describe('views/MapView', function() {
 		var testView;
 		var $testDiv;
 		var testModel;

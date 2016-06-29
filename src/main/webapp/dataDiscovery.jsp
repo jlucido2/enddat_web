@@ -7,6 +7,7 @@
 		<link rel="stylesheet" type="text/css" href="<%=baseUrl%>bower_components/select2/dist/css/select2.min.css" />
 		<link rel="stylesheet" type="text/css" href="<%=baseUrl%>bower_components/leaflet/dist/leaflet.css" />
 		<link rel="stylesheet" type="text/css" href="<%=baseUrl%>bower_components/leaflet-draw/dist/leaflet.draw.css" />
+		<link rel="stylesheet" type="text/css" href="bower_components/blueimp-file-upload/css/jquery.fileupload.css" />
 		<link rel="stylesheet" type="text/css" href="css/custom.css" />
                 <script>
                     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -88,6 +89,8 @@
 					'bootstrap-datetimepicker' : '<%=baseUrl%>bower_components/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker'
 				},
 				shim: {
+					'jquery-ui' : ['jquery'],
+					'blueimp-file-upload' : ['jquery', 'jquery-ui'],
 					"bootstrap": [ "jquery" ],
 					'leaflet' : {
 						exports: 'L'

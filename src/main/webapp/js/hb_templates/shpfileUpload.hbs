@@ -1,12 +1,16 @@
 <div class="hint-div">
 	<em>
-		Use this field to upload a shapefile to select an area of interest.
+		Use this field to upload a shapefile to display on the map.
 	</em>
 </div>
-<span class="file-uploader-indicator"><i class="fa-3x fa fa-spinner fa-spin"></i></span>
-<div class="upload-msg bg-warning"></div>
-<div class="shpfile-content">
-	<form enctype="multipart/form-data">
-		<input id="shpFileInput" class="form-control" type="file" name="qqfile"/>
-	</form>
+<div class="form-group">
+	<div class="upload-input-container">
+		<span class="btn btn-primary fileinput-button">
+			<i class="fa fa-upload"></i>
+			<span>&nbsp;Select shapefile to display...</span>
+			<!-- The file input field used as target for the file upload widget -->
+			<input id="shpFileInput" type="file" name="qqfile">
+		</span>
+		<span class="upload-msg"></span>
+	</div>
 </div>

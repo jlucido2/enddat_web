@@ -135,7 +135,7 @@ define([
 					this.unset('datasets');
 					this.unset('startDate');
 					this.unset('endDate');
-					//TODO add code to allow switching between project location and aoi box.
+					this.unset('uploadedFeatureName');
 					this.get('aoi').clear();
 					break;
 

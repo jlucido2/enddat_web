@@ -23,11 +23,11 @@ define([
 
 		render : function() {
 			BaseView.prototype.render.apply(this, arguments);
-			this._createFileUploader(this.$('#shpFileInput'), this.$('.file-uploader-indicator'), this.$('.upload-msg'));
+			this._createFileUploader(this.$('#shpFileInput'), this.$('.upload-msg'));
 			return this;
 		},
 
-		_createFileUploader : function($fileUploaderInput, $uploadIndicator, $msg) {
+		_createFileUploader : function($fileUploaderInput, $msg) {
 			var self = this;
 			var params = {
 					'maxfilesize': 167772160,
@@ -36,16 +36,21 @@ define([
 					'use.crs.failover': 'true',
 					'projection.policy': 'reproject'
 			};
+			var filename;
+
 			$fileUploaderInput.fileupload({
 				url : 'uploadhandler?' +  $.param(params),
 				type: 'POST',
 				dataType: 'xml',
 				send : function(e, data) {
-					data.url = data.url + '&qqfile=' + data.files[0].name;
-					$uploadIndicator.show();
+					filename = data.files[0].name;
+					data.url = data.url + '&qqfile=' + filename;
+					$msg.addClass('text-info').html('Upload of ' + filename + ' is in progress.');
+				},
+				progress : function(e, data) {
+					log.debug('Upload is in progress')
 				},
 				done : function(e, data) {
-					$uploadIndicator.hide();
 					var $resp = $(data.result);
 					// Determine if the response indicated an error
 					var success = $resp.find('success').first().text();
@@ -59,19 +64,18 @@ define([
 							log.debug('Upload Successful!');
 						}
 
+						$msg.removeClass('text-info').addClass('text-success').html('Shapefile ' + filename + ' is now visible on map.')
 						self.model.set('uploadedFeatureName', layerName);
 
 					}
 					else {
 						var error = $resp.find('error').first().text();
 						var exception = $resp.find('exception').first().text();
-						$msg.html('Unable to upload shapefile selected with error ' + error + '. ' + exception)
+						$msg.removeClass('text-info').addClass('text-danger').html('Unable to upload shapefile selected with error ' + error + '. ' + exception)
 					}
-
 				},
 				fail : function(e, data) {
-					$uploadIndicator.hide();
-					$msg.html('Upload failed');
+					$msg.removeClass('text-info').addClass('text-danger').html('Upload failed');
 				}
 			});
 		}

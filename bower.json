@@ -33,8 +33,7 @@
     "moment": "2.12.0",
     "eonasdan-bootstrap-datetimepicker": "4.17.37",
     "leaflet-draw": "0.3.0",
-    "blueimp-file-upload": "9.12.5",
-    "jquery-ui": "1.10.4"
+    "blueimp-file-upload": "9.12.5"
   },
   "resolutions": {
     "underscore": "1.8.3",

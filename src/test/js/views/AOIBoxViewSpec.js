@@ -3,9 +3,10 @@
 
 define([
 	'jquery',
+	'backbone',
 	'models/AOIModel',
 	'views/AOIBoxView'
-], function($, AOIModel, AOIBoxView) {
+], function($, Backbone, AOIModel, AOIBoxView) {
 	"use strict";
 
 	describe('Tests for views/AOIBoxView', function() {
@@ -17,13 +18,15 @@ define([
 			$('body').append('<div id="test-div"></div>');
 			$testDiv = $('#test-div');
 
-			testModel = new AOIModel({
-				aoiBox : {
-					south : 43.0,
-					west : -101.0,
-					north : 44.0,
-					east : -100.0
-				}
+			testModel = new Backbone.Model({
+				aoi : new AOIModel({
+					aoiBox : {
+						south : 43.0,
+						west : -101.0,
+						north : 44.0,
+						east : -100.0
+					}
+				})
 			});
 
 			testView = new AOIBoxView({
@@ -45,23 +48,24 @@ define([
 
 		it('Expects that the model attributes are passed to the context when rendering the view', function() {
 			testView.render();
-			expect(testView.template).toHaveBeenCalledWith(testModel.attributes.aoiBox);
+			expect(testView.template).toHaveBeenCalledWith(testModel.get('aoi').attributes.aoiBox);
 		});
 
 		it('Expects that the template is re rendered whenevr the model is updated', function() {
+			var aoiModel = testModel.get('aoi');
 			testView.render();
 			testView.template.calls.reset();
-			testModel.set('aoiBox', {
+			aoiModel.set('aoiBox', {
 				south : 43.0,
 				west : -102.0,
 				north : 44.0,
 				east : -100.0
 			});
 
-			expect(testView.template).toHaveBeenCalledWith(testModel.attributes.aoiBox);
+			expect(testView.template).toHaveBeenCalledWith(aoiModel.attributes.aoiBox);
 
 			testView.template.calls.reset();
-			testModel.set('aoiBox', {});
+			aoiModel.set('aoiBox', {});
 
 			expect(testView.template).toHaveBeenCalledWith({});
 		});

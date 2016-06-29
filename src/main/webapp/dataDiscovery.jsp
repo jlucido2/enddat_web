@@ -72,7 +72,7 @@
 				paths: {
 					"bootstrap" :  '<%=baseUrl%>bower_components/bootstrap/dist/js/bootstrap<%= development ? "" : ".min"%>',
 					"jquery": '<%=baseUrl%>bower_components/jquery/dist/jquery<%= development ? "" : ".min"%>',
-					"jquery-ui": '<%=baseUrl%>bower_components/jquery-ui/ui/jquery-ui',
+					'jquery.ui.widget' : '<%=baseUrl%>bower_components/blueimp-file-upload/js/vendor/jquery.ui.widget',
 					'blueimp-file-upload': '<%=baseUrl%>bower_components/blueimp-file-upload/js/jquery.fileupload',
 					"backbone": '<%=baseUrl%>bower_components/backbone/backbone<%= development ? "" : "-min"%>',
 					"underscore": '<%=baseUrl%>bower_components/underscore/underscore<%= development ? "" : "-min"%>',
@@ -89,8 +89,6 @@
 					'bootstrap-datetimepicker' : '<%=baseUrl%>bower_components/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker'
 				},
 				shim: {
-					'jquery-ui' : ['jquery'],
-					'blueimp-file-upload' : ['jquery', 'jquery-ui'],
 					"bootstrap": [ "jquery" ],
 					'leaflet' : {
 						exports: 'L'
@@ -106,7 +104,6 @@
 						exports: 'Backgrid'
 					},
 					'backbone.stickit' : ['backbone', 'underscore'],
-					'blueimp-file-upload' : ['jquery', 'jquery-ui', 'jquery.ui.widget'],
 					'bootstrap-datetimepicker' : ['jquery', 'bootstrap', 'moment']
 				},
 				packages : [
@@ -114,11 +111,6 @@
 						name : 'hbs',
 						location: "<%=baseUrl%>bower_components/requirejs-hbs",
 						main : 'hbs'
-					},
-					{
-						name : 'jquery.ui.widget',
-						location : "<%=baseUrl%>bower_components/jquery-ui/ui",
-						main : 'jquery.ui.widget'
 					}
 				]
 			};

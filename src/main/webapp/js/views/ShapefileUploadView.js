@@ -4,13 +4,12 @@
 define([
     'underscore',
     'jquery',
-    'jquery-ui',
     'blueimp-file-upload',
     'module',
     'loglevel',
     'views/BaseView',
     'hbs!hb_templates/shpfileUpload'
-], function(_, $, ju, bfu, module, log, BaseView, hbTemplate){
+], function(_, $, bfu, module, log, BaseView, hbTemplate){
 	"use strict";
 
    var view = BaseView.extend({
@@ -48,7 +47,7 @@ define([
 					$msg.addClass('text-info').html('Upload of ' + filename + ' is in progress.');
 				},
 				progress : function(e, data) {
-					log.debug('Upload is in progress')
+					log.debug('Upload is in progress');
 				},
 				done : function(e, data) {
 					var $resp = $(data.result);
@@ -64,14 +63,14 @@ define([
 							log.debug('Upload Successful!');
 						}
 
-						$msg.removeClass('text-info').addClass('text-success').html('Shapefile ' + filename + ' is now visible on map.')
+						$msg.removeClass('text-info').addClass('text-success').html('Shapefile ' + filename + ' is now visible on map.');
 						self.model.set('uploadedFeatureName', layerName);
 
 					}
 					else {
 						var error = $resp.find('error').first().text();
 						var exception = $resp.find('exception').first().text();
-						$msg.removeClass('text-info').addClass('text-danger').html('Unable to upload shapefile selected with error ' + error + '. ' + exception)
+						$msg.removeClass('text-info').addClass('text-danger').html('Unable to upload shapefile selected with error ' + error + '. ' + exception);
 					}
 				},
 				fail : function(e, data) {

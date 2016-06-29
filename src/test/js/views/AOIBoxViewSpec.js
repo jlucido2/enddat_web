@@ -6,9 +6,8 @@ define([
 	'jquery',
 	'backbone',
 	'models/AOIModel',
-	'views/BaseCollapsiblePanelView',
-	'views/AOIBoxView'
-], function(Squire, $, Backbone, AOIModel, BaseCollapsiblePanelView, AOIBoxView) {
+	'views/BaseCollapsiblePanelView'
+], function(Squire, $, Backbone, AOIModel, BaseCollapsiblePanelView) {
 	"use strict";
 
 	describe('Tests for views/AOIBoxView', function() {

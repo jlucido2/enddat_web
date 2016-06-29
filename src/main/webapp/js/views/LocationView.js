@@ -46,7 +46,7 @@ define([
 			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
 
 			this.shapefileUploadView = new ShapefileUploadView({
-				$el : this.$('.shapefile-upload-div'),
+				el : '.shapefile-upload-div',
 				model : this.model
 			});
 		},
@@ -69,7 +69,7 @@ define([
 		getMyLocation : function(ev) {
 			var self = this;
 			var updateModel = function(position) {
-				self.model.set({
+				self.model.get('aoi').set({
 					latitude : position.coords.latitude,
 					longitude : position.coords.longitude
 				});

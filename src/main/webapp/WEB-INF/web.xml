@@ -105,7 +105,7 @@
 		<init-param>
 			<!-- URL of the geoserver instances receiving the upload. -->
 			<param-name>geoserver.endpoint</param-name>
-			<param-value></param-value>
+			<param-value />
 		</init-param>
 		<init-param>
 		<!-- geoserver username -->

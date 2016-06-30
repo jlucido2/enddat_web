@@ -4,9 +4,10 @@ define([
 	'underscore',
 	'backbone.stickit',
 	'views/BaseCollapsiblePanelView',
+	'views/ShapefileUploadView',
 	'hbs!hb_templates/location',
 	'hbs!hb_templates/errorAlert'
-], function(_, stickit, BaseCollapsiblePanelView, hbTemplate, errorAlertTemplate) {
+], function(_, stickit, BaseCollapsiblePanelView, ShapefileUploadView, hbTemplate, errorAlertTemplate) {
 	"use strict";
 
 	/*
@@ -41,10 +42,25 @@ define([
 			}
 		},
 
+		initialize : function(options) {
+			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
+
+			this.shapefileUploadView = new ShapefileUploadView({
+				el : '.shapefile-upload-div',
+				model : this.model
+			});
+		},
+
 		render : function() {
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
-			this.stickit();
+			this.shapefileUploadView.setElement(this.$('.shapefile-upload-div')).render();
+			this.stickit(this.model.get('aoi'));
 			return this;
+		},
+
+		remove : function() {
+			this.shapefileUploadView.remove();
+			BaseCollapsiblePanelView.prototype.remove.apply(this, arguments);
 		},
 
 		/*
@@ -53,7 +69,7 @@ define([
 		getMyLocation : function(ev) {
 			var self = this;
 			var updateModel = function(position) {
-				self.model.set({
+				self.model.get('aoi').set({
 					latitude : position.coords.latitude,
 					longitude : position.coords.longitude
 				});

@@ -29,6 +29,7 @@
 	String glcfsWFSGetFeatureUrlOntario = props.getProperty("enddat.endpoint.glcfs.wfsgetfeature.ontario");
 	String glcfsWFSGetFeatureUrlSuperior = props.getProperty("enddat.endpoint.glcfs.wfsgetfeature.superior");
 	String acisStnMetaUrl = props.getProperty("enddat.endpoint.acis.stnmeta");
+	String shapefileuploadGeoserverUrl = props.getProperty("enddat.shapefileupload.geoserver.endpoint");
 %>
 
 <link rel="shortcut icon" type="image/ico" href="img/favicon.ico">

@@ -13,6 +13,8 @@ module.exports = function (config) {
 			'src/test/js/test-main.js',
 			{pattern: 'src/main/webapp/bower_components/Squire.js/src/Squire.js', included: false},
 			{pattern: 'src/main/webapp/bower_components/jquery/dist/jquery.js', included: false},
+			{pattern: 'src/main/webapp/bower_components/blueimp-file-upload/js/vendor/jquery.ui.widget.js', included : false},
+			{pattern: 'src/main/webapp/bower_components/blueimp-file-upload/js/jquery.fileupload.js', included : false},
 			{pattern: 'src/main/webapp/bower_components/select2/dist/js/select2.full.js', included: false},
 			{pattern: 'src/main/webapp/bower_components/underscore/underscore.js', included: false},
 			{pattern: 'src/main/webapp/bower_components/backbone/backbone.js', included: false},

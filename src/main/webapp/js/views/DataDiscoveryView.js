@@ -127,19 +127,18 @@ define([
 
 				case Config.CHOOSE_DATA_FILTERS_STEP:
 					var aoiModel = this.model.get('aoi');
-					log.info("Here is the AOI model:");
 					if (!this.aoiView) {
 						if (aoiModel.usingProjectLocation()) {
 							this.aoiView = new LocationView({
 								el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
-								model : aoiModel,
+								model : this.model,
 								opened : true
 							});
 						}
 						else if (aoiModel.usingAOIBox()) {
 							this.aoiView = new AOIBoxView({
 								el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
-								model : aoiModel,
+								model : this.model,
 								opened : true
 							});
 						}
@@ -284,7 +283,7 @@ define([
 					if (!this.aoiView) {
 						this.aoiView = new LocationView({
 							el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
-							model : this.model.get('aoi'),
+							model : this.model,
 							opened : true
 						});
 						this.aoiView.render();
@@ -301,7 +300,7 @@ define([
 					if (!this.aoiView) {
 						this.aoiView = new AOIBoxView({
 							el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
-							model : this.model.get('aoi'),
+							model : this.model,
 							opened : true
 						});
 						this.aoiView.render();

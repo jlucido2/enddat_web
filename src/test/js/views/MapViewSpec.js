@@ -5,12 +5,13 @@ define([
 	'jquery',
 	'underscore',
 	'leaflet',
+	'backbone',
 	'Config',
 	'utils/LUtils',
 	'models/WorkflowStateModel',
 	'views/BaseView',
 	'views/MapView'
-], function($, _, L, Config, LUtils, WorkflowStateModel, BaseView, MapView) {
+], function($, _, L, Backbone, Config, LUtils, WorkflowStateModel, BaseView, MapView) {
 	"use strict";
 	describe('views/MapView', function() {
 		var testView;
@@ -267,8 +268,8 @@ define([
 
 			it('Expects that the precipitation layer group contains markers for each grid', function() {
 				testPrecipCollection.reset([
-					{lon : '-100', lat : '43.0', variables : new Backbone.Collection([{x : '1', y: '2', }])},
-					{lon : '-100', lat : '44.0', variables : new Backbone.Collection([{x : '1', y: '3', }])}
+					{lon : '-100', lat : '43.0', variables : new Backbone.Collection([{x : '1', y: '2'}])},
+					{lon : '-100', lat : '44.0', variables : new Backbone.Collection([{x : '1', y: '3'}])}
 				]);
 				spyOn(testView.siteLayerGroups[Config.PRECIP_DATASET], 'addLayer').and.callThrough();
 				testView.render();
@@ -277,8 +278,8 @@ define([
 
 			it('Expects that the GLCFS layer group contains markers for each grid', function() {
 				testGLCFSErieCollection.reset([
-					{lon : '-100', lat : '43.0', variables : new Backbone.Collection([{x : '1', y: '2', }])},
-					{lon : '-100', lat : '44.0', variables : new Backbone.Collection([{x : '1', y: '3', }])}
+					{lon : '-100', lat : '43.0', variables : new Backbone.Collection([{x : '1', y: '2'}])},
+					{lon : '-100', lat : '44.0', variables : new Backbone.Collection([{x : '1', y: '3'}])}
 				]);
 				spyOn(testView.siteLayerGroups[Config.GLCFS_DATASET_ERIE], 'addLayer').and.callThrough();
 				testView.render();

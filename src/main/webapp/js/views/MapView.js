@@ -6,6 +6,7 @@ define([
 	'leaflet-draw',
 	'leaflet-providers',
 	'loglevel',
+	'module',
 	'Config',
 	'utils/jqueryUtils',
 	'utils/LUtils',
@@ -16,21 +17,21 @@ define([
 	'views/ACISDataView',
 	'views/NWISDataView',
 	'hbs!hb_templates/mapOps'
-], function(_, L, leafletDraw, leafletProviders, log, Config, $utils, LUtils, legendControl, BaseView,
+], function(_, L, leafletDraw, leafletProviders, log, module, Config, $utils, LUtils, legendControl, BaseView,
 		PrecipDataView, GLCFSDataView, ACISDataView, NWISDataView, hbTemplate) {
 
 	var siteIcons = _.mapObject(Config.DATASET_ICON, function(value) {
 		return L.icon(value);
 	});
-	
+
 	var getGLCFSTitle = function(model) {
 		return model.get('variables').at(0).get('y') + ':' + model.get('variables').at(0).get('x');
 	};
-	
+
 	var getNWISTitle = function(model) {
 		return model.get('name');
 	};
-	
+
 	var getPrecipTitle = function(model) {
 		return model.get('variables').at(0).get('y') + ':' + model.get('variables').at(0).get('x');
 	};
@@ -164,6 +165,9 @@ define([
 
 			this.updateAOILayerAndExtent(aoiModel);
 			this.listenTo(aoiModel, 'change', this.updateAOILayerAndExtent);
+
+			this.updateUploadFeatureLayer(this.model, this.model.get('uploadedFeatureName'));
+			this.listenTo(this.model, 'change:uploadedFeatureName', this.updateUploadFeatureLayer);
 
 			// If the dataset collection models have already been created, then setup their listeners. Otherwise
 			// wait until they have been created.
@@ -327,6 +331,21 @@ define([
 			}
 		},
 
+		updateUploadFeatureLayer : function(model, featureName) {
+			if (this.uploadFeatureLayer) {
+				this.map.removeLayer(this.uploadFeatureLayer);
+			}
+			if (featureName) {
+				this.uploadFeatureLayer = L.tileLayer.wms(module.config().uploadGeoserverUrl + '/upload/wms', {
+					layers: featureName,
+					format : 'image/png',
+					transparent : true,
+					opacity : .5
+				});
+				this.uploadFeatureLayer.addTo(this.map).bringToFront();
+			}
+		},
+
 		setupDatasetListeners : function(model, datasetCollections) {
 			this.updateAllSiteMarkers();
 
@@ -420,7 +439,7 @@ define([
 				this.updateSiteMarkerLayer(datasetKind);
 			}, this);
 		},
-		
+
 		/*
 		 * Updates the NWIS layerGroup to reflect the sites in the nwis collection
 		 */
@@ -438,7 +457,7 @@ define([
 		updateACISMarker : function() {
 			this.updateSiteMarkerLayer(Config.ACIS_DATASET);
 		},
-		
+
 		updateGLCFSErieMarker : function() {
 			this.updateSiteMarkerLayer(Config.GLCFS_DATASET_ERIE);
 		},
@@ -457,7 +476,7 @@ define([
 
 		updateGLCFSSuperiorMarker : function() {
 			this.updateSiteMarkerLayer(Config.GLCFS_DATASET_SUPERIOR);
-		},
+		}
 	});
 
 	return view;

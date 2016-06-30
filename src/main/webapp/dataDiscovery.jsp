@@ -7,6 +7,7 @@
 		<link rel="stylesheet" type="text/css" href="<%=baseUrl%>bower_components/select2/dist/css/select2.min.css" />
 		<link rel="stylesheet" type="text/css" href="<%=baseUrl%>bower_components/leaflet/dist/leaflet.css" />
 		<link rel="stylesheet" type="text/css" href="<%=baseUrl%>bower_components/leaflet-draw/dist/leaflet.draw.css" />
+		<link rel="stylesheet" type="text/css" href="bower_components/blueimp-file-upload/css/jquery.fileupload.css" />
 		<link rel="stylesheet" type="text/css" href="css/custom.css" />
                 <script>
                     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -62,13 +63,16 @@
 					},
 					'views/ProcessDataView' : {
 						'baseUrl' : '<%=baseUrl%>'
+					},
+					'views/MapView' : {
+						'uploadGeoserverUrl' : '<%=shapefileuploadGeoserverUrl%>'
 					}
 				},
 				baseUrl: "<%=baseUrl%>js/",
 				paths: {
 					"bootstrap" :  '<%=baseUrl%>bower_components/bootstrap/dist/js/bootstrap<%= development ? "" : ".min"%>',
 					"jquery": '<%=baseUrl%>bower_components/jquery/dist/jquery<%= development ? "" : ".min"%>',
-					"jquery-ui": '<%=baseUrl%>bower_components/jquery-ui/ui/jquery-ui',
+					'jquery.ui.widget' : '<%=baseUrl%>bower_components/blueimp-file-upload/js/vendor/jquery.ui.widget',
 					'blueimp-file-upload': '<%=baseUrl%>bower_components/blueimp-file-upload/js/jquery.fileupload',
 					"backbone": '<%=baseUrl%>bower_components/backbone/backbone<%= development ? "" : "-min"%>',
 					"underscore": '<%=baseUrl%>bower_components/underscore/underscore<%= development ? "" : "-min"%>',
@@ -100,7 +104,6 @@
 						exports: 'Backgrid'
 					},
 					'backbone.stickit' : ['backbone', 'underscore'],
-					'blueimp-file-upload' : ['jquery', 'jquery-ui', 'jquery.ui.widget'],
 					'bootstrap-datetimepicker' : ['jquery', 'bootstrap', 'moment']
 				},
 				packages : [
@@ -108,11 +111,6 @@
 						name : 'hbs',
 						location: "<%=baseUrl%>bower_components/requirejs-hbs",
 						main : 'hbs'
-					},
-					{
-						name : 'jquery.ui.widget',
-						location : "<%=baseUrl%>bower_components/jquery-ui/ui",
-						main : 'jquery.ui.widget'
 					}
 				]
 			};

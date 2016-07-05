@@ -139,11 +139,14 @@ define([
 					this.get('aoi').clear();
 					break;
 
-				case Config.CHOOSE_DATA_FILTERS_STEP:
+				case Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP:
 					if (previousStep === Config.SPECIFY_AOI_STEP) {
 						this.initializeDatasetCollections();
 						this.set('datasets', DEFAULT_CHOSEN_DATASETS);
 					}
+					break;
+
+				case Config.CHOOSE_DATA_BY_VARIABLES_STEP:
 					break;
 
 				case Config.PROCESS_DATA_STEP:

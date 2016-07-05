@@ -17,6 +17,7 @@ define([
 		var startDate = (state.startDate) ? '/startdate/' + state.startDate.format(Config.DATE_FORMAT_URL) : '';
 		var endDate = (state.endDate) ? '/enddate/' + state.endDate.format(Config.DATE_FORMAT_URL) : '';
 		var datasets = (state.datasets) ? '/dataset/' + state.datasets.join('/') : '';
+		var variableKinds = (state.variableKinds) ? '/variable' + state.variableKinds.join('/') : '';
 
 		var aoiFragment = '';
 		if (aoi.usingProjectLocation()) {
@@ -30,7 +31,7 @@ define([
 			aoiFragment = 'aoiBbox/' + aoiBox.south + ',' + aoiBox.west + ',' + aoiBox.north + ',' + aoiBox.east;
 		}
 
-		return aoiFragment + startDate + endDate + datasets;
+		return aoiFragment + startDate + endDate + datasets + variableKinds;
 	};
 
 	var view = BaseView.extend({
@@ -38,9 +39,10 @@ define([
 
 		events : {
 			'click .nav-specify-aoi a' : 'showWarning',
-			'click .nav-choose-data a' : 'goToChooseDataStep',
+			'click .nav-choose-data a' : 'showChooseDataWorkflowModal',
 			'click .nav-process-data a' : 'goToProcessDataStep',
-			'click .nav-warning-modal .ok-button' : 'goToProjectLocationStep'
+			'click .nav-warning-modal .ok-button' : 'goToProjectLocationStep',
+			'change .choose-data-workflow-modal select' : 'goToChooseDataStep'
 		},
 
 		/*
@@ -54,8 +56,9 @@ define([
 
 			this.navSelector = {};
 			this.navSelector[Config.SPECIFY_AOI_STEP] = '.nav-specify-aoi';
-			this.navSelector[Config.CHOOSE_DATA_FILTERS_STEP] = '.nav-choose-data';
-			this.navSelector[Config.CHOOSE_DATA_VARIABLES_STEP] = '.nav-choose-data';
+			this.navSelector[Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP] = '.nav-choose-data';
+			this.navSelector[Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP] = '.nav-choose-data';
+			this.navSelector[Config.CHOOSE_DATA_BY_VARIABLES_STEP] = '.nav-choose-data';
 			this.navSelector[Config.PROCESS_DATA_STEP] = '.nav-process-data';
 
 			this.listenTo(this.model, 'change', this.updateNavigation);
@@ -79,6 +82,29 @@ define([
 			}
 		},
 
+		showChooseDataWorkflowModal : function(ev) {
+			var showModal = _.bind(function() {
+				var $modal = this.$('.choose-data-workflow-modal');
+				$modal.find('select').val('');
+				$modal.modal('show');
+			}, this);
+			ev.preventDefault();
+			if (this.model.get('step') === Config.PROCESS_DATA_STEP) {
+				if (!_.isEmpty(this.model.get('datasets'))) {
+					this.model.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
+				}
+				else if (!_.isEmpty(this.model.get('variables'))) {
+					this.model.set('step', Config.CHOOSE_DATA_BY_VARIABLES_STEP);
+				}
+				else {
+					showModal();
+				}
+			}
+			else {
+				showModal();
+			}
+		},
+
 		goToProjectLocationStep : function(ev) {
 			ev.preventDefault();
 			if (this.model.get('step') !== Config.SPECIFY_AOI_STEP) {
@@ -87,11 +113,11 @@ define([
 			}
 		},
 		goToChooseDataStep : function(ev) {
-			var step = this.model.get('step');
+			var step = $(ev.target).val();
+
 			ev.preventDefault();
-			if ((step !== Config.CHOOSE_DATA_FILTERS_STEP) && (step !== Config.CHOOSE_DATA_VARIABLES_STEP)) {
-				this.model.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
-			}
+			this.$('.choose-data-workflow-modal').modal('hide');
+			this.model.set('step', step);
 		},
 		goToProcessDataStep : function(ev) {
 			ev.preventDefault();
@@ -104,7 +130,7 @@ define([
 			var stepHasChanged = isRendering ? true : model.hasChanged('step');
 			var newStep = model.get('step');
 
-			var $chooseDataBtn = this.$(this.navSelector[Config.CHOOSE_DATA_FILTERS_STEP]);
+			var $chooseDataBtn = this.$(this.navSelector[Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP]);
 			var $processDataBtn= this.$(this.navSelector[Config.PROCESS_DATA_STEP]);
 			var currentStepSelector;
 
@@ -126,8 +152,9 @@ define([
 					this.router.navigate('');
 					break;
 
-				case Config.CHOOSE_DATA_FILTERS_STEP:
-				case Config.CHOOSE_DATA_VARIABLES_STEP:
+				case Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP:
+				case Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP:
+				case Config.CHOOSE_DATA_BY_VARIABLES_STEP:
 					if (model.get('hasSelectedVariables')) {
 						$processDataBtn.removeClass('disabled');
 					}
@@ -146,7 +173,7 @@ define([
 		},
 
 		updateAOI : function() {
-			var $chooseDataBtn = this.$(this.navSelector[Config.CHOOSE_DATA_FILTERS_STEP]);
+			var $chooseDataBtn = this.$(this.navSelector[Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP]);
 
 			switch(this.model.get('step')) {
 				case Config.SPECIFY_AOI_STEP:
@@ -158,8 +185,8 @@ define([
 					}
 					break;
 
-				case Config.CHOOSE_DATA_FILTERS_STEP:
-				case Config.CHOOSE_DATA_VARIABLES_STEP:
+				case Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP:
+				case Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP:
 					if (this.model.get('aoi').hasValidAOI()) {
 						this.router.navigate(getChooseDataUrl(this.model));
 					}

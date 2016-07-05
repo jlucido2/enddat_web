@@ -259,7 +259,8 @@ define([
 					}
 					break;
 
-				case Config.CHOOSE_DATA_FILTERS_STEP:
+				case Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP:
+				case Config.CHOOSE_DATA_BY_VARIABLES_STEP:
 					this.legendControl.setVisibility(true);
 					break;
 			}
@@ -368,6 +369,8 @@ define([
 
 			var siteCollection = this.model.get('datasetCollections')[datasetKind];
 			var filteredSiteModels = siteCollection.getSiteModelsWithinDateFilter(this.model.get('startDate'), this.model.get('endDate'));
+			var step = self.model.get('step');
+			var isInChooseDataBySiteWorkflow = (step === Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP) || (step === Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP);
 
 			var moveCircleMarker = function(latLng) {
 				if (self.circleMarker) {
@@ -424,13 +427,15 @@ define([
 					icon : siteMarkerOptions[datasetKind].icon,
 					title : siteMarkerOptions[datasetKind].getTitle(siteModel)
 				});
-
+				
 				self.siteLayerGroups[datasetKind].addLayer(marker);
-				marker.on('click', function(ev) {
-					moveCircleMarker(latLng);
-					updateDataView(siteModel, latLng);
-					self.model.set('step', Config.CHOOSE_DATA_VARIABLES_STEP);
-				});
+				if (isInChooseDataBySiteWorkflow) {
+					marker.on('click', function(ev) {
+						moveCircleMarker(latLng);
+						updateDataView(siteModel, latLng);
+						self.model.set('step', Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP);
+					});
+				}
 			});
 		},
 

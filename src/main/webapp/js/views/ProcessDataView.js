@@ -232,9 +232,15 @@ define([
 		showUrl : function(ev) {
 			var dataUrls = getUrl(this.model);
 			ev.preventDefault();
-			console.log(dataUrls);
 			this.context.dataUrls = dataUrls;
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
+			// disable "Get data" and "Download" buttons
+			if (dataUrls.length > 1) {
+				var $getDataBtn = this.$('.get-data-btn');
+				var $downloadBtn = this.$('.download-data-btn');
+				$getDataBtn.prop("disabled", true);
+				$downloadBtn.prop("disabled", true);
+			}
 		},
 
 		getData : function(ev) {

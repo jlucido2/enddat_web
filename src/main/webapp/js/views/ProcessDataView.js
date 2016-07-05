@@ -238,6 +238,9 @@ define([
 			if (dataUrls.length > 1) {
 				var $getDataBtn = this.$('.get-data-btn');
 				var $downloadBtn = this.$('.download-data-btn');
+				var $message = this.$('.warning-msg');
+				var messageText = "The URL for data processing exceeds the character limit. A single URL has been provided for each selected station.";
+				$message.html(messageText);
 				$getDataBtn.prop("disabled", true);
 				$downloadBtn.prop("disabled", true);
 			}

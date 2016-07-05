@@ -18,6 +18,43 @@ define([
 	"use strict";
 
 	var BASE_URL = module.config().baseUrl;
+	
+	var isInArray = function(value, array) {
+		return array.indexOf(value) > -1;
+	};
+	
+	var constructClassifier = function(param) {
+		var name = param.name;
+		var value = param.value;
+		var siteNumber = value.split(":")[0];
+		var classifier = name + '--' + siteNumber;
+		return classifier;
+	};
+	
+	var organizeParams = function(params) {
+		var classifiers = [];
+		for (var i = 0; i < params.length; i++) {
+			var paramObject = params[i];
+			var paramClassifier = constructClassifier(paramObject);
+			if (!isInArray(paramClassifier, classifiers)) {
+				classifiers.push(paramClassifier);
+			}
+		}
+		var masterParams = [];
+		for (var j = 0; j < classifiers.length; j++) {
+			var paramClassifier = classifiers[j];
+			var classifierParams = [];
+			for (var k = 0; k < params.length; k++) {
+				var paramObject = params[k];
+				var objectClassifier = constructClassifier(paramObject);
+				if (objectClassifier == paramClassifier) {
+					classifierParams.push(paramObject);
+				}
+			}
+			masterParams.push(classifierParams);
+		}
+		return masterParams;
+	};
 
 	var getUrl = function(workflowModel, download) {
 		var attrs = workflowModel.attributes;
@@ -40,10 +77,23 @@ define([
 		if (download) {
 			params.push({name : 'download', value: 'true'});
 		}
-
-		return BASE_URL + 'service/execute?' + $.param(params.concat(varParams));
+		var dataProcessingUrl = BASE_URL + 'service/execute?' + $.param(params.concat(varParams));
+		var urlLength = dataProcessingUrl.length;
+		if (urlLength > 200) {
+			var siteOrganizedParams = organizeParams(varParams);
+			var siteUrls = [];
+			for (var i = 0; i < siteOrganizedParams.length; i++) {
+				var siteParams = siteOrganizedParams[i];
+				var siteProcessingUrl = BASE_URL + 'service/execute?' + $.param(params.concat(siteParams));
+				siteUrls.push(siteProcessingUrl);
+			}
+		}
+		else {
+			siteUrls.push(dataProcessingUrl);
+		}
+		return siteUrls;
 	};
-
+	
 	/*
 	 * @constructs
 	 * @param {Object} options
@@ -176,11 +226,12 @@ define([
 		},
 
 		showUrl : function(ev) {
-			var url = getUrl(this.model);
-			var $link = this.$('.url-container a');
+			var dataUrls = getUrl(this.model);
+			var $link = this.$('.url-container');
 			ev.preventDefault();
-
-			$link.attr('href', url).html(url);
+			console.log(dataUrls);
+			var template = Handlebars.compile($link);
+			template.html(dataUrls);
 		},
 
 		getData : function(ev) {

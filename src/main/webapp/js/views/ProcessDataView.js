@@ -20,6 +20,7 @@ define([
 	var BASE_URL = module.config().baseUrl;
 	
 	var isInArray = function(value, array) {
+		// determine if a value is in an array
 		return array.indexOf(value) > -1;
 	};
 	
@@ -27,20 +28,23 @@ define([
 		var name = param.name;
 		var value = param.value;
 		var siteNumber = value.split(":")[0];
-		var classifier = name + '--' + siteNumber;
+		var classifier = name + '--' + siteNumber;  // make a simple string to identify each site type and site number pair
 		return classifier;
 	};
 	
 	var organizeParams = function(params) {
 		var classifiers = [];
+		// build list of identifying site type and number pairs
 		for (var i = 0; i < params.length; i++) {
 			var paramObject = params[i];
 			var paramClassifier = constructClassifier(paramObject);
+			// do not create duplicates
 			if (!isInArray(paramClassifier, classifiers)) {
 				classifiers.push(paramClassifier);
 			}
 		}
 		var masterParams = [];
+		// organize parameters by their sites
 		for (var j = 0; j < classifiers.length; j++) {
 			var paramClassifier = classifiers[j];
 			var classifierParams = [];
@@ -227,11 +231,10 @@ define([
 
 		showUrl : function(ev) {
 			var dataUrls = getUrl(this.model);
-			var $link = this.$('.url-container');
 			ev.preventDefault();
 			console.log(dataUrls);
-			var template = Handlebars.compile($link);
-			template.html(dataUrls);
+			this.context.dataUrls = dataUrls;
+			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
 		},
 
 		getData : function(ev) {

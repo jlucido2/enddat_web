@@ -22,47 +22,27 @@ define([
 	
 	var URL_LENGTH = 200;
 	
-	var isInArray = function(value, array) {
-		// determine if a value is in an array
-		return array.indexOf(value) > -1;
-	};
-	
 	var constructClassifier = function(param) {
 		var name = param.name;
 		var siteNo = param.siteNo;
-		var classifier = name + '--' + siteNo;  // make a simple string to identify each site type and site number pair
+		var classifier = name + '--' + siteNo;  // make a simple string to identify each dataset type and site number pair
 		return classifier;
 	};
 	
 	var organizeParams = function(params) {
-		var classifiers = [];
 		// build list of identifying site type and number pairs
-		for (var i = 0; i < params.length; i++) {
-			var paramObject = params[i];
-			var paramClassifier = constructClassifier(paramObject);
-			// do not create duplicates
-			if (!isInArray(paramClassifier, classifiers)) {
-				classifiers.push(paramClassifier);
-			}
-		}
+		var classifiers = _.uniq(_.map(params, constructClassifier));
 		var masterParams = [];
 		// organize parameters by their sites
-		for (var j = 0; j < classifiers.length; j++) {
-			var paramClassifier = classifiers[j];
-			var classifierParams = [];
-			for (var k = 0; k < params.length; k++) {
-				var paramObject = params[k];
-				var objectClassifier = constructClassifier(paramObject);
-				if (objectClassifier == paramClassifier) {
-					classifierParams.push(paramObject);
-				}
-			}
+		for (var i = 0; i < classifiers.length; i++) {
+			var paramClassifier = classifiers[i];
+			var classifierParams = _.filter(params, function(param) {return constructClassifier(param) == paramClassifier});
 			masterParams.push(classifierParams);
 		}
 		return masterParams;
 	};
 
-	var getUrl = function(workflowModel, download) {
+	var getUrls = function(workflowModel, download) {
 		var attrs = workflowModel.attributes;
 		var varParams = _.chain(workflowModel.getSelectedVariables())
 			.map(function(variable) {
@@ -87,15 +67,18 @@ define([
 		var urlLength = dataProcessingUrl.length;
 		if (urlLength > URL_LENGTH) {
 			var siteOrganizedParams = organizeParams(varParams);
-			var siteUrls = [];
+			//var siteUrls = [];
+			/*
 			for (var i = 0; i < siteOrganizedParams.length; i++) {
 				var siteParams = siteOrganizedParams[i];
 				var siteProcessingUrl = BASE_URL + 'service/execute?' + $.param(params.concat(siteParams));
 				siteUrls.push(siteProcessingUrl);
 			}
+			*/
+			var siteUrls = _.map(siteOrganizedParams, function(siteParams) {return BASE_URL + 'service/execute?' + $.param(params.concat(siteParams))});
 		}
 		else {
-			siteUrls.push(dataProcessingUrl);
+			siteUrls = [dataProcessingUrl];
 		}
 		return siteUrls;
 	};
@@ -232,7 +215,7 @@ define([
 		},
 
 		showUrl : function(ev) {
-			var dataUrls = getUrl(this.model);
+			var dataUrls = getUrls(this.model);
 			ev.preventDefault();
 			this.context.dataUrls = dataUrls;
 			var template = urlContainer;
@@ -259,12 +242,12 @@ define([
 
 		getData : function(ev) {
 			ev.preventDefault();
-			window.open(getUrl(this.model), '_blank');
+			window.open(getUrls(this.model), '_blank');
 		},
 
 		downloadData : function(ev) {
 			ev.preventDefault();
-			window.location.assign(getUrl(this.model, true));
+			window.location.assign(getUrls(this.model, true));
 		}
 	});
 

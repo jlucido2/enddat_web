@@ -82,7 +82,6 @@ define([
 		if (download) {
 			params.push({name : 'download', value: 'true'});
 		}
-		console.log(varParams);
 		var dataProcessingUrl = BASE_URL + 'service/execute?' + $.param(params.concat(varParams));
 		var urlLength = dataProcessingUrl.length;
 		if (urlLength > URL_LENGTH) {

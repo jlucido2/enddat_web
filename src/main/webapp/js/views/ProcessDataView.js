@@ -20,7 +20,7 @@ define([
 
 	var BASE_URL = module.config().baseUrl;
 	
-	var URL_LENGTH = 200;
+	var URL_LENGTH = 2000; // max url character length before it gets broken down into urls by site
 	
 	var constructClassifier = function(param) {
 		var name = param.name;
@@ -36,6 +36,7 @@ define([
 		// organize parameters by their sites
 		for (var i = 0; i < classifiers.length; i++) {
 			var paramClassifier = classifiers[i];
+			// make a list for parameters that fall into a specific dataset/site pair
 			var classifierParams = _.filter(params, function(param) {return constructClassifier(param) == paramClassifier});
 			masterParams.push(classifierParams);
 		}
@@ -211,7 +212,7 @@ define([
 			ev.preventDefault();
 			this.context.dataUrls = dataUrls;
 			var template = urlContainer;
-			$('.url-container').html(template({dataUrls : dataUrls}));
+			$('.url-container').html(template({dataUrls : dataUrls})); // render content in the url-container div
 			var $getDataBtn = this.$('.get-data-btn');
 			var $downloadBtn = this.$('.download-data-btn');
 			var $message = this.$('.warning-msg');

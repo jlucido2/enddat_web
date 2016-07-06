@@ -48,11 +48,11 @@ define([
 
 				var variableCollection = new BaseVariableCollection([
 					{x : '2', y: '2', selected : true,
-						variableParameter : new VariableParameter({name : 'DatasetId', value : '2:2', colName : 'Var1'}),
+						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var1'}),
 						timeSeriesOptions : [{statistic : 'raw'}]
 					},
 					{x : '3', y: '3', selected : true,
-						variableParameter : new VariableParameter({name : 'DatasetId', value : '3:3', colName : 'Var1'}),
+						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var1'}),
 						timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]}
 				]);
 

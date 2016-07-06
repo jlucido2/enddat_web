@@ -67,14 +67,6 @@ define([
 		var urlLength = dataProcessingUrl.length;
 		if (urlLength > URL_LENGTH) {
 			var siteOrganizedParams = organizeParams(varParams);
-			//var siteUrls = [];
-			/*
-			for (var i = 0; i < siteOrganizedParams.length; i++) {
-				var siteParams = siteOrganizedParams[i];
-				var siteProcessingUrl = BASE_URL + 'service/execute?' + $.param(params.concat(siteParams));
-				siteUrls.push(siteProcessingUrl);
-			}
-			*/
 			var siteUrls = _.map(siteOrganizedParams, function(siteParams) {return BASE_URL + 'service/execute?' + $.param(params.concat(siteParams))});
 		}
 		else {

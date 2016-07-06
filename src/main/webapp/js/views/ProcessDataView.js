@@ -28,8 +28,8 @@ define([
 	
 	var constructClassifier = function(param) {
 		var name = param.name;
-		var site_id = param.site_id;
-		var classifier = name + '--' + site_id;  // make a simple string to identify each site type and site number pair
+		var siteNo = param.siteNo;
+		var classifier = name + '--' + siteNo;  // make a simple string to identify each site type and site number pair
 		return classifier;
 	};
 	

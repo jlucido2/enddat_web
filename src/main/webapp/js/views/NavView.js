@@ -13,11 +13,17 @@ define([
 	var getChooseDataUrl = function(model) {
 		var state = model.attributes;
 		var aoi = model.attributes.aoi;
+		var isBySite = ((state.step === Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP) ||
+			(state.step === Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP));
+		var isByVariables = (state.step === Config.CHOOSE_DATA_BY_VARIABLES_STEP);
 
 		var startDate = (state.startDate) ? '/startdate/' + state.startDate.format(Config.DATE_FORMAT_URL) : '';
 		var endDate = (state.endDate) ? '/enddate/' + state.endDate.format(Config.DATE_FORMAT_URL) : '';
-		var datasets = (state.datasets) ? '/dataset/' + state.datasets.join('/') : '';
-		var variableKinds = (state.variableKinds) ? '/variable' + state.variableKinds.join('/') : '';
+
+		var datasets = (state.datasets) ? state.datasets.join('/') : '';
+		var datasetFragment = (isBySite) ? '/dataset/' + datasets : '';
+		var variableKinds = (state.variables) ? state.variables.join('/') : '';
+		var variableKindFragment = (isByVariables) ? '/variable/' + variableKinds : '';
 
 		var aoiFragment = '';
 		if (aoi.usingProjectLocation()) {
@@ -31,7 +37,7 @@ define([
 			aoiFragment = 'aoiBbox/' + aoiBox.south + ',' + aoiBox.west + ',' + aoiBox.north + ',' + aoiBox.east;
 		}
 
-		return aoiFragment + startDate + endDate + datasets + variableKinds;
+		return aoiFragment + startDate + endDate + datasetFragment + variableKindFragment;
 	};
 
 	var view = BaseView.extend({

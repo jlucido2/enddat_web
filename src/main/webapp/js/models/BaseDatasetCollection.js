@@ -96,6 +96,24 @@ define([
 				};
 			}
 			return result;
+		},
+
+		selectAllVariablesInFilters : function(filters) {
+			this.each(function(siteModel) {
+				var variables = siteModel.get('variables');
+				_.each(filters, function(filter) {
+					variables.selectVariablesInFilter(filter);
+				});
+			});
+		},
+
+		unselectAllVariablesInFilters : function(filters) {
+			this.each(function(siteModel) {
+				var variables = siteModel.get('variables');
+				_.each(filters, function(filter) {
+					variables.unselectVariablesInFilter(filter);
+				});
+			});
 		}
 	});
 

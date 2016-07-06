@@ -57,7 +57,7 @@ define([
 			this.updateDatasets();
 			this.updateStartDate();
 			this.updateEndDate();
-                        this.gaSelectTracker();
+			this.gaSelectTracker();
 
 			this.listenTo(this.model, 'change:datasets', this.updateDatasets);
 			this.listenTo(this.model, 'change:startDate', this.updateStartDate);
@@ -126,18 +126,18 @@ define([
 				$startDate.data('DateTimePicker').maxDate(new Date());
 			}
 		},
-                
-                gaSelectTracker : function(){
-                    $('#datasets-select').on('select2:select', function(e){
-                           var lastSelectedItem = e.params.data.text;
-                           ga('send', 'event', 'Dataset Selected', 'clicked', lastSelectedItem);
-                        });
-                        
-                    $('#datasets-select').on('select2:unselect', function(e){
-                           var lastRemovedItem = e.params.data.text;
-                           ga('send', 'event', 'Dataset Removed', 'clicked', lastRemovedItem);
-                        });
-                } 
+
+		gaSelectTracker: function () {
+			$('#datasets-select').on('select2:select', function (e) {
+				var lastSelectedItem = e.params.data.text;
+				ga('send', 'event', 'Dataset Selected', 'clicked', lastSelectedItem);
+			});
+
+			$('#datasets-select').on('select2:unselect', function (e) {
+				var lastRemovedItem = e.params.data.text;
+				ga('send', 'event', 'Dataset Removed', 'clicked', lastRemovedItem);
+			});
+		}
 
 	});
 

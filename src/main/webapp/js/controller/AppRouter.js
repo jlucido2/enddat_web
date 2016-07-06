@@ -24,10 +24,10 @@ define([
 	var appRouter = Backbone.Router.extend({
 		routes: {
 			'': 'specifyProjectLocationState',
-			'lat/:lat/lng/:lng/radius/:radius(/startdate/:startDate)(/enddate/:endDate)(/dataset/*datasets)' : 'chooseDataStateProjLoc',
-			'aoiBbox/:bbox(/startdate/:startDate)(/enddate/:endDate)(/dataset/*datasets)' : 'chooseDataStateAOIBox',
-			'lat/:lat/lng/:lng/radius/:radius(/startdate/:startDate)(/enddate/:endDate)(/variable/*variables)' : 'chooseByVariableStateProjLoc',
-			'aoiBbox/:bbox(/startdate/:startDate)(/enddate/:endDate)(/variable/*variables)' : 'chooseByVariableStateAOIBox'
+			'lat/:lat/lng/:lng/radius/:radius(/startdate/:startDate)(/enddate/:endDate)/dataset/*datasets' : 'chooseDataStateProjLoc',
+			'aoiBbox/:bbox(/startdate/:startDate)(/enddate/:endDate)/dataset/*datasets' : 'chooseDataStateAOIBox',
+			'lat/:lat/lng/:lng/radius/:radius(/startdate/:startDate)(/enddate/:endDate)/variable/*variables' : 'chooseByVariableStateProjLoc',
+			'aoiBbox/:bbox(/startdate/:startDate)(/enddate/:endDate)/variable/*variables' : 'chooseByVariableStateAOIBox'
 	},
 
 		initialize : function(options) {

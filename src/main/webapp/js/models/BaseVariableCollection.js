@@ -106,6 +106,27 @@ define([
 				}
 			}
 			return dateRange;
+		},
+
+		selectVariablesInFilter : function(filter) {
+			var matchFilter = _.matcher(filter);
+			var variableModelsInFilter = _.filter(this.models, function(variableModel) {
+				return matchFilter(variableModel.attributes);
+			});
+			_.each(variableModelsInFilter, function(variableModel) {
+				variableModel.set('selected', true);
+			});
+		},
+
+		unselectVariablesInFilter : function(filter) {
+			var matchFilter = _.matcher(filter);
+			_.chain(this.models)
+				.filter(function(variableModel) {
+					return matchFilter(variableModel.attributes);
+				})
+				.each(function(variableModel) {
+					variableModel.unset('selected');
+				});
 		}
 	});
 

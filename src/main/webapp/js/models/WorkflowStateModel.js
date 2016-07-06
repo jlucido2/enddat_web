@@ -6,12 +6,13 @@ define([
 	'moment',
 	'backbone',
 	'Config',
+	'VariableDatasetMapping',
 	'models/GLCFSCollection',
 	'models/NWISCollection',
 	'models/PrecipitationCollection',
 	'models/ACISCollection',
 	'models/AOIModel'
-], function(_, $, moment, Backbone, Config, GLCFSCollection, NWISCollection, PrecipitationCollection, ACISCollection, AOIModel) {
+], function(_, $, moment, Backbone, Config, VariableDatasetMapping, GLCFSCollection, NWISCollection, PrecipitationCollection, ACISCollection, AOIModel) {
 	"use strict";
 
 	var DEFAULT_CHOSEN_DATASETS = ['NWIS'];
@@ -65,6 +66,7 @@ define([
 
 				this.get('aoi').on('change', this.changeAOI, this);
 				this.on('change:datasets', this.updateDatasetCollections, this);
+				this.on('change:variables', this.updateSelectedVariables, this);
 			}
 		},
 
@@ -118,6 +120,50 @@ define([
 			}
 		},
 
+		updateSelectedVariables : function() {
+			var self = this;
+			var prevVariableKinds = this.previous('variables');
+			var variableKinds = this.get('variables');
+			var variableKindsToSelect = _.difference(variableKinds, prevVariableKinds);
+			var variableKindsToUnselect = _.difference(prevVariableKinds, variableKinds);
+
+			var datasetsToRetrieve = _.chain(variableKindsToSelect)
+				.map(function(variableKind) {
+					return _.pluck(VariableDatasetMapping[variableKind].datasets, 'name');
+				})
+				.flatten()
+				.uniq()
+				.filter(function(datasetKind) {
+					return self.attributes.datasetCollections[datasetKind].length === 0;
+				})
+				.value();
+
+			this.once('dataset:updateFinished', function() {
+				_.each(variableKindsToSelect, function(variableKind) {
+					var variableMapping = VariableDatasetMapping[variableKind].datasets;
+					var datasetsWithVariable = _.pluck(variableMapping, 'name');
+					_.each(datasetsWithVariable, function(dataset) {
+						var filter = _.find(variableMapping, function(variableDataset) {
+							return variableDataset.name === dataset;
+						}).filter;
+						self.attributes.datasetCollections[dataset].selectAllVariablesInFilters(filter);
+					});
+				});
+
+				_.each(variableKindsToUnselect, function(variableKind) {
+					var variableMapping = VariableDatasetMapping[variableKind].datasets;
+					var datasetsWithVariable = _.pluck(variableMapping, 'name');
+					_.each(datasetsWithVariable, function(dataset) {
+						var filter = _.find(variableMapping, function(variableDataset) {
+							return variableDataset.name === dataset;
+						}).filter;
+						self.attributes.datasetCollections[dataset].unselectAllVariablesInFilters(filter);
+					});
+				});
+			});
+			this.fetchDatasets(datasetsToRetrieve, this.attributes.aoi.getBoundingBox());
+		},
+
 		/*
 		 * Updates the state of the model based on the current step and the previous step.
 		 */
@@ -133,6 +179,7 @@ define([
 						});
 					};
 					this.unset('datasets');
+					this.unset('variables');
 					this.unset('startDate');
 					this.unset('endDate');
 					this.unset('uploadedFeatureName');

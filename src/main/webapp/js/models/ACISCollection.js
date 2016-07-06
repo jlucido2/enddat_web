@@ -52,11 +52,13 @@ define([
 				var variables = _.chain(site.valid_daterange)
 					.map(function(dateRange, varIndex) {
 						var result = _.clone(ELEMS[varIndex]);
+						console.log(result);
 						if (dateRange.length > 0) {
 							result.startDate = moment(dateRange[0], Config.DATE_FORMAT);
 							result.endDate = moment(dateRange[1], Config.DATE_FORMAT);
 							result.variableParameter = new VariableParameter({
 								name : 'ACIS',
+								site_id : sid,
 								value : sid + ':' +  result.code,
 								colName : result.description + ':' + sid
 							});

@@ -19,6 +19,8 @@ define([
 
 	var BASE_URL = module.config().baseUrl;
 	
+	var URL_LENGTH = 200;
+	
 	var isInArray = function(value, array) {
 		// determine if a value is in an array
 		return array.indexOf(value) > -1;
@@ -26,9 +28,8 @@ define([
 	
 	var constructClassifier = function(param) {
 		var name = param.name;
-		var value = param.value;
-		var siteNumber = value.split(":")[0];
-		var classifier = name + '--' + siteNumber;  // make a simple string to identify each site type and site number pair
+		var site_id = param.site_id;
+		var classifier = name + '--' + site_id;  // make a simple string to identify each site type and site number pair
 		return classifier;
 	};
 	
@@ -81,9 +82,10 @@ define([
 		if (download) {
 			params.push({name : 'download', value: 'true'});
 		}
+		console.log(varParams);
 		var dataProcessingUrl = BASE_URL + 'service/execute?' + $.param(params.concat(varParams));
 		var urlLength = dataProcessingUrl.length;
-		if (urlLength > 200) {
+		if (urlLength > URL_LENGTH) {
 			var siteOrganizedParams = organizeParams(varParams);
 			var siteUrls = [];
 			for (var i = 0; i < siteOrganizedParams.length; i++) {

@@ -12,9 +12,10 @@ define([
 	'utils/jqueryUtils',
 	'views/BaseCollapsiblePanelView',
 	'views/VariableTsOptionView',
-	'hbs!hb_templates/processData'
+	'hbs!hb_templates/processData',
+	'hbs!hb_templates/urlContainer'
 ], function($, _, moment, Handlebars, datetimepicker, stickit, module, Config, $utils, BaseCollapsiblePanelView,
-	VariableTsOptionView, hbTemplate) {
+	VariableTsOptionView, hbTemplate, urlContainer) {
 	"use strict";
 
 	var BASE_URL = module.config().baseUrl;
@@ -107,7 +108,7 @@ define([
 	 */
 	var view = BaseCollapsiblePanelView.extend({
 		template : hbTemplate,
-
+		
 		panelHeading : 'Process Data',
 		panelBodyId : 'process-data-panel-body',
 
@@ -234,17 +235,25 @@ define([
 			var dataUrls = getUrl(this.model);
 			ev.preventDefault();
 			this.context.dataUrls = dataUrls;
-			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
+			var template = urlContainer;
+			$('.url-container').html(template({dataUrls : dataUrls}));
+			var $getDataBtn = this.$('.get-data-btn');
+			var $downloadBtn = this.$('.download-data-btn');
+			var $message = this.$('.warning-msg');
 			if (dataUrls.length > 1) {
-				var $getDataBtn = this.$('.get-data-btn');
-				var $downloadBtn = this.$('.download-data-btn');
-				var $message = this.$('.warning-msg');
 				var messageText = "The URL for data processing exceeds the character limit. A single URL has been provided for each selected station.";
 				// display a message
 				$message.html(messageText);
 				// disable "Get data" and "Download" buttons
 				$getDataBtn.prop("disabled", true);
 				$downloadBtn.prop("disabled", true);
+			}
+			else {
+				// clear the message
+				$message.html('');
+				// enable "Get data" and "Download" buttons
+				$getDataBtn.prop("disabled", false);
+				$downloadBtn.prop("disabled", false);
 			}
 		},
 

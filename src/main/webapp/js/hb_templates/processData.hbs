@@ -79,12 +79,5 @@
 	<button class="btn btn-info show-url-btn" type="button">Show data processing url</button>
 	<button class="btn btn-info get-data-btn" type="button">Get data (opens new tab)</button>
 	<button class="btn btn-primary download-data-btn" type="button">Download</button>
-	<div class="url-container">
-		<p class="warning-msg"></p>
-		<ul>
-			{{#each dataUrls}}
-				<li><a href={{this}} target="_blank">{{this}}</a></li>
-			{{/each}}
-		</ul>
-	</div>
+	<div class="url-container"></div>
 </div>

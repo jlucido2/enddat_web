@@ -108,25 +108,42 @@ define([
 			return dateRange;
 		},
 
-		selectVariablesInFilter : function(filter) {
-			var matchFilter = _.matcher(filter);
-			var variableModelsInFilter = _.filter(this.models, function(variableModel) {
-				return matchFilter(variableModel.attributes);
-			});
-			_.each(variableModelsInFilter, function(variableModel) {
-				variableModel.set('selected', true);
+		hasVariablesInFilters : function(filters) {
+			var self = this;
+			return  _.some(filters, function(filter) {
+				var matchFilter = _.matcher(filter);
+				return _.some(self.models, function(variableModel) {
+					return matchFilter(variableModel.attributes);
+				});
 			});
 		},
 
-		unselectVariablesInFilter : function(filter) {
-			var matchFilter = _.matcher(filter);
-			_.chain(this.models)
-				.filter(function(variableModel) {
+		selectVariablesInFilters : function(filters) {
+			var matchFilters = _.map(filters, function(filter) {
+				return _.matcher(filter);
+			});
+			this.each(function(variableModel) {
+				var inFilter =_.some(matchFilters, function(matchFilter) {
 					return matchFilter(variableModel.attributes);
-				})
-				.each(function(variableModel) {
-					variableModel.unset('selected');
 				});
+				if (inFilter) {
+					variableModel.set('selected', true);
+				}
+			});
+		},
+
+		unselectVariablesInFilters : function(filters) {
+			var matchFilters = _.map(filters, function(filter) {
+				return _.matcher(filter);
+			});
+			this.each(function(variableModel) {
+				var inFilter =_.some(matchFilters, function(matchFilter) {
+					return matchFilter(variableModel.attributes);
+				});
+				if (inFilter) {
+					variableModel.unset('selected');
+				}
+			});
 		}
 	});
 

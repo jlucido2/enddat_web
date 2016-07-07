@@ -8,6 +8,7 @@ define([
 	'loglevel',
 	'module',
 	'Config',
+	'VariableDatasetMapping',
 	'utils/jqueryUtils',
 	'utils/LUtils',
 	'leafletCustomControls/legendControl',
@@ -17,7 +18,7 @@ define([
 	'views/ACISDataView',
 	'views/NWISDataView',
 	'hbs!hb_templates/mapOps'
-], function(_, L, leafletDraw, leafletProviders, log, module, Config, $utils, LUtils, legendControl, BaseView,
+], function(_, L, leafletDraw, leafletProviders, log, module, Config, variableDatasetMapping, $utils, LUtils, legendControl, BaseView,
 		PrecipDataView, GLCFSDataView, ACISDataView, NWISDataView, hbTemplate) {
 
 	var siteIcons = _.mapObject(Config.DATASET_ICON, function(value) {
@@ -361,6 +362,15 @@ define([
 			this.listenTo(datasetCollections[Config.GLCFS_DATASET_MICHIGAN], 'reset', this.updateGLCFSMichiganMarker);
 			this.listenTo(datasetCollections[Config.GLCFS_DATASET_ONTARIO], 'reset', this.updateGLCFSOntarioMarker);
 			this.listenTo(datasetCollections[Config.GLCFS_DATASET_SUPERIOR], 'reset', this.updateGLCFSSuperiorMarker);
+
+			this.listenTo(datasetCollections[Config.NWIS_DATASET], 'dataset:updateVariablesInFilter', this.updateNWISMarker);
+			this.listenTo(datasetCollections[Config.PRECIP_DATASET], 'dataset:updateVariablesInFilter', this.updatePrecipGridPoints);
+			this.listenTo(datasetCollections[Config.ACIS_DATASET], 'dataset:updateVariablesInFilter', this.updateACISMarker);
+			this.listenTo(datasetCollections[Config.GLCFS_DATASET_ERIE], 'dataset:updateVariablesInFilter', this.updateGLCFSErieMarker);
+			this.listenTo(datasetCollections[Config.GLCFS_DATASET_HURON], 'dataset:updateVariablesInFilter', this.updateGLCFSHuronMarker);
+			this.listenTo(datasetCollections[Config.GLCFS_DATASET_MICHIGAN], 'dataset:updateVariablesInFilter', this.updateGLCFSMichiganMarker);
+			this.listenTo(datasetCollections[Config.GLCFS_DATASET_ONTARIO], 'dataset:updateVariablesInFilter', this.updateGLCFSOntarioMarker);
+			this.listenTo(datasetCollections[Config.GLCFS_DATASET_SUPERIOR], 'dataset:updateVariablesInFilter', this.updateGLCFSSuperiorMarker);
 		},
 
 		updateSiteMarkerLayer : function(datasetKind) {
@@ -411,6 +421,12 @@ define([
 				self.selectedSite.dataView.render();
 			};
 
+			if (isInChooseDataBySiteWorkflow) {
+				filteredSiteModels = siteCollection.getSiteModelsWithinDateFilter(this.model.get('startDate'), this.model.get('endDate'));
+			}
+			else {
+				filteredSiteModels = siteCollection.getSitesWithVariableInFilters(variableDatasetMapping.getFilters(datasetKind, this.model.get('variables')))
+			}
 			// Determine if the selected site is still in the collection
 			if (this.selectedSite && (this.selectedSite.datasetKind === datasetKind) &&
 				!_.contains(filteredSiteModels, this.selectedSite.model)) {
@@ -427,7 +443,7 @@ define([
 					icon : siteMarkerOptions[datasetKind].icon,
 					title : siteMarkerOptions[datasetKind].getTitle(siteModel)
 				});
-				
+
 				self.siteLayerGroups[datasetKind].addLayer(marker);
 				if (isInChooseDataBySiteWorkflow) {
 					marker.on('click', function(ev) {

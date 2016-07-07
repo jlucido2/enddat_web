@@ -98,22 +98,26 @@ define([
 			return result;
 		},
 
+		getSitesWithVariableInFilters : function(filters) {
+			return this.filter(function(siteModel) {
+				return siteModel.attributes.variables.hasVariablesInFilters(filters);
+			});
+		},
+
 		selectAllVariablesInFilters : function(filters) {
 			this.each(function(siteModel) {
 				var variables = siteModel.get('variables');
-				_.each(filters, function(filter) {
-					variables.selectVariablesInFilter(filter);
-				});
+				variables.selectVariablesInFilters(filters);
 			});
+			this.trigger('dataset:updateVariablesInFilter');
 		},
 
 		unselectAllVariablesInFilters : function(filters) {
 			this.each(function(siteModel) {
 				var variables = siteModel.get('variables');
-				_.each(filters, function(filter) {
-					variables.unselectVariablesInFilter(filter);
-				});
+				variables.unselectVariablesInFilters(filters);
 			});
+			this.trigger('dataset:updateVariablesInFilter');
 		}
 	});
 

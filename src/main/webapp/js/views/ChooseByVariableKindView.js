@@ -22,7 +22,7 @@ define([
 		},
 
 		render : function() {
-			this.context = VariableDatasetMapping;
+			this.context = VariableDatasetMapping.mapping;
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
 
 			this.$('#variable-select').select2({

@@ -110,15 +110,30 @@ define([
 		 * fetch all chosen datasets. Otherwise clear all datasets.
 		 */
 		changeAOI : function() {
+			var self = this;
 			var boundingBox = this.get('aoi').getBoundingBox();
 			var chosenDatasets = this.has('datasets') ? this.get('datasets') : [];
-			if (boundingBox) {
-				this.fetchDatasets(chosenDatasets, boundingBox);
+			var chosenVariableKinds = this.has('variables') ? this.get('variables') : [];
+			if (chosenDatasets.length > 0) {
+				if (boundingBox) {
+					this.fetchDatasets(chosenDatasets, boundingBox);
+				}
+				else {
+					this.clearDatasets(Config.ALL_DATASETS);
+				}
 			}
-			else {
-				this.clearDatasets(Config.ALL_DATASETS);
+			else if (chosenVariableKinds.length > 0) {
+				var variableDatasets = VariableDatasetMapping.getDatasets(chosenVariableKinds);
+				var updateSelectedVariableKinds = function() {
+					_.each(variableDatasets, function(dataset) {
+						var filters = VariableDatasetMapping.getFilters(dataset, chosenVariableKinds);
+						self.get('datasetCollections')[dataset].selectAllVariablesInFilters(filters);
+					});
+				};
+				this.fetchDatasets(variableDatasets, boundingBox, updateSelectedVariableKinds);
 			}
 		},
+
 
 		updateSelectedVariables : function() {
 			var self = this;
@@ -129,7 +144,7 @@ define([
 
 			var datasetsToRetrieve = _.chain(variableKindsToSelect)
 				.map(function(variableKind) {
-					return _.pluck(VariableDatasetMapping[variableKind].datasets, 'name');
+					return _.pluck(VariableDatasetMapping.mapping[variableKind].datasets, 'name');
 				})
 				.flatten()
 				.uniq()
@@ -138,9 +153,9 @@ define([
 				})
 				.value();
 
-			this.once('dataset:updateFinished', function() {
+			var finishFetchingCallback = function() {
 				_.each(variableKindsToSelect, function(variableKind) {
-					var variableMapping = VariableDatasetMapping[variableKind].datasets;
+					var variableMapping = VariableDatasetMapping.mapping[variableKind].datasets;
 					var datasetsWithVariable = _.pluck(variableMapping, 'name');
 					_.each(datasetsWithVariable, function(dataset) {
 						var filter = _.find(variableMapping, function(variableDataset) {
@@ -151,7 +166,7 @@ define([
 				});
 
 				_.each(variableKindsToUnselect, function(variableKind) {
-					var variableMapping = VariableDatasetMapping[variableKind].datasets;
+					var variableMapping = VariableDatasetMapping.mapping[variableKind].datasets;
 					var datasetsWithVariable = _.pluck(variableMapping, 'name');
 					_.each(datasetsWithVariable, function(dataset) {
 						var filter = _.find(variableMapping, function(variableDataset) {
@@ -160,8 +175,9 @@ define([
 						self.attributes.datasetCollections[dataset].unselectAllVariablesInFilters(filter);
 					});
 				});
-			});
-			this.fetchDatasets(datasetsToRetrieve, this.attributes.aoi.getBoundingBox());
+			};
+
+			this.fetchDatasets(datasetsToRetrieve, this.attributes.aoi.getBoundingBox(), finishFetchingCallback);
 		},
 
 		/*
@@ -262,7 +278,7 @@ define([
 		 * @param {Array of String} datasetKinds
 		 * @param {Object with north, south, east, west properties} boundingBox
 		 */
-		fetchDatasets : function(datasetKinds, boundingBox) {
+		fetchDatasets : function(datasetKinds, boundingBox, finishedFnc) {
 			var self = this;
 			var datasetsToFetch = _.pick(this.get('datasetCollections'), datasetKinds);
 			var fetchDonePromises = [];
@@ -292,11 +308,23 @@ define([
 					var datasetKindErrors = _.filter(arguments, function(arg) {
 						return (arg) ? true : false;
 					});
+					if (finishedFnc) {
+						finishedFnc();
+					}
 					self.trigger('dataset:updateFinished', datasetKindErrors);
 				});
 			}
 			else {
-				this.trigger('dataset:updateFinished', []);
+				if (finishedFnc) {
+					// This gives the view's time to call any dataset:updateStart handlers before the dataset:updateFinisihed is triggered
+					setTimeout(function() {
+						finishedFnc();
+						self.trigger('dataset:updateFinished', []);
+					}, 10);
+				}
+				else {
+					self.trigger('dataset:updateFinished', []);
+				}
 			}
 		},
 

@@ -20,8 +20,6 @@ define([
 
 	var BASE_URL = module.config().baseUrl;
 	
-	var URL_LENGTH = 2000; // max url character length before it gets broken down into urls by site
-	
 	var constructClassifier = function(param) {
 		var name = param.name;
 		var siteNo = param.siteNo;
@@ -43,7 +41,7 @@ define([
 		return masterParams;
 	};
 
-	var getUrls = function(workflowModel, download) {
+	var getUrls = function(workflowModel, maxUrlLength, download) {
 		var attrs = workflowModel.attributes;
 		var varParams = _.chain(workflowModel.getSelectedVariables())
 			.map(function(variable) {
@@ -66,7 +64,7 @@ define([
 		}
 		var dataProcessingUrl = BASE_URL + 'service/execute?' + $.param(params.concat(varParams));
 		var urlLength = dataProcessingUrl.length;
-		if (urlLength > URL_LENGTH) {
+		if (urlLength > maxUrlLength) {
 			var siteOrganizedParams = organizeParams(varParams);
 			var siteUrls = _.map(siteOrganizedParams, function(siteParams) {return BASE_URL + 'service/execute?' + $.param(params.concat(siteParams))});
 		}
@@ -103,6 +101,11 @@ define([
 			'#acceptable-data-gap-input' : 'outputTimeGapInterval',
 			'#output-file-format-input' : 'outputFileFormat',
 			'#missing-value-input' : 'outputMissingValue'
+		},
+		
+		initialize : function(options) {
+			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
+			this.maxUrlLength = options.maxUrlLength ? options.maxUrlLength : 200; // max url character length before it gets broken down into urls by site
 		},
 
 		render : function() {
@@ -208,7 +211,7 @@ define([
 		},
 
 		showUrl : function(ev) {
-			var dataUrls = getUrls(this.model);
+			var dataUrls = getUrls(this.model, this.maxUrlLength);
 			ev.preventDefault();
 			this.context.dataUrls = dataUrls;
 			var template = urlContainer;

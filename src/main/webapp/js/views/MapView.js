@@ -8,7 +8,7 @@ define([
 	'loglevel',
 	'module',
 	'Config',
-	'VariableDatasetMapping',
+	'utils/VariableDatasetMapping',
 	'utils/jqueryUtils',
 	'utils/LUtils',
 	'leafletCustomControls/legendControl',

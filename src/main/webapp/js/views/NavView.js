@@ -193,6 +193,7 @@ define([
 
 				case Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP:
 				case Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP:
+				case Config.CHOOSE_DATA_BY_VARIABLES_STEP:
 					if (this.model.get('aoi').hasValidAOI()) {
 						this.router.navigate(getChooseDataUrl(this.model));
 					}

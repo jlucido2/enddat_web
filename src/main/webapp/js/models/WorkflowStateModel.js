@@ -6,7 +6,7 @@ define([
 	'moment',
 	'backbone',
 	'Config',
-	'VariableDatasetMapping',
+	'utils/VariableDatasetMapping',
 	'models/GLCFSCollection',
 	'models/NWISCollection',
 	'models/PrecipitationCollection',
@@ -142,38 +142,21 @@ define([
 			var variableKindsToSelect = _.difference(variableKinds, prevVariableKinds);
 			var variableKindsToUnselect = _.difference(prevVariableKinds, variableKinds);
 
-			var datasetsToRetrieve = _.chain(variableKindsToSelect)
-				.map(function(variableKind) {
-					return _.pluck(VariableDatasetMapping.mapping[variableKind].datasets, 'name');
-				})
-				.flatten()
-				.uniq()
-				.filter(function(datasetKind) {
-					return self.attributes.datasetCollections[datasetKind].length === 0;
-				})
-				.value();
+			var datasetsToSelect = VariableDatasetMapping.getDatasets(variableKindsToSelect);
+			var datasetsToUnselect = VariableDatasetMapping.getDatasets(variableKindsToUnselect);
+			var datasetsToRetrieve = _.filter(datasetsToSelect, function(datasetKind) {
+				return self.attributes.datasetCollections[datasetKind].length === 0;
+			});
 
 			var finishFetchingCallback = function() {
-				_.each(variableKindsToSelect, function(variableKind) {
-					var variableMapping = VariableDatasetMapping.mapping[variableKind].datasets;
-					var datasetsWithVariable = _.pluck(variableMapping, 'name');
-					_.each(datasetsWithVariable, function(dataset) {
-						var filter = _.find(variableMapping, function(variableDataset) {
-							return variableDataset.name === dataset;
-						}).filter;
-						self.attributes.datasetCollections[dataset].selectAllVariablesInFilters(filter);
-					});
+				_.each(datasetsToSelect, function(dataset) {
+					var filters = VariableDatasetMapping.getFilters(dataset, variableKindsToSelect);
+					self.attributes.datasetCollections[dataset].selectAllVariablesInFilters(filters);
 				});
 
-				_.each(variableKindsToUnselect, function(variableKind) {
-					var variableMapping = VariableDatasetMapping.mapping[variableKind].datasets;
-					var datasetsWithVariable = _.pluck(variableMapping, 'name');
-					_.each(datasetsWithVariable, function(dataset) {
-						var filter = _.find(variableMapping, function(variableDataset) {
-							return variableDataset.name === dataset;
-						}).filter;
-						self.attributes.datasetCollections[dataset].unselectAllVariablesInFilters(filter);
-					});
+				_.each(datasetsToUnselect, function(dataset) {
+					var filters = VariableDatasetMapping.getFilters(dataset, variableKindsToUnselect);
+					self.attributes.datasetCollections[dataset].unselectAllVariablesInFilters(filters);
 				});
 			};
 

@@ -3,7 +3,7 @@
 define([
 	'underscore',
 	'select2',
-	'VariableDatasetMapping',
+	'utils/VariableDatasetMapping',
 	'views/BaseCollapsiblePanelView',
 	'hbs!hb_templates/chooseByVariable'
 ], function(_, select2, VariableDatasetMapping, BaseCollapsiblePanelView, hbTemplate) {
@@ -22,7 +22,7 @@ define([
 		},
 
 		render : function() {
-			this.context = VariableDatasetMapping.mapping;
+			this.context = VariableDatasetMapping.getMapping();
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
 
 			this.$('#variable-select').select2({

@@ -238,12 +238,12 @@ define([
 
 		getData : function(ev) {
 			ev.preventDefault();
-			window.open(getUrls(this.model), '_blank');
+			window.open(getUrls(this.model, this.maxUrlLength), '_blank');
 		},
 
 		downloadData : function(ev) {
 			ev.preventDefault();
-			window.location.assign(getUrls(this.model, true));
+			window.location.assign(getUrls(this.model, this.maxUrlLength, true));
 		}
 	});
 

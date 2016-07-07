@@ -3,14 +3,14 @@
 define([
 	'jquery',
 	'underscore',
-	'Config'
-], function($, _) {
+	'module'
+], function($, _, module) {
 	"use strict";
 
 	var variableDatasetMapping = (function() {
 		var self = {};
 		var mapping = {};
-		$.getJSON('json/variableDatasetMapping.json', function(data) {
+		$.getJSON(module.config().variableDatasetMappingUrl, function(data) {
 			mapping = data;
 		});
 
@@ -64,6 +64,6 @@ define([
 
 		return self;
 	})();
-	
+
 	return variableDatasetMapping;
 });

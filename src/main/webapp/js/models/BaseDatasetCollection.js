@@ -98,6 +98,10 @@ define([
 			return result;
 		},
 
+		/*
+		 * @param {Array of Objects} filters - which can be used to filter a dataset variables
+		 * @returns {Array of models} - Returns the site models that contain variables within one or more of the filters
+		 */
 		getSitesWithVariableInFilters : function(filters) {
 			return this.filter(function(siteModel) {
 				return siteModel.attributes.variables.hasVariablesInFilters(filters);

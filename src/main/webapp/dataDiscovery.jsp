@@ -42,6 +42,9 @@
 						'baseUrl': '<%=baseUrl%>',
 						'development': '<%=development%>'
 					},
+					'utils/VariableDatasetMapping' : {
+						'variableDatasetMappingUrl' : 'json/variableDatasetMapping.json'
+					},
 					'models/NWISCollection': {
 						'parameterCodesPath': '<%=parameterCodesUrl%>'
 				 	},

@@ -7,7 +7,7 @@ define([
 	'utils/VariableDatasetMapping'
 ], function($, _, VariableDatasetMapping) {
 	"use strict";
-	fdescribe('utils/VariableDatasetMapping', function() {
+	describe('utils/VariableDatasetMapping', function() {
 		var expectedMapping = {
 			"precipitation" : {
 				"displayName" : "Precipitation",

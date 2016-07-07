@@ -249,7 +249,7 @@ define([
 					{x : '3', y: '3', selected : true,
 						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var1'}),
 						timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]},
-				    {x : '4', y : '4', selected : true,
+					{x : '4', y : '4', selected : true,
 					     variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '4:4', value : '4:4', colName : 'Var3'}),
 					     timeSeriesOptions : [{statistic : 'raw'}]
 				    }                                                       

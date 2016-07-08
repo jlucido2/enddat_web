@@ -40,21 +40,6 @@ define([
 					},{
 						"name" : "ACIS",
 						"filter" : [{"code" : "maxt"}]
-					},{
-						"name" : "GLCFS_ERIE",
-						"filter" : [{"code" : "at"}]
-					},{
-						"name" : "GLCFS_HURON",
-						"filter" : [{"code" : "at"}]
-					},{
-						"name" : "GLCFS_MICHIGAN",
-						"filter" : [{"code" : "at"}]
-					},{
-						"name" : "GLCFS_ONTARIO",
-						"filter" : [{"code" : "at"}]
-					},{
-						"name" : "GLCFS_SUPERIOR",
-						"filter" : [{"code" : "at"}]
 					}
 				]
 			}
@@ -69,13 +54,13 @@ define([
 
 		it('Expects that getDatasets returns the expected datasets for an array of variables with no duplicates', function() {
 			var datasets = VariableDatasetMapping.getDatasets(['precipitation', 'maxTemperature']);
-			var expectedResult = ['NWIS', 'ACIS', 'PRECIP', 'GLCFS_ERIE', 'GLCFS_HURON', 'GLCFS_MICHIGAN', 'GLCFS_ONTARIO', 'GLCFS_SUPERIOR'];
+			var expectedResult = ['NWIS', 'ACIS', 'PRECIP'];
 
 			expect(datasets.length).toEqual(expectedResult.length);
 			expect(_.difference(datasets, expectedResult)).toEqual([]);
 
-			datasets = VariableDatasetMapping.getDatasets(['precipitation']);
-			expectedResult = ['NWIS', 'ACIS', 'PRECIP'];
+			datasets = VariableDatasetMapping.getDatasets(['maxTemperature']);
+			expectedResult = ['NWIS', 'ACIS'];
 
 			expect(datasets.length).toEqual(expectedResult.length);
 			expect(_.difference(datasets, expectedResult)).toEqual([]);

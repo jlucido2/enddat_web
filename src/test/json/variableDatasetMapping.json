@@ -30,21 +30,6 @@
 			},{
 				"name" : "ACIS",
 				"filter" : [{"code" : "maxt"}]
-			},{
-				"name" : "GLCFS_ERIE",
-				"filter" : [{"code" : "at"}]
-			},{
-				"name" : "GLCFS_HURON",
-				"filter" : [{"code" : "at"}]
-			},{
-				"name" : "GLCFS_MICHIGAN",
-				"filter" : [{"code" : "at"}]
-			},{
-				"name" : "GLCFS_ONTARIO",
-				"filter" : [{"code" : "at"}]
-			},{
-				"name" : "GLCFS_SUPERIOR",
-				"filter" : [{"code" : "at"}]
 			}
 		]
 	}

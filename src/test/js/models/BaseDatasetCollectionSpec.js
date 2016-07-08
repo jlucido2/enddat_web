@@ -229,5 +229,135 @@ define([
 				expect(result.end.format(DATE_FORMAT)).toEqual('01-01-2011');
 			});
 		});
+
+		describe('Tests for getSitesWithVariableInFilters', function() {
+			var testCollection;
+
+			it('Expects an empty testCollection to return an empty array', function() {
+				testCollection = new BaseDatasetCollection();
+
+				expect(testCollection.getSitesWithVariableInFilters({x : 1})).toEqual([]);
+			});
+
+			it('Expects a testCollection with an empty filters array to return an empty array', function() {
+				testCollection = new BaseDatasetCollection([
+					{id : 1, variables : new BaseVariableCollection([
+							{x : 1, y : 2},
+							{x : 1, y : 3},
+							{x : 2, y : 3}
+						])
+					},
+					{id : 2, variables : new BaseVariableCollection([
+							{x : 2, y : 4},
+							{x : 3, y : 4}
+						])
+					}
+				]);
+
+				expect(testCollection.getSitesWithVariableInFilters([])).toEqual([]);
+			});
+
+			it('Expects the expected models to be returned for filters', function() {
+				var result;
+				testCollection = new BaseDatasetCollection([
+					{id : 1, variables : new BaseVariableCollection([
+							{x : 1, y : 2},
+							{x : 1, y : 3},
+							{x : 2, y : 3}
+						])
+					},
+					{id : 2, variables : new BaseVariableCollection([
+							{x : 2, y : 4},
+							{x : 3, y : 4}
+						])
+					}
+				]);
+
+				expect(testCollection.getSitesWithVariableInFilters([{x : 4}])).toEqual([]);
+
+				result = testCollection.getSitesWithVariableInFilters([{x : 3}]);
+
+				expect(result.length).toBe(1);
+				expect(result[0]).toEqual(testCollection.at(1));
+
+				result = testCollection.getSitesWithVariableInFilters([{x : 2}]);
+
+				expect(result.length).toBe(2);
+
+				result = testCollection.getSitesWithVariableInFilters([{x : 1}, {x : 3}]);
+				expect(result.length).toBe(2);
+			});
+		});
+
+		describe('Tests for selectAllVariablesInFilters', function() {
+			var testCollection;
+
+			beforeEach(function() {
+				testCollection = new BaseDatasetCollection([
+					{id : 1, variables : new BaseVariableCollection([
+							{x : 1, y : 2},
+							{x : 1, y : 3},
+							{x : 2, y : 3}
+						])
+					},
+					{id : 2, variables : new BaseVariableCollection([
+							{x : 2, y : 4},
+							{x : 3, y : 4}
+						])
+					}
+				]);
+			});
+
+			it('Expects that none of the variables will be selected if not in the filters', function() {
+				testCollection.selectAllVariablesInFilters([{x : 5}, {x : 0}]);
+				expect(testCollection.getSelectedVariables()).toEqual([]);
+			});
+
+			it('Expects that the variables in the filters will be selected', function() {
+				var selectedVars;
+				testCollection.selectAllVariablesInFilters([{x : 1}, {x:2}]);
+				selectedVars = testCollection.getSelectedVariables();
+
+				expect(selectedVars.length).toBe(4);
+				expect(_.contains(selectedVars, testCollection.at(0).attributes.variables.at(0)));
+				expect(_.contains(selectedVars, testCollection.at(0).attributes.variables.at(1)));
+				expect(_.contains(selectedVars, testCollection.at(0).attributes.variables.at(2)));
+				expect(_.contains(selectedVars, testCollection.at(1).attributes.variables.at(0)));
+			});
+		});
+
+		describe('Tests for unSelectAllVariablesInFilters', function() {
+			var testCollection;
+
+			beforeEach(function() {
+				testCollection = new BaseDatasetCollection([
+					{id : 1, variables : new BaseVariableCollection([
+							{x : 1, y : 2, selected : true},
+							{x : 1, y : 3, selected : true},
+							{x : 2, y : 3, selected : true}
+						])
+					},
+					{id : 2, variables : new BaseVariableCollection([
+							{x : 2, y : 4, selected : true},
+							{x : 3, y : 4, selected : true}
+						])
+					}
+				]);
+			});
+
+			it('Expects that none of the variables will be unselected if not in the filters', function() {
+				testCollection.unselectAllVariablesInFilters([{x : 5}, {x : 0}]);
+				expect(testCollection.getSelectedVariables().length).toBe(5);
+			});
+
+			it('Expects that the variables in the filters will be unselected', function() {
+				var selectedVars;
+				testCollection.unselectAllVariablesInFilters([{x : 1}, {x:2}]);
+				selectedVars = testCollection.getSelectedVariables();
+
+				expect(selectedVars.length).toBe(1);
+				expect(_.contains(selectedVars, testCollection.at(1).attributes.variables.at(1)));
+			});
+		});
 	});
 });

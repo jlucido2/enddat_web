@@ -108,6 +108,13 @@ define([
 			});
 		},
 
+		/*
+		 * For each siteModel in the collection, update the variables which match any filter
+		 * in filters to have the selected property set to true. Trigger the event 'dataset:updateVariablesInFilter'
+		 * when the process is complete
+		 *
+		 * @param {Array of Objects} filters - Should match variable properties
+		 */
 		selectAllVariablesInFilters : function(filters) {
 			this.each(function(siteModel) {
 				var variables = siteModel.get('variables');
@@ -116,6 +123,13 @@ define([
 			this.trigger('dataset:updateVariablesInFilter');
 		},
 
+		/*
+		 * For each siteModel in the collection, update the variables which match any filter
+		 * in filters to unset the selected property. Trigger the event 'dataset:updateVariablesInFilter'
+		 * when the process is complete
+		 *
+		 * @param {Array of Objects} filters - Should match variable properties
+		 */
 		unselectAllVariablesInFilters : function(filters) {
 			this.each(function(siteModel) {
 				var variables = siteModel.get('variables');

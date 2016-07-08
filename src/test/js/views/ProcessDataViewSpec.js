@@ -48,14 +48,14 @@ define([
 
 				var variableCollection = new BaseVariableCollection([
 					{x : '2', y: '2', selected : true,
-						variableParameter : new VariableParameter({name : 'DatasetId', value : '2:2', colName : 'Var1'}),
+						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var1'}),
 						timeSeriesOptions : [{statistic : 'raw'}]
 					},
 					{x : '3', y: '3', selected : true,
-						variableParameter : new VariableParameter({name : 'DatasetId', value : '3:3', colName : 'Var1'}),
+						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var1'}),
 						timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]}
 				]);
-
+				
 				testModel = new WorkflowStateModel({
 					step : Config.PROCESS_DATA_STEP,
 					outputDateRange : {
@@ -64,11 +64,12 @@ define([
 					}
 				});
 
-				spyOn(testModel, 'getSelectedVariables').and.returnValue(variableCollection.models);
+				getSelectedVarSpy = spyOn(testModel, 'getSelectedVariables').and.returnValue(variableCollection.models);
 
 				testView = new ProcessDataView({
 					el : $testDiv,
-					model : testModel
+					model : testModel,
+					maxUrlLength : 215
 				});
 
 				done();
@@ -238,6 +239,76 @@ define([
 				expect(testModel.get('outputTimeGapInterval')).toEqual('12');
 			});
 
+			describe('DOM events for processing buttons with a long URL', function() {
+				var expectedBaseUrl = 'http:fakeservice/enddat/service/execute?';
+				var variableCollectionLong = new BaseVariableCollection([
+					{x : '2', y: '2', selected : true,
+						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var1'}),
+						timeSeriesOptions : [{statistic : 'raw'}]
+					},
+					{x : '3', y: '3', selected : true,
+						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var1'}),
+						timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]},
+					{x : '4', y : '4', selected : true,
+					     variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '4:4', value : '4:4', colName : 'Var3'}),
+					     timeSeriesOptions : [{statistic : 'raw'}]
+				    }                                                       
+   				]);
+
+				beforeEach(function() {
+					getSelectedVarSpy.and.returnValue(variableCollectionLong.models);
+					testModel.set({
+						outputFileFormat : 'tab',
+						outputDateFormat : 'Excel',
+						outputTimeZone : '0_GMT',
+						outputTimeGapInterval : '6',
+						outputMissingValue : 'NaN',
+						outputDateRange : {
+							start : moment('2001-04-05', Config.DATE_FORMAT),
+							end : moment('2006-06-30', Config.DATE_FORMAT)
+						}
+					});				
+				});
+
+				it('Expects a message be shown for more than one site url', function() {
+					$testDiv.find('.show-url-btn').trigger('click');
+					var expectedMsg = 'The URL for data processing exceeds the character limit. A single URL has been provided for each selected station.'
+					var message = $testDiv.find('p.warning-msg').html();
+				    expect(message).toEqual(expectedMsg);
+				});
+
+				it('Expects that there are three urls displayed within the URL container', function() {
+					$testDiv.find('.show-url-btn').trigger('click');
+					var urlCount = $testDiv.find('ul.url-links li').length;
+					expect(urlCount).toEqual(3);
+				});
+
+				it('Expects urls are separated by site', function() {
+					$testDiv.find('.show-url-btn').trigger('click');
+					var firstUrl = decodeURIComponent($testDiv.find('ul.url-links li:nth-child(1)').html());
+					var secondUrl = decodeURIComponent($testDiv.find('ul.url-links li:nth-child(2)').html());
+					var thirdUrl = decodeURIComponent($testDiv.find('ul.url-links li:nth-child(3)').html());
+					var firstInspect = (firstUrl.search('DatasetId=2:2!Var1') !== -1) && (firstUrl.search('DatasetId=3:3:Min:2!Var1') === -1) && (firstUrl.search('DatasetId=4:4!Var3') === -1);
+					var secondInspect = (secondUrl.search('DatasetId=2:2!Var1') === -1) && (secondUrl.search('DatasetId=3:3:Min:2!Var1') !== -1 ) && (secondUrl.search('DatasetId=4:4!Var3') === -1);
+					var thirdInspect = (thirdUrl.search('DatasetId=2:2!Var1') === -1) && (thirdUrl.search('DatasetId=3:3:Min:2!Var1') === -1 ) && (thirdUrl.search('DatasetId=4:4!Var3') !== -1);
+					expect(firstInspect).toBe(true);
+					expect(secondInspect).toBe(true);
+					expect(thirdInspect).toBe(true);
+				});
+
+				it('Expects get data button to be disabled', function() {
+					$testDiv.find('.show-url-btn').trigger('click');
+					var isDisabled = $testDiv.find('.get-data-btn').is(':disabled');
+					expect(isDisabled).toBe(true);
+				});
+
+				it('Expects download data button to be disabled', function() {
+					$testDiv.find('.show-url-btn').trigger('click');
+					var isDisabled = $testDiv.find('.download-data-btn').is(':disabled');
+					expect(isDisabled).toBe(true);
+				});
+			});
+
 			describe('DOM events for processing buttons', function() {
 				var expectedBaseUrl = 'http:fakeservice/enddat/service/execute?';
 				var isExpectedUrl = function(url) {
@@ -253,6 +324,7 @@ define([
 						(testUrl.search('DatasetId=2:2!Var1') !== -1) &&
 						(testUrl.search('DatasetId=3:3:Min:2!Var1') !== -1);
 				};
+
 				beforeEach(function() {
 					testModel.set({
 						outputFileFormat : 'tab',
@@ -266,10 +338,34 @@ define([
 						}
 					});
 				});
+
+				it('Expects that there is one url displayed within the URL container', function() {
+					$testDiv.find('.show-url-btn').trigger('click');
+					var urlCount = $testDiv.find('ul.url-links li').length;
+					expect(urlCount).toEqual(1);
+				});
+
+				it('Expects there is not a warning message', function() {
+					$testDiv.find('.show-url-btn').trigger('click');
+					var message = $testDiv.find('p.warning-msg').html();
+					expect(message).toEqual('');
+				});
+
+				it('Expects get data button to be enabled', function() {
+					$testDiv.find('.show-url-btn').trigger('click');
+					var isDisabled = $testDiv.find('.get-data-btn').is(':disabled');
+					expect(isDisabled).toBe(false);
+				});
+
+				it('Expects download data button to be enabled', function() {
+					$testDiv.find('.show-url-btn').trigger('click');
+					var isDisabled = $testDiv.find('.download-data-btn').is(':disabled');
+					expect(isDisabled).toBe(false);					
+				});
+
 				it('Expects that the expected url is shown in the url container', function() {
 					$testDiv.find('.show-url-btn').trigger('click');
-
-					expect(isExpectedUrl($testDiv.find('.url-container a').html())).toBe(true);
+					expect(isExpectedUrl($testDiv.find('.url-container ul').html())).toBe(true);
 				});
 
 				it('Expects that the expected url is used to open a new window', function() {

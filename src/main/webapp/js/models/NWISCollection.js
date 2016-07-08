@@ -62,6 +62,7 @@ define([
 						var parseVariables = function(rawVariables) {
 							var parseVariable = function(variable) {
 								var name = '';
+								var siteNumber = variable.site_no;
 								var pName, sName;
 								var statCd = variable.stat_cd;
 
@@ -95,6 +96,7 @@ define([
 									count : variable.count_nu,
 									variableParameter : new VariableParameter({
 										name : 'NWIS',
+										siteNo: variable.site_no,
 										value : variable.site_no + ':' + variable.parm_cd + ':' +  statCd,
 										colName : name + ':' + variable.site_no
 									})

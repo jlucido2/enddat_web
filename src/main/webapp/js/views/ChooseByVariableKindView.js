@@ -9,6 +9,12 @@ define([
 ], function(_, select2, VariableDatasetMapping, BaseCollapsiblePanelView, hbTemplate) {
 	"use strict";
 
+	/*
+	 * @constructs
+	 * @param {Object} options
+	 *		@prop {Jquery selector} el
+	 *		@prop {WorkflowStateModel} model
+	 */
 	var view = BaseCollapsiblePanelView.extend({
 
 		template : hbTemplate,
@@ -31,7 +37,7 @@ define([
 			});
 			this.updateVariables();
 
-			this.listenTo(this.model, 'change:variables', this.updateVariables);
+			this.listenTo(this.model, 'change:variableKinds', this.updateVariables);
 			return this;
 		},
 
@@ -40,7 +46,7 @@ define([
 		 */
 
 		updateVariables : function() {
-			var chosenVariables = (this.model.has('variables')) ? this.model.get('variables') : [];
+			var chosenVariables = (this.model.has('variableKinds')) ? this.model.get('variableKinds') : [];
 			this.$('#variable-select').val(chosenVariables).trigger('change');
 		},
 
@@ -49,17 +55,17 @@ define([
 		 */
 
 		selectVariable : function(ev) {
-			var variables = _.clone((this.model.has('variables')) ? this.model.get('variables') : []);
-			variables.push(ev.params.data.id);
-			this.model.set('variables', variables);
+			var chosenVariables = _.clone((this.model.has('variableKinds')) ? this.model.get('variableKinds') : []);
+			chosenVariables.push(ev.params.data.id);
+			this.model.set('variableKinds', chosenVariables);
 		},
 
 		resetVariable : function(ev) {
-			var variables = (this.model.has('variables')) ? this.model.get('variables') : [];
-			variables = _.reject(variables, function(variableKind) {
+			var chosenVariables = (this.model.has('variableKinds')) ? this.model.get('variableKindss') : [];
+			chosenVariables = _.reject(chosenVariables, function(variableKind) {
 				return (ev.params.data.id === variableKind);
 			});
-			this.model.set('variables', variables);
+			this.model.set('variableKinds', chosenVariables);
 		}
 	});
 

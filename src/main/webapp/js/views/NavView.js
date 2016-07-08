@@ -22,7 +22,7 @@ define([
 
 		var datasets = (state.datasets) ? state.datasets.join('/') : '';
 		var datasetFragment = (isBySite) ? '/dataset/' + datasets : '';
-		var variableKinds = (state.variables) ? state.variables.join('/') : '';
+		var variableKinds = (state.variableKinds) ? state.variableKinds.join('/') : '';
 		var variableKindFragment = (isByVariables) ? '/variable/' + variableKinds : '';
 
 		var aoiFragment = '';
@@ -99,7 +99,7 @@ define([
 				if (!_.isEmpty(this.model.get('datasets'))) {
 					this.model.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				}
-				else if (!_.isEmpty(this.model.get('variables'))) {
+				else if (!_.isEmpty(this.model.get('variableKinds'))) {
 					this.model.set('step', Config.CHOOSE_DATA_BY_VARIABLES_STEP);
 				}
 				else {

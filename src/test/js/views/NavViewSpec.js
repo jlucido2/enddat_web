@@ -241,7 +241,7 @@ define([
 				});
 				testModel.set({
 					step : Config.PROCESS_DATA_STEP,
-					variables : ['maxTemperature']
+					variableKinds : ['maxTemperature']
 				});
 				testView.render();
 				$(chooseDataSel + ' a').trigger('click');
@@ -399,7 +399,7 @@ define([
 
 			it('Expects that if the step is changed to CHOOSE_DATA_BY_VARIABLES_STEP, then the router will navigate to the url with the lat/lon and radius in it', function() {
 				testModel.set('step', Config.CHOOSE_DATA_BY_VARIABLES_STEP);
-				testModel.set('variables', []);
+				testModel.set('variableKinds', []);
 				testModel.get('aoi').set({latitude: 43.0, longitude : -100.0, radius : 4});
 
 				expect(mockRouter.navigate.calls.mostRecent().args).toEqual(['lat/43/lng/-100/radius/4/variable/']);

@@ -289,7 +289,7 @@ define([
 				testModel.initializeDatasetCollections();
 
 				testModel.get('aoi').set({latitude : '43.0', longitude : '-100.0', radius : '5'}),
-				testModel.set('variables', []);
+				testModel.set('variableKinds', []);
 
 				testModel.on('dataset:updateStart', updateStartSpy);
 				testModel.on('dataset:updateFinished', updateFinishedSpy);
@@ -310,8 +310,8 @@ define([
 				testModel.off('dataset:updateFinished');
 			});
 
-			it('Expects that if variables changes to add a variable, the appropriate datasets are fetched', function() {
-				testModel.set('variables', ['maxTemperature']);
+			it('Expects that if variableKinds changes to add a variable, the appropriate datasets are fetched', function() {
+				testModel.set('variableKinds', ['maxTemperature']);
 
 				expect(fetchSiteSpy).toHaveBeenCalled();
 				expect(fetchACISSpy).toHaveBeenCalled();
@@ -319,7 +319,7 @@ define([
 			});
 
 			it('Expects that once fetching is complete the datasets that have the variable have selectAlLVariablesInFilter called', function() {
-				testModel.set('variables', ['maxTemperature']);
+				testModel.set('variableKinds', ['maxTemperature']);
 				fetchSiteDeferred.resolve();
 				fetchACISDeferred.resolve();
 				jasmine.clock().tick(500);
@@ -328,12 +328,12 @@ define([
 			});
 
 			it('Expects that if a variable is removed, that unselect is called for the datasets that are in that variable type', function() {
-				testModel.set('variables', ['maxTemperature', 'precipitation']);
+				testModel.set('variableKinds', ['maxTemperature', 'precipitation']);
 				fetchSiteDeferred.resolve();
 				fetchACISDeferred.resolve();
 				fetchPrecipDeferred.resolve();
 				jasmine.clock().tick(500);
-				testModel.set('variables', ['maxTemperature']);
+				testModel.set('variableKinds', ['maxTemperature']);
 				fetchSiteDeferred.resolve();
 				fetchACISDeferred.resolve();
 				jasmine.clock().tick(500);

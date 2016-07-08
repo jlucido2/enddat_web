@@ -425,7 +425,7 @@ define([
 				filteredSiteModels = siteCollection.getSiteModelsWithinDateFilter(this.model.get('startDate'), this.model.get('endDate'));
 			}
 			else {
-				filteredSiteModels = siteCollection.getSitesWithVariableInFilters(variableDatasetMapping.getFilters(datasetKind, this.model.get('variables')));
+				filteredSiteModels = siteCollection.getSitesWithVariableInFilters(variableDatasetMapping.getFilters(datasetKind, this.model.get('variableKinds')));
 			}
 			// Determine if the selected site is still in the collection
 			if (this.selectedSite && (this.selectedSite.datasetKind === datasetKind) &&

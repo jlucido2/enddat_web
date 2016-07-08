@@ -66,7 +66,7 @@ define([
 
 				this.get('aoi').on('change', this.changeAOI, this);
 				this.on('change:datasets', this.updateDatasetCollections, this);
-				this.on('change:variables', this.updateSelectedVariables, this);
+				this.on('change:variableKinds', this.updateSelectedVariables, this);
 			}
 		},
 
@@ -113,7 +113,7 @@ define([
 			var self = this;
 			var boundingBox = this.get('aoi').getBoundingBox();
 			var chosenDatasets = this.has('datasets') ? this.get('datasets') : [];
-			var chosenVariableKinds = this.has('variables') ? this.get('variables') : [];
+			var chosenVariableKinds = this.has('variableKinds') ? this.get('variableKinds') : [];
 			if (chosenDatasets.length > 0) {
 				if (boundingBox) {
 					this.fetchDatasets(chosenDatasets, boundingBox);
@@ -137,8 +137,8 @@ define([
 
 		updateSelectedVariables : function() {
 			var self = this;
-			var prevVariableKinds = this.previous('variables');
-			var variableKinds = this.get('variables');
+			var prevVariableKinds = this.previous('variableKinds');
+			var variableKinds = this.get('variableKinds');
 			var variableKindsToSelect = _.difference(variableKinds, prevVariableKinds);
 			var variableKindsToUnselect = _.difference(prevVariableKinds, variableKinds);
 

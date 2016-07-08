@@ -15,7 +15,7 @@ define([
 	'hbs!hb_templates/processData',
 	'hbs!hb_templates/urlContainer'
 ], function($, _, moment, Handlebars, datetimepicker, stickit, module, Config, $utils, BaseCollapsiblePanelView,
-	VariableTsOptionView, hbTemplate, urlContainer) {
+	VariableTsOptionView, hbTemplate, urlContainerTemplate) {
 	"use strict";
 
 	var BASE_URL = module.config().baseUrl;
@@ -28,16 +28,13 @@ define([
 	};
 	
 	var organizeParams = function(params) {
-		// build list of identifying site type and number pairs
+		// build array of identifying site type and number pairs
 		var classifiers = _.uniq(_.map(params, constructClassifier));
-		var masterParams = [];
-		// organize parameters by their sites
-		for (var i = 0; i < classifiers.length; i++) {
-			var paramClassifier = classifiers[i];
-			// make a list for parameters that fall into a specific dataset/site pair
-			var classifierParams = _.filter(params, function(param) {return constructClassifier(param) == paramClassifier});
-			masterParams.push(classifierParams);
-		}
+		// make an array of arrays... each sub-array is site specific 
+		var masterParams = _.map(classifiers, function(classifier) {
+			var classifierParams = _.filter(params, function(param) {return constructClassifier(param) == classifier});
+			return classifierParams;
+		});
 		return masterParams;
 	};
 
@@ -64,9 +61,12 @@ define([
 		}
 		var dataProcessingUrl = BASE_URL + 'service/execute?' + $.param(params.concat(varParams));
 		var urlLength = dataProcessingUrl.length;
+		var siteUrls;
 		if (urlLength > maxUrlLength) {
 			var siteOrganizedParams = organizeParams(varParams);
-			var siteUrls = _.map(siteOrganizedParams, function(siteParams) {return BASE_URL + 'service/execute?' + $.param(params.concat(siteParams))});
+			siteUrls = _.map(siteOrganizedParams, function(siteParams) {
+				return BASE_URL + 'service/execute?' + $.param(params.concat(siteParams));
+				});
 		}
 		else {
 			siteUrls = [dataProcessingUrl];
@@ -214,8 +214,7 @@ define([
 			var dataUrls = getUrls(this.model, this.maxUrlLength);
 			ev.preventDefault();
 			this.context.dataUrls = dataUrls;
-			var template = urlContainer;
-			$('.url-container').html(template({dataUrls : dataUrls})); // render content in the url-container div
+			$('.url-container').html(urlContainerTemplate({dataUrls : dataUrls})); // render content in the url-container div
 			var $getDataBtn = this.$('.get-data-btn');
 			var $downloadBtn = this.$('.download-data-btn');
 			var $message = this.$('.warning-msg');
@@ -238,12 +237,12 @@ define([
 
 		getData : function(ev) {
 			ev.preventDefault();
-			window.open(getUrls(this.model, this.maxUrlLength), '_blank');
+			window.open(getUrls(this.model, this.maxUrlLength)[0], '_blank'); // grab first item in the array
 		},
 
 		downloadData : function(ev) {
 			ev.preventDefault();
-			window.location.assign(getUrls(this.model, this.maxUrlLength, true));
+			window.location.assign(getUrls(this.model, this.maxUrlLength, true)[0]); // grab first item in the array
 		}
 	});
 

@@ -64,7 +64,7 @@ define([
 					}
 				});
 
-				spy = spyOn(testModel, 'getSelectedVariables').and.returnValue(variableCollection.models);
+				getSelectedVarSpy = spyOn(testModel, 'getSelectedVariables').and.returnValue(variableCollection.models);
 
 				testView = new ProcessDataView({
 					el : $testDiv,
@@ -238,7 +238,7 @@ define([
 				$('#acceptable-data-gap-input').val('12').trigger('change');
 				expect(testModel.get('outputTimeGapInterval')).toEqual('12');
 			});
-			
+
 			describe('DOM events for processing buttons with a long URL', function() {
 				var expectedBaseUrl = 'http:fakeservice/enddat/service/execute?';
 				var variableCollectionLong = new BaseVariableCollection([
@@ -254,9 +254,9 @@ define([
 					     timeSeriesOptions : [{statistic : 'raw'}]
 				    }                                                       
    				]);
-				
+
 				beforeEach(function() {
-					spy.and.returnValue(variableCollectionLong.models);
+					getSelectedVarSpy.and.returnValue(variableCollectionLong.models);
 					testModel.set({
 						outputFileFormat : 'tab',
 						outputDateFormat : 'Excel',
@@ -269,20 +269,20 @@ define([
 						}
 					});				
 				});
-				
+
 				it('Expects a message be shown for more than one site url', function() {
 					$testDiv.find('.show-url-btn').trigger('click');
 					var expectedMsg = 'The URL for data processing exceeds the character limit. A single URL has been provided for each selected station.'
 					var message = $testDiv.find('p.warning-msg').html();
 				    expect(message).toEqual(expectedMsg);
 				});
-				
+
 				it('Expects that there are three urls displayed within the URL container', function() {
 					$testDiv.find('.show-url-btn').trigger('click');
 					var urlCount = $testDiv.find('ul.url-links li').length;
 					expect(urlCount).toEqual(3);
 				});
-				
+
 				it('Expects urls are separated by site', function() {
 					$testDiv.find('.show-url-btn').trigger('click');
 					var firstUrl = decodeURIComponent($testDiv.find('ul.url-links li:nth-child(1)').html());
@@ -295,20 +295,20 @@ define([
 					expect(secondInspect).toBe(true);
 					expect(thirdInspect).toBe(true);
 				});
-				
+
 				it('Expects get data button to be disabled', function() {
 					$testDiv.find('.show-url-btn').trigger('click');
 					var isDisabled = $testDiv.find('.get-data-btn').is(':disabled');
 					expect(isDisabled).toBe(true);
 				});
-				
+
 				it('Expects download data button to be disabled', function() {
 					$testDiv.find('.show-url-btn').trigger('click');
 					var isDisabled = $testDiv.find('.download-data-btn').is(':disabled');
-					expect(isDisabled).toBe(true);					
+					expect(isDisabled).toBe(true);
 				});
 			});
-			
+
 			describe('DOM events for processing buttons', function() {
 				var expectedBaseUrl = 'http:fakeservice/enddat/service/execute?';
 				var isExpectedUrl = function(url) {
@@ -324,6 +324,7 @@ define([
 						(testUrl.search('DatasetId=2:2!Var1') !== -1) &&
 						(testUrl.search('DatasetId=3:3:Min:2!Var1') !== -1);
 				};
+
 				beforeEach(function() {
 					testModel.set({
 						outputFileFormat : 'tab',
@@ -337,31 +338,31 @@ define([
 						}
 					});
 				});
-				
+
 				it('Expects that there is one url displayed within the URL container', function() {
 					$testDiv.find('.show-url-btn').trigger('click');
 					var urlCount = $testDiv.find('ul.url-links li').length;
 					expect(urlCount).toEqual(1);
 				});
-				
-				it('Expects there there is not a warning message', function() {
+
+				it('Expects there is not a warning message', function() {
 					$testDiv.find('.show-url-btn').trigger('click');
 					var message = $testDiv.find('p.warning-msg').html();
 					expect(message).toEqual('');
 				});
-				
+
 				it('Expects get data button to be enabled', function() {
 					$testDiv.find('.show-url-btn').trigger('click');
 					var isDisabled = $testDiv.find('.get-data-btn').is(':disabled');
 					expect(isDisabled).toBe(false);
 				});
-				
+
 				it('Expects download data button to be enabled', function() {
 					$testDiv.find('.show-url-btn').trigger('click');
 					var isDisabled = $testDiv.find('.download-data-btn').is(':disabled');
 					expect(isDisabled).toBe(false);					
 				});
-				
+
 				it('Expects that the expected url is shown in the url container', function() {
 					$testDiv.find('.show-url-btn').trigger('click');
 					expect(isExpectedUrl($testDiv.find('.url-container ul').html())).toBe(true);

@@ -108,6 +108,10 @@ define([
 			return dateRange;
 		},
 
+		/*
+		 * @param {Array of Objects} filters - where the objects property keys should match variable keys
+		 * @return true if any variables in the collection match any of the filters
+		 */
 		hasVariablesInFilters : function(filters) {
 			var self = this;
 			return  _.some(filters, function(filter) {
@@ -118,6 +122,10 @@ define([
 			});
 		},
 
+		/*
+		 * Set the selected property to true for all variables in the collection that match
+		 * at least one of the filters
+		 */
 		selectVariablesInFilters : function(filters) {
 			var matchFilters = _.map(filters, function(filter) {
 				return _.matcher(filter);
@@ -132,6 +140,10 @@ define([
 			});
 		},
 
+		/*
+		 * Unset the selected property for all variables in the collection that match
+		 * at least one of the filters
+		 */
 		unselectVariablesInFilters : function(filters) {
 			var matchFilters = _.map(filters, function(filter) {
 				return _.matcher(filter);

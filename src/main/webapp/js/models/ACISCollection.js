@@ -46,7 +46,7 @@ define([
 
 		parse : function(response) {
 			var sites = response.meta;
-			console.log('ACIS sites received: ' + sites.length);
+			log.debug('ACIS sites received: ' + sites.length);
 			return _.map(sites, function(site) {
 				// Use first sid when retrieving information.
 				var sid = site.sids[0].split(' ')[0];

@@ -30,11 +30,9 @@ define([
 	var organizeParams = function(params) {
 		// build array of identifying site type and number pairs
 		var classifiers = _.uniq(_.map(params, constructClassifier));
-		// make an array of arrays... each sub-array is site specific 
-		var masterParams = _.map(classifiers, function(classifier) {
-			var classifierParams = _.filter(params, function(param) {return constructClassifier(param) == classifier});
-			return classifierParams;
-		});
+		// make an object containing of parameters for each site
+		// e.g. {site1 : [parameters for site 1], site2 : [parameters for site2], ...}
+		var masterParams = _.groupBy(params, constructClassifier);
 		return masterParams;
 	};
 
@@ -64,9 +62,11 @@ define([
 		var siteUrls;
 		if (urlLength > maxUrlLength) {
 			var siteOrganizedParams = organizeParams(varParams);
-			siteUrls = _.map(siteOrganizedParams, function(siteParams) {
+			// take the site organizied parameters and create a url for each site,
+			// then return the values from the new object as an array
+			siteUrls = _.chain(siteOrganizedParams).mapObject(function(siteParams) {
 				return BASE_URL + 'service/execute?' + $.param(params.concat(siteParams));
-				});
+				}).values().value();
 		}
 		else {
 			siteUrls = [dataProcessingUrl];
@@ -105,7 +105,7 @@ define([
 		
 		initialize : function(options) {
 			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
-			this.maxUrlLength = options.maxUrlLength ? options.maxUrlLength : 2000; // max url character length before it gets broken down into urls by site
+			this.maxUrlLength = options.maxUrlLength ? options.maxUrlLength : 200; // max url character length before it gets broken down into urls by site
 		},
 
 		render : function() {

@@ -221,8 +221,8 @@ define([
 
 			it('Expects that if the current step is PROCESS_DATA_STEP and the datasets property is not empty and then the choose data button is clicked, the workflow step changes to CHOOSE_DATA_BY_SITE_FILTERS_STEP', function() {
 				testModel.set({
-					startDate : moment('2001/01/01'),
-					endDate : moment('2002/01/01')
+					startDate : moment('2001-01-01', Config.DATE_FORMAT),
+					endDate : moment('2002-01-01', Config.DATE_FORMAT)
 				});
 				testModel.set({
 					step : Config.PROCESS_DATA_STEP,
@@ -236,8 +236,8 @@ define([
 
 			it('Expects that if the current step is PROCESS_DATA_STEP and the variables property is not empty and then the choose data button is clicked, the workflow step changes to CHOOSE_DATA_BY_VARIABLES_STEP', function() {
 				testModel.set({
-					startDate : moment('2001/01/01'),
-					endDate : moment('2002/01/01')
+					startDate : moment('2001-01-01', Config.DATE_FORMAT),
+					endDate : moment('2002-01-01', Config.DATE_FORMAT)
 				});
 				testModel.set({
 					step : Config.PROCESS_DATA_STEP,

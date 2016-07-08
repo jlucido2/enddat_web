@@ -61,6 +61,7 @@ define([
 							endDate : today,
 							variableParameter : new VariableParameter({
 								name : 'Precip',
+								site_id: y + ':' + x,
 								value : y + ':' + x + ':' + self.timeBounds + ':' + variableId,
 								colName : variableName + ' [' + y + ',' + x + ']',
 							})

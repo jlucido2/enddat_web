@@ -58,6 +58,7 @@ define([
 							result.endDate = moment(dateRange[1], Config.DATE_FORMAT);
 							result.variableParameter = new VariableParameter({
 								name : 'ACIS',
+								siteNo : sid,
 								value : sid + ':' +  result.code,
 								colName : result.description + ':' + sid
 							});

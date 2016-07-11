@@ -351,8 +351,7 @@ define([
 		setupDatasetListeners : function(model, datasetCollections) {
 			this.updateAllSiteMarkers();
 
-			this.listenTo(model, 'change:startDate', this.updateAllSiteMarkers);
-			this.listenTo(model, 'change:endDate', this.updateAllSiteMarkers);
+			this.listenTo(model, 'change:datasetDateFilter', this.updateAllSiteMarkers);
 
 			this.listenTo(datasetCollections[Config.NWIS_DATASET], 'reset', this.updateNWISMarker);
 			this.listenTo(datasetCollections[Config.PRECIP_DATASET], 'reset', this.updatePrecipGridPoints);
@@ -378,7 +377,7 @@ define([
 			var $mapDiv = this.$('#' + self.mapDivId);
 
 			var siteCollection = this.model.get('datasetCollections')[datasetKind];
-			var filteredSiteModels = siteCollection.getSiteModelsWithinDateFilter(this.model.get('startDate'), this.model.get('endDate'));
+			var filteredSiteModels = siteCollection.getSiteModelsWithinDateFilter(this.model.get('datasetDateFilter'));
 			var step = self.model.get('step');
 			var isInChooseDataBySiteWorkflow = (step === Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP) || (step === Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP);
 
@@ -422,7 +421,7 @@ define([
 			};
 
 			if (isInChooseDataBySiteWorkflow) {
-				filteredSiteModels = siteCollection.getSiteModelsWithinDateFilter(this.model.get('startDate'), this.model.get('endDate'));
+				filteredSiteModels = siteCollection.getSiteModelsWithinDateFilter(this.model.get('datasetDateFilter'));
 			}
 			else {
 				filteredSiteModels = siteCollection.getSitesWithVariableInFilters(variableDatasetMapping.getFilters(datasetKind, this.model.get('variableKinds')));

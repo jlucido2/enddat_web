@@ -178,9 +178,8 @@ define([
 						});
 					};
 					this.unset('datasets');
-					this.unset('variables');
-					this.unset('startDate');
-					this.unset('endDate');
+					this.unset('variableKinds');
+					this.unset('datasetDateFilter');
 					this.unset('uploadedFeatureName');
 					this.get('aoi').clear();
 					break;
@@ -197,16 +196,13 @@ define([
 
 				case Config.PROCESS_DATA_STEP:
 					var outputDateRange;
-					var startDate = this.get('startDate');
-					var endDate = this.get('endDate');
+					var datasetDateFilter = this.has('datasetDateFilter') ? this.get('datasetDateFilter') : {};
+
 					var selectedVarsDateRange = this.getSelectedVarsDateRange();
 					var selectedVars = this.getSelectedVariables();
 
-					if ((startDate) && (endDate)) {
-						outputDateRange = {
-							start : startDate,
-							end : endDate
-						};
+					if ((datasetDateFilter.start) && (datasetDateFilter.end)) {
+						outputDateRange = datasetDateFilter;
 					}
 					else {
 						outputDateRange = {

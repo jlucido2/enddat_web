@@ -245,9 +245,9 @@ define([
 				expect(renderNavViewSpy.calls.count()).toBe(2);
 
 				testModel.set('step', testModel.CHOOSE_DATA_BY_SITE_VARIABLES_STEP);
-				testModel.set({
-					startDate : moment('2005-04-01', Config.DATE_FORMAT),
-					endDate : moment('2009-03-11', Config.DATE_FORMAT)
+				testModel.set('datasetDateFilter', {
+					start : moment('2005-04-01', Config.DATE_FORMAT),
+					end : moment('2009-03-11', Config.DATE_FORMAT)
 				});
 				testModel.set('step', Config.PROCESS_DATA_STEP);
 				testView.render();
@@ -433,9 +433,9 @@ define([
 			});
 
 			it('Expects that the variable summary and process data subviews are removed when the step is PROCESS_DATA_STEP', function() {
-				testModel.set({
-					startDate : moment('2005-04-01', Config.DATE_FORMAT),
-					endDate : moment('2009-03-11', Config.DATE_FORMAT)
+				testModel.set('datasetDateFilter', {
+					start : moment('2005-04-01', Config.DATE_FORMAT),
+					end : moment('2009-03-11', Config.DATE_FORMAT)
 				});
 				testModel.set('step', Config.PROCESS_DATA_STEP);
 				testView.render();
@@ -488,16 +488,12 @@ define([
 				expect(showDangerAlertSpy).toHaveBeenCalled();
 			});
 
-			it('Expects that if the startDate property is changed the success alert is shown', function() {
+			it('Expects that if the datasetDateFilter property is changed the success alert is shown', function() {
 				showSuccessAlertSpy.calls.reset();
-				testModel.set('startDate', moment());
-
-				expect(showSuccessAlertSpy).toHaveBeenCalled();
-			});
-
-			it('Expects that if the endDate property is changed the success alert is shown', function() {
-				showSuccessAlertSpy.calls.reset();
-				testModel.set('endDate', moment());
+				testModel.set('datasetDateFilter', {
+					start : moment('2000-01-02', Config.DATE_FORMAT),
+					end : moment('2000-11-11', Config.DATE_FORMAT)
+				});
 
 				expect(showSuccessAlertSpy).toHaveBeenCalled();
 			});
@@ -573,9 +569,9 @@ define([
 				removeMapViewSpy.calls.reset();
 				collapseSummaryViewSpy.calls.reset();
 				renderProcessDataViewSpy.calls.reset();
-				testModel.set({
-					startDate : moment('2005-04-01', Config.DATE_FORMAT),
-					endDate : moment('2009-03-11', Config.DATE_FORMAT)
+				testModel.set('datasetDateFilter', {
+					start : moment('2005-04-01', Config.DATE_FORMAT),
+					end : moment('2009-03-11', Config.DATE_FORMAT)
 				});
 				testModel.set('step', Config.PROCESS_DATA_STEP);
 
@@ -593,9 +589,9 @@ define([
 				removeMapViewSpy.calls.reset();
 				collapseSummaryViewSpy.calls.reset();
 				renderProcessDataViewSpy.calls.reset();
-				testModel.set({
-					startDate : moment('2005-04-01', Config.DATE_FORMAT),
-					endDate : moment('2009-03-11', Config.DATE_FORMAT)
+				testModel.set('datasetDateFilter', {
+					start : moment('2005-04-01', Config.DATE_FORMAT),
+					end : moment('2009-03-11', Config.DATE_FORMAT)
 				});
 				testModel.set('step', Config.PROCESS_DATA_STEP);
 
@@ -609,9 +605,9 @@ define([
 			it('Expects that if the step is PROCESS_DATA_STEP and goes back to CHOOSE_DATA_BY_SITE_FILTERS_STEP, the process data view is removed, the location, choose, and map view are created and the variable summary is shown', function() {
 				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP);
-				testModel.set({
-					startDate : moment('2005-04-01', Config.DATE_FORMAT),
-					endDate : moment('2009-03-11', Config.DATE_FORMAT)
+				testModel.set('datasetDateFilter', {
+					start : moment('2005-04-01', Config.DATE_FORMAT),
+					end : moment('2009-03-11', Config.DATE_FORMAT)
 				});
 				testModel.set('step', Config.PROCESS_DATA_STEP);
 				renderLocationViewSpy.calls.reset();
@@ -631,8 +627,10 @@ define([
 			it('Expects that if the step is PROCESS_DATA_STEP and goes back to CHOOSE_DATA_BY_VARIABLES_STEP, the process data view is removed, the location, choose variable, and map view are created and the variable summary is shown', function() {
 				testModel.set('step', Config.CHOOSE_DATA_BY_VARIABLES_STEP);
 				testModel.set({
-					startDate : moment('2005-04-01', Config.DATE_FORMAT),
-					endDate : moment('2009-03-11', Config.DATE_FORMAT),
+					datasetDateFilter : {
+						start : moment('2005-04-01', Config.DATE_FORMAT),
+						end : moment('2009-03-11', Config.DATE_FORMAT)
+					},
 					variables : []
 				});
 				testModel.set('step', Config.PROCESS_DATA_STEP);
@@ -653,9 +651,9 @@ define([
 			it('Expects that if the step is PROCESS_DATA_STEP and changes to SPECIFY_AOI_STEP, the process data and summary views are removed', function() {
 				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP);
-				testModel.set({
-					startDate : moment('2005-04-01', Config.DATE_FORMAT),
-					endDate : moment('2009-03-11', Config.DATE_FORMAT)
+				testModel.set('datasetDateFilter', {
+					start : moment('2005-04-01', Config.DATE_FORMAT),
+					end : moment('2009-03-11', Config.DATE_FORMAT)
 				});
 				testModel.set('step', Config.PROCESS_DATA_STEP);
 				removeProcessDataViewSpy.calls.reset();
@@ -724,9 +722,9 @@ define([
 				removeMapViewSpy.calls.reset();
 				collapseSummaryViewSpy.calls.reset();
 				renderProcessDataViewSpy.calls.reset();
-				testModel.set({
-					startDate : moment('2005-04-01', Config.DATE_FORMAT),
-					endDate : moment('2009-03-11', Config.DATE_FORMAT)
+				testModel.set('datasetDateFilter', {
+					start : moment('2005-04-01', Config.DATE_FORMAT),
+					end : moment('2009-03-11', Config.DATE_FORMAT)
 				});
 				testModel.set('step', Config.PROCESS_DATA_STEP);
 
@@ -740,9 +738,9 @@ define([
 			it('Expects that if the step is PROCESS_DATA_STEP and goes back to CHOOSE_DATA_BY_SITE_FILTERS_STEP, the process data view is removed, the aoiBox, choose, and map view are created and the variable summary is shown', function() {
 				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP);
-				testModel.set({
-					startDate : moment('2005-04-01', Config.DATE_FORMAT),
-					endDate : moment('2009-03-11', Config.DATE_FORMAT)
+				testModel.set('datasetDateFilter', {
+					start : moment('2005-04-01', Config.DATE_FORMAT),
+					end : moment('2009-03-11', Config.DATE_FORMAT)
 				});
 				testModel.set('step', Config.PROCESS_DATA_STEP);
 				renderAOIBoxViewSpy.calls.reset();

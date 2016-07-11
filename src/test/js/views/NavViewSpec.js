@@ -220,9 +220,9 @@ define([
 			});
 
 			it('Expects that if the current step is PROCESS_DATA_STEP and the datasets property is not empty and then the choose data button is clicked, the workflow step changes to CHOOSE_DATA_BY_SITE_FILTERS_STEP', function() {
-				testModel.set({
-					startDate : moment('2001-01-01', Config.DATE_FORMAT),
-					endDate : moment('2002-01-01', Config.DATE_FORMAT)
+				testModel.set('datasetDateFilter', {
+					start : moment('2001-01-01', Config.DATE_FORMAT),
+					end : moment('2002-01-01', Config.DATE_FORMAT)
 				});
 				testModel.set({
 					step : Config.PROCESS_DATA_STEP,
@@ -235,9 +235,9 @@ define([
 			});
 
 			it('Expects that if the current step is PROCESS_DATA_STEP and the variables property is not empty and then the choose data button is clicked, the workflow step changes to CHOOSE_DATA_BY_VARIABLES_STEP', function() {
-				testModel.set({
-					startDate : moment('2001-01-01', Config.DATE_FORMAT),
-					endDate : moment('2002-01-01', Config.DATE_FORMAT)
+				testModel.set('datasetDateFilter', {
+					start : moment('2001-01-01', Config.DATE_FORMAT),
+					end : moment('2002-01-01', Config.DATE_FORMAT)
 				});
 				testModel.set({
 					step : Config.PROCESS_DATA_STEP,
@@ -351,9 +351,9 @@ define([
 				testModel.set('datasets', ['NWIS', 'Precip']);
 				expect(mockRouter.navigate.calls.mostRecent().args).toEqual(['lat/43/lng/-100/radius/2/dataset/NWIS/Precip']);
 
-				testModel.set({
-					startDate : moment('1Jan2000', DATE_FORMAT),
-					endDate : moment('1Jan2010', DATE_FORMAT)
+				testModel.set('datasetDateFilter', {
+					start : moment('1Jan2000', DATE_FORMAT),
+					end : moment('1Jan2010', DATE_FORMAT)
 				});
 				expect(mockRouter.navigate.calls.mostRecent().args).toEqual(['lat/43/lng/-100/radius/2/startdate/1Jan2000/enddate/1Jan2010/dataset/NWIS/Precip']);
 				aoiModel.set('radius', 10);

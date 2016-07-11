@@ -13,12 +13,13 @@ define([
 	var getChooseDataUrl = function(model) {
 		var state = model.attributes;
 		var aoi = model.attributes.aoi;
+		var datasetDateFilter = model.has('datasetDateFilter') ? state.datasetDateFilter : {};
 		var isBySite = ((state.step === Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP) ||
 			(state.step === Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP));
 		var isByVariables = (state.step === Config.CHOOSE_DATA_BY_VARIABLES_STEP);
 
-		var startDate = (state.startDate) ? '/startdate/' + state.startDate.format(Config.DATE_FORMAT_URL) : '';
-		var endDate = (state.endDate) ? '/enddate/' + state.endDate.format(Config.DATE_FORMAT_URL) : '';
+		var startDate = (datasetDateFilter.start) ? '/startdate/' + datasetDateFilter.start.format(Config.DATE_FORMAT_URL) : '';
+		var endDate = (datasetDateFilter.end) ? '/enddate/' + datasetDateFilter.end.format(Config.DATE_FORMAT_URL) : '';
 
 		var datasets = (state.datasets) ? state.datasets.join('/') : '';
 		var datasetFragment = (isBySite) ? '/dataset/' + datasets : '';

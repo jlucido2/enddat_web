@@ -100,20 +100,41 @@ define([
 				]);
 			});
 
-			it ('Expects that if either the startDate or endDate is falsy, the entire collection is returned', function() {
-				expect(testCollection.getSiteModelsWithinDateFilter(moment('01-01-2003', DATE_FORMAT), '').length).toBe(2);
-				expect(testCollection.getSiteModelsWithinDateFilter('', moment('01-01-2003', DATE_FORMAT)).length).toBe(2);
+			it ('Expects that if either the start or end is falsy, the entire collection is returned', function() {
+				expect(testCollection.getSiteModelsWithinDateFilter({
+					start : moment('01-01-2003', DATE_FORMAT)
+				}).length).toBe(2);
+				expect(testCollection.getSiteModelsWithinDateFilter({
+					start : moment('01-01-2003', DATE_FORMAT),
+					end : ''
+				}).length).toBe(2);
+				expect(testCollection.getSiteModelsWithinDateFilter({
+					end : moment('01-01-2003', DATE_FORMAT)
+				}).length).toBe(2);
+				expect(testCollection.getSiteModelsWithinDateFilter({
+					start : '',
+					end : moment('01-01-2003', DATE_FORMAT)
+				}).length).toBe(2);
 			});
 
 			it('Expects that only models within the date range will be returned', function() {
 				var results;
-				results = testCollection.getSiteModelsWithinDateFilter(moment('03-01-2003', DATE_FORMAT), moment('01-01-2004', DATE_FORMAT));
+				results = testCollection.getSiteModelsWithinDateFilter({
+					start : moment('03-01-2003', DATE_FORMAT),
+					end : moment('01-01-2004', DATE_FORMAT)
+				});
 				expect(results.length).toBe(1);
 
-				results = testCollection.getSiteModelsWithinDateFilter(moment('01-01-1999', DATE_FORMAT), moment('01-01-2014', DATE_FORMAT));
+				results = testCollection.getSiteModelsWithinDateFilter({
+					start : moment('01-01-1999', DATE_FORMAT),
+					end : moment('01-01-2014', DATE_FORMAT)
+				});
 				expect(results.length).toBe(2);
 
-				results = testCollection.getSiteModelsWithinDateFilter(moment('01-01-2013', DATE_FORMAT), moment('01-01-2015', DATE_FORMAT));
+				results = testCollection.getSiteModelsWithinDateFilter({
+					start : moment('01-01-2013', DATE_FORMAT),
+					end : moment('01-01-2015', DATE_FORMAT)
+				});
 				expect(results.length).toBe(0);
 			});
 		});

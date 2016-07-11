@@ -5,9 +5,9 @@ define([
 	'jquery',
 	'select2',
 	'views/BaseCollapsiblePanelView',
-	'views/DatasetDateFilterView',
+	'views/DataDateFilterView',
 	'hbs!hb_templates/choose'
-], function(_, $, select2, BaseCollapsiblePanelView, DatasetDateFilterView, hbTemplate) {
+], function(_, $, select2, BaseCollapsiblePanelView, DataDateFilterView, hbTemplate) {
 	"use strict";
 
 	/*
@@ -31,15 +31,13 @@ define([
 		initialize : function(options) {
 			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
 
-			this.dateFilterView = new DatasetDateFilterView({
+			this.dateFilterView = new DataDateFilterView({
 				el : this.$('.date-filter-container'),
 				model : this.model
 			});
 		},
 
 		render : function() {
-			var now = new Date();
-
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
 			this.dateFilterView.setElement(this.$('.date-filter-container')).render();
 

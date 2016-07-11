@@ -6,7 +6,7 @@ define([
 	'bootstrap-datetimepicker',
 	'Config',
 	'views/BaseView',
-	'hbs!hb_templates/datasetDateFilter'
+	'hbs!hb_templates/dataDateFilter'
 ], function(_, moment, datetimepicker, Config, BaseView, hbTemplate) {
 
 	/*
@@ -43,7 +43,7 @@ define([
 			});
 
 			this.updateDateFilter();
-			this.listenTo(this.model, 'change:datasetDateFilter', this.updateDateFilter);
+			this.listenTo(this.model, 'change:dateFilter', this.updateDateFilter);
 
 			return this;
 		},
@@ -55,7 +55,7 @@ define([
 		updateDateFilter : function() {
 			var $startDate = this.$('#start-date-div');
 			var $endDate = this.$('#end-date-div');
-			var dateFilter = this.model.get('datasetDateFilter');
+			var dateFilter = this.model.get('dataDateFilter');
 			var startDate = (_.has(dateFilter, 'start') && (dateFilter.start)) ? dateFilter.start : '';
 			var endDate = (_.has(dateFilter, 'end') && (dateFilter.end)) ? dateFilter.end : '';
 
@@ -80,7 +80,7 @@ define([
 		 */
 
 		changeStartDate : function(ev) {
-			var prevEnd = (this.model.has('datasetDateFilter') && (this.model.attributes.datasetDateFilter.end)) ? this.model.attributes.datasetDateFilter.end : '';
+			var prevEnd = (this.model.has('dataDateFilter') && (this.model.attributes.dataDateFilter.end)) ? this.model.attributes.dataDateFilter.end : '';
 			var dateFilter = {
 				start : '',
 				end : prevEnd
@@ -88,11 +88,11 @@ define([
 			if (ev.date) {
 				dateFilter.start = moment(ev.date);
 			}
-			this.model.set('datasetDateFilter', dateFilter);
+			this.model.set('dataDateFilter', dateFilter);
 		},
 
 		changeEndDate : function(ev) {
-			var prevStart = (this.model.has('datasetDateFilter') && (this.model.attributes.datasetDateFilter.start)) ? this.model.attributes.datasetDateFilter.start : '';
+			var prevStart = (this.model.has('dataDateFilter') && (this.model.attributes.dataDateFilter.start)) ? this.model.attributes.dataDateFilter.start : '';
 			var dateFilter = {
 				start : prevStart,
 				end : ''
@@ -100,7 +100,7 @@ define([
 			if (ev.date) {
 				dateFilter.end = moment(ev.date);
 			}
-			this.model.set('datasetDateFilter', dateFilter);
+			this.model.set('dataDateFilter', dateFilter);
 		}
 	});
 

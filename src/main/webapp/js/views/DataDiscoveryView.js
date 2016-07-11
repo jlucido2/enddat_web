@@ -76,7 +76,7 @@ define([
 			// Set up event listeners on the workflow model
 			this.listenTo(this.model, 'dataset:updateStart', this.showLoadingIndicator);
 			this.listenTo(this.model, 'dataset:updateFinished', this.hideLoadingIndicator);
-			this.listenTo(this.model, 'change:datasetDateFilter', this.showSuccessfulFetchAlert);
+			this.listenTo(this.model, 'change:dataDateFilter', this.showSuccessfulFetchAlert);
 			this.listenTo(this.model, 'change:step', this.updateSubViews);
 			this.listenTo(this.model, 'change:datasets', this.closeAlert);
 
@@ -232,7 +232,7 @@ define([
 		_filterMsg : function() {
 			var state = this.model.attributes;
 			var aoi = state.aoi;
-			var dateFilter = this.model.has('datasetDateFilter') ? state.datasetDateFilter : {};
+			var dateFilter = this.model.has('dataDateFilter') ? state.dataDateFilter : {};
 
 			var startDate = (dateFilter.start) ? dateFilter.start.format(Config.DATE_FORMAT) : '';
 			var endDate = (dateFilter.end) ? dateFilter.end.format(Config.DATE_FORMAT) : '';

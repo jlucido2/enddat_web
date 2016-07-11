@@ -94,11 +94,12 @@ define([
 
 		/*
 		 * @param {Array of Objects} filters - which can be used to filter a dataset variables
+		 * @param {Object with start and end keys representing moment objects} dateFilter
 		 * @returns {Array of models} - Returns the site models that contain variables within one or more of the filters
 		 */
-		getSitesWithVariableInFilters : function(filters) {
+		getSitesWithVariableInFilters : function(filters, dateFilter) {
 			return this.filter(function(siteModel) {
-				return siteModel.attributes.variables.hasVariablesInFilters(filters);
+				return siteModel.attributes.variables.hasVariablesInFilters(filters, dateFilter);
 			});
 		},
 
@@ -108,11 +109,12 @@ define([
 		 * when the process is complete
 		 *
 		 * @param {Array of Objects} filters - Should match variable properties
+		 * @param {Object with start and end keys representing moment objects} dateFilter
 		 */
-		selectAllVariablesInFilters : function(filters) {
+		selectAllVariablesInFilters : function(filters, dateFilter) {
 			this.each(function(siteModel) {
 				var variables = siteModel.get('variables');
-				variables.selectVariablesInFilters(filters);
+				variables.selectVariablesInFilters(filters, dateFilter);
 			});
 			this.trigger('dataset:updateVariablesInFilter');
 		},
@@ -123,11 +125,12 @@ define([
 		 * when the process is complete
 		 *
 		 * @param {Array of Objects} filters - Should match variable properties
+		 * @param {Object with start and end keys representing moment objects} dateFilter
 		 */
-		unselectAllVariablesInFilters : function(filters) {
+		unselectAllVariablesInFilters : function(filters, dateFilter) {
 			this.each(function(siteModel) {
 				var variables = siteModel.get('variables');
-				variables.unselectVariablesInFilters(filters);
+				variables.unselectVariablesInFilters(filters, dateFilter);
 			});
 			this.trigger('dataset:updateVariablesInFilter');
 		}

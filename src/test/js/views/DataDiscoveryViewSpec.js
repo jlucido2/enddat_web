@@ -245,7 +245,7 @@ define([
 				expect(renderNavViewSpy.calls.count()).toBe(2);
 
 				testModel.set('step', testModel.CHOOSE_DATA_BY_SITE_VARIABLES_STEP);
-				testModel.set('datasetDateFilter', {
+				testModel.set('dataDateFilter', {
 					start : moment('2005-04-01', Config.DATE_FORMAT),
 					end : moment('2009-03-11', Config.DATE_FORMAT)
 				});
@@ -433,7 +433,7 @@ define([
 			});
 
 			it('Expects that the variable summary and process data subviews are removed when the step is PROCESS_DATA_STEP', function() {
-				testModel.set('datasetDateFilter', {
+				testModel.set('dataDateFilter', {
 					start : moment('2005-04-01', Config.DATE_FORMAT),
 					end : moment('2009-03-11', Config.DATE_FORMAT)
 				});
@@ -488,9 +488,9 @@ define([
 				expect(showDangerAlertSpy).toHaveBeenCalled();
 			});
 
-			it('Expects that if the datasetDateFilter property is changed the success alert is shown', function() {
+			it('Expects that if the dataDateFilter property is changed the success alert is shown', function() {
 				showSuccessAlertSpy.calls.reset();
-				testModel.set('datasetDateFilter', {
+				testModel.set('dataDateFilter', {
 					start : moment('2000-01-02', Config.DATE_FORMAT),
 					end : moment('2000-11-11', Config.DATE_FORMAT)
 				});
@@ -569,7 +569,7 @@ define([
 				removeMapViewSpy.calls.reset();
 				collapseSummaryViewSpy.calls.reset();
 				renderProcessDataViewSpy.calls.reset();
-				testModel.set('datasetDateFilter', {
+				testModel.set('dataDateFilter', {
 					start : moment('2005-04-01', Config.DATE_FORMAT),
 					end : moment('2009-03-11', Config.DATE_FORMAT)
 				});
@@ -589,7 +589,7 @@ define([
 				removeMapViewSpy.calls.reset();
 				collapseSummaryViewSpy.calls.reset();
 				renderProcessDataViewSpy.calls.reset();
-				testModel.set('datasetDateFilter', {
+				testModel.set('dataDateFilter', {
 					start : moment('2005-04-01', Config.DATE_FORMAT),
 					end : moment('2009-03-11', Config.DATE_FORMAT)
 				});
@@ -605,7 +605,7 @@ define([
 			it('Expects that if the step is PROCESS_DATA_STEP and goes back to CHOOSE_DATA_BY_SITE_FILTERS_STEP, the process data view is removed, the location, choose, and map view are created and the variable summary is shown', function() {
 				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP);
-				testModel.set('datasetDateFilter', {
+				testModel.set('dataDateFilter', {
 					start : moment('2005-04-01', Config.DATE_FORMAT),
 					end : moment('2009-03-11', Config.DATE_FORMAT)
 				});
@@ -627,7 +627,7 @@ define([
 			it('Expects that if the step is PROCESS_DATA_STEP and goes back to CHOOSE_DATA_BY_VARIABLES_STEP, the process data view is removed, the location, choose variable, and map view are created and the variable summary is shown', function() {
 				testModel.set('step', Config.CHOOSE_DATA_BY_VARIABLES_STEP);
 				testModel.set({
-					datasetDateFilter : {
+					dataDateFilter : {
 						start : moment('2005-04-01', Config.DATE_FORMAT),
 						end : moment('2009-03-11', Config.DATE_FORMAT)
 					},
@@ -651,7 +651,7 @@ define([
 			it('Expects that if the step is PROCESS_DATA_STEP and changes to SPECIFY_AOI_STEP, the process data and summary views are removed', function() {
 				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP);
-				testModel.set('datasetDateFilter', {
+				testModel.set('dataDateFilter', {
 					start : moment('2005-04-01', Config.DATE_FORMAT),
 					end : moment('2009-03-11', Config.DATE_FORMAT)
 				});
@@ -722,7 +722,7 @@ define([
 				removeMapViewSpy.calls.reset();
 				collapseSummaryViewSpy.calls.reset();
 				renderProcessDataViewSpy.calls.reset();
-				testModel.set('datasetDateFilter', {
+				testModel.set('dataDateFilter', {
 					start : moment('2005-04-01', Config.DATE_FORMAT),
 					end : moment('2009-03-11', Config.DATE_FORMAT)
 				});
@@ -738,7 +738,7 @@ define([
 			it('Expects that if the step is PROCESS_DATA_STEP and goes back to CHOOSE_DATA_BY_SITE_FILTERS_STEP, the process data view is removed, the aoiBox, choose, and map view are created and the variable summary is shown', function() {
 				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP);
-				testModel.set('datasetDateFilter', {
+				testModel.set('dataDateFilter', {
 					start : moment('2005-04-01', Config.DATE_FORMAT),
 					end : moment('2009-03-11', Config.DATE_FORMAT)
 				});

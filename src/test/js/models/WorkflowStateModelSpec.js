@@ -349,7 +349,7 @@ define([
 				var aoiModel = testModel.get('aoi');
 				aoiModel.set({latitude : '43.0', longitude : '-100.0', radius : '6'});
 				testModel.set({
-					datasetDateFilter : {
+					dataDateFilter : {
 						start : moment('2010-04-11','YYYY-MM-DD'),
 						end : moment('2016-04-15', 'YYYY-MM-DD')
 					},
@@ -359,7 +359,7 @@ define([
 
 				expect(aoiModel.attributes).toEqual({});
 				expect(testModel.has('datasets')).toBe(false);
-				expect(testModel.has('datasetDateFilter')).toBe(false);
+				expect(testModel.has('dataDateFilter')).toBe(false);
 			});
 
 			it('Expects that if the step changes to SPECIFY_AOI_STEP the datasetCollections will be cleared', function() {
@@ -407,7 +407,7 @@ define([
 
 			it('Expects that if the step changes to PROCESS_DATA_STEP and the startDate and endDate have values, these values will be used to set the initial value of the outputDateRange', function() {
 				var result;
-				testModel.set('datasetDateFilter', {
+				testModel.set('dataDateFilter', {
 					start : moment('2005-04-11', Config.DATE_FORMAT),
 					end : moment('2010-05-01', Config.DATE_FORMAT)
 				});

@@ -38,7 +38,7 @@ define([
 
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
 
-			//Set up date pickers
+			/Csjcd851!fermi/Set up date pickers
 			this.$('#start-date-div').datetimepicker({
 				format : Config.DATE_FORMAT,
 				useCurrent: false,

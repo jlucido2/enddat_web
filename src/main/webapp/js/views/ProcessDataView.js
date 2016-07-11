@@ -38,6 +38,10 @@ define([
 
 	var getUrls = function(workflowModel, maxUrlLength, download) {
 		var attrs = workflowModel.attributes;
+		_.each(workflowModel.getSelectedVariables(), function(model) {
+			console.log('Showing a model:');
+			console.log(model);
+		});
 		var varParams = _.chain(workflowModel.getSelectedVariables())
 			.map(function(variable) {
 				return variable.get('variableParameter').getUrlParameters(variable.get('timeSeriesOptions'));
@@ -62,7 +66,7 @@ define([
 		var siteUrls;
 		if (urlLength > maxUrlLength) {
 			var siteOrganizedParams = organizeParams(varParams);
-			// take the site organizied parameters and create a url for each site,
+			// take the site organized parameters and create a url for each site,
 			// then return the values from the new object as an array
 			siteUrls = _.chain(siteOrganizedParams).mapObject(function(siteParams) {
 				return BASE_URL + 'service/execute?' + $.param(params.concat(siteParams));
@@ -184,6 +188,7 @@ define([
 			var dataUrls = getUrls(this.model, this.maxUrlLength);
 			var $getDataBtn = this.$('.get-data-btn');
 			var $downloadBtn = this.$('.download-data-btn');
+			console.log('Length: ' + dataUrls.length);
 			if (dataUrls.length > 1) {
 				$getDataBtn.prop("disabled", true);
 				$downloadBtn.prop("disabled", true);				

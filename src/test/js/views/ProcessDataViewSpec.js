@@ -4,14 +4,16 @@
 define([
 	'squire',
 	'jquery',
+	'underscore',
 	'moment',
 	'Config',
 	'bootstrap-datetimepicker',
 	'utils/VariableParameter',
 	'models/WorkflowStateModel',
 	'models/BaseVariableCollection',
-	'views/BaseView'
-], function(Squire, $, moment, Config, datetimepicker, VariableParameter, WorkflowStateModel, BaseVariableCollection, BaseView) {
+	'views/BaseView',
+	'views/VariableTsOptionView'
+], function(Squire, $, _, moment, Config, datetimepicker, VariableParameter, WorkflowStateModel, BaseVariableCollection, BaseView, VariableTsOptionView) {
 	describe('views/ProcessDataView', function() {
 		var testView, ProcessDataView;
 		var $testDiv;
@@ -30,7 +32,7 @@ define([
 			removeVariableTsOptionView = jasmine.createSpy('removeVariableTsOptionView');
 
 			injector = new Squire();
-
+			
 			injector.mock('views/VariableTsOptionView', BaseView.extend({
 				setElement : setElVariableTsOptionView.and.returnValue({
 					render : renderVariableTsOptionView
@@ -84,21 +86,22 @@ define([
 		
 		fdescribe('Tests for render with a long URL', function() {
 			var variableCollectionLong = new BaseVariableCollection([
-			                                     					{x : '2', y: '2', selected : true,
-			                                     						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var1'}),
-			                                     						timeSeriesOptions : [{statistic : 'raw'}]
-			                                     					},
-			                                     					{x : '3', y: '3', selected : true,
-			                                     						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var1'}),
-			                                     						timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]},
-			                                     					{x : '4', y : '4', selected : true,
-			                                     					     variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '4:4', value : '4:4', colName : 'Var3'}),
-			                                     					     timeSeriesOptions : [{statistic : 'raw'}]
-			                                     				    }                                                       
-			                                        				]);
+				{x : '2', y: '2', selected : true,
+					variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var1'}),
+					timeSeriesOptions : [{statistic : 'raw'}]
+				},
+				{x : '3', y: '3', selected : true,
+					variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var1'}),
+					timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]},
+				{x : '4', y : '4', selected : true,
+				     variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '4:4', value : '4:4', colName : 'Var3'}),
+				     timeSeriesOptions : [{statistic : 'raw'}]
+			    }                                                       
+				]);
 
 			beforeEach(function() {
 				getSelectedVarSpy.and.returnValue(variableCollectionLong.models);
+				templateSpy = jasmine.createSpy('renderVariableTsOptionView');
 				spyOn(testModel, 'getSelectedVarsDateRange').and.returnValue({
 					start : moment('2000-01-04', Config.DATE_FORMAT),
 					end : moment('2005-06-01', Config.DATE_FORMAT),
@@ -116,24 +119,31 @@ define([
 			it('Expects variableTsOptionView to be rendered for each of the variables.', function() {
 				expect(renderVariableTsOptionView.calls.count()).toBe(3);
 				expect(testView.variableTsOptionViews.length).toBe(3);
-				console.log(skitty);
 			});
 			
 			it('Expects the download button is disabled.', function() {
-				$testDiv.find('.show-url-btn').trigger('click');
 				var isDisabled = $testDiv.find('.download-data-btn').is(':disabled');
 				expect(isDisabled).toBe(true);
 			});
 			
 			it('Expects the get data button is disabled.', function() {
-				$testDiv.find('.show-url-btn').trigger('click');
 				var isDisabled = $testDiv.find('.get-data-btn').is(':disabled');
 				expect(isDisabled).toBe(true);
 			});
 			
-			it('Expects that download button is enabled when only on TS variable is selected.', function() {
-				//var divHtml = $testDiv.html();
-				//console.log(divHtml);
+			it('Expects that buttons are enabled upon unchecking TS options after the view has rendered.', function() {
+				// test that unselecting time-series variables will enable the buttons
+				// unselect the last two variables...
+				_.each(variableCollectionLong.models.slice(1), function(varModel) {
+					getSelectedVarSpy.and.returnValue(variableCollectionLong.models);
+					var unselectedModel = varModel.set({'selected' : false}); // alter the model
+					variableCollectionLong.remove(varModel);
+				});
+				var isGetDataDisabled = $testDiv.find('.get-data-btn').is(':disabled');
+				expect(isGetDataDisabled).toBe(false);	
+				var isDownloadDisabled = $testDiv.find('.download-data-btn').is(':disabled');
+				console.log(isDownloadDisabled);
+				expect(isDownloadDisabled).toBe(false);
 			});
 		});
 
@@ -171,6 +181,16 @@ define([
 			it('Expects that a variableTsOptionView is created for each selected variable', function() {
 				expect(renderVariableTsOptionView.calls.count()).toBe(2);
 				expect(testView.variableTsOptionViews.length).toBe(2);
+			});
+			
+			it('Expects the download button is enabled.', function() {
+				var isDisabled = $testDiv.find('.download-data-btn').is(':disabled');
+				expect(isDisabled).toBe(false);
+			});
+			
+			it('Expects the get data button is enabled.', function() {
+				var isDisabled = $testDiv.find('.get-data-btn').is(':disabled');
+				expect(isDisabled).toBe(false);
 			});
 
 			it('Expects the remaining configuration inputs to be initialized', function() {
@@ -350,18 +370,6 @@ define([
 					expect(secondInspect).toBe(true);
 					expect(thirdInspect).toBe(true);
 				});
-
-				it('Expects get data button to be disabled', function() {
-					$testDiv.find('.show-url-btn').trigger('click');
-					var isDisabled = $testDiv.find('.get-data-btn').is(':disabled');
-					expect(isDisabled).toBe(true);
-				});
-
-				it('Expects download data button to be disabled', function() {
-					$testDiv.find('.show-url-btn').trigger('click');
-					var isDisabled = $testDiv.find('.download-data-btn').is(':disabled');
-					expect(isDisabled).toBe(true);
-				});
 			});
 
 			describe('DOM events for processing buttons', function() {
@@ -404,18 +412,6 @@ define([
 					$testDiv.find('.show-url-btn').trigger('click');
 					var message = $testDiv.find('p.warning-msg').html();
 					expect(message).toEqual('');
-				});
-
-				it('Expects get data button to be enabled', function() {
-					$testDiv.find('.show-url-btn').trigger('click');
-					var isDisabled = $testDiv.find('.get-data-btn').is(':disabled');
-					expect(isDisabled).toBe(false);
-				});
-
-				it('Expects download data button to be enabled', function() {
-					$testDiv.find('.show-url-btn').trigger('click');
-					var isDisabled = $testDiv.find('.download-data-btn').is(':disabled');
-					expect(isDisabled).toBe(false);					
 				});
 
 				it('Expects that the expected url is shown in the url container', function() {

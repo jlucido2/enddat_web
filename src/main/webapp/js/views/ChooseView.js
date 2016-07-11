@@ -4,12 +4,10 @@ define([
 	'underscore',
 	'jquery',
 	'select2',
-	'moment',
-	'bootstrap-datetimepicker',
-	'Config',
 	'views/BaseCollapsiblePanelView',
+	'views/DatasetDateFilterView',
 	'hbs!hb_templates/choose'
-], function(_, $, select2, moment, datetimepicker, Config, BaseCollapsiblePanelView, hbTemplate) {
+], function(_, $, select2, BaseCollapsiblePanelView, DatasetDateFilterView, hbTemplate) {
 	"use strict";
 
 	/*
@@ -27,42 +25,38 @@ define([
 
 		additionalEvents : {
 			'select2:select #datasets-select' : 'selectDataset',
-			'select2:unselect #datasets-select' : 'resetDataset',
-			// To set the model value from a datetimepicker, handle the event of the input's div
-			'dp.change #start-date-div' : 'changeStartDate',
-			'dp.change #end-date-div' : 'changeEndDate'
+			'select2:unselect #datasets-select' : 'resetDataset'
+		},
+
+		initialize : function(options) {
+			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
+
+			this.dateFilterView = new DatasetDateFilterView({
+				el : this.$('.date-filter-container'),
+				model : this.model
+			});
 		},
 
 		render : function() {
 			var now = new Date();
 
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
-
-			/Csjcd851!fermi/Set up date pickers
-			this.$('#start-date-div').datetimepicker({
-				format : Config.DATE_FORMAT,
-				useCurrent: false,
-				maxDate : now
-			});
-			this.$('#end-date-div').datetimepicker({
-				format : Config.DATE_FORMAT,
-				useCurrent : false,
-				maxDate : now
-			});
+			this.dateFilterView.setElement(this.$('.date-filter-container')).render();
 
 			this.$('#datasets-select').select2({
 				allowClear : true,
 				theme : 'bootstrap'
 			});
 			this.updateDatasets();
-			this.updateStartDate();
-			this.updateEndDate();
 			this.gaSelectTracker();
 
 			this.listenTo(this.model, 'change:datasets', this.updateDatasets);
-			this.listenTo(this.model, 'change:startDate', this.updateStartDate);
-			this.listenTo(this.model, 'change:endDate', this.updateEndDate);
 			return this;
+		},
+
+		remove : function() {
+			this.dateFilterView.remove();
+			BaseCollapsiblePanelView.prototype.remove.apply(this, arguments);
 		},
 
 		/*
@@ -72,17 +66,6 @@ define([
 		updateDatasets : function() {
 			var chosenDatasets = (this.model.has('datasets')) ? this.model.get('datasets') : [];
 			this.$('#datasets-select').val(chosenDatasets).trigger('change');
-		},
-
-		updateStartDate : function() {
-			var startDate = (this.model.has('startDate') && (this.model.attributes.startDate)) ? this.model.attributes.startDate : null;
-
-			this.$('#start-date-div').data('DateTimePicker').date(startDate);
-		},
-
-		updateEndDate : function() {
-			var endDate = (this.model.has('endDate')  && (this.model.attributes.endDate)) ? this.model.attributes.endDate : null;
-			this.$('#end-date-div').data('DateTimePicker').date(endDate);
 		},
 
 		/*
@@ -103,30 +86,6 @@ define([
 			this.model.set('datasets', datasets);
 		},
 
-		changeStartDate : function(ev) {
-			var $endDate = this.$('#end-date-div');
-			if (ev.date) {
-				this.model.set('startDate', moment(ev.date));
-				$endDate.data('DateTimePicker').minDate(ev.date);
-			}
-			else {
-				this.model.unset('startDate');
-				$endDate.data('DateTimePicker').minDate(false);
-			}
-		},
-
-		changeEndDate : function(ev) {
-			var $startDate = this.$('#start-date-div');
-			if (ev.date) {
-				this.model.set('endDate', moment(ev.date));
-				$startDate.data('DateTimePicker').maxDate(ev.date);
-			}
-			else {
-				this.model.unset('endDate');
-				$startDate.data('DateTimePicker').maxDate(new Date());
-			}
-		},
-
 		gaSelectTracker: function () {
 			$('#datasets-select').on('select2:select', function (e) {
 				var lastSelectedItem = e.params.data.text;
@@ -138,7 +97,6 @@ define([
 				ga('send', 'event', 'Dataset Removed', 'clicked', lastRemovedItem);
 			});
 		}
-
 	});
 
 	return view;

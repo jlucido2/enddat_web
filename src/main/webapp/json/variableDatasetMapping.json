@@ -1,0 +1,51 @@
+{
+	"precipitation" : {
+		"displayName" : "Precipitation",
+		"datasets" : [
+			{
+				"name" : "NWIS",
+				"filter" : [
+					{"parameterCd" : "00045", "statCd" : "00000"},
+					{"parameterCd" : "00046", "statCd" : "00000"}
+				]
+			},{
+				"name" : "ACIS",
+				"filter" : [
+					{"code" : "pcpn"}
+				]
+			},{
+				"name" : "PRECIP",
+				"filter" : [{}]
+			}
+		]
+	},
+	"maxTemperature" : {
+		"displayName" : "Maximum Temperature",
+		"datasets" : [
+			{
+				"name" : "NWIS",
+				"filter" : [
+					{"parameterCd" : "00021", "statCd" : "00001"}
+				]
+			},{
+				"name" : "ACIS",
+				"filter" : [{"code" : "maxt"}]
+			},{
+				"name" : "GLCFS_ERIE",
+				"filter" : [{"code" : "at"}]
+			},{
+				"name" : "GLCFS_HURON",
+				"filter" : [{"code" : "at"}]
+			},{
+				"name" : "GLCFS_MICHIGAN",
+				"filter" : [{"code" : "at"}]
+			},{
+				"name" : "GLCFS_ONTARIO",
+				"filter" : [{"code" : "at"}]
+			},{
+				"name" : "GLCFS_SUPERIOR",
+				"filter" : [{"code" : "at"}]
+			}
+		]
+	}
+}

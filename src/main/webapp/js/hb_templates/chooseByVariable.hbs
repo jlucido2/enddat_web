@@ -1,0 +1,8 @@
+<div class="form-group">
+	<label for="variable-select">Variables:</label>
+	<select id="variable-select" class="form-control" multiple style="width: 100%">
+		{{#each this}}
+			<option value="{{@key}}">{{displayName}}</option>
+		{{/each}}
+	</select>
+</div>

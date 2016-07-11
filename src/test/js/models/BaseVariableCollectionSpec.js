@@ -197,5 +197,102 @@ define([
 				expect(testCollection.getSelectedOverlappingDateRange()).toBeUndefined();
 			});
 		});
+
+		describe('Tests for hasVariablesInFilters', function(){
+			var testCollection;
+
+			it('Expects that an empty collection will return false', function() {
+				testCollection = new BaseVariableCollection();
+				expect(testCollection.hasVariablesInFilters([{x : 1}])).toBe(false);
+			});
+
+			it('Expects an empty filter to return false', function() {
+				testCollection = new BaseVariableCollection([
+					{x : 1, y : 1},
+					{x : 1, y : 2},
+					{x : 2, y : 2},
+					{x : 3, y : 2}
+				]);
+				expect(testCollection.hasVariablesInFilters([])).toBe(false);
+			});
+
+			it('Expects a filter that doesn\'t match any of the variables to return false', function() {
+				testCollection = new BaseVariableCollection([
+					{x : 1, y : 1},
+					{x : 1, y : 2},
+					{x : 2, y : 2},
+					{x : 3, y : 2}
+				]);
+
+				expect(testCollection.hasVariablesInFilters([{x : 4}, {x : 5}])).toBe(false);
+			});
+
+			it('Expects a filter that matches some variables to return true', function() {
+				testCollection = new BaseVariableCollection([
+					{x : 1, y : 1},
+					{x : 1, y : 2},
+					{x : 2, y : 2},
+					{x : 3, y : 2}
+				]);
+
+				expect(testCollection.hasVariablesInFilters([{x : 1}, {x : 5}])).toBe(true);
+			});
+		});
+
+		describe('Tests for selectVariablesInFilters', function() {
+			var testCollection;
+
+			beforeEach(function() {
+				testCollection = new BaseVariableCollection([
+					{x : 1, y : 1},
+					{x : 1, y : 2},
+					{x : 2, y : 2},
+					{x : 3, y : 2}
+				]);
+			});
+
+			it('Expects none of the variables to be selected if they are not in the filters', function() {
+				testCollection.selectVariablesInFilters([{x : 4}, {x : 5}]);
+				expect(testCollection.getSelectedVariables().length).toBe(0);
+			});
+
+			it('Expects that variables in the filters will be selected', function() {
+				var selectedVars;
+				testCollection.selectVariablesInFilters([{x : 1}, {x : 3}]);
+				selectedVars = testCollection.getSelectedVariables();
+
+				expect(selectedVars.length).toBe(3);
+				expect(_.contains(selectedVars, testCollection.at(0))).toBe(true);
+				expect(_.contains(selectedVars, testCollection.at(1))).toBe(true);
+				expect(_.contains(selectedVars, testCollection.at(3))).toBe(true);
+			});
+		});
+
+		describe('Tests for unselectVariablesInFilters', function() {
+			var testCollection;
+
+			beforeEach(function() {
+				testCollection = new BaseVariableCollection([
+					{x : 1, y : 1, selected : true},
+					{x : 1, y : 2, selected : true},
+					{x : 2, y : 2, selected : true},
+					{x : 3, y : 2, selected : true}
+				]);
+			});
+
+			it('Expects none of the variables to be unselected if they are not in the filters', function() {
+				testCollection.selectVariablesInFilters([{x : 4}, {x : 5}]);
+				expect(testCollection.getSelectedVariables().length).toBe(4);
+			});
+
+			it('Expects that variables in the filters will be sunelected', function() {
+				var selectedVars;
+				testCollection.unselectVariablesInFilters([{x : 1}, {x : 3}]);
+				selectedVars = testCollection.getSelectedVariables();
+
+				expect(selectedVars.length).toBe(1);
+				expect(_.contains(selectedVars, testCollection.at(2))).toBe(true);
+			});
+		});
 	});
 });

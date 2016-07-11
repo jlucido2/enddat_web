@@ -113,14 +113,32 @@ define([
 				expect(testView.$(processDataSel).hasClass('disabled')).toBe(true);
 			});
 
-			it('Expects that if the workflow step is CHOOSE_DATA_FILTERS_STEP the choose data btn is active and the process data step is disabled', function() {
+			it('Expects that if the workflow step is CHOOSE_DATA_BY_SITE_FILTERS_STEP the choose data btn is active and the process data step is disabled', function() {
 				testModel.get('aoi').set({
 					latitude : 43.0,
 					longitude : -100.0,
 					radius : 2
 				});
 				testModel.set({
-					step : Config.CHOOSE_DATA_FILTERS_STEP
+					step : Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP
+				});
+				testView.render();
+				expect(testView.$(projLocSel + ' a').hasClass('active')).toBe(false);
+				expect(testView.$(chooseDataSel + ' a').hasClass('active')).toBe(true);
+				expect(testView.$(processDataSel + ' a').hasClass('active')).toBe(false);
+				expect(testView.$(projLocSel).hasClass('disabled')).toBe(false);
+				expect(testView.$(chooseDataSel).hasClass('disabled')).toBe(false);
+				expect(testView.$(processDataSel).hasClass('disabled')).toBe(true);
+			});
+
+			it('Expects that if the workflow step is CHOOSE_DATA_BY_VARIABLES_STEP the choose data btn is active and the process data step is disabled', function() {
+				testModel.get('aoi').set({
+					latitude : 43.0,
+					longitude : -100.0,
+					radius : 2
+				});
+				testModel.set({
+					step : Config.CHOOSE_DATA_BY_VARIABLES_STEP
 				});
 				testView.render();
 				expect(testView.$(projLocSel + ' a').hasClass('active')).toBe(false);
@@ -146,34 +164,94 @@ define([
 				});
 			});
 
-			it('Expects that clicking the choose data button, changes the step to CHOOSE_DATA_FILTERS_STEP', function() {
-				testModel.set({
-					step : Config.SPECIFY_AOI_STEP
-				});
+			it('Expects that clicking the choose data button when the current step is SPECIFY_AOI_STEP, shows the choose workflow modal', function() {
+				testModel.set('step', Config.SPECIFY_AOI_STEP);
 				testView.render();
+				$.fn.modal.calls.reset();
 				$(chooseDataSel + ' a').trigger('click');
 
-				expect(testModel.get('step')).toEqual(Config.CHOOSE_DATA_FILTERS_STEP);
+				expect($.fn.modal).toHaveBeenCalled();
+				expect($.fn.modal.calls.mostRecent().object.hasClass('choose-data-workflow-modal')).toBe(true);
 			});
 
-			it('Expects that clicking the choose data button, only changes the step if the current step is not CHOOSE_DATA_FILTERS_STEP or CHOOSE_DATA_VARIABLES_STEP', function() {
+			it('Expects that after clicking the choose data button and then choosing Select variables by site, the workflow step changes to CHOOSE_DATA_BY_SITE_FILTERS_STEP', function() {
+				testModel.set('step', Config.SPECIFY_AOI_STEP);
+				testView.render();
+				$(chooseDataSel + ' a').trigger('click');
+				$.fn.modal.calls.reset();
+				$('.choose-data-workflow-modal select').val('chooseDataBySiteFilters').trigger('change');
+
+				expect(testModel.get('step')).toEqual(Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
+				expect($.fn.modal).toHaveBeenCalledWith('hide');
+				expect($.fn.modal.calls.mostRecent().object.hasClass('choose-data-workflow-modal')).toBe(true);
+			});
+
+			it('Expects that after clicking the choose data button and then choosing Selecte variables by variable type, the workflow step changes to CHOOSE_DATA_BY_VARIABLES_STEP', function() {
+				testModel.set('step', Config.SPECIFY_AOI_STEP);
+				testView.render();
+				$(chooseDataSel + ' a').trigger('click');
+				$.fn.modal.calls.reset();
+				$('.choose-data-workflow-modal select').val('chooseDataByVariables').trigger('change');
+
+
+				expect(testModel.get('step')).toEqual(Config.CHOOSE_DATA_BY_VARIABLES_STEP);
+				expect($.fn.modal).toHaveBeenCalledWith('hide');
+				expect($.fn.modal.calls.mostRecent().object.hasClass('choose-data-workflow-modal')).toBe(true);
+			});
+
+			it('Expects that if current step is one of the CHOOSE_DATA_BY_SITE_FILTERS_STEP, the modal is shown', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
+				testView.render();
+				$.fn.modal.calls.reset();
+				$(chooseDataSel + ' a').trigger('click');
+
+				expect($.fn.modal).toHaveBeenCalled();
+				expect($.fn.modal.calls.mostRecent().object.hasClass('choose-data-workflow-modal')).toBe(true);
+			});
+
+			it('Expects that if current step is one of the CHOOSE_DATA_BY_VARIABLES_STEP, the modal is shown', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_VARIABLES_STEP);
+				testView.render();
+				$.fn.modal.calls.reset();
+				$(chooseDataSel + ' a').trigger('click');
+
+				expect($.fn.modal).toHaveBeenCalled();
+				expect($.fn.modal.calls.mostRecent().object.hasClass('choose-data-workflow-modal')).toBe(true);
+			});
+
+			it('Expects that if the current step is PROCESS_DATA_STEP and the datasets property is not empty and then the choose data button is clicked, the workflow step changes to CHOOSE_DATA_BY_SITE_FILTERS_STEP', function() {
 				testModel.set({
-					step : Config.CHOOSE_DATA_FILTERS_STEP
+					startDate : moment('2001-01-01', Config.DATE_FORMAT),
+					endDate : moment('2002-01-01', Config.DATE_FORMAT)
+				});
+				testModel.set({
+					step : Config.PROCESS_DATA_STEP,
+					datasets : ['NWIS']
 				});
 				testView.render();
 				$(chooseDataSel + ' a').trigger('click');
 
-				expect(testModel.get('step')).toEqual(Config.CHOOSE_DATA_FILTERS_STEP);
+				expect(testModel.get('step')).toEqual(Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
+			});
 
-				testModel.set('step', Config.CHOOSE_DATA_VARIABLES_STEP);
+			it('Expects that if the current step is PROCESS_DATA_STEP and the variables property is not empty and then the choose data button is clicked, the workflow step changes to CHOOSE_DATA_BY_VARIABLES_STEP', function() {
+				testModel.set({
+					startDate : moment('2001-01-01', Config.DATE_FORMAT),
+					endDate : moment('2002-01-01', Config.DATE_FORMAT)
+				});
+				testModel.set({
+					step : Config.PROCESS_DATA_STEP,
+					variableKinds : ['maxTemperature']
+				});
+				testView.render();
 				$(chooseDataSel + ' a').trigger('click');
 
-				expect(testModel.get('step')).toEqual(Config.CHOOSE_DATA_VARIABLES_STEP);
+				expect(testModel.get('step')).toEqual(Config.CHOOSE_DATA_BY_VARIABLES_STEP);
 			});
 
 			it('Expects that clicking the project location button causes the warning modal to be shown', function() {
 				testModel.set({
-					step : Config.CHOOSE_DATA_FILTERS_STEP
+					step : Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP
 				});
 				testView.render();
 				$.fn.modal.calls.reset();
@@ -185,7 +263,7 @@ define([
 			it('Expects that clicking the cancel button in the modal does nothing to the state of the workflow model', function() {
 				var currentWorkflowState;
 				testModel.set({
-					step : Config.CHOOSE_DATA_FILTERS_STEP
+					step : Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP
 				});
 				currentWorkflowState = testModel.attributes;
 				testView.render();
@@ -198,7 +276,7 @@ define([
 			it('Expects that clicking the ok button sets the workflow step to SPECIFY_AOI_STEP', function() {
 				var currentWorkflowState;
 				testModel.set({
-					step : Config.CHOOSE_DATA_FILTERS_STEP
+					step : Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP
 				});
 				currentWorkflowState = testModel.attributes;
 				testView.render();
@@ -221,14 +299,16 @@ define([
 
 			it('Expects that if the location  and radius are defined when in the SPECIFY_AOI_STEP, the choose data btn becomes active', function() {
 				testModel.get('aoi').set({latitude: 43.0, longitude : -100.0, radius : 4});
+
 				expect(testView.$(projLocSel).hasClass('disabled')).toBe(false);
 				expect(testView.$(chooseDataSel).hasClass('disabled')).toBe(false);
 				expect(testView.$(processDataSel).hasClass('disabled')).toBe(true);
 			});
 
-			it('Expects that if the step is changed to CHOOSE_DATA_FILTERS_STEP, the choose data btn is active', function() {
+			it('Expects that if the step is changed to CHOOSE_DATA_BY_SITE_FILTERS_STEP, the choose data btn is active', function() {
 				testModel.get('aoi').set({latitude: 43.0, longitude : -100.0, radius : 4});
-				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
+
 				expect(testView.$(projLocSel + ' a').hasClass('active')).toBe(false);
 				expect(testView.$(chooseDataSel + ' a').hasClass('active')).toBe(true);
 				expect(testView.$(processDataSel + ' a').hasClass('active')).toBe(false);
@@ -237,17 +317,17 @@ define([
 				expect(testView.$(processDataSel).hasClass('disabled')).toBe(true);
 			});
 
-			it('Expects that if the step is changed to CHOOSE_DATA_FILTERS_STEP, then the router will navigate to the url with the lat/lon and radius in it', function() {
-				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
+			it('Expects that if the step is changed to CHOOSE_DATA_BY_SITE_FILTERS_STEP, then the router will navigate to the url with the lat/lon and radius in it', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testModel.set('datasets', []);
 				testModel.get('aoi').set({latitude: 43.0, longitude : -100.0, radius : 4});
 
 				expect(mockRouter.navigate.calls.mostRecent().args).toEqual(['lat/43/lng/-100/radius/4/dataset/']);
 			});
 
-			it('Expects that if the step is CHOOSE_DATA_FILTERS_STEP and the location becomes invalid that the url is not updated', function() {
+			it('Expects that if the step is CHOOSE_DATA_BY_SITE_FILTERS_STEP and the location becomes invalid that the url is not updated', function() {
 				var aoiModel = testModel.get('aoi');
-				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testModel.set('datasets', []);
 				aoiModel.set({latitude: 43.0, longitude : -100.0, radius : 4});
 
@@ -259,10 +339,10 @@ define([
 				expect(mockRouter.navigate).not.toHaveBeenCalled();
 			});
 
-			it('Expects that if the step is CHOOSE_DATA_FILTERS_STEP and radius, location, start/endDate, and datasets change the router will navigate to the appropriate url', function() {
+			it('Expects that if the step is CHOOSE_DATA_BY_SITE_FILTERS_STEP and radius, location, start/endDate, and datasets change the router will navigate to the appropriate url', function() {
 				var aoiModel = testModel.get('aoi');
 				aoiModel.set({latitude: 43.0, longitude : -100.0, radius : 2});
-				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testModel.set({
 					datasets : ['NWIS']
 				});
@@ -280,10 +360,10 @@ define([
 				expect(mockRouter.navigate.calls.mostRecent().args).toEqual(['lat/43/lng/-100/radius/10/startdate/1Jan2000/enddate/1Jan2010/dataset/NWIS/Precip']);
 			});
 
-			it('Expects that if the step is CHOOSE_DATA_FILTERS_STEP and changed to CHOOSE_DATA_VARIABLES_STEP, the choose data btn remains active', function() {
+			it('Expects that if the step is CHOOSE_DATA_BY_SITE_FILTERS_STEP and changed to CHOOSE_DATA_BY_SITE_VARIABLES_STEP, the choose data btn remains active', function() {
 				testModel.get('aoi').set({latitude: 43.0, longitude : -100.0, radius : 4});
-				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
-				testModel.set('step', Config.CHOOSE_DATA_VARIABLES_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP);
 
 				expect(testView.$(projLocSel + ' a').hasClass('active')).toBe(false);
 				expect(testView.$(chooseDataSel + ' a').hasClass('active')).toBe(true);
@@ -293,16 +373,36 @@ define([
 				expect(testView.$(processDataSel).hasClass('disabled')).toBe(true);
 			});
 
-			it('Expects that if the steop is CHOOSE_DATA_VARIABLES_STEP and the hasSelectedVariables is changed to true, the process data button in enabled', function() {
+			it('Expects that if the step is CHOOSE_DATA_BY_SITE_VARIABLES_STEP and the hasSelectedVariables is changed to true, the process data button in enabled', function() {
 				var processDataBtn = testView.$(processDataSel);
 				testModel.get('aoi').set({latitude: 43.0, longitude : -100.0, radius : 4});
-				testModel.set('step', Config.CHOOSE_DATA_VARIABLES_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP);
 
 				expect(processDataBtn.hasClass('disabled')).toBe(true);
 
 				testModel.set('hasSelectedVariables', true);
 
 				expect(processDataBtn.hasClass('disabled')).toBe(false);
+			});
+
+			it('Expects that if the step is changed to CHOOSE_DATA_BY_VARIABLES_STEP, the choose data btn is active', function() {
+				testModel.get('aoi').set({latitude: 43.0, longitude : -100.0, radius : 4});
+				testModel.set('step', Config.CHOOSE_DATA_BY_VARIABLES_STEP);
+
+				expect(testView.$(projLocSel + ' a').hasClass('active')).toBe(false);
+				expect(testView.$(chooseDataSel + ' a').hasClass('active')).toBe(true);
+				expect(testView.$(processDataSel + ' a').hasClass('active')).toBe(false);
+				expect(testView.$(projLocSel).hasClass('disabled')).toBe(false);
+				expect(testView.$(chooseDataSel).hasClass('disabled')).toBe(false);
+				expect(testView.$(processDataSel).hasClass('disabled')).toBe(true);
+			});
+
+			it('Expects that if the step is changed to CHOOSE_DATA_BY_VARIABLES_STEP, then the router will navigate to the url with the lat/lon and radius in it', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_VARIABLES_STEP);
+				testModel.set('variableKinds', []);
+				testModel.get('aoi').set({latitude: 43.0, longitude : -100.0, radius : 4});
+
+				expect(mockRouter.navigate.calls.mostRecent().args).toEqual(['lat/43/lng/-100/radius/4/variable/']);
 			});
 		});
 	});

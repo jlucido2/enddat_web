@@ -6,12 +6,13 @@ define([
 	'moment',
 	'backbone',
 	'Config',
+	'utils/VariableDatasetMapping',
 	'models/GLCFSCollection',
 	'models/NWISCollection',
 	'models/PrecipitationCollection',
 	'models/ACISCollection',
 	'models/AOIModel'
-], function(_, $, moment, Backbone, Config, GLCFSCollection, NWISCollection, PrecipitationCollection, ACISCollection, AOIModel) {
+], function(_, $, moment, Backbone, Config, VariableDatasetMapping, GLCFSCollection, NWISCollection, PrecipitationCollection, ACISCollection, AOIModel) {
 	"use strict";
 
 	var DEFAULT_CHOSEN_DATASETS = ['NWIS'];
@@ -65,6 +66,7 @@ define([
 
 				this.get('aoi').on('change', this.changeAOI, this);
 				this.on('change:datasets', this.updateDatasetCollections, this);
+				this.on('change:variableKinds', this.updateSelectedVariables, this);
 			}
 		},
 
@@ -108,14 +110,57 @@ define([
 		 * fetch all chosen datasets. Otherwise clear all datasets.
 		 */
 		changeAOI : function() {
+			var self = this;
 			var boundingBox = this.get('aoi').getBoundingBox();
 			var chosenDatasets = this.has('datasets') ? this.get('datasets') : [];
-			if (boundingBox) {
-				this.fetchDatasets(chosenDatasets, boundingBox);
+			var chosenVariableKinds = this.has('variableKinds') ? this.get('variableKinds') : [];
+			if (chosenDatasets.length > 0) {
+				if (boundingBox) {
+					this.fetchDatasets(chosenDatasets, boundingBox);
+				}
+				else {
+					this.clearDatasets(Config.ALL_DATASETS);
+				}
 			}
-			else {
-				this.clearDatasets(Config.ALL_DATASETS);
+			else if (chosenVariableKinds.length > 0) {
+				var variableDatasets = VariableDatasetMapping.getDatasets(chosenVariableKinds);
+				var updateSelectedVariableKinds = function() {
+					_.each(variableDatasets, function(dataset) {
+						var filters = VariableDatasetMapping.getFilters(dataset, chosenVariableKinds);
+						self.get('datasetCollections')[dataset].selectAllVariablesInFilters(filters);
+					});
+				};
+				this.fetchDatasets(variableDatasets, boundingBox, updateSelectedVariableKinds);
 			}
+		},
+
+
+		updateSelectedVariables : function() {
+			var self = this;
+			var prevVariableKinds = this.previous('variableKinds');
+			var variableKinds = this.get('variableKinds');
+			var variableKindsToSelect = _.difference(variableKinds, prevVariableKinds);
+			var variableKindsToUnselect = _.difference(prevVariableKinds, variableKinds);
+
+			var datasetsToSelect = VariableDatasetMapping.getDatasets(variableKindsToSelect);
+			var datasetsToUnselect = VariableDatasetMapping.getDatasets(variableKindsToUnselect);
+			var datasetsToRetrieve = _.filter(datasetsToSelect, function(datasetKind) {
+				return self.attributes.datasetCollections[datasetKind].length === 0;
+			});
+
+			var finishFetchingCallback = function() {
+				_.each(datasetsToSelect, function(dataset) {
+					var filters = VariableDatasetMapping.getFilters(dataset, variableKindsToSelect);
+					self.attributes.datasetCollections[dataset].selectAllVariablesInFilters(filters);
+				});
+
+				_.each(datasetsToUnselect, function(dataset) {
+					var filters = VariableDatasetMapping.getFilters(dataset, variableKindsToUnselect);
+					self.attributes.datasetCollections[dataset].unselectAllVariablesInFilters(filters);
+				});
+			};
+
+			this.fetchDatasets(datasetsToRetrieve, this.attributes.aoi.getBoundingBox(), finishFetchingCallback);
 		},
 
 		/*
@@ -133,17 +178,21 @@ define([
 						});
 					};
 					this.unset('datasets');
+					this.unset('variables');
 					this.unset('startDate');
 					this.unset('endDate');
 					this.unset('uploadedFeatureName');
 					this.get('aoi').clear();
 					break;
 
-				case Config.CHOOSE_DATA_FILTERS_STEP:
+				case Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP:
 					if (previousStep === Config.SPECIFY_AOI_STEP) {
 						this.initializeDatasetCollections();
 						this.set('datasets', DEFAULT_CHOSEN_DATASETS);
 					}
+					break;
+
+				case Config.CHOOSE_DATA_BY_VARIABLES_STEP:
 					break;
 
 				case Config.PROCESS_DATA_STEP:
@@ -212,7 +261,7 @@ define([
 		 * @param {Array of String} datasetKinds
 		 * @param {Object with north, south, east, west properties} boundingBox
 		 */
-		fetchDatasets : function(datasetKinds, boundingBox) {
+		fetchDatasets : function(datasetKinds, boundingBox, finishedFnc) {
 			var self = this;
 			var datasetsToFetch = _.pick(this.get('datasetCollections'), datasetKinds);
 			var fetchDonePromises = [];
@@ -242,11 +291,23 @@ define([
 					var datasetKindErrors = _.filter(arguments, function(arg) {
 						return (arg) ? true : false;
 					});
+					if (finishedFnc) {
+						finishedFnc();
+					}
 					self.trigger('dataset:updateFinished', datasetKindErrors);
 				});
 			}
 			else {
-				this.trigger('dataset:updateFinished', []);
+				if (finishedFnc) {
+					// This gives the view's time to call any dataset:updateStart handlers before the dataset:updateFinisihed is triggered
+					setTimeout(function() {
+						finishedFnc();
+						self.trigger('dataset:updateFinished', []);
+					}, 10);
+				}
+				else {
+					self.trigger('dataset:updateFinished', []);
+				}
 			}
 		},
 

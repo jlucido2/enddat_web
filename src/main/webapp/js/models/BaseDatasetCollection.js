@@ -96,6 +96,46 @@ define([
 				};
 			}
 			return result;
+		},
+
+		/*
+		 * @param {Array of Objects} filters - which can be used to filter a dataset variables
+		 * @returns {Array of models} - Returns the site models that contain variables within one or more of the filters
+		 */
+		getSitesWithVariableInFilters : function(filters) {
+			return this.filter(function(siteModel) {
+				return siteModel.attributes.variables.hasVariablesInFilters(filters);
+			});
+		},
+
+		/*
+		 * For each siteModel in the collection, update the variables which match any filter
+		 * in filters to have the selected property set to true. Trigger the event 'dataset:updateVariablesInFilter'
+		 * when the process is complete
+		 *
+		 * @param {Array of Objects} filters - Should match variable properties
+		 */
+		selectAllVariablesInFilters : function(filters) {
+			this.each(function(siteModel) {
+				var variables = siteModel.get('variables');
+				variables.selectVariablesInFilters(filters);
+			});
+			this.trigger('dataset:updateVariablesInFilter');
+		},
+
+		/*
+		 * For each siteModel in the collection, update the variables which match any filter
+		 * in filters to unset the selected property. Trigger the event 'dataset:updateVariablesInFilter'
+		 * when the process is complete
+		 *
+		 * @param {Array of Objects} filters - Should match variable properties
+		 */
+		unselectAllVariablesInFilters : function(filters) {
+			this.each(function(siteModel) {
+				var variables = siteModel.get('variables');
+				variables.unselectVariablesInFilters(filters);
+			});
+			this.trigger('dataset:updateVariablesInFilter');
 		}
 	});
 

@@ -81,6 +81,61 @@ define([
 			testView.remove();
 			$testDiv.remove();
 		});
+		
+		fdescribe('Tests for render with a long URL', function() {
+			var variableCollectionLong = new BaseVariableCollection([
+			                                     					{x : '2', y: '2', selected : true,
+			                                     						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var1'}),
+			                                     						timeSeriesOptions : [{statistic : 'raw'}]
+			                                     					},
+			                                     					{x : '3', y: '3', selected : true,
+			                                     						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var1'}),
+			                                     						timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]},
+			                                     					{x : '4', y : '4', selected : true,
+			                                     					     variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '4:4', value : '4:4', colName : 'Var3'}),
+			                                     					     timeSeriesOptions : [{statistic : 'raw'}]
+			                                     				    }                                                       
+			                                        				]);
+
+			beforeEach(function() {
+				getSelectedVarSpy.and.returnValue(variableCollectionLong.models);
+				spyOn(testModel, 'getSelectedVarsDateRange').and.returnValue({
+					start : moment('2000-01-04', Config.DATE_FORMAT),
+					end : moment('2005-06-01', Config.DATE_FORMAT),
+				});
+				testModel.set({
+					outputFileFormat : 'tab',
+					outputDateFormat : 'Excel',
+					outputTimeZone : '0_GMT',
+					outputTimeGapInterval : '6',
+					outputMissingValue : 'NaN'
+				});
+				testView.render($testDiv.html());
+			});
+			
+			it('Expects variableTsOptionView to be rendered for each of the variables.', function() {
+				expect(renderVariableTsOptionView.calls.count()).toBe(3);
+				expect(testView.variableTsOptionViews.length).toBe(3);
+				console.log(skitty);
+			});
+			
+			it('Expects the download button is disabled.', function() {
+				$testDiv.find('.show-url-btn').trigger('click');
+				var isDisabled = $testDiv.find('.download-data-btn').is(':disabled');
+				expect(isDisabled).toBe(true);
+			});
+			
+			it('Expects the get data button is disabled.', function() {
+				$testDiv.find('.show-url-btn').trigger('click');
+				var isDisabled = $testDiv.find('.get-data-btn').is(':disabled');
+				expect(isDisabled).toBe(true);
+			});
+			
+			it('Expects that download button is enabled when only on TS variable is selected.', function() {
+				//var divHtml = $testDiv.html();
+				//console.log(divHtml);
+			});
+		});
 
 		describe('Tests for render', function() {
 			beforeEach(function() {

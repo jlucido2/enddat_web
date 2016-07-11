@@ -151,12 +151,10 @@ define([
 			this.listenTo(this.model, 'change:outputDateRange', this.updateOutputDateRangeInputs);
 			
 			var timeSeriesOptionsModels = this.model.getSelectedVariables();
-			console.log(timeSeriesOptionsModels);
-			for (var i = 0; i < timeSeriesOptionsModels.length; i++) {
-				var timeSeriesOptionsModel = timeSeriesOptionsModels[i];
-				this.listenTo(timeSeriesOptionsModel, 'change:timeSeriesOptions', this.urlLengthBtnControl);
-			}
-
+			_.each(timeSeriesOptionsModels, function(timeSeriesOptionsModel) {
+				this.listenTo(timeSeriesOptionsModel, 'change:timeSeriesOptions', this.urlLengthBtnControl)
+			},
+			this);
 			return this;
 		},
 

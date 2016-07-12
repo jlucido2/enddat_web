@@ -45,9 +45,6 @@
 					'utils/VariableDatasetMapping' : {
 						'variableDatasetMappingUrl' : 'json/variableDatasetMapping.json'
 					},
-					'models/NWISCollection': {
-						'parameterCodesPath': '<%=parameterCodesUrl%>'
-				 	},
 					'models/PrecipitationCollection' : {
 						'precipWFSGetFeatureUrl' : '<%=precipWFSGetFeatureUrl%>',
 						'cidaThreddsPrecipData' : '<%=cidaThreddsPrecipData%>'
@@ -60,9 +57,6 @@
 							'Ontario' : '<%=glcfsWFSGetFeatureUrlOntario%>',
 							'Superior' : '<%=glcfsWFSGetFeatureUrlSuperior%>'
 						}
-					},
-					'models/ACISCollection' : {
-						'acisStnMetaUrl' : '<%=acisStnMetaUrl%>'
 					},
 					'views/ProcessDataView' : {
 						'baseUrl' : ''

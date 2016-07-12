@@ -42,7 +42,7 @@ define([
 
 	var collection = BaseDatasetCollection.extend({
 
-		url : ENDPOINT + '?meta=name,valid_daterange,ll,sids&elems=' + _.pluck(ELEMS, 'code').join(','),
+		url : 'acis/StnMeta?meta=name,valid_daterange,ll,sids&elems=' + _.pluck(ELEMS, 'code').join(','),
 
 		parse : function(response) {
 			var sites = response.meta;

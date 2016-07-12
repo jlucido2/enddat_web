@@ -84,7 +84,7 @@
         </div>
 			  
 	<jsp:include page="template/USGSFooter.jsp">
-		<jsp:param name="site-url" value="http://cida.usgs.gov/enddat" />
+		<jsp:param name="site-url" value="https://cida.usgs.gov/enddat" />
 		<jsp:param name="contact-info" value="<a href='mailto:enddat@usgs.gov'>Enddat Team</a>" />
 	</jsp:include>
         

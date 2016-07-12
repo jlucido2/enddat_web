@@ -59,7 +59,7 @@
 						}
 					},
 					'views/ProcessDataView' : {
-						'baseUrl' : ''
+						'baseUrl' : '<%=baseUrl%>',
 					},
 					'views/MapView' : {
 						'uploadGeoserverUrl' : '<%=shapefileuploadGeoserverUrl%>'

@@ -8,7 +8,7 @@ define([
 	'views/BaseView',
 	'hbs!hb_templates/dataDateFilter'
 ], function(_, moment, datetimepicker, Config, BaseView, hbTemplate) {
-
+	"use strict";
 	/*
 	 * @constructs
 	 * @param {Object} options
@@ -43,7 +43,7 @@ define([
 			});
 
 			this.updateDateFilter();
-			this.listenTo(this.model, 'change:dateFilter', this.updateDateFilter);
+			this.listenTo(this.model, 'change:dataDateFilter', this.updateDateFilter);
 
 			return this;
 		},
@@ -55,9 +55,9 @@ define([
 		updateDateFilter : function() {
 			var $startDate = this.$('#start-date-div');
 			var $endDate = this.$('#end-date-div');
-			var dateFilter = this.model.get('dataDateFilter');
-			var startDate = (_.has(dateFilter, 'start') && (dateFilter.start)) ? dateFilter.start : '';
-			var endDate = (_.has(dateFilter, 'end') && (dateFilter.end)) ? dateFilter.end : '';
+			var dateFilter = this.model.has('dataDateFilter') ? this.model.get('dataDateFilter') : {};
+			var startDate = (_.has(dateFilter, 'start') && (dateFilter.start)) ? dateFilter.start : null;
+			var endDate = (_.has(dateFilter, 'end') && (dateFilter.end)) ? dateFilter.end : null;
 
 			$startDate.data('DateTimePicker').date(startDate);
 			$endDate.data('DateTimePicker').date(endDate);

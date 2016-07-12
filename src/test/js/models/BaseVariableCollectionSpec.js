@@ -237,6 +237,18 @@ define([
 
 				expect(testCollection.hasVariablesInFilters([{x : 1}, {x : 5}])).toBe(true);
 			});
+
+			it('Expects that if a dateFilter is used, the returned results are filtered by the date filter', function() {
+				testCollection = new BaseVariableCollection([
+					{x : 1, y : 1, startDate : moment('2002-01-04', DATE_FORMAT), endDate : moment('2005-01-01', DATE_FORMAT)},
+					{x : 1, y : 2, startDate : moment('2002-01-04', DATE_FORMAT), endDate : moment('2015-01-01', DATE_FORMAT)},
+					{x : 2, y : 2, startDate : moment('2012-01-04', DATE_FORMAT), endDate : moment('2015-01-01', DATE_FORMAT)},
+					{x : 3, y : 2, startDate : moment('2002-01-04', DATE_FORMAT), endDate : moment('2015-01-01', DATE_FORMAT)}
+				]);
+				expect(testCollection.hasVariablesInFilters(
+					[{x : 2}], {start : moment('2000-01-02', DATE_FORMAT), end : moment('2011-12-31', DATE_FORMAT)}
+				)).toBe(false);
+			});
 		});
 
 		describe('Tests for selectVariablesInFilters', function() {
@@ -244,10 +256,10 @@ define([
 
 			beforeEach(function() {
 				testCollection = new BaseVariableCollection([
-					{x : 1, y : 1},
-					{x : 1, y : 2},
-					{x : 2, y : 2},
-					{x : 3, y : 2}
+					{x : 1, y : 1, startDate : moment('2002-01-04', DATE_FORMAT), endDate : moment('2005-01-01', DATE_FORMAT)},
+					{x : 1, y : 2, startDate : moment('2002-01-04', DATE_FORMAT), endDate : moment('2015-01-01', DATE_FORMAT)},
+					{x : 2, y : 2, startDate : moment('2012-01-04', DATE_FORMAT), endDate : moment('2015-01-01', DATE_FORMAT)},
+					{x : 3, y : 2, startDate : moment('2002-01-04', DATE_FORMAT), endDate : moment('2015-01-01', DATE_FORMAT)}
 				]);
 			});
 
@@ -266,6 +278,19 @@ define([
 				expect(_.contains(selectedVars, testCollection.at(1))).toBe(true);
 				expect(_.contains(selectedVars, testCollection.at(3))).toBe(true);
 			});
+
+			it('Expects that if a date filter is used the only the variables with the date filter are selected', function() {
+				var selectedVars;
+				testCollection.selectVariablesInFilters(
+					[{x : 1}, {x : 2}],
+					{start : moment('2010-01-01', DATE_FORMAT), end : moment('2015-01-01', DATE_FORMAT)}
+				);
+				selectedVars = testCollection.getSelectedVariables();
+
+				expect(selectedVars.length).toBe(2);
+				expect(_.contains(selectedVars, testCollection.at(1))).toBe(true);
+				expect(_.contains(selectedVars, testCollection.at(2))).toBe(true);
+			});
 		});
 
 		describe('Tests for unselectVariablesInFilters', function() {
@@ -273,10 +298,10 @@ define([
 
 			beforeEach(function() {
 				testCollection = new BaseVariableCollection([
-					{x : 1, y : 1, selected : true},
-					{x : 1, y : 2, selected : true},
-					{x : 2, y : 2, selected : true},
-					{x : 3, y : 2, selected : true}
+					{x : 1, y : 1, selected : true, startDate : moment('2002-01-04', DATE_FORMAT), endDate : moment('2005-01-01', DATE_FORMAT)},
+					{x : 1, y : 2, selected : true, startDate : moment('2002-01-04', DATE_FORMAT), endDate : moment('2015-01-01', DATE_FORMAT)},
+					{x : 2, y : 2, selected : true, startDate : moment('2012-01-04', DATE_FORMAT), endDate : moment('2015-01-01', DATE_FORMAT)},
+					{x : 3, y : 2, selected : true, startDate : moment('2002-01-04', DATE_FORMAT), endDate : moment('2015-01-01', DATE_FORMAT)}
 				]);
 			});
 

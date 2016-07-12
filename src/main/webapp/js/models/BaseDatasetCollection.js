@@ -125,12 +125,11 @@ define([
 		 * when the process is complete
 		 *
 		 * @param {Array of Objects} filters - Should match variable properties
-		 * @param {Object with start and end keys representing moment objects} dateFilter
 		 */
-		unselectAllVariablesInFilters : function(filters, dateFilter) {
+		unselectAllVariablesInFilters : function(filters) {
 			this.each(function(siteModel) {
 				var variables = siteModel.get('variables');
-				variables.unselectVariablesInFilters(filters, dateFilter);
+				variables.unselectVariablesInFilters(filters);
 			});
 			this.trigger('dataset:updateVariablesInFilter');
 		}

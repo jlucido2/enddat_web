@@ -59,7 +59,6 @@ define([
 				var serviceUrl;
 				expect(fakeServer.requests.length).toBe(1);
 				serviceUrl = decodeURIComponent(fakeServer.requests[0].url);
-				expect(serviceUrl).toContain('http:dummyservice/acis/StnMeta');
 				expect(serviceUrl).toContain('bbox=-92.4,42.1,-92.2,42.2');
 				expect(serviceUrl).toContain('meta=');
 				expect(serviceUrl).toContain('elems=');

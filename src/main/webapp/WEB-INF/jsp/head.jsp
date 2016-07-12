@@ -16,7 +16,8 @@
 %>
 <%
 	Boolean development = Boolean.parseBoolean(props.getProperty("enddat.development"));
-	String version = props.getProperty("application.version");
+	String baseUrl = props.getProperty("enddat.base.url", request.getContextPath());
+	if (!baseUrl.endsWith("/")) { baseUrl += "/"; }	String version = props.getProperty("application.version");
 
 	String parameterCodesUrl = props.getProperty("enddat.endpoint.nwis.pmcodes");
 	String precipWFSGetFeatureUrl = props.getProperty("enddat.endpoint.precip.wfsgetfeature");

@@ -39,7 +39,7 @@
 			var require = {
 				config: {
 					'init': {
-						'baseUrl': '',
+						'baseUrl': '<%=baseUrl%>',
 						'development': '<%=development%>'
 					},
 					'utils/VariableDatasetMapping' : {

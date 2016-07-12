@@ -46,6 +46,7 @@ define([
 
 		parse : function(response) {
 			var sites = response.meta;
+			log.debug('ACIS sites received: ' + sites.length);
 			return _.map(sites, function(site) {
 				// Use first sid when retrieving information.
 				var sid = site.sids[0].split(' ')[0];
@@ -57,6 +58,7 @@ define([
 							result.endDate = moment(dateRange[1], Config.DATE_FORMAT);
 							result.variableParameter = new VariableParameter({
 								name : 'ACIS',
+								siteNo : sid,
 								value : sid + ':' +  result.code,
 								colName : result.description + ':' + sid
 							});

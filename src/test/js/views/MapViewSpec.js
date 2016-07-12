@@ -8,10 +8,11 @@ define([
 	'backbone',
 	'Config',
 	'utils/LUtils',
+	'models/BaseVariableCollection',
 	'models/WorkflowStateModel',
 	'views/BaseView',
 	'views/MapView'
-], function($, _, L, Backbone, Config, LUtils, WorkflowStateModel, BaseView, MapView) {
+], function($, _, L, Backbone, Config, LUtils, BaseVariableCollection, WorkflowStateModel, BaseView, MapView) {
 	"use strict";
 	describe('views/MapView', function() {
 		var testView;
@@ -260,16 +261,19 @@ define([
 			});
 
 			it('Expect that the site location marker is added to the map if there are sites in the site model', function() {
-				testSiteCollection.reset([{siteNo : '05464220','name': 'test', 'lat': '42.25152778', 'lon': '-92.2988889'}]);
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
+				testSiteCollection.reset([{siteNo : '05464220','name': 'test', 'lat': '42.25152778', 'lon': '-92.2988889',
+					variables : new BaseVariableCollection()}]);
 				spyOn(testView.siteLayerGroups[Config.NWIS_DATASET], 'addLayer').and.callThrough();
 				testView.render();
 				expect(testView.siteLayerGroups[Config.NWIS_DATASET].addLayer.calls.count()).toBe(1);
 			});
 
 			it('Expects that the precipitation layer group contains markers for each grid', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testPrecipCollection.reset([
-					{lon : '-100', lat : '43.0', variables : new Backbone.Collection([{x : '1', y: '2'}])},
-					{lon : '-100', lat : '44.0', variables : new Backbone.Collection([{x : '1', y: '3'}])}
+					{lon : '-100', lat : '43.0', variables : new BaseVariableCollection([{x : '1', y: '2'}])},
+					{lon : '-100', lat : '44.0', variables : new BaseVariableCollection([{x : '1', y: '3'}])}
 				]);
 				spyOn(testView.siteLayerGroups[Config.PRECIP_DATASET], 'addLayer').and.callThrough();
 				testView.render();
@@ -277,9 +281,10 @@ define([
 			});
 
 			it('Expects that the GLCFS layer group contains markers for each grid', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testGLCFSErieCollection.reset([
-					{lon : '-100', lat : '43.0', variables : new Backbone.Collection([{x : '1', y: '2'}])},
-					{lon : '-100', lat : '44.0', variables : new Backbone.Collection([{x : '1', y: '3'}])}
+					{lon : '-100', lat : '43.0', variables : new BaseVariableCollection([{x : '1', y: '2'}])},
+					{lon : '-100', lat : '44.0', variables : new BaseVariableCollection([{x : '1', y: '3'}])}
 				]);
 				spyOn(testView.siteLayerGroups[Config.GLCFS_DATASET_ERIE], 'addLayer').and.callThrough();
 				testView.render();
@@ -287,9 +292,10 @@ define([
 			});
 
 			it('Expects that the ACIS layer group contains markers for each site in collection', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testACISCollection.reset([
-					{name : 'Name1', lon : '-100', lat : '43.0'},
-					{name : 'Name2', lon : '-100', lat : '44.0'}
+					{name : 'Name1', lon : '-100', lat : '43.0', variables : new BaseVariableCollection()},
+					{name : 'Name2', lon : '-100', lat : '44.0', variables : new BaseVariableCollection()}
 				]);
 				spyOn(testView.siteLayerGroups[Config.ACIS_DATASET], 'addLayer').and.callThrough();
 				testView.render();
@@ -389,12 +395,14 @@ define([
 			});
 
 			it('Expects that if the NWIS model is updated, an updated NWIS marker is added to the map', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testSiteCollection.reset([{siteNo : '05464220','name': 'test', 'lat': '42.25152778', 'lon': '-92.2988889'}]);
 
 				expect(testView.siteLayerGroups[Config.NWIS_DATASET].getLayers().length).toBe(1);
 			});
 
 			it('Expects that if the NWIS model is updated and then cleared, no NWIS markers will be on the map', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testSiteCollection.reset([{siteNo : '05464220','name': 'test', 'lat': '42.25152778', 'lon': '-92.2988889'}]);
 				testSiteCollection.reset();
 
@@ -402,6 +410,7 @@ define([
 			});
 
 			it('Expects that if the precipitation collection is updated, precipitation grid points will be on the map', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testPrecipCollection.reset([
 					{lon : '-100', lat : '43.0', variables : new Backbone.Collection([{x : '1', y: '2'}])},
 					{lon : '-100', lat : '44.0', variables : new Backbone.Collection([{x : '1', y: '3'}])}
@@ -410,6 +419,7 @@ define([
 			});
 
 			it('Expects that if the precipitation collection is updated then cleared, no precipitation grid points will be on the map', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testPrecipCollection.reset([
 					{lon : '-100', lat : '43.0', variables : new Backbone.Collection([{x : '1', y: '2'}])},
 					{lon : '-100', lat : '44.0', variables : new Backbone.Collection([{x : '1', y: '3'}])}
@@ -419,6 +429,7 @@ define([
 			});
 
 			it('Expects that if the ACIS collection is updated, ACIS markers will be added to the map', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testACISCollection.reset([
 					{name : 'Name1', lon : '-100', lat : '43.0'},
 					{name : 'Name2', lon : '-100', lat : '44.0'}
@@ -427,6 +438,7 @@ define([
 			});
 
 			it('Expects that if the ACIS collection is updated then cleared, no ACIS markers will be on the map', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testACISCollection.reset([
 					{x : '1', y: '2', lon : '-100', lat : '43.0'},
 					{x : '1', y: '3', lon : '-100', lat : '44.0'}

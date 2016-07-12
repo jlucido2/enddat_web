@@ -11,6 +11,7 @@ module.exports = function (config) {
 		// list of files / patterns to load in the browser
 		files: [
 			'src/test/js/test-main.js',
+			{pattern: 'src/test/json/variableDatasetMapping.json', included: false},
 			{pattern: 'src/main/webapp/bower_components/Squire.js/src/Squire.js', included: false},
 			{pattern: 'src/main/webapp/bower_components/jquery/dist/jquery.js', included: false},
 			{pattern: 'src/main/webapp/bower_components/blueimp-file-upload/js/vendor/jquery.ui.widget.js', included : false},

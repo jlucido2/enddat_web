@@ -82,6 +82,7 @@ define([
 					var vectorOpts = ':::0'; // not doing any vector options currently
 					siteVar.variableParameter = new VariableParameter({
 						name : 'GRID',
+						siteNo : y + ':' + x,
 						value : y + ':' + x + ':' + sigma + ':' + siteVar.dataset + ':' + siteVar.code + vectorOpts,
 						colName : siteVar.description + ': [' + x + ',' + y + ']'
 					});

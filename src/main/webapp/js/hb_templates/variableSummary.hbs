@@ -1,32 +1,34 @@
 <div class="variable-summary-div">
 	{{#if hasSelectedVariables}}
-		<table class="table">
-			<thead>
-				<tr>
-					<th></th>
-					<th>Dataset</th>
-					<th>Site ID</th>
-					<th>Start Date</th>
-					<th>End Date</th>
-					<th>Property</th>
-				</tr>
-			</thead>
-			<tbody>
-				{{#each selectedDatasets}}
-					{{#each variables}}
+		<div class="variable-summary-table-div">
+			<table class="table">
+				<thead>
 					<tr>
-						<td><button title="Remove from processing" data-id="{{modelId}}" data-variable-id ="{{variableId}}"
-									data-dataset-kind="{{../datasetName}}"><i class="fa fa-times"></i></button></td>
-						<td>{{../datasetName}}</td>
-						<td>{{siteId}}</td>
-						<td>{{startDate}}</td>
-						<td>{{endDate}}</td>
-						<td>{{property}}</td>
+						<th></th>
+						<th>Dataset</th>
+						<th>Site ID</th>
+						<th>Start Date</th>
+						<th>End Date</th>
+						<th>Property</th>
 					</tr>
+				</thead>
+				<tbody>
+					{{#each selectedDatasets}}
+						{{#each variables}}
+						<tr>
+							<td><button title="Remove from processing" data-id="{{modelId}}" data-variable-id ="{{variableId}}"
+										data-dataset-kind="{{../datasetName}}"><i class="fa fa-times"></i></button></td>
+							<td>{{../datasetName}}</td>
+							<td>{{siteId}}</td>
+							<td>{{startDate}}</td>
+							<td>{{endDate}}</td>
+							<td>{{property}}</td>
+						</tr>
+						{{/each}}
 					{{/each}}
-				{{/each}}
-			</tbody>
-		</table>
+				</tbody>
+			</table>
+		</div>
 	{{else}}
 		<div>No variables are currently selected</div>
 	{{/if}}

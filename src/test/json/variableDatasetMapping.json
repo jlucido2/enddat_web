@@ -1,0 +1,36 @@
+{
+	"precipitation" : {
+		"displayName" : "Precipitation",
+		"datasets" : [
+			{
+				"name" : "NWIS",
+				"filter" : [
+					{"parameterCd" : "00045", "statCd" : "00000"},
+					{"parameterCd" : "00046", "statCd" : "00000"}
+				]
+			},{
+				"name" : "ACIS",
+				"filter" : [
+					{"code" : "pcpn"}
+				]
+			},{
+				"name" : "PRECIP",
+				"filter" : [{}]
+			}
+		]
+	},
+	"maxTemperature" : {
+		"displayName" : "Maximum Temperature",
+		"datasets" : [
+			{
+				"name" : "NWIS",
+				"filter" : [
+					{"parameterCd" : "00021", "statCd" : "00001"}
+				]
+			},{
+				"name" : "ACIS",
+				"filter" : [{"code" : "maxt"}]
+			}
+		]
+	}
+}

@@ -36,20 +36,14 @@ define([
 
 		/*
 		 * The startDate and endDate values in each model are assumed to be moment objects
-		 * @param {Moment} startDate
-		 * @param {Moment} endDate
+		 * @param {Object} dateFilter - has start and end properties that are moment objects.
 		 * @returns {Array of Backbone.Model} whose startDate and endDate range overlaps the function parameters.
 		 *		If startDate or endDate are falsy, all of the models in the collection are returned.
 		 */
-		getSiteModelsWithinDateFilter : function(startDate, endDate) {
-			var dateFilter;
+		getSiteModelsWithinDateFilter : function(dateFilter) {
 			var result;
 
-			if ((startDate) && (endDate)) {
-				dateFilter = {
-					start : startDate,
-					end : endDate
-				};
+			if (_.has(dateFilter, 'start') && (dateFilter.start) && _.has(dateFilter, 'end') && (dateFilter.end)) {
 				result = this.filter(function(model) {
 					return dateUtils.dateRangeOverlaps(model.attributes.variables.getDateRange(), dateFilter);
 				});
@@ -100,11 +94,12 @@ define([
 
 		/*
 		 * @param {Array of Objects} filters - which can be used to filter a dataset variables
+		 * @param {Object with start and end keys representing moment objects} dateFilter
 		 * @returns {Array of models} - Returns the site models that contain variables within one or more of the filters
 		 */
-		getSitesWithVariableInFilters : function(filters) {
+		getSitesWithVariableInFilters : function(filters, dateFilter) {
 			return this.filter(function(siteModel) {
-				return siteModel.attributes.variables.hasVariablesInFilters(filters);
+				return siteModel.attributes.variables.hasVariablesInFilters(filters, dateFilter);
 			});
 		},
 
@@ -114,11 +109,12 @@ define([
 		 * when the process is complete
 		 *
 		 * @param {Array of Objects} filters - Should match variable properties
+		 * @param {Object with start and end keys representing moment objects} dateFilter
 		 */
-		selectAllVariablesInFilters : function(filters) {
+		selectAllVariablesInFilters : function(filters, dateFilter) {
 			this.each(function(siteModel) {
 				var variables = siteModel.get('variables');
-				variables.selectVariablesInFilters(filters);
+				variables.selectVariablesInFilters(filters, dateFilter);
 			});
 			this.trigger('dataset:updateVariablesInFilter');
 		},

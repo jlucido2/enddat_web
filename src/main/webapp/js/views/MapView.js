@@ -351,8 +351,7 @@ define([
 		setupDatasetListeners : function(model, datasetCollections) {
 			this.updateAllSiteMarkers();
 
-			this.listenTo(model, 'change:startDate', this.updateAllSiteMarkers);
-			this.listenTo(model, 'change:endDate', this.updateAllSiteMarkers);
+			this.listenTo(model, 'change:dataDateFilter', this.updateAllSiteMarkers);
 
 			this.listenTo(datasetCollections[Config.NWIS_DATASET], 'reset', this.updateNWISMarker);
 			this.listenTo(datasetCollections[Config.PRECIP_DATASET], 'reset', this.updatePrecipGridPoints);
@@ -378,8 +377,9 @@ define([
 			var $mapDiv = this.$('#' + self.mapDivId);
 
 			var siteCollection = this.model.get('datasetCollections')[datasetKind];
-			var filteredSiteModels = siteCollection.getSiteModelsWithinDateFilter(this.model.get('startDate'), this.model.get('endDate'));
+			var filteredSiteModels;
 			var step = self.model.get('step');
+			var dateFilter = this.model.has('dataDateFilter') ? this.model.get('dataDateFilter') : undefined;
 			var isInChooseDataBySiteWorkflow = (step === Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP) || (step === Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP);
 
 			var moveCircleMarker = function(latLng) {
@@ -422,10 +422,11 @@ define([
 			};
 
 			if (isInChooseDataBySiteWorkflow) {
-				filteredSiteModels = siteCollection.getSiteModelsWithinDateFilter(this.model.get('startDate'), this.model.get('endDate'));
+				filteredSiteModels = siteCollection.getSiteModelsWithinDateFilter(dateFilter);
 			}
 			else {
-				filteredSiteModels = siteCollection.getSitesWithVariableInFilters(variableDatasetMapping.getFilters(datasetKind, this.model.get('variableKinds')));
+				filteredSiteModels =
+					siteCollection.getSitesWithVariableInFilters(variableDatasetMapping.getFilters(datasetKind, self.model.get('variableKinds')), dateFilter);
 			}
 			// Determine if the selected site is still in the collection
 			if (this.selectedSite && (this.selectedSite.datasetKind === datasetKind) &&

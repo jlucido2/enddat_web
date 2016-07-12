@@ -3,8 +3,9 @@
 define([
 	'underscore',
 	'backbone',
-	'moment'
-], function(_, Backbone, moment) {
+	'moment',
+	'utils/dateUtils'
+], function(_, Backbone, moment, dateUtils) {
 	"use strict";
 	/*
 	 * Models are expected to have startDate and endDate property and to use the selected property to indicate that
@@ -110,32 +111,48 @@ define([
 
 		/*
 		 * @param {Array of Objects} filters - where the objects property keys should match variable keys
+		 * @param {Object with start and end keys representing moment objects} dateFilter
 		 * @return true if any variables in the collection match any of the filters
 		 */
-		hasVariablesInFilters : function(filters) {
-			var self = this;
-			return  _.some(filters, function(filter) {
-				var matchFilter = _.matcher(filter);
-				return _.some(self.models, function(variableModel) {
+		hasVariablesInFilters : function(filters, dateFilter) {
+			var matchFilters = _.map(filters, function(filter) {
+				return _.matcher(filter);
+			});
+			var validDateRange = (dateFilter) && (dateFilter.start) && (dateFilter.end);
+			return this.some(function(variableModel) {
+				var inFilter =_.some(matchFilters, function(matchFilter) {
 					return matchFilter(variableModel.attributes);
 				});
+				var inDateFilter = validDateRange ? dateUtils.dateRangeOverlaps(dateFilter, {
+					start : variableModel.get('startDate'),
+					end : variableModel.get('endDate')
+				}) : true;
+				return inFilter && inDateFilter;
 			});
 		},
 
 		/*
 		 * Set the selected property to true for all variables in the collection that match
-		 * at least one of the filters
+		 * at least one of the filters. If there is a date filter, set the selected property if the
+		 * variable is in the date filter, otherwise set it to false.
+		 * @param {Array of Objects} filters - where the objects property keys should match variable keys
+		 * @param {Object with start and end keys representing moment objects} dateFilter
 		 */
-		selectVariablesInFilters : function(filters) {
+		selectVariablesInFilters : function(filters, dateFilter) {
 			var matchFilters = _.map(filters, function(filter) {
 				return _.matcher(filter);
 			});
+			var validDateRange = (dateFilter) && (dateFilter.start) && (dateFilter.end);
 			this.each(function(variableModel) {
 				var inFilter =_.some(matchFilters, function(matchFilter) {
 					return matchFilter(variableModel.attributes);
 				});
+				var inDateFilter = validDateRange ? dateUtils.dateRangeOverlaps(dateFilter, {
+					start : variableModel.get('startDate'),
+					end : variableModel.get('endDate')
+				}) : true;
 				if (inFilter) {
-					variableModel.set('selected', true);
+					variableModel.set('selected', inDateFilter);
 				}
 			});
 		},
@@ -143,6 +160,7 @@ define([
 		/*
 		 * Unset the selected property for all variables in the collection that match
 		 * at least one of the filters
+		 * @param {Array of Objects} filters - where the objects property keys should match variable keys
 		 */
 		unselectVariablesInFilters : function(filters) {
 			var matchFilters = _.map(filters, function(filter) {
@@ -152,6 +170,7 @@ define([
 				var inFilter =_.some(matchFilters, function(matchFilter) {
 					return matchFilter(variableModel.attributes);
 				});
+
 				if (inFilter) {
 					variableModel.unset('selected');
 				}

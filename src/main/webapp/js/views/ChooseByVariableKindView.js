@@ -5,8 +5,9 @@ define([
 	'select2',
 	'utils/VariableDatasetMapping',
 	'views/BaseCollapsiblePanelView',
+	'views/DataDateFilterView',
 	'hbs!hb_templates/chooseByVariable'
-], function(_, select2, VariableDatasetMapping, BaseCollapsiblePanelView, hbTemplate) {
+], function(_, select2, VariableDatasetMapping, BaseCollapsiblePanelView, DataDateFilterView, hbTemplate) {
 	"use strict";
 
 	/*
@@ -27,9 +28,19 @@ define([
 			'select2:unselect #variable-select' : 'resetVariable'
 		},
 
+		initialize : function(options) {
+			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
+
+			this.dateFilterView = new DataDateFilterView({
+				el : this.$('.date-filter-container'),
+				model : this.model
+			});
+		},
+
 		render : function() {
 			this.context = VariableDatasetMapping.getMapping();
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
+			this.dateFilterView.setElement(this.$('.date-filter-container')).render();
 
 			this.$('#variable-select').select2({
 				allowClear : true,
@@ -39,6 +50,11 @@ define([
 
 			this.listenTo(this.model, 'change:variableKinds', this.updateVariables);
 			return this;
+		},
+
+		remove : function() {
+			this.dateFilterView.remove();
+			BaseCollapsiblePanelView.prototype.remove.apply(this, arguments);
 		},
 
 		/*

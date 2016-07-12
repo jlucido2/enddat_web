@@ -76,8 +76,7 @@ define([
 			// Set up event listeners on the workflow model
 			this.listenTo(this.model, 'dataset:updateStart', this.showLoadingIndicator);
 			this.listenTo(this.model, 'dataset:updateFinished', this.hideLoadingIndicator);
-			this.listenTo(this.model, 'change:startDate', this.showSuccessfulFetchAlert);
-			this.listenTo(this.model, 'change:endDate', this.showSuccessfulFetchAlert);
+			this.listenTo(this.model, 'change:dataDateFilter', this.showSuccessfulFetchAlert);
 			this.listenTo(this.model, 'change:step', this.updateSubViews);
 			this.listenTo(this.model, 'change:datasets', this.closeAlert);
 
@@ -156,7 +155,7 @@ define([
 						});
 						this.mapView.render();
 					}
-					
+
 					if (prevStep !== step) {
 						this.chooseView = removeSubView(this.chooseView)
 					}
@@ -233,9 +232,10 @@ define([
 		_filterMsg : function() {
 			var state = this.model.attributes;
 			var aoi = state.aoi;
+			var dateFilter = this.model.has('dataDateFilter') ? state.dataDateFilter : {};
 
-			var startDate = (state.startDate) ? state.startDate.format(Config.DATE_FORMAT) : '';
-			var endDate = (state.endDate) ? state.endDate.format(Config.DATE_FORMAT) : '';
+			var startDate = (dateFilter.start) ? dateFilter.start.format(Config.DATE_FORMAT) : '';
+			var endDate = (dateFilter.end) ? dateFilter.end.format(Config.DATE_FORMAT) : '';
 			var dateFilterMsg = (startDate && endDate) ? 'date filter from ' + startDate + ' to ' + endDate : 'no date filter';
 
 			var chosenDatasets = (state.datasets) ? state.datasets : [];

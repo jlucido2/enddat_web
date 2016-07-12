@@ -349,16 +349,17 @@ define([
 				var aoiModel = testModel.get('aoi');
 				aoiModel.set({latitude : '43.0', longitude : '-100.0', radius : '6'});
 				testModel.set({
-					startDate : moment('2010-04-11', 'YYYY-MM-DD'),
-					endDate : moment('2016-04-15', 'YYYY-MM-DD'),
+					dataDateFilter : {
+						start : moment('2010-04-11','YYYY-MM-DD'),
+						end : moment('2016-04-15', 'YYYY-MM-DD')
+					},
 					datasets : [Config.NWIS_DATASET, Config.PRECIP_DATASET]
 				});
 				testModel.set('step', Config.SPECIFY_AOI_STEP);
 
 				expect(aoiModel.attributes).toEqual({});
 				expect(testModel.has('datasets')).toBe(false);
-				expect(testModel.has('startDate')).toBe(false);
-				expect(testModel.has('endDate')).toBe(false);
+				expect(testModel.has('dataDateFilter')).toBe(false);
 			});
 
 			it('Expects that if the step changes to SPECIFY_AOI_STEP the datasetCollections will be cleared', function() {
@@ -406,9 +407,9 @@ define([
 
 			it('Expects that if the step changes to PROCESS_DATA_STEP and the startDate and endDate have values, these values will be used to set the initial value of the outputDateRange', function() {
 				var result;
-				testModel.set({
-					startDate : moment('2005-04-11', Config.DATE_FORMAT),
-					endDate : moment('2010-05-01', Config.DATE_FORMAT)
+				testModel.set('dataDateFilter', {
+					start : moment('2005-04-11', Config.DATE_FORMAT),
+					end : moment('2010-05-01', Config.DATE_FORMAT)
 				});
 				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP);
 				testModel.set('step', Config.PROCESS_DATA_STEP);

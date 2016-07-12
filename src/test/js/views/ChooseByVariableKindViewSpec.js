@@ -1,36 +1,80 @@
 /*jslint browser: true */
-/* global expect */
+/* global expect, jasmine, spyOn */
 
 define([
+	'squire',
 	'jquery',
 	'select2',
 	'backbone',
-	'views/ChooseByVariableKindView'
-], function($, select2, Backbone, ChooseByVariableKindView) {
+	'views/BaseView'
+], function(Squire, $, select2, Backbone, BaseView) {
 	"use strict";
 	describe('views/ChooseByVariableKindView', function() {
+		var ChooseByVariableKindView;
 		var testView;
 		var $testDiv;
 		var testModel;
+		var injector;
 
-		beforeEach(function() {
+		var setElDateViewSpy, renderDateViewSpy, removeDateViewSpy;
+
+		var injector;
+
+		beforeEach(function(done) {
 			$('body').append('<div id="test-div"></div>');
 			$testDiv = $('#test-div');
 
-			spyOn($.fn, 'select2');
+			spyOn($.fn, 'select2').and.callThrough;
+
+			setElDateViewSpy = jasmine.createSpy('setElDateViewSpy');
+			renderDateViewSpy = jasmine.createSpy('renderDateViewSpy');
+			removeDateViewSpy = jasmine.createSpy('removeDateViewSpy');
 
 			testModel = new Backbone.Model();
-			testView = new ChooseByVariableKindView({
-				el : $testDiv,
-				model : testModel
+
+			injector = new Squire();
+			injector.mock('jquery', $);
+			injector.mock('views/DataDateFilterView', BaseView.extend({
+				setElement : setElDateViewSpy.and.returnValue({
+					render : renderDateViewSpy
+				}),
+				render : renderDateViewSpy,
+				remove : removeDateViewSpy
+			}));
+
+			injector.require(['views/ChooseByVariableKindView'], function(View) {
+				ChooseByVariableKindView = View;
+
+				testView = new ChooseByVariableKindView({
+					el : $testDiv,
+					model : testModel
+				});
+
+				done();
 			});
 		});
 
 		afterEach(function() {
+			injector.remove();
 			if (testView) {
 				testView.remove();
 			}
 			$testDiv.remove();
+		});
+
+		it('Expects that the DataDateFilterView is initialized', function() {
+			expect(setElDateViewSpy).toHaveBeenCalled();
+		});
+
+		describe('Tests for remove', function() {
+			beforeEach(function() {
+				testView.render();
+			});
+			it('Expects the DataDateFilterView to be removed', function(){
+				testView.remove();
+
+				expect(removeDateViewSpy).toHaveBeenCalled();
+			});
 		});
 
 		describe('Tests for render', function() {
@@ -46,6 +90,14 @@ define([
 				testView.render();
 
 				expect($('#variable-select').val()).toEqual(['maxTemperature']);
+			});
+
+			it('Expects the DataDateFilter to be rendered', function() {
+				setElDateViewSpy.calls.reset();
+				testView.render();
+
+				expect(setElDateViewSpy).toHaveBeenCalled();
+				expect(renderDateViewSpy).toHaveBeenCalled();
 			});
 		});
 

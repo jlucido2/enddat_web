@@ -67,6 +67,7 @@ define([
 				this.get('aoi').on('change', this.changeAOI, this);
 				this.on('change:datasets', this.updateDatasetCollections, this);
 				this.on('change:variableKinds', this.updateSelectedVariables, this);
+				this.on('change:dataDateFilter', this.updateSelectedVariablesInDateFilter, this);
 			}
 		},
 
@@ -114,6 +115,7 @@ define([
 			var boundingBox = this.get('aoi').getBoundingBox();
 			var chosenDatasets = this.has('datasets') ? this.get('datasets') : [];
 			var chosenVariableKinds = this.has('variableKinds') ? this.get('variableKinds') : [];
+			var dateFilter = this.get('dataDateFilter');
 			if (chosenDatasets.length > 0) {
 				if (boundingBox) {
 					this.fetchDatasets(chosenDatasets, boundingBox);
@@ -124,13 +126,14 @@ define([
 			}
 			else if (chosenVariableKinds.length > 0) {
 				var variableDatasets = VariableDatasetMapping.getDatasets(chosenVariableKinds);
-				var updateSelectedVariableKinds = function() {
+				var updateSelectedVariableKindsCallback = function() {
 					_.each(variableDatasets, function(dataset) {
 						var filters = VariableDatasetMapping.getFilters(dataset, chosenVariableKinds);
-						self.get('datasetCollections')[dataset].selectAllVariablesInFilters(filters);
+						self.get('datasetCollections')[dataset].selectAllVariablesInFilters(filters, dateFilter);
 					});
 				};
-				this.fetchDatasets(variableDatasets, boundingBox, updateSelectedVariableKinds);
+
+				this.fetchDatasets(variableDatasets, boundingBox, updateSelectedVariableKindsCallback);
 			}
 		},
 
@@ -148,10 +151,12 @@ define([
 				return self.attributes.datasetCollections[datasetKind].length === 0;
 			});
 
+			var dateFilter = this.get('dataDateFilter');
+
 			var finishFetchingCallback = function() {
 				_.each(datasetsToSelect, function(dataset) {
 					var filters = VariableDatasetMapping.getFilters(dataset, variableKindsToSelect);
-					self.attributes.datasetCollections[dataset].selectAllVariablesInFilters(filters);
+					self.attributes.datasetCollections[dataset].selectAllVariablesInFilters(filters, dateFilter);
 				});
 
 				_.each(datasetsToUnselect, function(dataset) {
@@ -161,6 +166,17 @@ define([
 			};
 
 			this.fetchDatasets(datasetsToRetrieve, this.attributes.aoi.getBoundingBox(), finishFetchingCallback);
+		},
+
+		updateSelectedVariablesInDateFilter : function() {
+			var self = this;
+			var dateFilter = this.has('dataDateFilter') ? this.get('dataDateFilter') : undefined;
+			var variableKinds = this.get('variableKinds');
+			var datasetsToUpdate = VariableDatasetMapping.getDatasets(variableKinds);
+			_.each(datasetsToUpdate, function(dataset) {
+				var filters = VariableDatasetMapping.getFilters(dataset, variableKinds);
+				self.attributes.datasetCollections[dataset].selectAllVariablesInFilters(filters, dateFilter);
+			});
 		},
 
 		/*
@@ -178,9 +194,8 @@ define([
 						});
 					};
 					this.unset('datasets');
-					this.unset('variables');
-					this.unset('startDate');
-					this.unset('endDate');
+					this.unset('variableKinds');
+					this.unset('dataDateFilter');
 					this.unset('uploadedFeatureName');
 					this.get('aoi').clear();
 					break;
@@ -197,16 +212,13 @@ define([
 
 				case Config.PROCESS_DATA_STEP:
 					var outputDateRange;
-					var startDate = this.get('startDate');
-					var endDate = this.get('endDate');
+					var dataDateFilter = this.has('dataDateFilter') ? this.get('dataDateFilter') : {};
+
 					var selectedVarsDateRange = this.getSelectedVarsDateRange();
 					var selectedVars = this.getSelectedVariables();
 
-					if ((startDate) && (endDate)) {
-						outputDateRange = {
-							start : startDate,
-							end : endDate
-						};
+					if ((dataDateFilter.start) && (dataDateFilter.end)) {
+						outputDateRange = dataDateFilter;
 					}
 					else {
 						outputDateRange = {

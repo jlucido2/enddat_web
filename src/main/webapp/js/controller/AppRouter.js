@@ -83,7 +83,7 @@ define([
 				model : this.workflowState
 			}).render();
 			this.workflowState.set('datasets', state.datasets ? state.datasets.split('/') : []);
-			this.workflowState.set('variables', state.variables ? state.variables.split('/') : []);
+			this.workflowState.set('variableKinds', state.variables ? state.variables.split('/') : []);
 		},
 
 		chooseDataStateProjLoc : function(lat, lng, radius, startDate, endDate, datasets) {

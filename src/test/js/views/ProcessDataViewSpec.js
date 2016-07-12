@@ -100,7 +100,7 @@ define([
 				]);
 
 			beforeEach(function() {
-				getSelectedVarSpy.and.returnValue(variableCollectionLong.models);
+				//getSelectedVarSpy.and.returnValue(variableCollectionLong.models);
 				templateSpy = jasmine.createSpy('renderVariableTsOptionView');
 				spyOn(testModel, 'getSelectedVarsDateRange').and.returnValue({
 					start : moment('2000-01-04', Config.DATE_FORMAT),
@@ -117,28 +117,26 @@ define([
 			});
 			
 			it('Expects variableTsOptionView to be rendered for each of the variables.', function() {
+				getSelectedVarSpy.and.returnValue(variableCollectionLong.models);
 				expect(renderVariableTsOptionView.calls.count()).toBe(3);
 				expect(testView.variableTsOptionViews.length).toBe(3);
 			});
 			
 			it('Expects the download button is disabled.', function() {
+				getSelectedVarSpy.and.returnValue(variableCollectionLong.models);
 				var isDisabled = $testDiv.find('.download-data-btn').is(':disabled');
 				expect(isDisabled).toBe(true);
 			});
 			
 			it('Expects the get data button is disabled.', function() {
+				getSelectedVarSpy.and.returnValue(variableCollectionLong.models);
 				var isDisabled = $testDiv.find('.get-data-btn').is(':disabled');
 				expect(isDisabled).toBe(true);
 			});
 			
 			it('Expects that buttons are enabled upon unchecking TS options after the view has rendered.', function() {
 				// test that unselecting time-series variables will enable the buttons
-				// unselect the last two variables...
-				_.each(variableCollectionLong.models.slice(1), function(varModel) {
-					getSelectedVarSpy.and.returnValue(variableCollectionLong.models);
-					var unselectedModel = varModel.set({'selected' : false}); // alter the model
-					variableCollectionLong.remove(varModel);
-				});
+				getSelectedVarSpy.and.returnValue(variableCollectionLong.models.splice(0, 1));
 				var isGetDataDisabled = $testDiv.find('.get-data-btn').is(':disabled');
 				expect(isGetDataDisabled).toBe(false);	
 				var isDownloadDisabled = $testDiv.find('.download-data-btn').is(':disabled');

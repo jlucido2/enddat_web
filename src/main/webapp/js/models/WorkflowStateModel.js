@@ -208,6 +208,7 @@ define([
 					break;
 
 				case Config.CHOOSE_DATA_BY_VARIABLES_STEP:
+					this.initializeDatasetCollections();
 					break;
 
 				case Config.PROCESS_DATA_STEP:

@@ -13,9 +13,6 @@
 				"filter" : [
 					{"code" : "pcpn"}
 				]
-			},{
-				"name" : "PRECIP",
-				"filter" : [{}]
 			}
 		]
 	},

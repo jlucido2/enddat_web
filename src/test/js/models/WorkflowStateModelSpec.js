@@ -375,9 +375,20 @@ define([
 			it('Expects that if the step changes to CHOOSE_DATA_BY_SITE_FILTERS_STEP and the previous step was SPECIFY_AOI_STEP that the chosen datasets are set', function() {
 				testModel.set('step', Config.SPECIFY_AOI_STEP);
 				testModel.get('aoi').set({latitude : '43.0', longitude : '-100.0', radius : 2});
+				spyOn(testModel, 'initializeDatasetCollections').and.callThrough();
 				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 
 				expect(testModel.get('datasets')).toEqual(['NWIS']);
+				expect(testModel.initializeDatasetCollections).toHaveBeenCalled();
+			});
+
+			it('Expects that if the step changes to CHOOSE_DATA_BY_VARIABLES_STEP and the previous step was SPECIFY_AOI_STEP that the datasets are initalized', function() {
+				testModel.set('step', Config.SPECIFY_AOI_STEP);
+				testModel.get('aoi').set({latitude : '43.0', longitude : '-100.0', radius : 2});
+				spyOn(testModel, 'initializeDatasetCollections').and.callThrough();
+				testModel.set('step', Config.CHOOSE_DATA_BY_VARIABLES_STEP);
+				
+				expect(testModel.initializeDatasetCollections).toHaveBeenCalled();
 			});
 
 			it('Expects that if the step changes to CHOOSE_DATA_BY_SITE_FILTERS_STEP and the previous step was SPECIFY_AOI_STEP, the chosen datasets are fetched', function() {

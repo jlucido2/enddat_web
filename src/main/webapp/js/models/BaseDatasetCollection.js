@@ -13,6 +13,17 @@ define([
 	 */
 	var collection = Backbone.Collection.extend({
 
+		reset : function() {
+			this.each(function(siteModel) {
+				// Cleans up the variable collections so that the variable models can be garbage collected.
+				if (siteModel.has('variables')) {
+					siteModel.get('variables').reset();
+				}
+			});
+
+			Backbone.Collection.prototype.reset.apply(this, arguments);
+		},
+
 		/*
 		 * @returns {Boolean} - ture if any of the models contain a variable that has been selected
 		 */

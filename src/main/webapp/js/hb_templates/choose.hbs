@@ -2,15 +2,34 @@
 	<div class="form-group">
 		<label for="datasets-select">Datasets</label>
 		<select id="datasets-select" class="form-control" multiple style="width: 100%">
-			<option value="GLCFS_ERIE">Great Lakes Coastal Forecasting System - Erie</option>
-			<option value="GLCFS_HURON">Great Lakes Coastal Forecasting System - Huron</option>
-			<option value="GLCFS_MICHIGAN">Great Lakes Coastal Forecasting System - Michigan</option>
-			<option value="GLCFS_ONTARIO">Great Lakes Coastal Forecasting System - Ontario</option>
-			<option value="GLCFS_SUPERIOR">Great Lakes Coastal Forecasting System - Superior</option>
-			<option value="NWIS">USGS Time Series (NWIS)</option>
-			<option value="PRECIP">1 Hr National Precipitation Grid Points</option>
-			<option value="ACIS">Applied Climate Information System</option>
+			<option class="glcfs-option" value="GLCFS">Great Lakes Coastal Forecasting System</option>
+			<option class="nwis-option" value="NWIS">USGS Time Series (NWIS)</option>
+			<option class="precip-option" value="PRECIP">1 Hr National Precipitation Grid Points</option>
+			<option class="acis-option" value="ACIS">Applied Climate Information System</option>
 		</select>
+	</div>
+	<div class="glcfs-lake-select-modal modal fade" tabindex="-1" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="glcfs-lake-select-modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title">Select a lake</h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label>Great Lake</label>
+						<select class="form-control">
+							<option></option>
+							<option value="Erie">Erie</option>
+							<option value="Huron">Huron</option>
+							<option value="Michigan">Michigan</option>
+							<option value="Ontario">Ontario</option>
+							<option value="Superior">Superior</option>
+						</select>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 	<div class="date-filter-container"></div>
 </div>

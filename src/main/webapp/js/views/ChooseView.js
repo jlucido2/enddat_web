@@ -4,10 +4,12 @@ define([
 	'underscore',
 	'jquery',
 	'select2',
+	'bootstrap',
+	'Config',
 	'views/BaseCollapsiblePanelView',
 	'views/DataDateFilterView',
 	'hbs!hb_templates/choose'
-], function(_, $, select2, BaseCollapsiblePanelView, DataDateFilterView, hbTemplate) {
+], function(_, $, select2, bootstrap, Config, BaseCollapsiblePanelView, DataDateFilterView, hbTemplate) {
 	"use strict";
 
 	/*
@@ -25,7 +27,8 @@ define([
 
 		additionalEvents : {
 			'select2:select #datasets-select' : 'selectDataset',
-			'select2:unselect #datasets-select' : 'resetDataset'
+			'select2:unselect #datasets-select' : 'resetDataset',
+			'change .glcfs-lake-select-modal select' : 'selectGLCFSLake'
 		},
 
 		initialize : function(options) {
@@ -38,12 +41,27 @@ define([
 		},
 
 		render : function() {
+			var self = this;
+
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
 			this.dateFilterView.setElement(this.$('.date-filter-container')).render();
 
+			this.$('.glcfs-lake-select-modal').modal({
+				show : false
+			});
+
 			this.$('#datasets-select').select2({
 				allowClear : true,
-				theme : 'bootstrap'
+				theme : 'bootstrap',
+				templateSelection : function(data) {
+					if (data.id === Config.GLCFS_DATASET) {
+						return data.text + ' - ' +
+							self.model.get('datasetCollections')[data.id].getLake();
+					}
+					else {
+						return data.text;
+					}
+				}
 			});
 			this.updateDatasets();
 			this.gaSelectTracker();
@@ -71,9 +89,15 @@ define([
 		 */
 
 		selectDataset : function(ev) {
+			ev.preventDefault();
 			var datasets = _.clone((this.model.has('datasets')) ? this.model.get('datasets') : []);
-			datasets.push(ev.params.data.id);
-			this.model.set('datasets', datasets);
+			if (ev.params.data.id === Config.GLCFS_DATASET) {
+				this.$('.glcfs-lake-select-modal').modal('show');
+			}
+			else {
+				datasets.push(ev.params.data.id);
+				this.model.set('datasets', datasets);
+			}
 		},
 
 		resetDataset : function(ev) {
@@ -82,6 +106,14 @@ define([
 				return (ev.params.data.id === datasetKind);
 			});
 			this.model.set('datasets', datasets);
+		},
+
+		selectGLCFSLake : function(ev) {
+			var datasets = _.clone((this.model.has('datasets')) ? this.model.get('datasets') : []);
+			this.model.get('datasetCollections')[Config.GLCFS_DATASET].setLake(ev.target.value);
+			datasets.push(Config.GLCFS_DATASET);
+			this.model.set('datasets', datasets);
+			this.$('.glcfs-lake-select-modal').modal('hide');
 		},
 
 		gaSelectTracker: function () {

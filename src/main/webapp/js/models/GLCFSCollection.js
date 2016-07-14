@@ -15,14 +15,14 @@ define([
 
 	var GLCFS_WFS_GETFEATURE_URLS = module.config().glcfsWFSGetFeatureUrls;
 	var START_DATE = moment('2006-01-01', 'YYYY-MM-DD');
-	
+
 	/* The dataset property is hard coded in the services to know which thredds endpoint to hit for that data
-	 * 
+	 *
 	 * dataset 0
 	 * http://tds.glos.us/thredds/dodsC/glos/glcfs/archivecurrent/michigan/ncfmrc-2d/Lake_Michigan_-_Nowcast_-_2D_-_Current_Year_best.ncd.html
-	 * 
+	 *
 	 * dataset 1
-	 * http://tds.glos.us/thredds/dodsC/glos/glcfs/archivecurrent/michigan/nowcast-forcing-fmrc-2d/Lake_Michigan_-_Nowcast_Forcing_-_2D_-_Current_Year_best.ncd.html 
+	 * http://tds.glos.us/thredds/dodsC/glos/glcfs/archivecurrent/michigan/nowcast-forcing-fmrc-2d/Lake_Michigan_-_Nowcast_Forcing_-_2D_-_Current_Year_best.ncd.html
 	 */
 	var DATA_VARS = [
 		{dataset : 0, code : 'ci', description : 'Ice Concentration (fraction)'},
@@ -53,10 +53,21 @@ define([
 	var collection = BaseDatasetCollection.extend({
 
 		initialize : function(attributes, options) {
-			Backbone.Collection.prototype.initialize.apply(this, arguments);
-			this.lake = options.lake;
+			BaseDatasetCollection.prototype.initialize.apply(this, arguments);
+			this.lake = ((options) && options.lake) ? options.lake : '';
 		},
-		
+
+		setLake : function(lake) {
+			if (this.lake !== lake) {
+				this.reset([]);
+			}
+			this.lake = lake;
+		},
+
+		getLake : function() {
+			return this.lake;
+		},
+
 		/* Parse the xml document and returns a json object which can be used to create the collection.
 		 * @param {Document} xml
 		 * @returns {Array of Objects}
@@ -64,16 +75,14 @@ define([
 		parse : function(xml) {
 			var result = [];
 			var today = moment();
-			var self = this;
 
 			$utils.xmlFind($(xml), 'wfs', 'member').each(function() {
 				var $this = $(this);
 				var x = getInteger($utils.xmlFind($this, 'sb', 'nx').text());
 				var y = getInteger($utils.xmlFind($this, 'sb', 'ny').text());
-				
+
 				var variables = _.map(DATA_VARS, function(dataVar) {
 					var siteVar = _.clone(dataVar);
-					siteVar.lake = self.lake;
 					siteVar.startDate = START_DATE;
 					siteVar.endDate = today;
 					siteVar.x = x;
@@ -88,7 +97,7 @@ define([
 					});
 					return siteVar;
 				});
-				
+
 				result.push({
 					lon : $utils.xmlFind($this, 'sb', 'X1').text(),
 					lat : $utils.xmlFind($this, 'sb', 'X2').text(),
@@ -98,7 +107,7 @@ define([
 
 			return result;
 		},
-		
+
 		/* Fetches the GLCFS grid data for the specified bounding box and updates the collection contents.
 		 * If the fetch fails the collection is reset.
 		 * @param {Object} boundingBox - west, east, north, and south properties

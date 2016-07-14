@@ -157,7 +157,7 @@ define([
 					}
 
 					if (prevStep !== step) {
-						this.chooseView = removeSubView(this.chooseView)
+						this.chooseView = removeSubView(this.chooseView);
 					}
 					if (!this.chooseView) {
 						if (step === Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP) {

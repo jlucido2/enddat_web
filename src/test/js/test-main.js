@@ -12,6 +12,9 @@ require.config({
 	baseUrl: '/base/src/main/webapp/js/',
 
 	config: {
+		'utils/VariableDatasetMapping' : {
+			variableDatasetMappingUrl : 'base/src/test/json/variableDatasetMapping.json'
+		},
 		'models/PrecipitationCollection' : {
 			precipWFSGetFeatureUrl : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',
 			cidaThreddsPrecipData : 'dodsC/fakedata'
@@ -22,17 +25,11 @@ require.config({
 				'Huron' : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',
 				'Michigan' : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',
 				'Ontario' : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',
-				'Superior' : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',
+				'Superior' : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0'
 			}
 		},
 		'views/ProcessDataView' : {
 			baseUrl : 'http:fakeservice/enddat/'
-		},
-		'models/NWISCollection' : {
-			parameterCodesPath : 'http:dummyservice/nwis/info/'
-		},
-		'models/ACISCollection' : {
-			acisStnMetaUrl : 'http:dummyservice/acis/StnMeta'
 		}
 	},
 

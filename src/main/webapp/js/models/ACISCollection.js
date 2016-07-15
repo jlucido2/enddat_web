@@ -42,10 +42,11 @@ define([
 
 	var collection = BaseDatasetCollection.extend({
 
-		url : ENDPOINT + '?meta=name,valid_daterange,ll,sids&elems=' + _.pluck(ELEMS, 'code').join(','),
+		url : 'acis/StnMeta?meta=name,valid_daterange,ll,sids&elems=' + _.pluck(ELEMS, 'code').join(','),
 
 		parse : function(response) {
 			var sites = response.meta;
+			log.debug('ACIS sites received: ' + sites.length);
 			return _.map(sites, function(site) {
 				// Use first sid when retrieving information.
 				var sid = site.sids[0].split(' ')[0];

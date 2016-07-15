@@ -14,8 +14,6 @@ define([
 ], function ($, _, moment, log, module, VariableParameter, rdbUtils, stringUtils, BaseDatasetCollection, BaseVariableCollection) {
 	"use strict";
 
-	var parameterCodesPath = module.config().parameterCodesPath;
-
 	var DATE_FORMAT = 'YYYY-MM-DD';
 
 	var collection = BaseDatasetCollection.extend({
@@ -149,7 +147,7 @@ define([
 			var deferred = $.Deferred();
 			$.ajax({
 				type : "GET",
-				url : parameterCodesPath + 'pmcodes?radio_pm_search=param_group&pm_group=Physical&format=rdb&show=parameter_nm',
+				url : 'pmcodes/?radio_pm_search=param_group&pm_group=Physical&format=rdb&show=parameter_nm',
 				dataType: 'text',
 				success: function(data) {
 					var parsedParams = rdbUtils.parseRDB(data);

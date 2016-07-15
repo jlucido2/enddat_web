@@ -23,6 +23,7 @@ define([
 		var setElLocationViewSpy, renderLocationViewSpy, removeLocationViewSpy, collapseLocationViewSpy, expandLocationViewSpy;
 		var setElAOIBoxViewSpy, renderAOIBoxViewSpy, removeAOIBoxViewSpy, collapseAOIBoxViewSpy, expandAOIBoxViewSpy;
 		var setElChooseViewSpy, renderChooseViewSpy, removeChooseViewSpy, collapseChooseViewSpy, expandChooseViewSpy;
+		var setElChooseVarViewSpy, renderChooseVarViewSpy, removeChooseVarViewSpy, collapseChooseVarViewSpy, expandChooseVarViewSpy;
 		var setElSummaryViewSpy, renderSummaryViewSpy, removeSummaryViewSpy, collapseSummaryViewSpy, expandSummaryViewSpy;
 		var setElProcessDataViewSpy, renderProcessDataViewSpy, removeProcessDataViewSpy;
 		var setElAlertViewSpy, renderAlertViewSpy, removeAlertViewSpy, showSuccessAlertSpy, showDangerAlertSpy, closeAlertSpy;
@@ -59,6 +60,12 @@ define([
 			removeChooseViewSpy = jasmine.createSpy('removeChooseViewSpy');
 			collapseChooseViewSpy = jasmine.createSpy('collapseChooseViewSpy');
 			expandChooseViewSpy = jasmine.createSpy('expandChooseViewSpy');
+
+			setElChooseVarViewSpy = jasmine.createSpy('setElChooseVarViewSpy');
+			renderChooseVarViewSpy = jasmine.createSpy('renderChooseVarViewSpy');
+			removeChooseVarViewSpy = jasmine.createSpy('removeChooseVarViewSpy');
+			collapseChooseVarViewSpy = jasmine.createSpy('collapseChooseVarViewSpy');
+			expandChooseVarViewSpy = jasmine.createSpy('expandChooseVarViewSpy');
 
 			setElSummaryViewSpy = jasmine.createSpy('setElSummaryViewSpy');
 			renderSummaryViewSpy = jasmine.createSpy('renderSummaryViewSpy');
@@ -125,6 +132,16 @@ define([
 				render : renderChooseViewSpy,
 				remove : removeChooseViewSpy,
 				expand : expandChooseViewSpy,
+				collapse : collapseChooseViewSpy
+			}));
+
+			injector.mock('views/ChooseByVariableKindView', BaseView.extend({
+				setElement : setElChooseVarViewSpy.and.returnValue({
+					render : renderChooseVarViewSpy
+				}),
+				render : renderChooseVarViewSpy,
+				remove : removeChooseVarViewSpy,
+				expand : expandChooseVarViewSpy,
 				collapse : collapseChooseViewSpy
 			}));
 
@@ -222,15 +239,15 @@ define([
 				expect(setElNavViewSpy.calls.count()).toBe(2);
 				expect(renderNavViewSpy.calls.count()).toBe(1);
 
-				testModel.set('step', testModel.CHOOSE_DATA_FILTERS_STEP);
+				testModel.set('step', testModel.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testView.render();
 				expect(setElNavViewSpy.calls.count()).toBe(3);
 				expect(renderNavViewSpy.calls.count()).toBe(2);
 
-				testModel.set('step', testModel.CHOOSE_DATA_VARIABLES_STEP);
-				testModel.set({
-					startDate : moment('2005-04-01', Config.DATE_FORMAT),
-					endDate : moment('2009-03-11', Config.DATE_FORMAT)
+				testModel.set('step', testModel.CHOOSE_DATA_BY_SITE_VARIABLES_STEP);
+				testModel.set('dataDateFilter', {
+					start : moment('2005-04-01', Config.DATE_FORMAT),
+					end : moment('2009-03-11', Config.DATE_FORMAT)
 				});
 				testModel.set('step', Config.PROCESS_DATA_STEP);
 				testView.render();
@@ -252,12 +269,13 @@ define([
 				expect($testDiv.find('.workflow-start-container').is(':visible')).toBe(true);
 			});
 
-			it('Expects that if the workflow step is CHOOSE_DATA_FILTERS_STEP and the aoi model contains a location, the location, map, variable summary and choose data views are created and rendered', function() {
-				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
+			it('Expects that if the workflow step is CHOOSE_DATA_BY_SITE_FILTERS_STEP and the aoi model contains a location, the location, map, variable summary and choose data views are created and rendered', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testModel.get('aoi').set({
 					latitude : 42.0,
 					longitude : 43.0,
-					radius : 2
+					radius : 2,
+					datasets : []
 				});
 				testView.render();
 
@@ -273,8 +291,8 @@ define([
 				expect(renderSummaryViewSpy).toHaveBeenCalled();
 			});
 
-			it('Expects that if the workflow step is CHOOSE_DATA_FILTERS_STEP and the aoi model contains an AOI box, the location, map, variable summary and choose data views are created and rendered', function() {
-				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
+			it('Expects that if the workflow step is CHOOSE_DATA_BY_SITE_FILTERS_STEP and the aoi model contains an AOI box, the location, map, variable summary and choose data views are created and rendered', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testModel.get('aoi').set('aoiBox', {
 					south : 42.0,
 					west : -101.0,
@@ -291,6 +309,28 @@ define([
 				expect(renderAOIBoxViewSpy).toHaveBeenCalled();
 				expect(setElChooseViewSpy).toHaveBeenCalled();
 				expect(renderChooseViewSpy).toHaveBeenCalled();
+				expect(setElSummaryViewSpy).toHaveBeenCalled();
+				expect(renderSummaryViewSpy).toHaveBeenCalled();
+			});
+
+			it('Expects that if the workflow step is CHOOSE_DATA_BY_VARIABLES_STEP and the aoi model contains a location, the location, map, variable summary and choose variable data views are created and rendered', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_VARIABLES_STEP);
+				testModel.get('aoi').set({
+					latitude : 42.0,
+					longitude : 43.0,
+					radius : 2,
+					variables : []
+				});
+				testView.render();
+
+				expect(setElMapViewSpy).toHaveBeenCalled();
+				expect(renderMapViewSpy).toHaveBeenCalled();
+				expect(setElLocationViewSpy).toHaveBeenCalled();
+				expect(renderLocationViewSpy).toHaveBeenCalled();
+				expect(setElAOIBoxViewSpy).not.toHaveBeenCalled();
+				expect(renderAOIBoxViewSpy).not.toHaveBeenCalled();
+				expect(setElChooseVarViewSpy).toHaveBeenCalled();
+				expect(renderChooseVarViewSpy).toHaveBeenCalled();
 				expect(setElSummaryViewSpy).toHaveBeenCalled();
 				expect(renderSummaryViewSpy).toHaveBeenCalled();
 			});
@@ -344,7 +384,7 @@ define([
 			});
 
 			it('Expects that the location,map, variable summary, and choose data subviews are removed if they have been created', function() {
-				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testModel.get('aoi').set({
 					latitude : 42.0,
 					longitude : -100.0,
@@ -360,7 +400,7 @@ define([
 			});
 
 			it('Expects that the AOI box, map, variable summary, and choose data subviews are removed if they have been created', function() {
-				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testModel.get('aoi').set('aoiBox', {
 					south : 42.0,
 					west : -101.0,
@@ -376,10 +416,26 @@ define([
 				expect(removeMapViewSpy).toHaveBeenCalled();
 			});
 
+			it('Expects that the location,map, variable summary, and choose variable type data subviews are removed if they have been created', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_VARIABLES_STEP);
+				testModel.get('aoi').set({
+					latitude : 42.0,
+					longitude : -100.0,
+					radius : 2
+				});
+				testView.render();
+				testView.remove();
+
+				expect(removeLocationViewSpy).toHaveBeenCalled();
+				expect(removeChooseVarViewSpy).toHaveBeenCalled();
+				expect(removeSummaryViewSpy).toHaveBeenCalled();
+				expect(removeMapViewSpy).toHaveBeenCalled();
+			});
+
 			it('Expects that the variable summary and process data subviews are removed when the step is PROCESS_DATA_STEP', function() {
-				testModel.set({
-					startDate : moment('2005-04-01', Config.DATE_FORMAT),
-					endDate : moment('2009-03-11', Config.DATE_FORMAT)
+				testModel.set('dataDateFilter', {
+					start : moment('2005-04-01', Config.DATE_FORMAT),
+					end : moment('2009-03-11', Config.DATE_FORMAT)
 				});
 				testModel.set('step', Config.PROCESS_DATA_STEP);
 				testView.render();
@@ -396,7 +452,7 @@ define([
 					el : $testDiv,
 					model : testModel
 				});
-				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testModel.get('aoi').set({
 					latitude : 42.0,
 					longitude : -100.0,
@@ -432,22 +488,18 @@ define([
 				expect(showDangerAlertSpy).toHaveBeenCalled();
 			});
 
-			it('Expects that if the startDate property is changed the success alert is shown', function() {
+			it('Expects that if the dataDateFilter property is changed the success alert is shown', function() {
 				showSuccessAlertSpy.calls.reset();
-				testModel.set('startDate', moment());
+				testModel.set('dataDateFilter', {
+					start : moment('2000-01-02', Config.DATE_FORMAT),
+					end : moment('2000-11-11', Config.DATE_FORMAT)
+				});
 
 				expect(showSuccessAlertSpy).toHaveBeenCalled();
 			});
 
-			it('Expects that if the endDate property is changed the success alert is shown', function() {
-				showSuccessAlertSpy.calls.reset();
-				testModel.set('endDate', moment());
-
-				expect(showSuccessAlertSpy).toHaveBeenCalled();
-			});
-
-			it('Expects that if the step changes from CHOOSE_DATA_FILTERS_STEP to SPECIFY_AOI_STEP, the location view, choose view and summary view are removed', function() {
-				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
+			it('Expects that if the step changes from CHOOSE_DATA_BY_SITE_FILTERS_STEP to SPECIFY_AOI_STEP, the location view, choose view and summary view are removed', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				removeChooseViewSpy.calls.reset();
 				removeSummaryViewSpy.calls.reset();
 				removeLocationViewSpy.calls.reset();
@@ -458,14 +510,26 @@ define([
 				expect(removeLocationViewSpy).toHaveBeenCalled();
 			});
 
-			it('Expects that if the step changes from SPECIFY_AOI_STEP to CHOOSE_DATA_FILTERS_STEP, the choose view and summary views are created and rendered', function() {
+			it('Expects that if the step changes from CHOOSE_DATA_BY_VARIABLES_STEP to SPECIFY_AOI_STEP, the location view, choose varview and summary view are removed', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_VARIABLES_STEP);
+				removeChooseVarViewSpy.calls.reset();
+				removeSummaryViewSpy.calls.reset();
+				removeLocationViewSpy.calls.reset();
+				testModel.set('step', Config.SPECIFY_AOI_STEP);
+
+				expect(removeChooseVarViewSpy).toHaveBeenCalled();
+				expect(removeSummaryViewSpy).toHaveBeenCalled();
+				expect(removeLocationViewSpy).toHaveBeenCalled();
+			});
+
+			it('Expects that if the step changes from SPECIFY_AOI_STEP to CHOOSE_DATA_BY_SITE_FILTERS_STEP, the choose view and summary views are created and rendered', function() {
 				testModel.set('step', Config.SPECIFY_AOI_STEP);
 				$testDiv.find('.workflow-start-container select').val('location').trigger('change');
 				setElChooseViewSpy.calls.reset();
 				renderChooseViewSpy.calls.reset();
 				setElSummaryViewSpy.calls.reset();
 				renderSummaryViewSpy.calls.reset();
-				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 
 				expect(setElChooseViewSpy).toHaveBeenCalled();
 				expect(renderChooseViewSpy).toHaveBeenCalled();
@@ -473,26 +537,41 @@ define([
 				expect(renderSummaryViewSpy).toHaveBeenCalled();
 			});
 
-			it('Expects that if the step changes from CHOOSE_DATA_FILTERS_STEP to CHOOSE_DATA_VARIABLE_STEP, the location and choose views are collapsed', function() {
+			it('Expects that if the step changes from SPECIFY_AOI_STEP to CHOOSE_DATA_BY_VARIABLES_STEP, the choose variable view and summary views are created and rendered', function() {
+				testModel.set('step', Config.SPECIFY_AOI_STEP);
+				$testDiv.find('.workflow-start-container select').val('location').trigger('change');
+				setElChooseVarViewSpy.calls.reset();
+				renderChooseVarViewSpy.calls.reset();
+				setElSummaryViewSpy.calls.reset();
+				renderSummaryViewSpy.calls.reset();
+				testModel.set('step', Config.CHOOSE_DATA_BY_VARIABLES_STEP);
+
+				expect(setElChooseVarViewSpy).toHaveBeenCalled();
+				expect(renderChooseVarViewSpy).toHaveBeenCalled();
+				expect(setElSummaryViewSpy).toHaveBeenCalled();
+				expect(renderSummaryViewSpy).toHaveBeenCalled();
+			});
+
+			it('Expects that if the step changes from CHOOSE_DATA_BY_SITE_FILTERS_STEP to CHOOSE_DATA_BY_SITE_VARIABLES_STEP, the location and choose views are collapsed', function() {
 				collapseLocationViewSpy.calls.reset();
 				collapseChooseViewSpy.calls.reset();
-				testModel.set('step', Config.CHOOSE_DATA_VARIABLES_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP);
 
 				expect(collapseLocationViewSpy).toHaveBeenCalled();
 				expect(collapseChooseViewSpy).toHaveBeenCalled();
 			});
 
-			it('Expects that if the step changes from CHOOSE_DATA_VARIABLES_STEP to PROCESS_DATA_STEP, the process data view is created and rendered, the location,choose, and map views are removed and variable summary is collapsed', function() {
-				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
-				testModel.set('step', Config.CHOOSE_DATA_VARIABLES_STEP);
+			it('Expects that if the step changes from CHOOSE_DATA_BY_SITE_VARIABLES_STEP to PROCESS_DATA_STEP, the process data view is created and rendered, the location,choose, and map views are removed and variable summary is collapsed', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP);
 				removeLocationViewSpy.calls.reset();
 				removeChooseViewSpy.calls.reset();
 				removeMapViewSpy.calls.reset();
 				collapseSummaryViewSpy.calls.reset();
 				renderProcessDataViewSpy.calls.reset();
-				testModel.set({
-					startDate : moment('2005-04-01', Config.DATE_FORMAT),
-					endDate : moment('2009-03-11', Config.DATE_FORMAT)
+				testModel.set('dataDateFilter', {
+					start : moment('2005-04-01', Config.DATE_FORMAT),
+					end : moment('2009-03-11', Config.DATE_FORMAT)
 				});
 				testModel.set('step', Config.PROCESS_DATA_STEP);
 
@@ -503,12 +582,32 @@ define([
 				expect(renderProcessDataViewSpy).toHaveBeenCalled();
 			});
 
-			it('Expects that if the step is PROCESS_DATA_STEP and goes back to CHOOSE_DATA_FILTERS_STEP, the process data view is removed, the location, choose, and map view are created and the variable summary is shown', function() {
-				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
-				testModel.set('step', Config.CHOOSE_DATA_VARIABLES_STEP);
-				testModel.set({
-					startDate : moment('2005-04-01', Config.DATE_FORMAT),
-					endDate : moment('2009-03-11', Config.DATE_FORMAT)
+			it('Expects that if the step changes from CHOOSE_DATA_BY_VARIABLES_STEP to PROCESS_DATA_STEP, the process data view is created and rendered, the location,choose, and map views are removed and variable summary is collapsed', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_VARIABLES_STEP);
+				removeLocationViewSpy.calls.reset();
+				removeChooseVarViewSpy.calls.reset();
+				removeMapViewSpy.calls.reset();
+				collapseSummaryViewSpy.calls.reset();
+				renderProcessDataViewSpy.calls.reset();
+				testModel.set('dataDateFilter', {
+					start : moment('2005-04-01', Config.DATE_FORMAT),
+					end : moment('2009-03-11', Config.DATE_FORMAT)
+				});
+				testModel.set('step', Config.PROCESS_DATA_STEP);
+
+				expect(removeLocationViewSpy).toHaveBeenCalled();
+				expect(removeChooseVarViewSpy).toHaveBeenCalled();
+				expect(removeMapViewSpy).toHaveBeenCalled();
+				expect(collapseSummaryViewSpy).toHaveBeenCalled();
+				expect(renderProcessDataViewSpy).toHaveBeenCalled();
+			});
+
+			it('Expects that if the step is PROCESS_DATA_STEP and goes back to CHOOSE_DATA_BY_SITE_FILTERS_STEP, the process data view is removed, the location, choose, and map view are created and the variable summary is shown', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP);
+				testModel.set('dataDateFilter', {
+					start : moment('2005-04-01', Config.DATE_FORMAT),
+					end : moment('2009-03-11', Config.DATE_FORMAT)
 				});
 				testModel.set('step', Config.PROCESS_DATA_STEP);
 				renderLocationViewSpy.calls.reset();
@@ -516,7 +615,7 @@ define([
 				renderMapViewSpy.calls.reset();
 				expandSummaryViewSpy.calls.reset();
 				removeProcessDataViewSpy.calls.reset();
-				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 
 				expect(renderLocationViewSpy).toHaveBeenCalled();
 				expect(renderChooseViewSpy).toHaveBeenCalled();
@@ -525,12 +624,36 @@ define([
 				expect(removeProcessDataViewSpy).toHaveBeenCalled();
 			});
 
-			it('Expects that if the step is PROCESS_DATA_STEP and changes to SPECIFY_AOI_STEP, the process data and summary views are removed', function() {
-				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
-				testModel.set('step', Config.CHOOSE_DATA_VARIABLES_STEP);
+			it('Expects that if the step is PROCESS_DATA_STEP and goes back to CHOOSE_DATA_BY_VARIABLES_STEP, the process data view is removed, the location, choose variable, and map view are created and the variable summary is shown', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_VARIABLES_STEP);
 				testModel.set({
-					startDate : moment('2005-04-01', Config.DATE_FORMAT),
-					endDate : moment('2009-03-11', Config.DATE_FORMAT)
+					dataDateFilter : {
+						start : moment('2005-04-01', Config.DATE_FORMAT),
+						end : moment('2009-03-11', Config.DATE_FORMAT)
+					},
+					variables : []
+				});
+				testModel.set('step', Config.PROCESS_DATA_STEP);
+				renderLocationViewSpy.calls.reset();
+				renderChooseVarViewSpy.calls.reset();
+				renderMapViewSpy.calls.reset();
+				expandSummaryViewSpy.calls.reset();
+				removeProcessDataViewSpy.calls.reset();
+				testModel.set('step', Config.CHOOSE_DATA_BY_VARIABLES_STEP);
+
+				expect(renderLocationViewSpy).toHaveBeenCalled();
+				expect(renderChooseVarViewSpy).toHaveBeenCalled();
+				expect(renderMapViewSpy).toHaveBeenCalled();
+				expect(expandSummaryViewSpy).toHaveBeenCalled();
+				expect(removeProcessDataViewSpy).toHaveBeenCalled();
+			});
+
+			it('Expects that if the step is PROCESS_DATA_STEP and changes to SPECIFY_AOI_STEP, the process data and summary views are removed', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP);
+				testModel.set('dataDateFilter', {
+					start : moment('2005-04-01', Config.DATE_FORMAT),
+					end : moment('2009-03-11', Config.DATE_FORMAT)
 				});
 				testModel.set('step', Config.PROCESS_DATA_STEP);
 				removeProcessDataViewSpy.calls.reset();
@@ -561,7 +684,7 @@ define([
 						el : $testDiv,
 						model : testModel
 					});
-				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testModel.get('aoi').set('aoiBox', {
 					south : 42.0,
 					west : -101.0,
@@ -571,7 +694,7 @@ define([
 				testView.render();
 			});
 
-			it('Expects that if the step changes from CHOOSE_DATA_FILTERS_STEP to SPECIFY_AOI_STEP, the aoiBox view, choose view and summary view are removed', function() {
+			it('Expects that if the step changes from CHOOSE_DATA_BY_SITE_FILTERS_STEP to SPECIFY_AOI_STEP, the aoiBox view, choose view and summary view are removed', function() {
 				removeAOIBoxViewSpy.calls.reset();
 				removeChooseViewSpy.calls.reset();
 				removeSummaryViewSpy.calls.reset();
@@ -582,26 +705,26 @@ define([
 				expect(removeAOIBoxViewSpy).toHaveBeenCalled();
 			});
 
-			it('Expects that if the step changes from CHOOSE_DATA_FILTERS_STEP to CHOOSE_DATA_VARIABLE_STEP, the aoiBox and choose views are collapsed', function() {
+			it('Expects that if the step changes from CHOOSE_DATA_BY_SITE_FILTERS_STEP to CHOOSE_DATA_BY_SITE_VARIABLE_STEP, the aoiBox and choose views are collapsed', function() {
 				collapseAOIBoxViewSpy.calls.reset();
 				collapseChooseViewSpy.calls.reset();
-				testModel.set('step', Config.CHOOSE_DATA_VARIABLES_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP);
 
 				expect(collapseAOIBoxViewSpy).toHaveBeenCalled();
 				expect(collapseChooseViewSpy).toHaveBeenCalled();
 			});
 
-			it('Expects that if the step changes from CHOOSE_DATA_VARIABLES_STEP to PROCESS_DATA_STEP, the process data view is created and rendered, the location,choose, and map views are removed and variable summary is collapsed', function() {
-				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
-				testModel.set('step', Config.CHOOSE_DATA_VARIABLES_STEP);
+			it('Expects that if the step changes from CHOOSE_DATA_BY_SITE_VARIABLES_STEP to PROCESS_DATA_STEP, the process data view is created and rendered, the location,choose, and map views are removed and variable summary is collapsed', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP);
 				removeAOIBoxViewSpy.calls.reset();
 				removeChooseViewSpy.calls.reset();
 				removeMapViewSpy.calls.reset();
 				collapseSummaryViewSpy.calls.reset();
 				renderProcessDataViewSpy.calls.reset();
-				testModel.set({
-					startDate : moment('2005-04-01', Config.DATE_FORMAT),
-					endDate : moment('2009-03-11', Config.DATE_FORMAT)
+				testModel.set('dataDateFilter', {
+					start : moment('2005-04-01', Config.DATE_FORMAT),
+					end : moment('2009-03-11', Config.DATE_FORMAT)
 				});
 				testModel.set('step', Config.PROCESS_DATA_STEP);
 
@@ -612,12 +735,12 @@ define([
 				expect(renderProcessDataViewSpy).toHaveBeenCalled();
 			});
 
-			it('Expects that if the step is PROCESS_DATA_STEP and goes back to CHOOSE_DATA_FILTERS_STEP, the process data view is removed, the aoiBox, choose, and map view are created and the variable summary is shown', function() {
-				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
-				testModel.set('step', Config.CHOOSE_DATA_VARIABLES_STEP);
-				testModel.set({
-					startDate : moment('2005-04-01', Config.DATE_FORMAT),
-					endDate : moment('2009-03-11', Config.DATE_FORMAT)
+			it('Expects that if the step is PROCESS_DATA_STEP and goes back to CHOOSE_DATA_BY_SITE_FILTERS_STEP, the process data view is removed, the aoiBox, choose, and map view are created and the variable summary is shown', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP);
+				testModel.set('dataDateFilter', {
+					start : moment('2005-04-01', Config.DATE_FORMAT),
+					end : moment('2009-03-11', Config.DATE_FORMAT)
 				});
 				testModel.set('step', Config.PROCESS_DATA_STEP);
 				renderAOIBoxViewSpy.calls.reset();
@@ -625,7 +748,7 @@ define([
 				renderMapViewSpy.calls.reset();
 				expandSummaryViewSpy.calls.reset();
 				removeProcessDataViewSpy.calls.reset();
-				testModel.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 
 				expect(renderAOIBoxViewSpy).toHaveBeenCalled();
 				expect(renderChooseViewSpy).toHaveBeenCalled();

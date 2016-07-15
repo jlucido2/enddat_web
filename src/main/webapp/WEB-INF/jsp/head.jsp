@@ -17,8 +17,7 @@
 <%
 	Boolean development = Boolean.parseBoolean(props.getProperty("enddat.development"));
 	String baseUrl = props.getProperty("enddat.base.url", request.getContextPath());
-	if (!baseUrl.endsWith("/")) { baseUrl += "/"; }
-	String version = props.getProperty("application.version");
+	if (!baseUrl.endsWith("/")) { baseUrl += "/"; }	String version = props.getProperty("application.version");
 
 	String parameterCodesUrl = props.getProperty("enddat.endpoint.nwis.pmcodes");
 	String precipWFSGetFeatureUrl = props.getProperty("enddat.endpoint.precip.wfsgetfeature");
@@ -35,7 +34,6 @@
 <link rel="shortcut icon" type="image/ico" href="img/favicon.ico">
 <jsp:include page="/template/USGSHead.jsp">
 	<jsp:param name="shortName" value="Environmental Data Discovery and Transformation Service"/>
-	<jsp:param name="relPath" value="<%= baseUrl %>" />
 	<jsp:param name="title" value="EnDDaT" />
 	<jsp:param name="description" value="EnDDaT is a data discovery, aggregation, and processing tool for scientific modelers focusing on Great Lakes beaches." />
 	<jsp:param name="author" value="" />

@@ -13,11 +13,12 @@ define([
 	'views/LocationView',
 	'views/AOIBoxView',
 	'views/ChooseView',
+	'views/ChooseByVariableKindView',
 	'views/VariableSummaryView',
 	'views/ProcessDataView',
 	'hbs!hb_templates/dataDiscovery'
 ], function (_, Config, log, $utils, BaseView, NavView, AlertView, MapView, LocationView, AOIBoxView, ChooseView,
-		VariableSummaryView, ProcessDataView, hbTemplate) {
+		ChooseByVariableKindView, VariableSummaryView, ProcessDataView, hbTemplate) {
 	"use strict";
 
 	var DEFAULT_RADIUS = 2;
@@ -75,8 +76,7 @@ define([
 			// Set up event listeners on the workflow model
 			this.listenTo(this.model, 'dataset:updateStart', this.showLoadingIndicator);
 			this.listenTo(this.model, 'dataset:updateFinished', this.hideLoadingIndicator);
-			this.listenTo(this.model, 'change:startDate', this.showSuccessfulFetchAlert);
-			this.listenTo(this.model, 'change:endDate', this.showSuccessfulFetchAlert);
+			this.listenTo(this.model, 'change:dataDateFilter', this.showSuccessfulFetchAlert);
 			this.listenTo(this.model, 'change:step', this.updateSubViews);
 			this.listenTo(this.model, 'change:datasets', this.closeAlert);
 
@@ -125,7 +125,8 @@ define([
 
 					break;
 
-				case Config.CHOOSE_DATA_FILTERS_STEP:
+				case Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP:
+				case Config.CHOOSE_DATA_BY_VARIABLES_STEP:
 					var aoiModel = this.model.get('aoi');
 					if (!this.aoiView) {
 						if (aoiModel.usingProjectLocation()) {
@@ -154,14 +155,28 @@ define([
 						});
 						this.mapView.render();
 					}
+
+					if (prevStep !== step) {
+						this.chooseView = removeSubView(this.chooseView)
+					}
 					if (!this.chooseView) {
-						this.chooseView = new ChooseView({
-							el : $utils.createDivInContainer(this.$(CHOOSE_SELECTOR)),
-							model : model,
-							opened : true
-						});
+						if (step === Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP) {
+							this.chooseView = new ChooseView({
+								el : $utils.createDivInContainer(this.$(CHOOSE_SELECTOR)),
+								model : model,
+								opened : true
+							});
+						}
+						else {
+							this.chooseView = new ChooseByVariableKindView({
+								el : $utils.createDivInContainer(this.$(CHOOSE_SELECTOR)),
+								model : model,
+								opened : true
+							});
+						}
 						this.chooseView.render();
 					}
+
 					if (!this.variableSummaryView) {
 						this.variableSummaryView = new VariableSummaryView({
 							el : $utils.createDivInContainer(this.$(VARIABLE_SUMMARY_SELECTOR)),
@@ -176,9 +191,9 @@ define([
 
 					break;
 
-				case Config.CHOOSE_DATA_VARIABLES_STEP:
+				case Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP:
 					// You can only get to this step from CHOOSE_DATA_FILTER_STEP
-					if (prevStep === Config.CHOOSE_DATA_FILTERS_STEP) {
+					if (prevStep === Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP) {
 						this.aoiView.collapse();
 						this.chooseView.collapse();
 					}
@@ -217,9 +232,10 @@ define([
 		_filterMsg : function() {
 			var state = this.model.attributes;
 			var aoi = state.aoi;
+			var dateFilter = this.model.has('dataDateFilter') ? state.dataDateFilter : {};
 
-			var startDate = (state.startDate) ? state.startDate.format(Config.DATE_FORMAT) : '';
-			var endDate = (state.endDate) ? state.endDate.format(Config.DATE_FORMAT) : '';
+			var startDate = (dateFilter.start) ? dateFilter.start.format(Config.DATE_FORMAT) : '';
+			var endDate = (dateFilter.end) ? dateFilter.end.format(Config.DATE_FORMAT) : '';
 			var dateFilterMsg = (startDate && endDate) ? 'date filter from ' + startDate + ' to ' + endDate : 'no date filter';
 
 			var chosenDatasets = (state.datasets) ? state.datasets : [];
@@ -243,8 +259,8 @@ define([
 
 		showSuccessfulFetchAlert : function() {
 			var step = this.model.get('step');
-			if ((step === Config.CHOOSE_DATA_FILTERS_STEP) ||
-				(step === Config.CHOOSE_DATA_VARIABLES_STEP)) {
+			if ((step === Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP) ||
+				(step === Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP)) {
 				this.alertView.showSuccessAlert(this._filterMsg());
 			}
 		},

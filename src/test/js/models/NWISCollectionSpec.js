@@ -47,7 +47,7 @@ define([
 		it('Expects that the parameter codes and statistic codes are fetched at initialization', function() {
 			expect(fakeServer.requests.length).toBe(2);
 			expect(_.find(fakeServer.requests, function(request) {
-				return request.url.includes('http:dummyservice/nwis/info/pmcodes');
+				return request.url.includes('pmcodes');
 			})).toBeDefined();
 			expect(_.find(fakeServer.requests, function(request) {
 				return request.url.includes('stcodes/?fmt=rdb');
@@ -55,7 +55,7 @@ define([
 		});
 
 		it('Expects that a successful parameter codes call sets the parameterCodes object values', function() {
-			fakeServer.respondWith(/http:dummyservice\/nwis\/info\/pmcodes/, [200, {'Content-Type' : 'text'}, PM_CODES]);
+			fakeServer.respondWith(/pmcodes/, [200, {'Content-Type' : 'text'}, PM_CODES]);
 			fakeServer.respond();
 
 			expect(testCollection.parameterCodes).toBeDefined();
@@ -65,7 +65,7 @@ define([
 		});
 
 		it('Expects that a failed parameter codes call sets the parameterCodes to be undefined', function() {
-			fakeServer.respondWith(/http:dummyservice\/nwis\/info\/pmcodes/, [500, {'Content-Type' : 'text'}, 'Internal servier error']);
+			fakeServer.respondWith(/pmcodes/, [500, {'Content-Type' : 'text'}, 'Internal servier error']);
 			fakeServer.respond();
 
 			expect(testCollection.parameterCodes).toBeUndefined();

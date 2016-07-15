@@ -4,6 +4,7 @@
 define([
 	'squire',
 	'jquery',
+	'underscore',
 	'moment',
 	'Config',
 	'bootstrap-datetimepicker',
@@ -11,7 +12,7 @@ define([
 	'models/WorkflowStateModel',
 	'models/BaseVariableCollection',
 	'views/BaseView'
-], function(Squire, $, moment, Config, datetimepicker, VariableParameter, WorkflowStateModel, BaseVariableCollection, BaseView) {
+], function(Squire, $, _, moment, Config, datetimepicker, VariableParameter, WorkflowStateModel, BaseVariableCollection, BaseView) {
 	describe('views/ProcessDataView', function() {
 		"use strict";
 		var testView, ProcessDataView;
@@ -20,7 +21,6 @@ define([
 		var variableCollectionLong;
 
 		var setElVariableTsOptionView, renderVariableTsOptionView, removeVariableTsOptionView;
-		var getSelectedVarSpy;
 
 		var injector;
 
@@ -113,7 +113,7 @@ define([
 				testModel.getSelectedVariables.and.returnValue(variableCollectionLong.models);
 				spyOn(testModel, 'getSelectedVarsDateRange').and.returnValue({
 					start : moment('2000-01-04', Config.DATE_FORMAT),
-					end : moment('2005-06-01', Config.DATE_FORMAT),
+					end : moment('2005-06-01', Config.DATE_FORMAT)
 				});
 				testModel.set({
 					outputFileFormat : 'tab',
@@ -349,18 +349,6 @@ define([
 					expect(firstInspect).toBe(true);
 					expect(secondInspect).toBe(true);
 					expect(thirdInspect).toBe(true);
-				});
-
-				it('Expects get data button to be disabled', function() {
-					$testDiv.find('.show-url-btn').trigger('click');
-					var isDisabled = $testDiv.find('.get-data-btn').is(':disabled');
-					expect(isDisabled).toBe(true);
-				});
-
-				it('Expects download data button to be disabled', function() {
-					$testDiv.find('.show-url-btn').trigger('click');
-					var isDisabled = $testDiv.find('.download-data-btn').is(':disabled');
-					expect(isDisabled).toBe(true);
 				});
 			});
 

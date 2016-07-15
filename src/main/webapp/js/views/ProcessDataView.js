@@ -65,7 +65,7 @@ define([
 		var siteUrls;
 		if (urlLength > maxUrlLength) {
 			var siteOrganizedParams = organizeParams(varParams);
-			// take the site organizied parameters and create a url for each site,
+			// take the site organized parameters and create a url for each site,
 			// then return the values from the new object as an array
 			siteUrls = _.chain(siteOrganizedParams).mapObject(function(siteParams) {
 				return BASE_URL + 'service/execute?' + $.param(params.concat(siteParams));
@@ -149,9 +149,15 @@ define([
 				minDate : outputDateRange.start,
 				maxDate : selectedVarsDateRange.end
 			});
-
+			// do the initial check for URL length when rendering after the user selects data
+			this.urlLengthBtnControl();
 			this.listenTo(this.model, 'change:outputDateRange', this.updateOutputDateRangeInputs);
-
+			
+			var variableModels = this.model.getSelectedVariables();
+			_.each(variableModels, function(variableModel) {
+				this.listenTo(variableModel, 'change', this.urlLengthBtnControl);
+			},
+			this);
 			return this;
 		},
 
@@ -175,6 +181,20 @@ define([
 			$startDate.data('DateTimePicker').date(outputDateRange.start);
 			$endDate.data('DateTimePicker').minDate(outputDateRange.start);
 			$endDate.data('DateTimePicker').date(outputDateRange.end);
+		},
+		
+		urlLengthBtnControl : function() {
+			var dataUrls = getUrls(this.model, this.maxUrlLength);
+			var $getDataBtn = this.$('.get-data-btn');
+			var $downloadBtn = this.$('.download-data-btn');
+			if (dataUrls.length > 1) {
+				$getDataBtn.prop("disabled", true);
+				$downloadBtn.prop("disabled", true);				
+			}
+			else {
+				$getDataBtn.prop("disabled", false);
+				$downloadBtn.prop("disabled", false);	
+			}				
 		},
 
 		/*
@@ -219,23 +239,15 @@ define([
 			ev.preventDefault();
 			this.context.dataUrls = dataUrls;
 			$('.url-container').html(urlContainerTemplate({dataUrls : dataUrls})); // render content in the url-container div
-			var $getDataBtn = this.$('.get-data-btn');
-			var $downloadBtn = this.$('.download-data-btn');
 			var $message = this.$('.warning-msg');
 			if (dataUrls.length > 1) {
 				var messageText = "The URL for data processing exceeds the character limit. A single URL has been provided for each selected station.";
 				// display a message
 				$message.html(messageText);
-				// disable "Get data" and "Download" buttons
-				$getDataBtn.prop("disabled", true);
-				$downloadBtn.prop("disabled", true);
 			}
 			else {
 				// clear the message
 				$message.html('');
-				// enable "Get data" and "Download" buttons
-				$getDataBtn.prop("disabled", false);
-				$downloadBtn.prop("disabled", false);
 			}
 		},
 

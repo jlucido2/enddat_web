@@ -51,6 +51,7 @@ define([
 			injector.require(['views/ProcessDataView'], function(view) {
 				ProcessDataView = view;
 
+				// generates a URL with 186 characters (give or take depending on other parameters
 				var variableCollection = new BaseVariableCollection([
 					{x : '2', y: '2', selected : true,
 						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var1'}),
@@ -177,6 +178,17 @@ define([
 				expect(testView.variableTsOptionViews.length).toBe(2);
 			});
 
+			it('Expects the download button is enabled when the variable URL is less than 215 characters.', function() {
+				var isDisabled = $testDiv.find('.download-data-btn').is(':disabled');
+				expect(isDisabled).toBe(false);
+			});
+
+			it('Expects the get data button is enabled when the variable URL is less than 215 characters.', function() {
+				var isDisabled = $testDiv.find('.get-data-btn').is(':disabled');
+				expect(isDisabled).toBe(false);
+			});
+
+
 			it('Expects the remaining configuration inputs to be initialized', function() {
 				expect($testDiv.find('#output-date-format-input').val()).toEqual('Excel');
 				expect($testDiv.find('#output-time-zone-input').val()).toEqual('0_GMT');
@@ -202,7 +214,12 @@ define([
 		});
 
 		describe('Model event listener tests', function() {
+			var datasetCollections;
+
 			beforeEach(function() {
+				testModel.initializeDatasetCollections();
+				datasetCollections = testModel.get('datasetCollections');
+				datasetCollections[Config.PRECIP_DATASET].reset([{variables : variableCollectionLong}]);
 				spyOn(testModel, 'getSelectedVarsDateRange').and.returnValue({
 					start : moment('2000-01-04', Config.DATE_FORMAT),
 					end : moment('2005-06-01', Config.DATE_FORMAT)

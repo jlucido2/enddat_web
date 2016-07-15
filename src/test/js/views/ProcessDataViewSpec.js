@@ -17,6 +17,7 @@ define([
 		var testView, ProcessDataView;
 		var $testDiv;
 		var testModel;
+		var variableCollectionLong;
 
 		var setElVariableTsOptionView, renderVariableTsOptionView, removeVariableTsOptionView;
 		var getSelectedVarSpy;
@@ -45,7 +46,6 @@ define([
 
 			// Need to inject these so that the jquery and bootstrap datetimepicker is the same instance used in the tests
 			injector.mock('jquery', $);
-
 			injector.mock('bootstrap-datetimepicker', datetimepicker);
 
 			injector.require(['views/ProcessDataView'], function(view) {
@@ -61,6 +61,25 @@ define([
 						timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]}
 				]);
 
+				// generates a URL with 220+ characters
+				variableCollectionLong = new BaseVariableCollection([
+ 	  				{x : '2', y: '2', selected : true,
+ 	  					variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var1'}),
+ 	  					timeSeriesOptions : [{statistic : 'raw'}]
+ 	  				},
+ 	  				{x : '3', y: '3', selected : true,
+ 	  					variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var1'}),
+ 	  					timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]},
+ 	  				{x : '4', y : '4', selected : true,
+ 	  				     variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '4:4', value : '4:4', colName : 'Var3'}),
+ 	  				     timeSeriesOptions : [{statistic : 'raw'}]
+ 	  				},
+ 	  				{x : '5', y : '5', selected : true,
+ 	 				     variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '5:5', value : '5:5', colName : 'Var4'}),
+ 	 				     timeSeriesOptions : [{statistic : 'raw'}]
+ 	 			    }
+ 	  			]);
+
 				testModel = new WorkflowStateModel({
 					step : Config.PROCESS_DATA_STEP,
 					outputDateRange : {
@@ -70,7 +89,7 @@ define([
 				});
 				testModel.initializeDatasetCollections();
 
-				getSelectedVarSpy = spyOn(testModel, 'getSelectedVariables').and.returnValue(variableCollection.models);
+				spyOn(testModel, 'getSelectedVariables').and.returnValue(variableCollection.models);
 
 				testView = new ProcessDataView({
 					el : $testDiv,
@@ -86,6 +105,40 @@ define([
 			injector.remove();
 			testView.remove();
 			$testDiv.remove();
+		});
+
+		describe('Tests for render with a long URL', function() {
+
+			beforeEach(function() {
+				testModel.getSelectedVariables.and.returnValue(variableCollectionLong.models);
+				spyOn(testModel, 'getSelectedVarsDateRange').and.returnValue({
+					start : moment('2000-01-04', Config.DATE_FORMAT),
+					end : moment('2005-06-01', Config.DATE_FORMAT),
+				});
+				testModel.set({
+					outputFileFormat : 'tab',
+					outputDateFormat : 'Excel',
+					outputTimeZone : '0_GMT',
+					outputTimeGapInterval : '6',
+					outputMissingValue : 'NaN'
+				});
+				testView.render($testDiv.html());
+			});
+
+			it('Expects variableTsOptionView to be rendered for each of the variables.', function() {
+				expect(renderVariableTsOptionView.calls.count()).toBe(4);
+				expect(testView.variableTsOptionViews.length).toBe(4);
+			});
+
+			it('Expects the download button is disabled when URL length is greater than 215 characters.', function() {
+				var isDisabled = $testDiv.find('.download-data-btn').is(':disabled');
+				expect(isDisabled).toBe(true);
+			});
+
+			it('Expects the get data button is disabled when URL length is greater than 215 characters.', function() {
+				var isDisabled = $testDiv.find('.get-data-btn').is(':disabled');
+				expect(isDisabled).toBe(true);
+			});
 		});
 
 		describe('Tests for render', function() {
@@ -187,6 +240,16 @@ define([
 				expect($testDiv.find('#missing-value-input').val()).toEqual('NaN');
 				expect($testDiv.find('#acceptable-data-gap-input').val()).toEqual('6');
 			});
+
+			it('Expects the get data button is enabled when variables are deselected to shorten URL length.', function() {
+				var variableModels = testModel.getSelectedVariables();
+				// change the last two variables to selected : false
+				_.each(variableModels.splice(2), function(variableModel){
+					variableModel.set('selected', false);
+				});
+				var isDisabled = $testDiv.find('.get-data-btn').is(':disabled');
+				expect(isDisabled).toBe(false);
+			});
 		});
 
 		describe('DOM event listener tests', function() {
@@ -246,22 +309,9 @@ define([
 			});
 
 			describe('DOM events for processing buttons with a long URL', function() {
-				var variableCollectionLong = new BaseVariableCollection([
-					{x : '2', y: '2', selected : true,
-						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var1'}),
-						timeSeriesOptions : [{statistic : 'raw'}]
-					},
-					{x : '3', y: '3', selected : true,
-						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var1'}),
-						timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]},
-					{x : '4', y : '4', selected : true,
-					     variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '4:4', value : '4:4', colName : 'Var3'}),
-					     timeSeriesOptions : [{statistic : 'raw'}]
-				    }
-   				]);
 
 				beforeEach(function() {
-					getSelectedVarSpy.and.returnValue(variableCollectionLong.models);
+					testModel.getSelectedVariables.and.returnValue(variableCollectionLong.models);
 					testModel.set({
 						outputFileFormat : 'tab',
 						outputDateFormat : 'Excel',
@@ -282,10 +332,10 @@ define([
 				    expect(message).toEqual(expectedMsg);
 				});
 
-				it('Expects that there are three urls displayed within the URL container', function() {
+				it('Expects that there are four urls displayed within the URL container', function() {
 					$testDiv.find('.show-url-btn').trigger('click');
 					var urlCount = $testDiv.find('ul.url-links li').length;
-					expect(urlCount).toEqual(3);
+					expect(urlCount).toEqual(4);
 				});
 
 				it('Expects urls are separated by site', function() {
@@ -369,18 +419,6 @@ define([
 					$testDiv.find('.show-url-btn').trigger('click');
 					var message = $testDiv.find('p.warning-msg').html();
 					expect(message).toEqual('');
-				});
-
-				it('Expects get data button to be enabled', function() {
-					$testDiv.find('.show-url-btn').trigger('click');
-					var isDisabled = $testDiv.find('.get-data-btn').is(':disabled');
-					expect(isDisabled).toBe(false);
-				});
-
-				it('Expects download data button to be enabled', function() {
-					$testDiv.find('.show-url-btn').trigger('click');
-					var isDisabled = $testDiv.find('.download-data-btn').is(':disabled');
-					expect(isDisabled).toBe(false);
 				});
 
 				it('Expects that the expected url is shown in the url container', function() {

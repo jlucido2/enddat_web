@@ -17,9 +17,10 @@ define([
 		var testView, ProcessDataView;
 		var $testDiv;
 		var testModel;
+		var variableCollectionLong;
 
 		var setElVariableTsOptionView, renderVariableTsOptionView, removeVariableTsOptionView;
-
+		
 		var injector;
 
 		beforeEach(function(done) {
@@ -58,6 +59,25 @@ define([
 						timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]}
 				]);
 				
+				// generates a URL with 220+ characters
+				variableCollectionLong = new BaseVariableCollection([
+ 	  				{x : '2', y: '2', selected : true,
+ 	  					variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var1'}),
+ 	  					timeSeriesOptions : [{statistic : 'raw'}]
+ 	  				},
+ 	  				{x : '3', y: '3', selected : true,
+ 	  					variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var1'}),
+ 	  					timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]},
+ 	  				{x : '4', y : '4', selected : true,
+ 	  				     variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '4:4', value : '4:4', colName : 'Var3'}),
+ 	  				     timeSeriesOptions : [{statistic : 'raw'}]
+ 	  				},
+ 	  				{x : '5', y : '5', selected : true,
+ 	 				     variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '5:5', value : '5:5', colName : 'Var4'}),
+ 	 				     timeSeriesOptions : [{statistic : 'raw'}]
+ 	 			    }  
+ 	  			]);
+				
 				testModel = new WorkflowStateModel({
 					step : Config.PROCESS_DATA_STEP,
 					outputDateRange : {
@@ -66,7 +86,7 @@ define([
 					}
 				});
 
-				getSelectedVarSpy = spyOn(testModel, 'getSelectedVariables').and.returnValue(variableCollection.models);
+				spyOn(testModel, 'getSelectedVariables').and.returnValue(variableCollection.models);
 
 				testView = new ProcessDataView({
 					el : $testDiv,
@@ -85,23 +105,9 @@ define([
 		});
 		
 		describe('Tests for render with a long URL', function() {
-			// this variable collection generates a URL with 224 characters
-			var variableCollectionLong = new BaseVariableCollection([
-				{x : '2', y: '2', selected : true,
-					variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var1'}),
-					timeSeriesOptions : [{statistic : 'raw'}]
-				},
-				{x : '3', y: '3', selected : true,
-					variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var1'}),
-					timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]},
-				{x : '4', y : '4', selected : true,
-				     variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '4:4', value : '4:4', colName : 'Var3'}),
-				     timeSeriesOptions : [{statistic : 'raw'}]
-			    }                                                       
-			]);
 
 			beforeEach(function() {
-				getSelectedVarSpy.and.returnValue(variableCollectionLong.models);
+				testModel.getSelectedVariables.and.returnValue(variableCollectionLong.models);
 				spyOn(testModel, 'getSelectedVarsDateRange').and.returnValue({
 					start : moment('2000-01-04', Config.DATE_FORMAT),
 					end : moment('2005-06-01', Config.DATE_FORMAT),
@@ -117,8 +123,8 @@ define([
 			});
 			
 			it('Expects variableTsOptionView to be rendered for each of the variables.', function() {
-				expect(renderVariableTsOptionView.calls.count()).toBe(3);
-				expect(testView.variableTsOptionViews.length).toBe(3);
+				expect(renderVariableTsOptionView.calls.count()).toBe(4);
+				expect(testView.variableTsOptionViews.length).toBe(4);
 			});
 			
 			it('Expects the download button is disabled when URL length is greater than 215 characters.', function() {
@@ -204,28 +210,9 @@ define([
 		});
 
 		describe('Model event listener tests', function() {
-			var variableCollectionLong;
 			var datasetCollections;
 			
 			beforeEach(function() {
-				variableCollectionLong = new BaseVariableCollection([
-	  				{x : '2', y: '2', selected : true,
-	  					variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var1'}),
-	  					timeSeriesOptions : [{statistic : 'raw'}]
-	  				},
-	  				{x : '3', y: '3', selected : true,
-	  					variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var1'}),
-	  					timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]},
-	  				{x : '4', y : '4', selected : true,
-	  				     variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '4:4', value : '4:4', colName : 'Var3'}),
-	  				     timeSeriesOptions : [{statistic : 'raw'}]
-	  				},
-	  				{x : '5', y : '5', selected : true,
-	 				     variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '5:5', value : '5:5', colName : 'Var4'}),
-	 				     timeSeriesOptions : [{statistic : 'raw'}]
-	 			    }  
-	  			]);
-				//testModel.set('dataCollections', variableCollectionLong);
 				spyOn(testModel, 'getSelectedVarsDateRange').and.returnValue({
 					start : moment('2000-01-04', Config.DATE_FORMAT),
 					end : moment('2005-06-01', Config.DATE_FORMAT)
@@ -337,22 +324,9 @@ define([
 
 			describe('DOM events for processing buttons with a long URL', function() {
 				var expectedBaseUrl = 'http:fakeservice/enddat/service/execute?';
-				var variableCollectionLong = new BaseVariableCollection([
-					{x : '2', y: '2', selected : true,
-						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var1'}),
-						timeSeriesOptions : [{statistic : 'raw'}]
-					},
-					{x : '3', y: '3', selected : true,
-						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var1'}),
-						timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]},
-					{x : '4', y : '4', selected : true,
-					     variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '4:4', value : '4:4', colName : 'Var3'}),
-					     timeSeriesOptions : [{statistic : 'raw'}]
-				    }                                                       
-   				]);
 
 				beforeEach(function() {
-					getSelectedVarSpy.and.returnValue(variableCollectionLong.models);
+					testModel.getSelectedVariables.and.returnValue(variableCollectionLong.models);
 					testModel.set({
 						outputFileFormat : 'tab',
 						outputDateFormat : 'Excel',
@@ -376,7 +350,7 @@ define([
 				it('Expects that there are three urls displayed within the URL container', function() {
 					$testDiv.find('.show-url-btn').trigger('click');
 					var urlCount = $testDiv.find('ul.url-links li').length;
-					expect(urlCount).toEqual(3);
+					expect(urlCount).toEqual(4);
 				});
 
 				it('Expects urls are separated by site', function() {

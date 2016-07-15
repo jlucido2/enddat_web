@@ -347,7 +347,7 @@ define([
 			    expect(message).toEqual(expectedMsg);
 			});
 
-			it('Expects that there are three urls displayed within the URL container', function() {
+			it('Expects that there are four urls displayed within the URL container', function() {
 				$testDiv.find('.show-url-btn').trigger('click');
 				var urlCount = $testDiv.find('ul.url-links li').length;
 				expect(urlCount).toEqual(4);

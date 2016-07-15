@@ -26,7 +26,7 @@ define([
 		panelBodyId : 'choose-data-panel-body',
 
 		additionalEvents : {
-			'select2:select #datasets-select' : 'selectDataset',
+			'select2:selecting #datasets-select' : 'selectDataset',
 			'select2:unselect #datasets-select' : 'resetDataset',
 			'change .glcfs-lake-select-modal select' : 'selectGLCFSLake'
 		},
@@ -89,13 +89,13 @@ define([
 		 */
 
 		selectDataset : function(ev) {
-			ev.preventDefault();
 			var datasets = _.clone((this.model.has('datasets')) ? this.model.get('datasets') : []);
-			if (ev.params.data.id === Config.GLCFS_DATASET) {
+			if (ev.params.args.data.id === Config.GLCFS_DATASET) {
+				ev.preventDefault();
 				this.$('.glcfs-lake-select-modal').modal('show');
 			}
 			else {
-				datasets.push(ev.params.data.id);
+				datasets.push(ev.params.args.data.id);
 				this.model.set('datasets', datasets);
 			}
 		},

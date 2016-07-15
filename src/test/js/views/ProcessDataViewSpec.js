@@ -13,17 +13,21 @@ define([
 	'views/BaseView'
 ], function(Squire, $, moment, Config, datetimepicker, VariableParameter, WorkflowStateModel, BaseVariableCollection, BaseView) {
 	describe('views/ProcessDataView', function() {
+		"use strict";
 		var testView, ProcessDataView;
 		var $testDiv;
 		var testModel;
 
 		var setElVariableTsOptionView, renderVariableTsOptionView, removeVariableTsOptionView;
+		var getSelectedVarSpy;
 
 		var injector;
 
 		beforeEach(function(done) {
 			$('body').append('<div id="test-div"></div>');
 			$testDiv = $('#test-div');
+
+			spyOn($, 'ajax');
 
 			setElVariableTsOptionView = jasmine.createSpy('setElVariableTsOptionView');
 			renderVariableTsOptionView = jasmine.createSpy('renderVariableTsOptionView');
@@ -41,6 +45,7 @@ define([
 
 			// Need to inject these so that the jquery and bootstrap datetimepicker is the same instance used in the tests
 			injector.mock('jquery', $);
+
 			injector.mock('bootstrap-datetimepicker', datetimepicker);
 
 			injector.require(['views/ProcessDataView'], function(view) {
@@ -55,7 +60,7 @@ define([
 						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var1'}),
 						timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]}
 				]);
-				
+
 				testModel = new WorkflowStateModel({
 					step : Config.PROCESS_DATA_STEP,
 					outputDateRange : {
@@ -63,6 +68,7 @@ define([
 						end : moment('2005-04-01', Config.DATE_FORMAT)
 					}
 				});
+				testModel.initializeDatasetCollections();
 
 				getSelectedVarSpy = spyOn(testModel, 'getSelectedVariables').and.returnValue(variableCollection.models);
 
@@ -86,7 +92,7 @@ define([
 			beforeEach(function() {
 				spyOn(testModel, 'getSelectedVarsDateRange').and.returnValue({
 					start : moment('2000-01-04', Config.DATE_FORMAT),
-					end : moment('2005-06-01', Config.DATE_FORMAT),
+					end : moment('2005-06-01', Config.DATE_FORMAT)
 				});
 				testModel.set({
 					outputFileFormat : 'tab',
@@ -240,7 +246,6 @@ define([
 			});
 
 			describe('DOM events for processing buttons with a long URL', function() {
-				var expectedBaseUrl = 'http:fakeservice/enddat/service/execute?';
 				var variableCollectionLong = new BaseVariableCollection([
 					{x : '2', y: '2', selected : true,
 						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var1'}),
@@ -252,7 +257,7 @@ define([
 					{x : '4', y : '4', selected : true,
 					     variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '4:4', value : '4:4', colName : 'Var3'}),
 					     timeSeriesOptions : [{statistic : 'raw'}]
-				    }                                                       
+				    }
    				]);
 
 				beforeEach(function() {
@@ -267,12 +272,12 @@ define([
 							start : moment('2001-04-05', Config.DATE_FORMAT),
 							end : moment('2006-06-30', Config.DATE_FORMAT)
 						}
-					});				
+					});
 				});
 
 				it('Expects a message be shown for more than one site url', function() {
 					$testDiv.find('.show-url-btn').trigger('click');
-					var expectedMsg = 'The URL for data processing exceeds the character limit. A single URL has been provided for each selected station.'
+					var expectedMsg = 'The URL for data processing exceeds the character limit. A single URL has been provided for each selected station.';
 					var message = $testDiv.find('p.warning-msg').html();
 				    expect(message).toEqual(expectedMsg);
 				});
@@ -345,6 +350,21 @@ define([
 					expect(urlCount).toEqual(1);
 				});
 
+				it('Expects that if the lake has been set in the GLCFS collection, it will be shown in the url', function() {
+					var url;
+					testModel.get('datasetCollections')[Config.GLCFS_DATASET].setLake('Erie');
+					$testDiv.find('.show-url-btn').trigger('click');
+					url = $testDiv.find('ul.url-links li').html();
+
+					expect(url.search('Lake=erie')).not.toEqual(-1);
+
+					testModel.get('datasetCollections')[Config.GLCFS_DATASET].setLake('');
+					$testDiv.find('.show-url-btn').trigger('click');
+					url = $testDiv.find('ul.url-links li').html();
+
+					expect(url.search('Lake=')).toEqual(-1);
+				});
+
 				it('Expects there is not a warning message', function() {
 					$testDiv.find('.show-url-btn').trigger('click');
 					var message = $testDiv.find('p.warning-msg').html();
@@ -360,7 +380,7 @@ define([
 				it('Expects download data button to be enabled', function() {
 					$testDiv.find('.show-url-btn').trigger('click');
 					var isDisabled = $testDiv.find('.download-data-btn').is(':disabled');
-					expect(isDisabled).toBe(false);					
+					expect(isDisabled).toBe(false);
 				});
 
 				it('Expects that the expected url is shown in the url container', function() {

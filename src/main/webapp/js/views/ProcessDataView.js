@@ -41,6 +41,7 @@ define([
 			})
 			.flatten()
 			.value();
+
 		var glcfsLake = workflowModel.get('datasetCollections')[Config.GLCFS_DATASET].getLake();
 
 		var params = [
@@ -55,6 +56,7 @@ define([
 		if (download) {
 			params.push({name : 'download', value: 'true'});
 		}
+		// The Lake parameter will be added even if no GLCFS variables are selected but the dataset has been chosen.
 		if (glcfsLake) {
 			params.push({name: 'Lake', value : glcfsLake.toLowerCase()});
 		}

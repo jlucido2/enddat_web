@@ -322,104 +322,104 @@ define([
 				expect(testModel.get('outputTimeGapInterval')).toEqual('12');
 			});
 
-			describe('DOM events for processing buttons with a long URL', function() {
-				var expectedBaseUrl = 'http:fakeservice/enddat/service/execute?';
+		describe('DOM events for processing buttons with a long URL', function() {
+			var expectedBaseUrl = 'http:fakeservice/enddat/service/execute?';
 
-				beforeEach(function() {
-					testModel.getSelectedVariables.and.returnValue(variableCollectionLong.models);
-					testModel.set({
-						outputFileFormat : 'tab',
-						outputDateFormat : 'Excel',
-						outputTimeZone : '0_GMT',
-						outputTimeGapInterval : '6',
-						outputMissingValue : 'NaN',
-						outputDateRange : {
-							start : moment('2001-04-05', Config.DATE_FORMAT),
-							end : moment('2006-06-30', Config.DATE_FORMAT)
-						}
-					});				
-				});
+			beforeEach(function() {
+				testModel.getSelectedVariables.and.returnValue(variableCollectionLong.models);
+				testModel.set({
+					outputFileFormat : 'tab',
+					outputDateFormat : 'Excel',
+					outputTimeZone : '0_GMT',
+					outputTimeGapInterval : '6',
+					outputMissingValue : 'NaN',
+					outputDateRange : {
+						start : moment('2001-04-05', Config.DATE_FORMAT),
+						end : moment('2006-06-30', Config.DATE_FORMAT)
+					}
+				});				
+			});
 
-				it('Expects a message be shown for more than one site url', function() {
-					$testDiv.find('.show-url-btn').trigger('click');
-					var expectedMsg = 'The URL for data processing exceeds the character limit. A single URL has been provided for each selected station.'
-					var message = $testDiv.find('p.warning-msg').html();
-				    expect(message).toEqual(expectedMsg);
-				});
+			it('Expects a message be shown for more than one site url', function() {
+				$testDiv.find('.show-url-btn').trigger('click');
+				var expectedMsg = 'The URL for data processing exceeds the character limit. A single URL has been provided for each selected station.'
+				var message = $testDiv.find('p.warning-msg').html();
+			    expect(message).toEqual(expectedMsg);
+			});
 
-				it('Expects that there are three urls displayed within the URL container', function() {
-					$testDiv.find('.show-url-btn').trigger('click');
-					var urlCount = $testDiv.find('ul.url-links li').length;
-					expect(urlCount).toEqual(4);
-				});
+			it('Expects that there are three urls displayed within the URL container', function() {
+				$testDiv.find('.show-url-btn').trigger('click');
+				var urlCount = $testDiv.find('ul.url-links li').length;
+				expect(urlCount).toEqual(4);
+			});
 
-				it('Expects urls are separated by site', function() {
-					$testDiv.find('.show-url-btn').trigger('click');
-					var firstUrl = decodeURIComponent($testDiv.find('ul.url-links li:nth-child(1)').html());
-					var secondUrl = decodeURIComponent($testDiv.find('ul.url-links li:nth-child(2)').html());
-					var thirdUrl = decodeURIComponent($testDiv.find('ul.url-links li:nth-child(3)').html());
-					var firstInspect = (firstUrl.search('DatasetId=2:2!Var1') !== -1) && (firstUrl.search('DatasetId=3:3:Min:2!Var1') === -1) && (firstUrl.search('DatasetId=4:4!Var3') === -1);
-					var secondInspect = (secondUrl.search('DatasetId=2:2!Var1') === -1) && (secondUrl.search('DatasetId=3:3:Min:2!Var1') !== -1 ) && (secondUrl.search('DatasetId=4:4!Var3') === -1);
-					var thirdInspect = (thirdUrl.search('DatasetId=2:2!Var1') === -1) && (thirdUrl.search('DatasetId=3:3:Min:2!Var1') === -1 ) && (thirdUrl.search('DatasetId=4:4!Var3') !== -1);
-					expect(firstInspect).toBe(true);
-					expect(secondInspect).toBe(true);
-					expect(thirdInspect).toBe(true);
+			it('Expects urls are separated by site', function() {
+				$testDiv.find('.show-url-btn').trigger('click');
+				var firstUrl = decodeURIComponent($testDiv.find('ul.url-links li:nth-child(1)').html());
+				var secondUrl = decodeURIComponent($testDiv.find('ul.url-links li:nth-child(2)').html());
+				var thirdUrl = decodeURIComponent($testDiv.find('ul.url-links li:nth-child(3)').html());
+				var firstInspect = (firstUrl.search('DatasetId=2:2!Var1') !== -1) && (firstUrl.search('DatasetId=3:3:Min:2!Var1') === -1) && (firstUrl.search('DatasetId=4:4!Var3') === -1);
+				var secondInspect = (secondUrl.search('DatasetId=2:2!Var1') === -1) && (secondUrl.search('DatasetId=3:3:Min:2!Var1') !== -1 ) && (secondUrl.search('DatasetId=4:4!Var3') === -1);
+				var thirdInspect = (thirdUrl.search('DatasetId=2:2!Var1') === -1) && (thirdUrl.search('DatasetId=3:3:Min:2!Var1') === -1 ) && (thirdUrl.search('DatasetId=4:4!Var3') !== -1);
+				expect(firstInspect).toBe(true);
+				expect(secondInspect).toBe(true);
+				expect(thirdInspect).toBe(true);
+			});
+		});
+
+		describe('DOM events for processing buttons', function() {
+			var expectedBaseUrl = 'http:fakeservice/enddat/service/execute?';
+			var isExpectedUrl = function(url) {
+				var testUrl = decodeURIComponent(url);
+				return (testUrl.search(expectedBaseUrl) !== -1) &&
+					(testUrl.search('style=tab') !== -1) &&
+					(testUrl.search('DateFormat=Excel') !== -1) &&
+					(testUrl.search('TZ=0_GMT') !== -1) &&
+					(testUrl.search('timeInt=6') !== -1) &&
+					(testUrl.search('fill=NaN') !== -1) &&
+					(testUrl.search('endPosition=2006-06-30') !== -1) &&
+					(testUrl.search('beginPosition=2001-04-05') !== -1) &&
+					(testUrl.search('DatasetId=2:2!Var1') !== -1) &&
+					(testUrl.search('DatasetId=3:3:Min:2!Var1') !== -1);
+			};
+
+			beforeEach(function() {
+				testModel.set({
+					outputFileFormat : 'tab',
+					outputDateFormat : 'Excel',
+					outputTimeZone : '0_GMT',
+					outputTimeGapInterval : '6',
+					outputMissingValue : 'NaN',
+					outputDateRange : {
+						start : moment('2001-04-05', Config.DATE_FORMAT),
+						end : moment('2006-06-30', Config.DATE_FORMAT)
+					}
 				});
 			});
 
-			describe('DOM events for processing buttons', function() {
-				var expectedBaseUrl = 'http:fakeservice/enddat/service/execute?';
-				var isExpectedUrl = function(url) {
-					var testUrl = decodeURIComponent(url);
-					return (testUrl.search(expectedBaseUrl) !== -1) &&
-						(testUrl.search('style=tab') !== -1) &&
-						(testUrl.search('DateFormat=Excel') !== -1) &&
-						(testUrl.search('TZ=0_GMT') !== -1) &&
-						(testUrl.search('timeInt=6') !== -1) &&
-						(testUrl.search('fill=NaN') !== -1) &&
-						(testUrl.search('endPosition=2006-06-30') !== -1) &&
-						(testUrl.search('beginPosition=2001-04-05') !== -1) &&
-						(testUrl.search('DatasetId=2:2!Var1') !== -1) &&
-						(testUrl.search('DatasetId=3:3:Min:2!Var1') !== -1);
-				};
-
-				beforeEach(function() {
-					testModel.set({
-						outputFileFormat : 'tab',
-						outputDateFormat : 'Excel',
-						outputTimeZone : '0_GMT',
-						outputTimeGapInterval : '6',
-						outputMissingValue : 'NaN',
-						outputDateRange : {
-							start : moment('2001-04-05', Config.DATE_FORMAT),
-							end : moment('2006-06-30', Config.DATE_FORMAT)
-						}
-					});
-				});
-
-				it('Expects that there is one url displayed within the URL container', function() {
-					$testDiv.find('.show-url-btn').trigger('click');
-					var urlCount = $testDiv.find('ul.url-links li').length;
-					expect(urlCount).toEqual(1);
-				});
-
-				it('Expects there is not a warning message', function() {
-					$testDiv.find('.show-url-btn').trigger('click');
-					var message = $testDiv.find('p.warning-msg').html();
-					expect(message).toEqual('');
-				});
-
-				it('Expects that the expected url is shown in the url container', function() {
-					$testDiv.find('.show-url-btn').trigger('click');
-					expect(isExpectedUrl($testDiv.find('.url-container ul').html())).toBe(true);
-				});
-
-				it('Expects that the expected url is used to open a new window', function() {
-					spyOn(window, 'open');
-					$testDiv.find('.get-data-btn').trigger('click');
-					expect(isExpectedUrl(window.open.calls.argsFor(0)[0])).toBe(true);
-				});
+			it('Expects that there is one url displayed within the URL container', function() {
+				$testDiv.find('.show-url-btn').trigger('click');
+				var urlCount = $testDiv.find('ul.url-links li').length;
+				expect(urlCount).toEqual(1);
 			});
+
+			it('Expects there is not a warning message', function() {
+				$testDiv.find('.show-url-btn').trigger('click');
+				var message = $testDiv.find('p.warning-msg').html();
+				expect(message).toEqual('');
+			});
+
+			it('Expects that the expected url is shown in the url container', function() {
+				$testDiv.find('.show-url-btn').trigger('click');
+				expect(isExpectedUrl($testDiv.find('.url-container ul').html())).toBe(true);
+			});
+
+			it('Expects that the expected url is used to open a new window', function() {
+				spyOn(window, 'open');
+				$testDiv.find('.get-data-btn').trigger('click');
+				expect(isExpectedUrl(window.open.calls.argsFor(0)[0])).toBe(true);
+			});
+		});
 		});
 	});
 });

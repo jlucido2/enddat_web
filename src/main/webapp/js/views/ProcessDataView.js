@@ -38,10 +38,6 @@ define([
 
 	var getUrls = function(workflowModel, maxUrlLength, download) {
 		var attrs = workflowModel.attributes;
-		_.each(workflowModel.getSelectedVariables(), function(model) {
-			console.log('Showing a model:');
-			console.log(model);
-		});
 		var varParams = _.chain(workflowModel.getSelectedVariables())
 			.map(function(variable) {
 				return variable.get('variableParameter').getUrlParameters(variable.get('timeSeriesOptions'));
@@ -188,7 +184,6 @@ define([
 			var dataUrls = getUrls(this.model, this.maxUrlLength);
 			var $getDataBtn = this.$('.get-data-btn');
 			var $downloadBtn = this.$('.download-data-btn');
-			console.log('Length: ' + dataUrls.length);
 			if (dataUrls.length > 1) {
 				$getDataBtn.prop("disabled", true);
 				$downloadBtn.prop("disabled", true);				

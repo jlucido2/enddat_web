@@ -46,7 +46,8 @@ define([
 
 			injector.require(['views/ProcessDataView'], function(view) {
 				ProcessDataView = view;
-
+				
+				// generates a URL with 186 characters (give or take depending on other parameters
 				var variableCollection = new BaseVariableCollection([
 					{x : '2', y: '2', selected : true,
 						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var1'}),
@@ -83,7 +84,8 @@ define([
 			$testDiv.remove();
 		});
 		
-		fdescribe('Tests for render with a long URL', function() {
+		describe('Tests for render with a long URL', function() {
+			// this variable collection generates a URL with 224 characters
 			var variableCollectionLong = new BaseVariableCollection([
 				{x : '2', y: '2', selected : true,
 					variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var1'}),
@@ -119,12 +121,12 @@ define([
 				expect(testView.variableTsOptionViews.length).toBe(3);
 			});
 			
-			it('Expects the download button is disabled.', function() {
+			it('Expects the download button is disabled when URL length is greater than 215 characters.', function() {
 				var isDisabled = $testDiv.find('.download-data-btn').is(':disabled');
 				expect(isDisabled).toBe(true);
 			});
 			
-			it('Expects the get data button is disabled.', function() {
+			it('Expects the get data button is disabled when URL length is greater than 215 characters.', function() {
 				var isDisabled = $testDiv.find('.get-data-btn').is(':disabled');
 				expect(isDisabled).toBe(true);
 			});
@@ -166,12 +168,12 @@ define([
 				expect(testView.variableTsOptionViews.length).toBe(2);
 			});
 			
-			it('Expects the download button is enabled because the variable URL is short.', function() {
+			it('Expects the download button is enabled when the variable URL is less than 215 characters.', function() {
 				var isDisabled = $testDiv.find('.download-data-btn').is(':disabled');
 				expect(isDisabled).toBe(false);
 			});
 			
-			it('Expects the get data button is enabled because the variable URL is short.', function() {
+			it('Expects the get data button is enabled when the variable URL is less than 215 characters.', function() {
 				var isDisabled = $testDiv.find('.get-data-btn').is(':disabled');
 				expect(isDisabled).toBe(false);
 			});
@@ -186,6 +188,7 @@ define([
 		});
 
 		describe('Tests for remove', function() {
+			
 			beforeEach(function() {
 				spyOn(testModel, 'getSelectedVarsDateRange').and.returnValue({
 					start : moment('2000-01-04', Config.DATE_FORMAT),
@@ -201,14 +204,39 @@ define([
 		});
 
 		describe('Model event listener tests', function() {
+			var variableCollectionLong;
+			var datasetCollections;
+			
 			beforeEach(function() {
+				variableCollectionLong = new BaseVariableCollection([
+	  				{x : '2', y: '2', selected : true,
+	  					variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var1'}),
+	  					timeSeriesOptions : [{statistic : 'raw'}]
+	  				},
+	  				{x : '3', y: '3', selected : true,
+	  					variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var1'}),
+	  					timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]},
+	  				{x : '4', y : '4', selected : true,
+	  				     variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '4:4', value : '4:4', colName : 'Var3'}),
+	  				     timeSeriesOptions : [{statistic : 'raw'}]
+	  				},
+	  				{x : '5', y : '5', selected : true,
+	 				     variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '5:5', value : '5:5', colName : 'Var4'}),
+	 				     timeSeriesOptions : [{statistic : 'raw'}]
+	 			    }  
+	  			]);
+				//testModel.set('dataCollections', variableCollectionLong);
 				spyOn(testModel, 'getSelectedVarsDateRange').and.returnValue({
 					start : moment('2000-01-04', Config.DATE_FORMAT),
 					end : moment('2005-06-01', Config.DATE_FORMAT)
 				});
+				testModel.initializeDatasetCollections();
+				datasetCollections = testModel.get('datasetCollections');
+				datasetCollections[Config.PRECIP_DATASET].reset([{variables : variableCollectionLong}]);
+				testModel.getSelectedVariables.and.callThrough();
 				testView.render();
 			});
-
+		
 			it('Expects that if the outputDateFormat changes, the date time picker inputs will be updated', function() {
 				var $startDate = $('#output-start-date-div');
 				var $endDate = $('#output-end-date-div');
@@ -216,7 +244,7 @@ define([
 					start : moment('2002-01-04', Config.DATE_FORMAT),
 					end : moment('2004-01-04', Config.DATE_FORMAT)
 				});
-
+	
 				expect($startDate.data('DateTimePicker').minDate()).toEqual(moment('2000-01-04', Config.DATE_FORMAT));
 				expect($startDate.data('DateTimePicker').maxDate()).toEqual(moment('2004-01-04', Config.DATE_FORMAT));
 				expect($startDate.data('DateTimePicker').date()).toEqual(moment('2002-01-04', Config.DATE_FORMAT));
@@ -224,7 +252,7 @@ define([
 				expect($endDate.data('DateTimePicker').maxDate()).toEqual(moment('2005-06-01', Config.DATE_FORMAT));
 				expect($endDate.data('DateTimePicker').date()).toEqual(moment('2004-01-04', Config.DATE_FORMAT));
 			});
-
+	
 			it('Expects the remaining output configuration DOM elements to be updated when the model is updated', function() {
 				testModel.set({
 					outputFileFormat : 'tab',
@@ -238,6 +266,16 @@ define([
 				expect($testDiv.find('#output-file-format-input').val()).toEqual('tab');
 				expect($testDiv.find('#missing-value-input').val()).toEqual('NaN');
 				expect($testDiv.find('#acceptable-data-gap-input').val()).toEqual('6');
+			});
+			
+			it('Expects the get data button is enabled when variables are deselected to shorten URL length.', function() {
+				var variableModels = testModel.getSelectedVariables();
+				// change the last two variables to selected : false
+				_.each(variableModels.splice(2), function(variableModel){
+					variableModel.set('selected', false);
+				});
+				var isDisabled = $testDiv.find('.get-data-btn').is(':disabled');
+				expect(isDisabled).toBe(false);
 			});
 		});
 

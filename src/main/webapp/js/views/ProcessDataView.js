@@ -150,9 +150,9 @@ define([
 			this.urlLengthBtnControl();
 			this.listenTo(this.model, 'change:outputDateRange', this.updateOutputDateRangeInputs);
 			
-			var timeSeriesOptionsModels = this.model.getSelectedVariables();
-			_.each(timeSeriesOptionsModels, function(timeSeriesOptionsModel) {
-				this.listenTo(timeSeriesOptionsModel, 'change:timeSeriesOptions', this.urlLengthBtnControl)
+			var variableModels = this.model.getSelectedVariables();
+			_.each(variableModels, function(variableModel) {
+				this.listenTo(variableModel, 'change', this.urlLengthBtnControl);
 			},
 			this);
 			return this;

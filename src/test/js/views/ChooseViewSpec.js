@@ -1,14 +1,16 @@
 /* jslint browser: true */
-/* global jasmine, expect, sinon */
+/* global jasmine, expect, spyOn */
 
 define([
 	'squire',
 	'jquery',
 	'select2',
+	'bootstrap',
 	'backbone',
 	'Config',
-	'views/BaseView',
-], function(Squire, $, select2, Backbone, Config, BaseView) {
+	'models/GLCFSCollection',
+	'views/BaseView'
+], function(Squire, $, select2, bootstrap, Backbone, Config, GLCFSCollection, BaseView) {
 	"use strict";
 
 	describe('views/ChooseView', function() {
@@ -32,6 +34,7 @@ define([
 			testModel = new Backbone.Model();
 
 			injector = new Squire();
+			injector.mock('jquery', $);
 			injector.mock('views/DataDateFilterView', BaseView.extend({
 				setElement : setElDateViewSpy.and.returnValue({
 					render : renderDateViewSpy
@@ -40,8 +43,11 @@ define([
 				remove : removeDateViewSpy
 			}));
 
+
 			injector.require(['views/ChooseView'], function(View) {
 				ChooseView = View;
+				spyOn($.fn, 'modal').and.callThrough();
+				spyOn($.fn, 'select2').and.callThrough();
 
 				testView = new ChooseView({
 					el : $testDiv,
@@ -83,6 +89,11 @@ define([
 				expect($panel.find('.panel-heading').html()).toContain('Choose Data');
 			});
 
+			it('Expects that the dataset select has been initialized with select2', function() {
+				testView.render();
+				expect($.fn.select2.calls.mostRecent().object.attr('id')).toEqual('datasets-select');
+			});
+
 			it('Expects the inputs to reflect the values in the model', function() {
 				testModel.set({
 					datasets : [Config.NWIS_DATASET]
@@ -99,11 +110,24 @@ define([
 				expect(setElDateViewSpy).toHaveBeenCalled();
 				expect(renderDateViewSpy).toHaveBeenCalled();
 			});
+
+			it('Expects that a modal dialog is initialized', function() {
+				testView.render();
+				expect($.fn.modal.calls.mostRecent().object.hasClass('glcfs-lake-select-modal')).toBe(true);
+			});
 		});
 
 		describe('DOM event handler tests', function() {
 			var $datasets;
+			var glcfsCollection;
 			beforeEach(function() {
+				glcfsCollection = new GLCFSCollection();
+
+				testModel.set('datasets', []);
+				testModel.set('datasetCollections', {
+					'GLCFS' : glcfsCollection
+				});
+				testModel.get('dataset');
 				testView.render();
 				$datasets = $testDiv.find('#datasets-select');
 			});
@@ -112,14 +136,45 @@ define([
 			it('Expects that changing the datasets updates the model\'s datasets property', function() {
 				var ev = {
 					params : {
-						data : {id : 'NWIS'}
+						args : {
+							data : {id : 'NWIS'}
+						}
 					}
 				};
 				testView.selectDataset(ev);
-				expect(testModel.get('datasets')).toEqual(['NWIS']);
+				expect(testModel.get('datasets')).toEqual([Config.NWIS_DATASET]);
 
+				ev = {
+					params : {
+						data : {id : 'NWIS'}
+					}
+				};
 				testView.resetDataset(ev);
 				expect(testModel.get('datasets')).toEqual([]);
+			});
+
+			it('Expects that if GLCFS dataset is selected, the modal is shown and the workflow state model is not updated', function() {
+				var ev = {
+					params : {
+						args : {
+							data : {id : Config.GLCFS_DATASET}
+						}
+					},
+					preventDefault : jasmine.createSpy('preventDefaultSpy')
+				};
+				$.fn.modal.calls.reset();
+				testView.selectDataset(ev);
+
+				expect($.fn.modal.calls.count()).toBe(1);
+				expect($.fn.modal.calls.mostRecent().args).toEqual(['show']);
+				expect(testModel.get('datasets')).toEqual([]);
+			});
+
+			it('Expects that when a lake is selected in the modal, the GLCFS dataset collection has the lake set', function() {
+				$.fn.modal.calls.reset();
+				$testDiv.find('.glcfs-lake-select-modal select').val('Erie').trigger('change');
+				expect(glcfsCollection.getLake()).toEqual('Erie');
+				expect($.fn.modal).toHaveBeenCalledWith('hide');
 			});
 		});
 

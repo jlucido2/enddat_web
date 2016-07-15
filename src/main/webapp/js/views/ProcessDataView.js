@@ -215,6 +215,7 @@ define([
 
 		showUrl : function(ev) {
 			var dataUrls = getUrls(this.model, this.maxUrlLength);
+			
 			ev.preventDefault();
 			this.context.dataUrls = dataUrls;
 			$('.url-container').html(urlContainerTemplate({dataUrls : dataUrls})); // render content in the url-container div

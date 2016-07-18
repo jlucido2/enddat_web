@@ -184,16 +184,20 @@ define([
 		},
 		
 		urlLengthBtnControl : function() {
+			var $message = this.$('#disabled-btn-msg');
 			var dataUrls = getUrls(this.model, this.maxUrlLength);
 			var $getDataBtn = this.$('.get-data-btn');
 			var $downloadBtn = this.$('.download-data-btn');
 			if (dataUrls.length > 1) {
 				$getDataBtn.prop("disabled", true);
-				$downloadBtn.prop("disabled", true);				
+				$downloadBtn.prop("disabled", true);
+				var $messageText = "The get data buttons have been disabled because the URL for the selected variables exceeds 2000 characters.";
+				$message.html($messageText);
 			}
 			else {
 				$getDataBtn.prop("disabled", false);
-				$downloadBtn.prop("disabled", false);	
+				$downloadBtn.prop("disabled", false);
+				$message.html('');
 			}				
 		},
 

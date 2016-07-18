@@ -191,7 +191,7 @@ define([
 				expect(isDisabled).toBe(false);
 			});
 			
-			it('Expects that there is NOT message explaining the disabled buttons', function() {
+			it('Expects that there is not a message explaining the disabled buttons', function() {
 				var message = $testDiv.find('#url-container-msg').html();
 				var messageText = '';
 				var message = $testDiv.find('#disabled-btn-msg').html();

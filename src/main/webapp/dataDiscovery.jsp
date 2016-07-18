@@ -112,6 +112,14 @@
 				]
 			};
 		</script>
-		<script data-main="init" src="bower_components/requirejs/require.js"></script>
+		<% if (development) {
+		%>
+			<script data-main="init" src="bower_components/requirejs/require.js"></script>
+		<%	}
+			else {
+		%>
+			<script src="assets-build/init.js"></script>
+			<% }
+			%>
 	</body>
 </html>

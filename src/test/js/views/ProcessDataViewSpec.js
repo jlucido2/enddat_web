@@ -140,12 +140,12 @@ define([
 				var isDisabled = $testDiv.find('.get-data-btn').is(':disabled');
 				expect(isDisabled).toBe(true);
 			});
-			
+
 			it('Expects a message explaining the disabled buttons', function() {
 				var message = $testDiv.find('#url-container-msg').html();
 				var messageText = "The get data buttons have been disabled because the URL for the selected variables exceeds 2000 characters.";
 				var message = $testDiv.find('#disabled-btn-msg').html();
-			    expect(message).toEqual(messageText);				
+			    expect(message).toEqual(messageText);
 			});
 		});
 
@@ -194,12 +194,12 @@ define([
 				var isDisabled = $testDiv.find('.get-data-btn').is(':disabled');
 				expect(isDisabled).toBe(false);
 			});
-			
+
 			it('Expects that there is not a message explaining the disabled buttons', function() {
 				var message = $testDiv.find('#url-container-msg').html();
 				var messageText = '';
 				var message = $testDiv.find('#disabled-btn-msg').html();
-			    expect(message).toEqual(messageText);				
+			    expect(message).toEqual(messageText);
 			});
 
 
@@ -426,17 +426,18 @@ define([
 					url = $testDiv.find('ul.url-links li').html();
 
 					expect(url.search('Lake=erie')).not.toEqual(-1);
-			it('Expects there is not a warning message', function() {
-				$testDiv.find('.show-url-btn').trigger('click');
-				var message = $testDiv.find('#url-container-msg').html();
-				expect(message).toEqual('');
-			});
 
 					testModel.get('datasetCollections')[Config.GLCFS_DATASET].setLake('');
 					$testDiv.find('.show-url-btn').trigger('click');
 					url = $testDiv.find('ul.url-links li').html();
 
 					expect(url.search('Lake=')).toEqual(-1);
+				});
+
+				it('Expects there is not a warning message', function() {
+					$testDiv.find('.show-url-btn').trigger('click');
+					var message = $testDiv.find('#url-container-msg').html();
+					expect(message).toEqual('');
 				});
 
 				it('Expects there is not a warning message', function() {

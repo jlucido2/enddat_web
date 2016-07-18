@@ -17,6 +17,7 @@ define([
 		var testView, ProcessDataView;
 		var $testDiv;
 		var testModel;
+		var maxUrlLength;
 		var variableCollectionLong;
 
 		var setElVariableTsOptionView, renderVariableTsOptionView, removeVariableTsOptionView;
@@ -87,11 +88,13 @@ define([
 				});
 
 				spyOn(testModel, 'getSelectedVariables').and.returnValue(variableCollection.models);
-
+				
+				maxUrlLength = 215;
+				
 				testView = new ProcessDataView({
 					el : $testDiv,
 					model : testModel,
-					maxUrlLength : 215
+					maxUrlLength : maxUrlLength
 				});
 
 				done();
@@ -139,7 +142,9 @@ define([
 			
 			it('Expects a message explaining the disabled buttons', function() {
 				var message = $testDiv.find('#url-container-msg').html();
-				var messageText = "The get data buttons have been disabled because the URL for the selected variables exceeds 2000 characters.";
+				var messageText = ("The get data buttons have been disabled because the URL for the selected variables exceeds "
+						+ maxUrlLength +
+						" characters.");
 				var message = $testDiv.find('#disabled-btn-msg').html();
 			    expect(message).toEqual(messageText);				
 			});
@@ -356,8 +361,10 @@ define([
 
 			it('Expects a message be shown for more than one site url', function() {
 				$testDiv.find('.show-url-btn').trigger('click');
-				var expectedMsg = 'The URL for data processing exceeds the character limit. A single URL has been provided for each selected station.'
-				var message = $testDiv.find('p.warning-msg').html();
+				var expectedMsg = ('The URL for data processing exceeds '
+						+ maxUrlLength +
+						' characters. A single URL has been provided for each selected station.');
+				var message = $testDiv.find('p#url-container-msg').html();
 			    expect(message).toEqual(expectedMsg);
 			});
 

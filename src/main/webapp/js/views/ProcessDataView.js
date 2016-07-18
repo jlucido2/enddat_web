@@ -19,17 +19,14 @@ define([
 	"use strict";
 
 	var BASE_URL = module.config().baseUrl;
-	
-	var constructClassifier = function(param) {
-		var name = param.name;
-		var siteNo = param.siteNo;
-		var classifier = name + '--' + siteNo;  // make a simple string to identify each dataset type and site number pair
-		return classifier;
-	};
-	
+
 	var organizeParams = function(params) {
-		// build array of identifying site type and number pairs
-		var classifiers = _.uniq(_.map(params, constructClassifier));
+		var constructClassifier = function(param) {
+				var name = param.name;
+				var siteNo = param.siteNo;
+				var classifier = name + '--' + siteNo;  // make a simple string to identify each dataset type and site number pair
+				return classifier;
+			};
 		// make an object containing of parameters for each site
 		// e.g. {site1 : [parameters for site 1], site2 : [parameters for site2], ...}
 		var masterParams = _.groupBy(params, constructClassifier);
@@ -45,6 +42,8 @@ define([
 			.flatten()
 			.value();
 
+		var glcfsLake = workflowModel.get('datasetCollections')[Config.GLCFS_DATASET].getLake();
+
 		var params = [
 			{name : 'style', value : attrs.outputFileFormat},
 			{name : 'DateFormat', value : attrs.outputDateFormat},
@@ -56,6 +55,10 @@ define([
 		];
 		if (download) {
 			params.push({name : 'download', value: 'true'});
+		}
+		// The Lake parameter will be added even if no GLCFS variables are selected but the dataset has been chosen.
+		if (glcfsLake) {
+			params.push({name: 'Lake', value : glcfsLake.toLowerCase()});
 		}
 		var dataProcessingUrl = BASE_URL + 'service/execute?' + $.param(params.concat(varParams));
 		var urlLength = dataProcessingUrl.length;
@@ -73,7 +76,7 @@ define([
 		}
 		return siteUrls;
 	};
-	
+
 	/*
 	 * @constructs
 	 * @param {Object} options
@@ -82,7 +85,7 @@ define([
 	 */
 	var view = BaseCollapsiblePanelView.extend({
 		template : hbTemplate,
-		
+
 		panelHeading : 'Process Data',
 		panelBodyId : 'process-data-panel-body',
 
@@ -102,7 +105,7 @@ define([
 			'#output-file-format-input' : 'outputFileFormat',
 			'#missing-value-input' : 'outputMissingValue'
 		},
-		
+
 		initialize : function(options) {
 			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
 			this.maxUrlLength = options.maxUrlLength ? options.maxUrlLength : 2000; // max url character length before it gets broken down into urls by site
@@ -238,6 +241,7 @@ define([
 
 		showUrl : function(ev) {
 			var dataUrls = getUrls(this.model, this.maxUrlLength);
+			
 			ev.preventDefault();
 			this.context.dataUrls = dataUrls;
 			$('.url-container').html(urlContainerTemplate({dataUrls : dataUrls})); // render content in the url-container div

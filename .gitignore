@@ -35,3 +35,4 @@ npm-debug.logcoverage.xml
 /nb-configuration.xml
 .DS_Store
 /nbactions.xml
+/src/main/webapp/assets-build/

@@ -2,13 +2,14 @@
 
 define([
 	'jquery',
+	'underscore',
 	'backbone',
 	'loglevel',
 	'moment',
 	'Config',
 	'models/WorkflowStateModel',
 	'views/DataDiscoveryView'
-], function ($, Backbone, log, moment, Config, WorkflowStateModel, DataDiscoveryView) {
+], function ($, _, Backbone, log, moment, Config, WorkflowStateModel, DataDiscoveryView) {
 	"use strict";
 
 	var getAOIBox = function(bboxStr) {
@@ -72,7 +73,24 @@ define([
 		},
 
 		chooseDataState : function(workflowStep, state) {
+			var datasetsInUrl = state.datasets ? state.datasets.split('/') : [];
+			var glcfsLake = '';
+			var datasets = [];
+			_.each(datasetsInUrl, function(dataset) {
+				var glcfsIndex = dataset.search(Config.GLCFS_DATASET);
+				if (glcfsIndex > -1) {
+					datasets.push(Config.GLCFS_DATASET);
+					glcfsLake = dataset.slice(glcfsIndex + Config.GLCFS_DATASET.length + 1);
+				}
+				else {
+					datasets.push(dataset);
+				}
+			});
+
 			this.workflowState.initializeDatasetCollections();
+			if (glcfsLake) {
+				this.workflowState.get('datasetCollections')[Config.GLCFS_DATASET].setLake(glcfsLake);
+			}
 			this.workflowState.get('aoi').set(state.aoi);
 			this.workflowState.set({
 				'startDate' : (state.startDate) ? moment(state.startDate, Config.DATE_FORMAT_URL) : '',
@@ -82,7 +100,7 @@ define([
 			this.createView(DataDiscoveryView, {
 				model : this.workflowState
 			}).render();
-			this.workflowState.set('datasets', state.datasets ? state.datasets.split('/') : []);
+			this.workflowState.set('datasets', datasets);
 			this.workflowState.set('variableKinds', state.variables ? state.variables.split('/') : []);
 		},
 

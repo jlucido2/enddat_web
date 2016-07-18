@@ -10,6 +10,23 @@ define([
 ], function(_, bootstrap, log, Config, BaseView, hb_template) {
 	"use strict";
 
+	var getDatasetFragment = function(model) {
+		var datasetUrlIds = [];
+		var fragment = '';
+
+		if (model.attributes.datasets) {
+			datasetUrlIds = _.map(model.attributes.datasets, function(dataset) {
+				var result = dataset;
+				if (dataset === Config.GLCFS_DATASET) {
+					result += '_' + model.attributes.datasetCollections[Config.GLCFS_DATASET].getLake();
+				}
+				return result;
+			});
+			fragment = datasetUrlIds.join('/');
+		}
+		return fragment;
+	};
+
 	var getChooseDataUrl = function(model) {
 		var state = model.attributes;
 		var aoi = model.attributes.aoi;
@@ -21,8 +38,7 @@ define([
 		var startDate = (dataDateFilter.start) ? '/startdate/' + dataDateFilter.start.format(Config.DATE_FORMAT_URL) : '';
 		var endDate = (dataDateFilter.end) ? '/enddate/' + dataDateFilter.end.format(Config.DATE_FORMAT_URL) : '';
 
-		var datasets = (state.datasets) ? state.datasets.join('/') : '';
-		var datasetFragment = (isBySite) ? '/dataset/' + datasets : '';
+		var datasetFragment = (isBySite) ? '/dataset/' + getDatasetFragment(model) : '';
 		var variableKinds = (state.variableKinds) ? state.variableKinds.join('/') : '';
 		var variableKindFragment = (isByVariables) ? '/variable/' + variableKinds : '';
 

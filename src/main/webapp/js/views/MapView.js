@@ -42,22 +42,14 @@ define([
 	};
 
 	var DataViews =_.object([
-  		[Config.GLCFS_DATASET_ERIE, GLCFSDataView],
- 		[Config.GLCFS_DATASET_HURON, GLCFSDataView],
- 		[Config.GLCFS_DATASET_MICHIGAN, GLCFSDataView],
- 		[Config.GLCFS_DATASET_ONTARIO, GLCFSDataView],
- 		[Config.GLCFS_DATASET_SUPERIOR, GLCFSDataView],
+  		[Config.GLCFS_DATASET, GLCFSDataView],
 		[Config.NWIS_DATASET, NWISDataView],
 		[Config.PRECIP_DATASET, PrecipDataView],
 		[Config.ACIS_DATASET, ACISDataView]
 	]);
 
 	var siteMarkerOptions = _.object([
-  		[Config.GLCFS_DATASET_ERIE, {icon : siteIcons[Config.GLCFS_DATASET_ICON], getTitle : getGLCFSTitle}],
-  		[Config.GLCFS_DATASET_HURON, {icon : siteIcons[Config.GLCFS_DATASET_ICON], getTitle : getGLCFSTitle}],
-  		[Config.GLCFS_DATASET_MICHIGAN, {icon : siteIcons[Config.GLCFS_DATASET_ICON], getTitle : getGLCFSTitle}],
-  		[Config.GLCFS_DATASET_ONTARIO, {icon : siteIcons[Config.GLCFS_DATASET_ICON], getTitle : getGLCFSTitle}],
-  		[Config.GLCFS_DATASET_SUPERIOR, {icon : siteIcons[Config.GLCFS_DATASET_ICON], getTitle : getGLCFSTitle}],
+  		[Config.GLCFS_DATASET, {icon : siteIcons[Config.GLCFS_DATASET], getTitle : getGLCFSTitle}],
 		[Config.NWIS_DATASET, {icon : siteIcons[Config.NWIS_DATASET], getTitle : getNWISTitle}],
 		[Config.PRECIP_DATASET, {icon : siteIcons[Config.PRECIP_DATASET], getTitle : getPrecipTitle}],
 		[Config.ACIS_DATASET, {icon : siteIcons[Config.ACIS_DATASET], getTitle : getACISTitle}]
@@ -106,10 +98,12 @@ define([
 				});
 			}, this);
 
-			this.siteLayerGroups = _.object(
-				[Config.GLCFS_DATASET_ERIE, Config.GLCFS_DATASET_HURON, Config.GLCFS_DATASET_MICHIGAN, Config.GLCFS_DATASET_ONTARIO, Config.GLCFS_DATASET_SUPERIOR, Config.NWIS_DATASET, Config.PRECIP_DATASET, Config.ACIS_DATASET],
-				[L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup()]
-			);
+			this.siteLayerGroups = _.object([
+				[Config.GLCFS_DATASET, L.layerGroup()],
+				[Config.NWIS_DATASET, L.layerGroup()],
+				[Config.PRECIP_DATASET, L.layerGroup()],
+				[Config.ACIS_DATASET, L.layerGroup()]
+			]);
 
 			// Initialize draw control
 			this.drawnAOIFeature = L.featureGroup();
@@ -353,23 +347,15 @@ define([
 
 			this.listenTo(model, 'change:dataDateFilter', this.updateAllSiteMarkers);
 
-			this.listenTo(datasetCollections[Config.NWIS_DATASET], 'reset', this.updateNWISMarker);
-			this.listenTo(datasetCollections[Config.PRECIP_DATASET], 'reset', this.updatePrecipGridPoints);
-			this.listenTo(datasetCollections[Config.ACIS_DATASET], 'reset', this.updateACISMarker);
-			this.listenTo(datasetCollections[Config.GLCFS_DATASET_ERIE], 'reset', this.updateGLCFSErieMarker);
-			this.listenTo(datasetCollections[Config.GLCFS_DATASET_HURON], 'reset', this.updateGLCFSHuronMarker);
-			this.listenTo(datasetCollections[Config.GLCFS_DATASET_MICHIGAN], 'reset', this.updateGLCFSMichiganMarker);
-			this.listenTo(datasetCollections[Config.GLCFS_DATASET_ONTARIO], 'reset', this.updateGLCFSOntarioMarker);
-			this.listenTo(datasetCollections[Config.GLCFS_DATASET_SUPERIOR], 'reset', this.updateGLCFSSuperiorMarker);
+			this.listenTo(datasetCollections[Config.NWIS_DATASET], 'reset', this.updateNWISMarkers);
+			this.listenTo(datasetCollections[Config.PRECIP_DATASET], 'reset', this.updatePrecipMarkers);
+			this.listenTo(datasetCollections[Config.ACIS_DATASET], 'reset', this.updateACISMarkers);
+			this.listenTo(datasetCollections[Config.GLCFS_DATASET], 'reset', this.updateGLCFSMarkers);
 
-			this.listenTo(datasetCollections[Config.NWIS_DATASET], 'dataset:updateVariablesInFilter', this.updateNWISMarker);
-			this.listenTo(datasetCollections[Config.PRECIP_DATASET], 'dataset:updateVariablesInFilter', this.updatePrecipGridPoints);
-			this.listenTo(datasetCollections[Config.ACIS_DATASET], 'dataset:updateVariablesInFilter', this.updateACISMarker);
-			this.listenTo(datasetCollections[Config.GLCFS_DATASET_ERIE], 'dataset:updateVariablesInFilter', this.updateGLCFSErieMarker);
-			this.listenTo(datasetCollections[Config.GLCFS_DATASET_HURON], 'dataset:updateVariablesInFilter', this.updateGLCFSHuronMarker);
-			this.listenTo(datasetCollections[Config.GLCFS_DATASET_MICHIGAN], 'dataset:updateVariablesInFilter', this.updateGLCFSMichiganMarker);
-			this.listenTo(datasetCollections[Config.GLCFS_DATASET_ONTARIO], 'dataset:updateVariablesInFilter', this.updateGLCFSOntarioMarker);
-			this.listenTo(datasetCollections[Config.GLCFS_DATASET_SUPERIOR], 'dataset:updateVariablesInFilter', this.updateGLCFSSuperiorMarker);
+			this.listenTo(datasetCollections[Config.NWIS_DATASET], 'dataset:updateVariablesInFilter', this.updateNWISMarkers);
+			this.listenTo(datasetCollections[Config.PRECIP_DATASET], 'dataset:updateVariablesInFilter', this.updatePrecipMarkers);
+			this.listenTo(datasetCollections[Config.ACIS_DATASET], 'dataset:updateVariablesInFilter', this.updateACISMarkers);
+			this.listenTo(datasetCollections[Config.GLCFS_DATASET], 'dataset:updateVariablesInFilter', this.updateGLCFSMarkers);
 		},
 
 		updateSiteMarkerLayer : function(datasetKind) {
@@ -426,7 +412,10 @@ define([
 			}
 			else {
 				filteredSiteModels =
-					siteCollection.getSitesWithVariableInFilters(variableDatasetMapping.getFilters(datasetKind, self.model.get('variableKinds')), dateFilter);
+					siteCollection.getSitesWithVariableInFilters(
+						variableDatasetMapping.getFilters(datasetKind, self.model.get('variableKinds')),
+						dateFilter
+					);
 			}
 			// Determine if the selected site is still in the collection
 			if (this.selectedSite && (this.selectedSite.datasetKind === datasetKind) &&
@@ -462,42 +451,20 @@ define([
 			}, this);
 		},
 
-		/*
-		 * Updates the NWIS layerGroup to reflect the sites in the nwis collection
-		 */
-		updateNWISMarker : function() {
+		updateNWISMarkers : function() {
 			this.updateSiteMarkerLayer(Config.NWIS_DATASET);
 		},
 
-		/*
-		 * Updates the precipitation layer group to reflect the grid points in precipCollection
-		 */
-		updatePrecipGridPoints : function() {
+		updatePrecipMarkers : function() {
 			this.updateSiteMarkerLayer(Config.PRECIP_DATASET);
 		},
 
-		updateACISMarker : function() {
+		updateACISMarkers : function() {
 			this.updateSiteMarkerLayer(Config.ACIS_DATASET);
 		},
 
-		updateGLCFSErieMarker : function() {
-			this.updateSiteMarkerLayer(Config.GLCFS_DATASET_ERIE);
-		},
-
-		updateGLCFSHuronMarker : function() {
-			this.updateSiteMarkerLayer(Config.GLCFS_DATASET_HURON);
-		},
-
-		updateGLCFSMichiganMarker : function() {
-			this.updateSiteMarkerLayer(Config.GLCFS_DATASET_MICHIGAN);
-		},
-
-		updateGLCFSOntarioMarker : function() {
-			this.updateSiteMarkerLayer(Config.GLCFS_DATASET_ONTARIO);
-		},
-
-		updateGLCFSSuperiorMarker : function() {
-			this.updateSiteMarkerLayer(Config.GLCFS_DATASET_SUPERIOR);
+		updateGLCFSMarkers : function() {
+			this.updateSiteMarkerLayer(Config.GLCFS_DATASET);
 		}
 	});
 

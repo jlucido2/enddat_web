@@ -101,11 +101,7 @@ define([
 			expect(testModel.attributes.datasetCollections[Config.NWIS_DATASET]).toBeDefined();
 			expect(testModel.attributes.datasetCollections[Config.PRECIP_DATASET]).toBeDefined();
 			expect(testModel.attributes.datasetCollections[Config.ACIS_DATASET]).toBeDefined();
-			expect(testModel.attributes.datasetCollections[Config.GLCFS_DATASET_ERIE]).toBeDefined();
-			expect(testModel.attributes.datasetCollections[Config.GLCFS_DATASET_HURON]).toBeDefined();
-			expect(testModel.attributes.datasetCollections[Config.GLCFS_DATASET_MICHIGAN]).toBeDefined();
-			expect(testModel.attributes.datasetCollections[Config.GLCFS_DATASET_ONTARIO]).toBeDefined();
-			expect(testModel.attributes.datasetCollections[Config.GLCFS_DATASET_SUPERIOR]).toBeDefined();
+			expect(testModel.attributes.datasetCollections[Config.GLCFS_DATASET]).toBeDefined();
 		});
 
 		describe('Tests for getSelectedVariables', function() {
@@ -387,7 +383,7 @@ define([
 				testModel.get('aoi').set({latitude : '43.0', longitude : '-100.0', radius : 2});
 				spyOn(testModel, 'initializeDatasetCollections').and.callThrough();
 				testModel.set('step', Config.CHOOSE_DATA_BY_VARIABLES_STEP);
-				
+
 				expect(testModel.initializeDatasetCollections).toHaveBeenCalled();
 			});
 

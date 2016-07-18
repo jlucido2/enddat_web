@@ -6,9 +6,10 @@ define([
 	'moment',
 	'Config',
 	'models/WorkflowStateModel',
+	'models/GLCFSCollection',
 	'views/BaseView',
 	'views/NavView'
-], function($, log, moment, Config, WorkflowStateModel, BaseView, NavView) {
+], function($, log, moment, Config, WorkflowStateModel, GLCFSCollection, BaseView, NavView) {
 	"use strict";
 
 	describe('views/NavView', function() {
@@ -358,6 +359,18 @@ define([
 				expect(mockRouter.navigate.calls.mostRecent().args).toEqual(['lat/43/lng/-100/radius/2/startdate/1Jan2000/enddate/1Jan2010/dataset/NWIS/Precip']);
 				aoiModel.set('radius', 10);
 				expect(mockRouter.navigate.calls.mostRecent().args).toEqual(['lat/43/lng/-100/radius/10/startdate/1Jan2000/enddate/1Jan2010/dataset/NWIS/Precip']);
+			});
+
+			it('Expects that if the GLCFS dataset is chosen, the lake is appended to the GLCFS string in the url', function() {
+				var aoiModel = testModel.get('aoi');
+				var glcfsCollection = new GLCFSCollection();
+				aoiModel.set({latitude: 43.0, longitude : -100.0, radius : 2});
+				testModel.set('datasetCollections', {'GLCFS' : glcfsCollection});
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
+				glcfsCollection.setLake('Erie');
+				testModel.set('datasets', ['GLCFS']);
+
+				expect(mockRouter.navigate.calls.mostRecent().args).toEqual(['lat/43/lng/-100/radius/2/dataset/GLCFS_Erie']);
 			});
 
 			it('Expects that if the step is CHOOSE_DATA_BY_SITE_FILTERS_STEP and changed to CHOOSE_DATA_BY_SITE_VARIABLES_STEP, the choose data btn remains active', function() {

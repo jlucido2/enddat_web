@@ -188,7 +188,7 @@ define([
 			if (dataUrls.length > 1) {
 				$getDataBtn.prop("disabled", true);
 				$downloadBtn.prop("disabled", true);
-				var $messageText = "The get data buttons have been disabled because the URL for the selected variables exceeds 2000 characters.";
+				var $messageText = "The get data buttons have been disabled because the URL for the selected variables exceeds " + this.maxUrlLength +" characters.";
 				$message.html($messageText);
 			}
 			else {
@@ -239,9 +239,9 @@ define([
 			ev.preventDefault();
 			this.context.dataUrls = dataUrls;
 			$('.url-container').html(urlContainerTemplate({dataUrls : dataUrls})); // render content in the url-container div
-			var $message = this.$('.warning-msg');
+			var $message = this.$('#url-container-msg');
 			if (dataUrls.length > 1) {
-				var messageText = "The URL for data processing exceeds the character limit. A single URL has been provided for each selected station.";
+				var messageText = "The URL for data processing exceeds " + this.maxUrlLength + " characters. A single URL has been provided for each selected station.";
 				// display a message
 				$message.html(messageText);
 			}

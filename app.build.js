@@ -52,7 +52,6 @@
 
 	deps : ['../bower_components/requirejs/require'],
 
-	// Run the module js/main as soon as it is ready.
 	insertRequire: ["init"],
 
 	dir: "src/main/webapp/assets-build"

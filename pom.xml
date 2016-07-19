@@ -295,7 +295,7 @@
 					<includes>
 						<include>custom.less</include>
 					</includes>
-					<compress>false</compress>
+					<compress>true</compress>
 					<force>true</force>
 				</configuration>
 				<executions>

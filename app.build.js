@@ -1,5 +1,5 @@
 ({
-	baseUrl: "js/",
+	baseUrl: "src/main/webapp/js/",
 
 	paths: {
 		"bootstrap" :  '../bower_components/bootstrap/dist/js/bootstrap',
@@ -55,5 +55,5 @@
 	// Run the module js/main as soon as it is ready.
 	insertRequire: ["init"],
 
-	dir: "assets-build"
+	dir: "src/main/webapp/assets-build"
 });

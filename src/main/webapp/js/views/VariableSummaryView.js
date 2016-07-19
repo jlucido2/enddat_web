@@ -22,7 +22,7 @@ define([
 		panelBodyId : 'variable-summary-panel-body',
 
 		additionalEvents : {
-			'click button' : 'removeVariable'
+			'click tbody button' : 'removeVariable'
 		},
 
 		initialize : function(options) {

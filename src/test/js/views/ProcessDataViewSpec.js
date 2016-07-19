@@ -18,6 +18,7 @@ define([
 		var testView, ProcessDataView;
 		var $testDiv;
 		var testModel;
+		var maxUrlLength;
 		var variableCollectionLong;
 
 		var setElVariableTsOptionView, renderVariableTsOptionView, removeVariableTsOptionView;
@@ -92,10 +93,12 @@ define([
 
 				spyOn(testModel, 'getSelectedVariables').and.returnValue(variableCollection.models);
 
+				maxUrlLength = 215;
+
 				testView = new ProcessDataView({
 					el : $testDiv,
 					model : testModel,
-					maxUrlLength : 215
+					maxUrlLength : maxUrlLength
 				});
 
 				done();
@@ -139,6 +142,15 @@ define([
 			it('Expects the get data button is disabled when URL length is greater than 215 characters.', function() {
 				var isDisabled = $testDiv.find('.get-data-btn').is(':disabled');
 				expect(isDisabled).toBe(true);
+			});
+
+			it('Expects a message explaining the disabled buttons', function() {
+				var message = $testDiv.find('#url-container-msg').html();
+				var messageText = ("The get data buttons have been disabled because the URL for the selected variables exceeds "
+						+ maxUrlLength +
+						" characters.");
+				var message = $testDiv.find('#disabled-btn-msg').html();
+			    expect(message).toEqual(messageText);
 			});
 		});
 
@@ -188,6 +200,13 @@ define([
 				expect(isDisabled).toBe(false);
 			});
 
+			it('Expects that there is not a message explaining the disabled buttons', function() {
+				var message = $testDiv.find('#url-container-msg').html();
+				var messageText = '';
+				var message = $testDiv.find('#disabled-btn-msg').html();
+			    expect(message).toEqual(messageText);
+			});
+
 
 			it('Expects the remaining configuration inputs to be initialized', function() {
 				expect($testDiv.find('#output-date-format-input').val()).toEqual('Excel');
@@ -224,6 +243,7 @@ define([
 					start : moment('2000-01-04', Config.DATE_FORMAT),
 					end : moment('2005-06-01', Config.DATE_FORMAT)
 				});
+				testModel.getSelectedVariables.and.callThrough();
 				testView.render();
 			});
 
@@ -259,13 +279,18 @@ define([
 			});
 
 			it('Expects the get data button is enabled when variables are deselected to shorten URL length.', function() {
-				var variableModels = testModel.getSelectedVariables();
+				var variableModels;
+				var $getDataBtn = $testDiv.find('.get-data-btn');
+
+				expect($getDataBtn.is(':disabled')).toBe(true);
+
+				variableModels = testModel.getSelectedVariables();
 				// change the last two variables to selected : false
 				_.each(variableModels.splice(2), function(variableModel){
 					variableModel.set('selected', false);
 				});
-				var isDisabled = $testDiv.find('.get-data-btn').is(':disabled');
-				expect(isDisabled).toBe(false);
+
+				expect($getDataBtn.is(':disabled')).toBe(false);
 			});
 		});
 
@@ -344,15 +369,11 @@ define([
 
 				it('Expects a message be shown for more than one site url', function() {
 					$testDiv.find('.show-url-btn').trigger('click');
-					var expectedMsg = 'The URL for data processing exceeds the character limit. A single URL has been provided for each selected station.';
-					var message = $testDiv.find('p.warning-msg').html();
-				    expect(message).toEqual(expectedMsg);
-				});
-
-				it('Expects that there are four urls displayed within the URL container', function() {
-					$testDiv.find('.show-url-btn').trigger('click');
-					var urlCount = $testDiv.find('ul.url-links li').length;
-					expect(urlCount).toEqual(4);
+					var expectedMsg = ('The URL for data processing exceeds '
+							+ maxUrlLength +
+							' characters. A single URL has been provided for each selected station.');
+					var message = $testDiv.find('p#url-container-msg').html();
+					expect(message).toEqual(expectedMsg);
 				});
 
 				it('Expects urls are separated by site', function() {
@@ -418,6 +439,12 @@ define([
 					url = $testDiv.find('ul.url-links li').html();
 
 					expect(url.search('Lake=')).toEqual(-1);
+				});
+
+				it('Expects there is not a warning message', function() {
+					$testDiv.find('.show-url-btn').trigger('click');
+					var message = $testDiv.find('#url-container-msg').html();
+					expect(message).toEqual('');
 				});
 
 				it('Expects there is not a warning message', function() {

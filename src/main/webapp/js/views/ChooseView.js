@@ -25,6 +25,8 @@ define([
 		panelHeading : 'Choose Data',
 		panelBodyId : 'choose-data-panel-body',
 
+		// Using the select2:selecting in order to intercept the event before the select2 is updated so that we can show
+		// the GLCFS lake modal before changing the selection.
 		additionalEvents : {
 			'select2:selecting #datasets-select' : 'selectDataset',
 			'select2:unselect #datasets-select' : 'resetDataset',

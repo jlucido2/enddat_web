@@ -5,19 +5,33 @@ Web UI for ENDDaT
 EnDDaT is a tool used to discover data from our natural environment. This tool accesses data from a variety of data sources, compiles and processes the data, and performs common transformations. The end result is that environmental data from multiple sources is sorted into a single table. See the user guide for step-by-step instructions on obtaining data, specifying transforms, and processing data.
 
 ## Build instructions  
-This project has been built and deployed using maven ?, java ? and tomcat ?.
+This project has been built using maven 3.2.x and java 8 and has been deployed to tomcat 8.
 To build the war execute the following command in the directory where you cloned the repository.
 ```
 mvn clean package
 ```
 This will produce a .war file in the `target` directory. You can deploy this war file to tomcat like any other war.
 
-The project optionally uses the following JNDI variables in the context.xml. Example values are given.
+The project optionally uses the following JNDI variables in the context.xml. 
 ```
-<Environment name="enddat.gdp-process-url" type="java.lang.String" value="http://vm_name:8080/gdp-process-wps/" override="true"/> 
-<Environment name="enddat.service-url" type="java.lang.String" value="http://vm_name:8080/enddat-services/" override="true"/> 
-<Environment name="enddat.geoserver-url" type="java.lang.String" value="http://vm_name:8080/beaches-geoserver/" override="true"/> 
+<Environment name="enddat.development" type="java.lang.String" value="true" /> <!-- Set to true in development when you don't want asset compression -->
+<Environment name="enddat.endpoint.service" type="java.lang.String" override="true" value="http://vm_name:8080/enddat-services/"/>
+<Environment name="enddat.endpoint.nwis.site" type="java.lang.String" override="true" value=""/>
+<Environment name="enddat.endpoint.nwis.statcodes" override="true" type="java.lang.String" value="" />
+<Environment name="enddat.endpoint.nwis.pmcodes" override="true" type="java.lang.String" value=""/>
+<Environment name="enddat.endpoint.precip.wfsgetfeature" override="true" type="java.lang.String" value="" />
+<Environment name="enddat.endpoint.cidathredds" override="true" type="java.lang.String" value="" />
+<Environment name="enddat.cidathredds.precipdata" override="true" type="java.lang.String" value="" />
+<Environment name="enddat.endpoint.acis" override="true" type="java.lang.String" value="" />
+<Environment name="enddat.endpoint.glcfs.wfsgetfeature.erie" override="true" type="java.lang.String" value="" />
+<Environment name="enddat.endpoint.glcfs.wfsgetfeature.huron" override="true" type="java.lang.String" value="" />
+<Environment name="enddat.endpoint.glcfs.wfsgetfeature.michigan" override="true" type="java.lang.String" value="" />
+<Environment name="enddat.endpoint.glcfs.wfsgetfeature.ontario" override="true" type="java.lang.String" value="" />
+<Environment name="enddat.endpoint.glcfs.wfsgetfeature.superior" override="true" type="java.lang.String" value="" />
+<Environment name="enddat.shapefileupload.geoserver.endpoint" override="true" type="java.lang.String" value="" />
+<Environment name="enddat.shapefileupload.geoserver.password" override="false" type="java.lang.String" value="" />
 ```
+
 
 ## Use Cases  
 * Select a project location.

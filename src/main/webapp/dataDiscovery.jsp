@@ -119,7 +119,7 @@
 			else {
 		%>
 			<script src="assets-build/init.js"></script>
-			<% }
-			%>
+		<% }
+		%>
 	</body>
 </html>

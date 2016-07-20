@@ -281,7 +281,7 @@
 						</configFile>
 					<!-- optional path to optimizer executable -->
 					<optimizerFile>
-						node_modules/requirejs/bin/r.js
+						${project.basedir}/node_modules/requirejs/bin/r.js
 					</optimizerFile>
 				</configuration>
 			</plugin>

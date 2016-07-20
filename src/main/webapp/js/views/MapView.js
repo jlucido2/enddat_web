@@ -21,6 +21,8 @@ define([
 ], function(_, L, leafletDraw, leafletProviders, log, module, Config, variableDatasetMapping, $utils, LUtils, legendControl, BaseView,
 		PrecipDataView, GLCFSDataView, ACISDataView, NWISDataView, hbTemplate) {
 
+	L.Icon.Default.imagePath = 'bower_components/leaflet/dist/images';
+
 	var siteIcons = _.mapObject(Config.DATASET_ICON, function(value) {
 		return L.icon(value);
 	});

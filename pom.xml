@@ -260,6 +260,32 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<groupId>com.github.bringking</groupId>
+				<artifactId>requirejs-maven-plugin</artifactId>
+				<version>2.0.4</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>optimize</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<!-- optional path to a nodejs executable -->
+					<nodeExecutable>
+						node/node
+					</nodeExecutable>
+					<!-- path to optimizer json config file(s) -->
+						<configFile>
+							app.build.js
+						</configFile>
+					<!-- optional path to optimizer executable -->
+					<optimizerFile>
+						node_modules/requirejs/bin/r.js
+					</optimizerFile>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.lesscss</groupId>
 				<artifactId>lesscss-maven-plugin</artifactId>
 				<version>1.7.0.1.1</version>
@@ -269,7 +295,7 @@
 					<includes>
 						<include>custom.less</include>
 					</includes>
-					<compress>false</compress>
+					<compress>true</compress>
 					<force>true</force>
 				</configuration>
 				<executions>

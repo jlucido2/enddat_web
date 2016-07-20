@@ -77,7 +77,7 @@ define([
 		},
 
 		resetVariable : function(ev) {
-			var chosenVariables = (this.model.has('variableKinds')) ? this.model.get('variableKindss') : [];
+			var chosenVariables = (this.model.has('variableKinds')) ? this.model.get('variableKinds') : [];
 			chosenVariables = _.reject(chosenVariables, function(variableKind) {
 				return (ev.params.data.id === variableKind);
 			});

@@ -137,8 +137,12 @@ define([
 				testView.selectVariable(ev);
 				expect(testModel.get('variableKinds')).toEqual(['maxTemperature']);
 
+				ev.params.data.id = 'precipitation';
+				testView.selectVariable(ev);
+				expect(testModel.get('variableKinds')).toEqual(['maxTemperature', 'precipitation']);
+
 				testView.resetVariable(ev);
-				expect(testModel.get('variableKinds')).toEqual([]);
+				expect(testModel.get('variableKinds')).toEqual(['maxTemperature']);
 			});
 		});
 	});

@@ -92,9 +92,12 @@ define([
 
 		selectDataset : function(ev) {
 			var datasets = _.clone((this.model.has('datasets')) ? this.model.get('datasets') : []);
+			var $modal;
 			if (ev.params.args.data.id === Config.GLCFS_DATASET) {
 				ev.preventDefault();
-				this.$('.glcfs-lake-select-modal').modal('show');
+				$modal = this.$('.glcfs-lake-select-modal');
+				$modal.modal('show');
+				$modal.find('select').val('');
 			}
 			else {
 				datasets.push(ev.params.args.data.id);

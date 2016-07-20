@@ -170,6 +170,22 @@ define([
 				expect(testModel.get('datasets')).toEqual([]);
 			});
 
+			it('Expects tha if the GLCFS is selected, the select menu is the modal is cleared', function() {
+				var $modalSelect = $testDiv.find('.glcfs-lake-select-modal select');
+				var ev = {
+					params : {
+						args : {
+							data : {id : Config.GLCFS_DATASET}
+						}
+					},
+					preventDefault : jasmine.createSpy('preventDefaultSpy')
+				};
+				$modalSelect.val('Erie');
+				testView.selectDataset(ev);
+
+				expect($modalSelect.val()).toEqual('');
+			});
+
 			it('Expects that when a lake is selected in the modal, the GLCFS dataset collection has the lake set', function() {
 				$.fn.modal.calls.reset();
 				$testDiv.find('.glcfs-lake-select-modal select').val('Erie').trigger('change');

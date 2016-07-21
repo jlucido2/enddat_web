@@ -364,7 +364,7 @@ define([
 			it('Expects that the location and map subviews are removed if they have been created', function() {
 				testModel.set('step', Config.SPECIFY_AOI_STEP);
 				testView.render();
-				$testDiv.find('.workflow-start-container select').val('location').trigger('change');
+				$testDiv.find('.location-aoi-btn').trigger('click');
 				testView.remove();
 
 				expect(removeLocationViewSpy).toHaveBeenCalled();
@@ -375,7 +375,7 @@ define([
 			it('Expects that the aoiBox and map subviews are removed if they have been created', function() {
 				testModel.set('step', Config.SPECIFY_AOI_STEP);
 				testView.render();
-				$testDiv.find('.workflow-start-container select').val('aoiBox').trigger('change');
+				$testDiv.find('.box-aoi-btn').trigger('click');
 				testView.remove();
 
 				expect(removeAOIBoxViewSpy).toHaveBeenCalled();

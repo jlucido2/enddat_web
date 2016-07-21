@@ -100,9 +100,7 @@ define([
 		 */
 		showWarning : function(ev) {
 			ev.preventDefault();
-			if (this.model.get('step') !== Config.SPECIFY_AOI_STEP) {
-				this.$('.nav-warning-modal').modal('show');
-			}
+			this.$('.nav-warning-modal').modal('show');
 		},
 
 		showChooseDataWorkflowModal : function(ev) {
@@ -130,10 +128,12 @@ define([
 
 		goToProjectLocationStep : function(ev) {
 			ev.preventDefault();
-			if (this.model.get('step') !== Config.SPECIFY_AOI_STEP) {
-				this.model.set('step', Config.SPECIFY_AOI_STEP);
-				this.$('.nav-warning-modal').modal('hide');
+			if (this.model.get('step') === Config.SPECIFY_AOI_STEP) {
+				// Need to do this so that the event handler for this step is triggered
+				this.model.set('step', '');
 			}
+			this.model.set('step', Config.SPECIFY_AOI_STEP);
+			this.$('.nav-warning-modal').modal('hide');
 		},
 		goToChooseDataStep : function(ev) {
 			var step = $(ev.target).val();

@@ -197,14 +197,18 @@ define([
 					break;
 
 				case Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP:
-					if (previousStep === Config.SPECIFY_AOI_STEP) {
+					if ((previousStep === Config.SPECIFY_AOI_STEP) || (previousStep === Config.CHOOSE_DATA_BY_VARIABLES_STEP)) {
 						this.initializeDatasetCollections();
 						this.set('datasets', DEFAULT_CHOSEN_DATASETS);
 					}
 					break;
 
 				case Config.CHOOSE_DATA_BY_VARIABLES_STEP:
-					this.initializeDatasetCollections();
+					if ((previousStep === Config.SPECIFY_AOI_STEP) ||
+						(previousStep === Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP) ||
+						(previousStep === Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP)) {
+						this.initializeDatasetCollections();
+					}
 					break;
 
 				case Config.PROCESS_DATA_STEP:

@@ -90,25 +90,28 @@ define([
 			expect(renderShapefileUploadViewSpy).toHaveBeenCalled();
 		});
 
-		it('Expects that the template is re rendered whenever the model is updated', function() {
+		it('Expects that southwest and northeast fiels are updated  the model is updated', function() {
 			var aoiModel = testModel.get('aoi');
-						spyOn(testView, 'template').and.callThrough();
+			var $southwestInput;
+			var $northeastInput;
 
 			testView.render();
-			testView.template.calls.reset();
+			$southwestInput = $testDiv.find('.southwest-input');
+			$northeastInput = $testDiv.find('.northeast-input');
 			aoiModel.set('aoiBox', {
-				south : 43.0,
-				west : -102.0,
-				north : 44.0,
-				east : -100.0
+				south : '43.0',
+				west : '-103.0',
+				north : '46.0',
+				east : '-99.0'
 			});
 
-			expect(testView.template).toHaveBeenCalledWith(aoiModel.attributes.aoiBox);
+			expect($southwestInput.val()).toEqual('43.0, -103.0');
+			expect($northeastInput.val()).toEqual('46.0, -99.0');
 
-			testView.template.calls.reset();
 			aoiModel.set('aoiBox', {});
 
-			expect(testView.template).toHaveBeenCalledWith({});
+			expect($southwestInput.val()).toEqual('');
+			expect($northeastInput.val()).toEqual('');
 		});
 
 		it('Expects that when the view is removed the shapefile upload view is removed and the parent class\'s remove is called', function() {

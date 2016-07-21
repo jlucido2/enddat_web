@@ -42,7 +42,8 @@ define([
 		template: hbTemplate,
 
 		events : {
-			'change .workflow-start-container select' : 'selectAOIDefinition'
+			'click .location-aoi-btn' : 'selectProjectLocationAOI',
+			'click .box-aoi-btn' : 'selectBoxAOI'
 		},
 
 		/*
@@ -285,49 +286,23 @@ define([
 		 * DOM Event Handlers
 		 */
 
-		selectAOIDefinition : function(ev) {
-			var kind = $(ev.currentTarget).val();
-			var aoiModel = this.model.get('aoi');
+		 /*
+		  * Handles updating the DOM and creating the appropriate views. Assumes that the AOI
+		  * model has already been updated.
+		  */
+		_updateAOIStep : function(AOIView) {
 			this.$('.workflow-start-container').removeClass('in');
-			switch(kind) {
-				case 'location':
-					aoiModel.set({
-						latitude : '',
-						longitude : '',
-						radius : DEFAULT_RADIUS
-					});
-					if (!this.aoiView) {
-						this.aoiView = new LocationView({
-							el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
-							model : this.model,
-							opened : true
-						});
-						this.aoiView.render();
-					}
-					else {
-						this.aoiView.expand();
-					}
-					break;
-
-				case 'aoiBox':
-					aoiModel.set({
-						aoiBox : {}
-					});
-					if (!this.aoiView) {
-						this.aoiView = new AOIBoxView({
-							el : $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
-							model : this.model,
-							opened : true
-						});
-						this.aoiView.render();
-					}
-					else {
-						this.aoiView.expand();
-					}
-					break;
-
+			if (!this.aoiView) {
+				this.aoiView = new AOIView({
+					el: $utils.createDivInContainer(this.$(LOCATION_SELECTOR)),
+					model: this.model,
+					opened: true
+				});
+				this.aoiView.render();
 			}
-
+			else {
+				this.aoiView.expand();
+			}
 			if (!this.mapView) {
 				this.mapView = new MapView({
 					el : $utils.createDivInContainer(this.$(MAPVIEW_SELECTOR)),
@@ -336,6 +311,22 @@ define([
 				});
 				this.mapView.render();
 			}
+		},
+
+		selectProjectLocationAOI : function() {
+			this.model.get('aoi').set({
+				latitude: '',
+				longitude: '',
+				radius: DEFAULT_RADIUS
+			});
+			this._updateAOIStep(LocationView);
+		},
+
+		selectBoxAOI : function() {
+			this.model.get('aoi').set({
+				aoiBox : {}
+			});
+			this._updateAOIStep(AOIBoxView);
 		}
 	});
 

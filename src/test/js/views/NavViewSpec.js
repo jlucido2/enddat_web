@@ -187,7 +187,7 @@ define([
 				expect($.fn.modal.calls.mostRecent().object.hasClass('choose-data-workflow-modal')).toBe(true);
 			});
 
-			it('Expects that after clicking the choose data button and then choosing Selecte variables by variable type, the workflow step changes to CHOOSE_DATA_BY_VARIABLES_STEP', function() {
+			it('Expects that after clicking the choose data button and then choosing Select variables by variable type, the workflow step changes to CHOOSE_DATA_BY_VARIABLES_STEP', function() {
 				testModel.set('step', Config.SPECIFY_AOI_STEP);
 				testView.render();
 				$(chooseDataSel + ' a').trigger('click');

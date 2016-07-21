@@ -1,10 +1,11 @@
 /* jslint browser: true */
 
 define([
+	'underscore',
 	'views/BaseCollapsiblePanelView',
 	'views/ShapefileUploadView',
 	'hbs!hb_templates/aoiBox'
-], function(BaseCollapsiblePanelView, ShapefileUploadView, hbTemplate) {
+], function(_, BaseCollapsiblePanelView, ShapefileUploadView, hbTemplate) {
 	"use strict";
 
 	/*
@@ -44,8 +45,21 @@ define([
 		},
 
 		updatePanelContents : function() {
-			//Don't want to re-render the whole panel just the contents
-			this.$('.panel-body').html(this.template(this.model.get('aoi').attributes.aoiBox));
+			var aoiBox = this.model.get('aoi').get('aoiBox');
+			var $southwest = this.$('.southwest-input');
+			var $northeast = this.$('.northeast-input');
+			if (_.has(aoiBox, 'south') && _.has(aoiBox, 'west')) {
+				$southwest.val(aoiBox.south + ', ' + aoiBox.west);
+			}
+			else {
+				$southwest.val('');
+			}
+			if (_.has(aoiBox, 'north') && _.has(aoiBox, 'east')) {
+				$northeast.val(aoiBox.north + ', ' + aoiBox.east);
+			}
+			else {
+				$northeast.val('');
+			}
 		}
 	});
 

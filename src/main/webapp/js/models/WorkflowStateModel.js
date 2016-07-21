@@ -199,6 +199,7 @@ define([
 				case Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP:
 					if ((previousStep === Config.SPECIFY_AOI_STEP) || (previousStep === Config.CHOOSE_DATA_BY_VARIABLES_STEP)) {
 						this.initializeDatasetCollections();
+						this.set('variableKinds', []);
 						this.set('datasets', DEFAULT_CHOSEN_DATASETS);
 					}
 					break;
@@ -208,6 +209,8 @@ define([
 						(previousStep === Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP) ||
 						(previousStep === Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP)) {
 						this.initializeDatasetCollections();
+						this.set('datasets', []);
+						this.set('variableKinds', []);
 					}
 					break;
 

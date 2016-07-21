@@ -19,15 +19,91 @@
 	"maxTemperature" : {
 		"displayName" : "Maximum Temperature",
 		"datasets" : [
+		    {
+				"name" : "ACIS",
+				"filter" : [
+				{"code" : "maxt"}
+				]
+			}
+		]
+	},
+	"minTemperature" : {
+		"displayName" : "Minimum Temperature",
+		"datasets" : [
+			{
+				"name" : "ACIS",
+				"filter" : [
+				{"code" : "mint"}
+				]
+			}
+		]
+	},
+	"aveTemperature" : {
+		"displayName" : "Average Temperature",
+		"datasets" : [
+			{
+				"name" : "ACIS",
+				"filter" : [
+				{"code" : "avgt"}
+				]
+			}
+		]
+	},
+	"snowDepth" : {
+		"displayName" : "Snow Depth",
+		"datasets" : [
+			{
+				"name" : "ACIS",
+				"filter" : [
+				{"code" : "snwd"}
+				]
+			}
+		]
+	},
+	"snow" : {
+		"displayName" : "Snowfall",
+		"datasets" : [
+			{
+				"name" : "ACIS",
+				"filter" : [
+				{"code" : "snow"}
+				]
+			}
+		]
+	},
+	"snowWater" : {
+		"displayName" : "Snow Water Equivalent",
+		"datasets" : [
+			{
+				"name" : "ACIS",
+				"filter" : [
+				{"code" : "13"}
+				]
+			}
+		]
+	},
+	"obsDayStreamflow" : {
+		"displayName" : "Daily Observed Streamflow",
+		"datasets" : [
 			{
 				"name" : "NWIS",
 				"filter" : [
-					{"parameterCd" : "00021", "statCd" : "00001"}
+					{"parameterCd" : "00060", "statCd" : "00003"}
 				]
-			},{
-				"name" : "ACIS",
-				"filter" : [{"code" : "maxt"}]
+			}
+		]
+	},
+	"obsInstStreamflow" : {
+		"displayName" : "Instantaneous Observed Streamflow",
+		"datasets" : [
+			{
+				"name" : "NWIS",
+				"filter" : [
+					{"parameterCd" : "00060", "statCd" : "00000"},
+					{"parameterCd" : "00061", "statCd" : "00000"}
+				]
 			}
 		]
 	}
+	
 }

@@ -3,9 +3,10 @@
 define([
 	'backbone',
 	'controller/AppRouter',
+	'utils/VariableDatasetMapping',
 	'module',
 	'loglevel'
-], function (Backbone, Router, module, log) {
+], function (Backbone, Router, VariableDatasetMapping, module, log) {
 	"use strict";
 	var config = module.config();
 
@@ -20,7 +21,9 @@ define([
 
 	var origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
 	var root  = config.baseUrl.replace(origin, '');
-	Backbone.history.start({root: root});
+	VariableDatasetMapping.getMappingLoadedPromise().done(function() {
+		Backbone.history.start({root: root});
+	});
 
 	return router;
 });

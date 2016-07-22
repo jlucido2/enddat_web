@@ -10,9 +10,18 @@ define([
 	var variableDatasetMapping = (function() {
 		var self = {};
 		var mapping = {};
+		var dataLoadedDeferred = $.Deferred();
 		$.getJSON(module.config().variableDatasetMappingUrl, function(data) {
 			mapping = data;
+			dataLoadedDeferred.resolve(mapping);
 		});
+
+		/*
+		 * @returns {Jquery Promise} - It is resolved once the mapping is loaded
+		 */
+		self.getMappingLoadedPromise = function() {
+			return dataLoadedDeferred.promise();
+		};
 
 		/*
 		 * @returns {Object} - variable kind to dataset mapping object

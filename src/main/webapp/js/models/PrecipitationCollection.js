@@ -67,7 +67,8 @@ define([
 								colName : variableName + ' [' + y + ',' + x + ']',
 								latitude : $utils.xmlFind($this, 'sb', 'X2').text(),
 								longitude : $utils.xmlFind($this, 'sb', 'X1').text(),
-								elevation : null
+								elevation : null,
+								elevationUnit : null
 							})
 						}
 					])

@@ -89,6 +89,7 @@ define([
 					siteVar.y = y;
 					var sigma = -1; // not using any 3D datasets currently
 					var vectorOpts = ':::0'; // not doing any vector options currently
+					console.log(siteVar);
 					siteVar.variableParameter = new VariableParameter({
 						name : 'GRID',
 						siteNo : y + ':' + x,
@@ -97,7 +98,8 @@ define([
 						colName : siteVar.description + ': [' + x + ',' + y + ']',
 						latitude : $utils.xmlFind($this, 'sb', 'X2').text(),
 						longitude : $utils.xmlFind($this, 'sb', 'X1').text(),
-						elevation : null
+						elevation : null,
+						elevationUnit : null
 					});
 					return siteVar;
 				});

@@ -39,8 +39,15 @@ define([
 			var latitude = variableModels[0].get('variableParameter').latitude;
 			var longitude = variableModels[0].get('variableParameter').longitude;
 			var elevation = variableModels[0].get('variableParameter').elevation;
+			var elevationUnit = variableModels[0].get('variableParameter').elevationUnit;
 			var siteName = variableModels[0].get('variableParameter').siteName;
-			return { parameters : varParams,latitude : latitude, longitude : longitude, elevation : elevation, siteName : siteName};
+			return { parameters : varParams,
+				latitude : latitude,
+				longitude : longitude,
+				elevation : elevation,
+				elevationUnit : elevationUnit,
+				siteName : siteName
+				};
 		});
 		return organizedParams;
 	};

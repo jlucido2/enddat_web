@@ -63,7 +63,7 @@ define([
 								var siteNumber = variable.site_no;
 								var pName, sName;
 								var statCd = variable.stat_cd;
-								console.log(variable);
+								//console.log(variable);
 
 								if ((self.parameterCodes) && (variable.parm_cd)) {
 									pName = self.parameterCodes[variable.parm_cd];
@@ -101,7 +101,8 @@ define([
 										colName : name + ':' + variable.site_no,
 										latitude : variable.dec_lat_va,
 										longitude : variable.dec_long_va,
-										elevation : null
+										elevation : null,
+										elevationUnit : null
 									})
 								};
 							};

@@ -42,13 +42,14 @@ define([
 
 	var collection = BaseDatasetCollection.extend({
 
-		url : 'acis/StnMeta?meta=name,valid_daterange,ll,sids&elems=' + _.pluck(ELEMS, 'code').join(','),
+		url : 'acis/StnMeta?meta=name,valid_daterange,ll,elev,sids&elems=' + _.pluck(ELEMS, 'code').join(','),
 
 		parse : function(response) {
 			var sites = response.meta;
 			log.debug('ACIS sites received: ' + sites.length);
 			return _.map(sites, function(site) {
 				// Use first sid when retrieving information.
+				//console.log(site);
 				var sid = site.sids[0].split(' ')[0];
 				var variables = _.chain(site.valid_daterange)
 					.map(function(dateRange, varIndex) {
@@ -64,7 +65,8 @@ define([
 								colName : result.description + ':' + sid,
 								latitude : site.ll[1],
 								longitude : site.ll[0],
-								elevation : null
+								elevation : site.elev,
+								elevationUnit : 'feet'
 							});
 						}
 						return result;

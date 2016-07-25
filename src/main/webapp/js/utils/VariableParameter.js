@@ -15,8 +15,12 @@ define([
 	var VariableParameter = function(attributes) {
 		this.name = attributes.name;
 		this.siteNo = attributes.siteNo;
+		this.siteName = attributes.siteName;
 		this.value = attributes.value;
 		this.colName = attributes.colName;
+		this.latitude = attributes.latitude;
+		this.longitude = attributes.longitude;
+		this.elevation = attributes.elevation;
 
 		/*
 		 * @param {Array of Objects} timeSeriesOptions -  Object has statistic and optional timeSpan properties representing the statistics to apply to this variable

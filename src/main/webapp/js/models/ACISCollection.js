@@ -59,8 +59,12 @@ define([
 							result.variableParameter = new VariableParameter({
 								name : 'ACIS',
 								siteNo : sid,
+								siteName : site.name,
 								value : sid + ':' +  result.code,
-								colName : result.description + ':' + sid
+								colName : result.description + ':' + sid,
+								latitude : site.ll[1],
+								longitude : site.ll[0],
+								elevation : null
 							});
 						}
 						return result;

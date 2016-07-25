@@ -92,8 +92,12 @@ define([
 					siteVar.variableParameter = new VariableParameter({
 						name : 'GRID',
 						siteNo : y + ':' + x,
+						siteName : y + ':' + x,
 						value : y + ':' + x + ':' + sigma + ':' + siteVar.dataset + ':' + siteVar.code + vectorOpts,
-						colName : siteVar.description + ': [' + x + ',' + y + ']'
+						colName : siteVar.description + ': [' + x + ',' + y + ']',
+						latitude : $utils.xmlFind($this, 'sb', 'X2').text(),
+						longitude : $utils.xmlFind($this, 'sb', 'X1').text(),
+						elevation : null
 					});
 					return siteVar;
 				});

@@ -27,6 +27,9 @@ define([
 		 */
 		getSelectedVariables : function() {
 			return this.filter(function(model) {
+				//console.log('In getSelectedVariables:');
+				//var x = model.has('selected') && model.get('selected')
+				//console.log(x);
 				return model.has('selected') && model.get('selected');
 			});
 		},
@@ -68,6 +71,15 @@ define([
 			}
 
 			return result;
+		},
+		
+		getSelectedVariableMetadata : function() {
+			var selectedVars = this.getSelectedVariables();
+			var selectedSites = _.map(selectedVars, function(selectedVar) {
+				//console.log(selectedVar);
+				return selectedVar.get("variableParameter");
+			});
+			//console.log(selectedSites);
 		},
 
 		/*

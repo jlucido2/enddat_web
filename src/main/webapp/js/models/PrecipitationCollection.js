@@ -61,9 +61,13 @@ define([
 							endDate : today,
 							variableParameter : new VariableParameter({
 								name : 'Precip',
-								site_id: y + ':' + x,
+								siteNo: y + ':' + x,
+								siteName : y + ':' + x,
 								value : y + ':' + x + ':' + self.timeBounds + ':' + variableId,
 								colName : variableName + ' [' + y + ',' + x + ']',
+								latitude : $utils.xmlFind($this, 'sb', 'X2').text(),
+								longitude : $utils.xmlFind($this, 'sb', 'X1').text(),
+								elevation : null
 							})
 						}
 					])

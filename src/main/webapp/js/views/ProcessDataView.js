@@ -19,9 +19,36 @@ define([
 	"use strict";
 
 	var BASE_URL = module.config().baseUrl;
-
+	
+	var organizeParams = function(selectedVariables){
+		var constructClassifer = function(selectedVariable) {
+			var varParams = selectedVariable.get('variableParameter');
+			var name = varParams.name;
+			var siteNo = varParams.siteNo;
+			var classifier = name + '--' + siteNo;
+			return classifier;
+		};
+		var siteOrganizedVarModels = _.groupBy(selectedVariables, constructClassifer);
+		var organizedParams = _.mapObject(siteOrganizedVarModels, function(variableModels) {
+			var varParams = _.chain(variableModels)
+			.map(function(variable) {
+				return variable.get('variableParameter').getUrlParameters(variable.get('timeSeriesOptions'));
+			})
+			.flatten()
+			.value();
+			var latitude = variableModels[0].get('variableParameter').latitude;
+			var longitude = variableModels[0].get('variableParameter').longitude;
+			var elevation = variableModels[0].get('variableParameter').elevation;
+			var siteName = variableModels[0].get('variableParameter').siteName;
+			return { parameters : varParams,latitude : latitude, longitude : longitude, elevation : elevation, siteName : siteName};
+		});
+		return organizedParams;
+	};
+	
+	/*
 	var organizeParams = function(params) {
 		var constructClassifier = function(param) {
+				console.log(param);
 				var name = param.name;
 				var siteNo = param.siteNo;
 				var classifier = name + '--' + siteNo;  // make a simple string to identify each dataset type and site number pair
@@ -32,6 +59,7 @@ define([
 		var masterParams = _.groupBy(params, constructClassifier);
 		return masterParams;
 	};
+	*/
 
 	var getUrls = function(workflowModel, maxUrlLength, download) {
 		var attrs = workflowModel.attributes;
@@ -67,8 +95,8 @@ define([
 			var siteOrganizedParams = organizeParams(varParams);
 			// take the site organized parameters and create a url for each site,
 			// then return the values from the new object as an array
-			siteUrls = _.chain(siteOrganizedParams).mapObject(function(siteParams) {
-				return BASE_URL + 'service/execute?' + $.param(params.concat(siteParams));
+			siteUrls = _.chain(siteOrganizedParams).mapObject(function(siteObject) {
+				return BASE_URL + 'service/execute?' + $.param(params.concat(siteObject.parameters));
 				}).values().value();
 		}
 		else {
@@ -271,15 +299,11 @@ define([
 		},
 		
 		provideMetadata : function(ev) {
-			console.log('Metadata!');
-			console.log(this.model);
-			var varParams = _.chain(this.model.getSelectedVariables())
-			.map(function(variable) {
-				return variable.get('variableParameter').getUrlParameters(variable.get('timeSeriesOptions'));
-			})
-			.flatten()
-			.value();
-			var organizedParams = organizeParams(varParams);
+			var selectedVars = this.model.getSelectedVariables();
+			//console.log(selectedVars);
+			var organizedParams = organizeParams(selectedVars);
+			console.log(organizedParams);
+			//return organizedParams;
 		}
 	});
 

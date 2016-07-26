@@ -22,6 +22,7 @@ define([
 		this.longitude = attributes.longitude;
 		this.elevation = attributes.elevation;
 		this.elevationUnit = attributes.elevationUnit;
+		this.variableUnit = attributes.variableUnit;
 
 		/*
 		 * @param {Array of Objects} timeSeriesOptions -  Object has statistic and optional timeSpan properties representing the statistics to apply to this variable

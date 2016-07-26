@@ -49,7 +49,7 @@ define([
 				var $this = $(this);
 				var x = getInteger($utils.xmlFind($this, 'sb', 'x').text());
 				var y = getInteger($utils.xmlFind($this, 'sb', 'y').text());
-
+				
 				result.push({
 					lon : $utils.xmlFind($this, 'sb', 'X1').text(),
 					lat : $utils.xmlFind($this, 'sb', 'X2').text(),
@@ -68,7 +68,8 @@ define([
 								latitude : $utils.xmlFind($this, 'sb', 'X2').text(),
 								longitude : $utils.xmlFind($this, 'sb', 'X1').text(),
 								elevation : null,
-								elevationUnit : null
+								elevationUnit : null,
+								variableUnit : 'kg m^-2'
 							})
 						}
 					])

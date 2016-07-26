@@ -46,7 +46,6 @@ define([
 
 		parse : function(response) {
 			var sites = response.meta;
-			console.log(url);
 			log.debug('ACIS sites received: ' + sites.length);
 			return _.map(sites, function(site) {
 				// Use first sid when retrieving information.
@@ -67,7 +66,8 @@ define([
 								latitude : site.ll[1],
 								longitude : site.ll[0],
 								elevation : site.elev,
-								elevationUnit : 'feet'
+								elevationUnit : 'feet',
+								variableUnit : result.unit
 							});
 						}
 						return result;

@@ -63,8 +63,7 @@ define([
 								var siteNumber = variable.site_no;
 								var pName, sName;
 								var statCd = variable.stat_cd;
-								//console.log(variable);
-
+								var pUnits = '';
 								if ((self.parameterCodes) && (variable.parm_cd)) {
 									pName = self.parameterCodes[variable.parm_cd];
 									name = (pName ? pName : "PCode " + variable.parm_cd);
@@ -72,6 +71,12 @@ define([
 								}
 								else {
 									name = 'Unknown parameter ' + variable.parm_cd;
+								}
+								if ((self.parameterUnits) && (variable.parm_cd)) {
+									pUnits = self.parameterUnits[variable.parm_cd];
+								}
+								else {
+									pUnits = 'Unknown units';
 								}
 								if (self.statisticCodes) {
 									if (statCd) {
@@ -102,7 +107,8 @@ define([
 										latitude : variable.dec_lat_va,
 										longitude : variable.dec_long_va,
 										elevation : null,
-										elevationUnit : null
+										elevationUnit : null,
+										variableUnit : pUnits
 									})
 								};
 							};
@@ -153,20 +159,19 @@ define([
 			var deferred = $.Deferred();
 			$.ajax({
 				type : "GET",
-				url : 'pmcodes/?radio_pm_search=param_group&pm_group=Physical&format=rdb&show=parameter_nm,parameter_units',
+				url : 'pmcodes/?radio_pm_search=param_group&pm_group=Physical&format=rdb&show=parameter_nm&show=parameter_units', // output is a bit cleaner than show=parameter_nm,parameter_units
 				dataType: 'text',
 				success: function(data) {
-					var parsedParams = rdbUtils.parseRDB(data);
-					self.parameterCodes = _.object(_.pluck(parsedParams, 'parameter_cd'),
-							_.pluck(parsedParams, 'parameter_nm'),
-							_.pluck(parsedParams, 'parameter_units')
-							);
+					var parsedParams = rdbUtils.parseRDB(data);					
+					self.parameterCodes = _.object(_.pluck(parsedParams, 'parameter_cd'), _.pluck(parsedParams, 'parameter_nm'));
+					self.parameterUnits = _.object(_.pluck(parsedParams, 'parameter_cd'), _.pluck(parsedParams, 'parameter_units'));
 					log.debug('Fetched parameter codes ' + _.size(self.parameterCodes));
 					deferred.resolve();
 				},
 				error : function(jqXHR, textStatus, error) {
 					log.debug('Error in loading NWIS Parameter definitions: ' + textStatus);
 					self.parameterCodes = undefined;
+					self.parameterUnits = undefined;
 					deferred.resolve();
 				}
 			});

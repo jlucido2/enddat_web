@@ -20,7 +20,7 @@ define([
 
 	var BASE_URL = module.config().baseUrl;
 	
-	var organizeParams = function(selectedVariables){
+	var organizeParams = function(selectedVariables, includeUnits=false){
 		var constructClassifer = function(selectedVariable) {
 			var varParams = selectedVariable.get('variableParameter');
 			var name = varParams.name;
@@ -32,7 +32,11 @@ define([
 		var organizedParams = _.mapObject(siteOrganizedVarModels, function(variableModels) {
 			var varParams = _.chain(variableModels)
 			.map(function(variable) {
-				return variable.get('variableParameter').getUrlParameters(variable.get('timeSeriesOptions'));
+				var varParam = variable.get('variableParameter').getUrlParameters(variable.get('timeSeriesOptions'));
+				if (includeUnits) {
+					varParam[0].variableUnit = variable.get('variableParameter').variableUnit;
+				}
+				return varParam;
 			})
 			.flatten()
 			.value();
@@ -51,22 +55,6 @@ define([
 		});
 		return organizedParams;
 	};
-	
-	/*
-	var organizeParams = function(params) {
-		var constructClassifier = function(param) {
-				console.log(param);
-				var name = param.name;
-				var siteNo = param.siteNo;
-				var classifier = name + '--' + siteNo;  // make a simple string to identify each dataset type and site number pair
-				return classifier;
-			};
-		// make an object containing of parameters for each site
-		// e.g. {site1 : [parameters for site 1], site2 : [parameters for site2], ...}
-		var masterParams = _.groupBy(params, constructClassifier);
-		return masterParams;
-	};
-	*/
 
 	var getUrls = function(workflowModel, maxUrlLength, download) {
 		var attrs = workflowModel.attributes;
@@ -308,7 +296,7 @@ define([
 		provideMetadata : function(ev) {
 			var selectedVars = this.model.getSelectedVariables();
 			//console.log(selectedVars);
-			var organizedParams = organizeParams(selectedVars);
+			var organizedParams = organizeParams(selectedVars, true);
 			console.log(organizedParams);
 			//return organizedParams;
 		}

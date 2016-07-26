@@ -14,18 +14,18 @@ define([
 
 	var ENDPOINT = module.config().acisStnMetaUrl;
 	var ELEMS = [
-			{code : 'maxt', description : 'Maximum temperature (F)'},
-			{code : 'mint', description : 'Minimum temperature (F)'},
-			{code : 'avgt', description : 'Average temperature (F)'},
-			{code : 'obst', description : 'Obs time temperature (F)'},
-			{code : 'pcpn', description : 'Precipitation (inches)'},
-			{code : 'snow', description : 'Snowfall (inches)'},
-			{code : 'snwd', description : 'Snow depth (inches)'},
-			{code : '13', description : 'Water equivalent of snow depth (inches)'},
-			{code : '7', description : 'Pan evaporation (inches)'},
-			{code : 'cdd', description : 'Cooling Degree Days (default base 65)'},
-			{code : 'hdd', description : 'Degree days below base (default base 65)'},
-			{code : 'gdd', description : 'Degree days above base (default base 50)'}
+			{code : 'maxt', description : 'Maximum temperature (F)', unit : 'F'},
+			{code : 'mint', description : 'Minimum temperature (F)', unit : 'F'},
+			{code : 'avgt', description : 'Average temperature (F)', unit : 'F'},
+			{code : 'obst', description : 'Obs time temperature (F)', unit : 'F'},
+			{code : 'pcpn', description : 'Precipitation (inches)', unit : 'inches'},
+			{code : 'snow', description : 'Snowfall (inches)', unit : 'inches'},
+			{code : 'snwd', description : 'Snow depth (inches)', unit : 'inches'},
+			{code : '13', description : 'Water equivalent of snow depth (inches)', unit : 'inches'},
+			{code : '7', description : 'Pan evaporation (inches)', unit : 'inches'},
+			{code : 'cdd', description : 'Cooling Degree Days (default base 65)', unit : 'days'},
+			{code : 'hdd', description : 'Degree days below base (default base 65)', unit : 'days'},
+			{code : 'gdd', description : 'Degree days above base (default base 50)', unit : 'days'}
 	];
 	var NETWORKS = [
 		{code : '1', name : 'WBAN'},
@@ -46,6 +46,7 @@ define([
 
 		parse : function(response) {
 			var sites = response.meta;
+			console.log(url);
 			log.debug('ACIS sites received: ' + sites.length);
 			return _.map(sites, function(site) {
 				// Use first sid when retrieving information.

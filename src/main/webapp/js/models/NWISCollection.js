@@ -153,11 +153,14 @@ define([
 			var deferred = $.Deferred();
 			$.ajax({
 				type : "GET",
-				url : 'pmcodes/?radio_pm_search=param_group&pm_group=Physical&format=rdb&show=parameter_nm',
+				url : 'pmcodes/?radio_pm_search=param_group&pm_group=Physical&format=rdb&show=parameter_nm,parameter_units',
 				dataType: 'text',
 				success: function(data) {
 					var parsedParams = rdbUtils.parseRDB(data);
-					self.parameterCodes = _.object(_.pluck(parsedParams, 'parameter_cd'), _.pluck(parsedParams, 'parameter_nm'));
+					self.parameterCodes = _.object(_.pluck(parsedParams, 'parameter_cd'),
+							_.pluck(parsedParams, 'parameter_nm'),
+							_.pluck(parsedParams, 'parameter_units')
+							);
 					log.debug('Fetched parameter codes ' + _.size(self.parameterCodes));
 					deferred.resolve();
 				},

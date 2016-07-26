@@ -1,4 +1,10 @@
-<div class="location-hint-div"><em>Click on the map to create a marker for your location. Drag the marker to change the location.</em>
+<div class="location-hint-div">
+        <em>
+            Click on the map to create a marker. 
+            Drag the marker to move it. 
+            You can also type in the fields below. 
+            Enter a radius and click Choose Data on the left when ready.
+        </em>
 </div>
 <div>
 	<div class="form-group">
@@ -11,7 +17,7 @@
 	</div>
 	<button class="btn btn-default btn-sm use-location-btn" type="button">Use my location</button>
 	<div class="form-group">
-		<label for="radius">Radius</label>
+		<label for="radius">Radius (km)</label>
 		<input id="radius" class="form-control" type="number" min="0" max="500" step="any" value="{{radius}}"/>
 	</div>
 	<div class="shapefile-upload-div"></div>

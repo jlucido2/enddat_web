@@ -18,7 +18,7 @@ define([
 	var view = BaseCollapsiblePanelView.extend({
 		template : hbTemplate,
 
-		panelHeading : 'Specify AOI Box',
+		panelHeading : 'Specify Area of Interest by Bounding Box',
 		panelBodyId : 'specify-aoi-box-panel-body',
 
 		initialize : function(options) {

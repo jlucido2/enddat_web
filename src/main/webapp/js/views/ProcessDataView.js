@@ -7,6 +7,8 @@ define([
 	'handlebars',
 	'bootstrap-datetimepicker',
 	'backbone.stickit',
+	'csv',
+	'filesaver',
 	'module',
 	'Config',
 	'utils/jqueryUtils',
@@ -14,8 +16,8 @@ define([
 	'views/VariableTsOptionView',
 	'hbs!hb_templates/processData',
 	'hbs!hb_templates/urlContainer'
-], function($, _, moment, Handlebars, datetimepicker, stickit, module, Config, $utils, BaseCollapsiblePanelView,
-	VariableTsOptionView, hbTemplate, urlContainerTemplate) {
+], function($, _, moment, Handlebars, datetimepicker, stickit, csv, filesaver, module, Config, $utils,
+	BaseCollapsiblePanelView, VariableTsOptionView, hbTemplate, urlContainerTemplate) {
 	"use strict";
 
 	var BASE_URL = module.config().baseUrl;
@@ -297,8 +299,6 @@ define([
 			var selectedVars = this.model.getSelectedVariables();
 			var organizedParams = organizeParams(selectedVars, true);
 			var dataUrls = getUrls(this.model, 0);
-			// console.log(organizedParams);
-			// console.log(dataUrls);
 			var tsvHeaders = ['station_id',
 			                  'station_name',
 			                  'longitude',
@@ -309,14 +309,22 @@ define([
 			                  'url'
 			                  ];
 			var paramKeys = _.keys(organizedParams);
-			// join dataUrls with organizedParams by key
 			_.map(paramKeys, function(paramKey) {
+				// join dataUrls with organizedParams by key
 				var paramUrl = dataUrls[paramKey];
 				var paramVarObject = organizedParams[paramKey];
 				paramVarObject.dataUrl = paramUrl;
+				// make the station code easily accessible
+				var stationId = paramKey.split('--')[1];
+				paramVarObject.stationId = stationId;
+				// make the variable information look presentable
+				paramVarObject.parameters = JSON.stringify(paramVarObject.parameters);
 			});
 			var organizedValues = _.values(organizedParams);
 			console.log(organizedValues);
+			var encoded = csv.encode(organizedValues, '\t');
+			var file = new File([encoded], 'sitemetadata.tsv', {type: 'type/tab-separated-values'});
+			saveAs(file);
 		}
 	});
 

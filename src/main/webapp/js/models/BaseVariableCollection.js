@@ -27,9 +27,6 @@ define([
 		 */
 		getSelectedVariables : function() {
 			return this.filter(function(model) {
-				//console.log('In getSelectedVariables:');
-				//var x = model.has('selected') && model.get('selected')
-				//console.log(x);
 				return model.has('selected') && model.get('selected');
 			});
 		},

@@ -22,7 +22,7 @@ define([
 	var view = BaseCollapsiblePanelView.extend({
 		template : hbTemplate,
 
-		panelHeading : 'Choose Data',
+		panelHeading : 'Choose Data Sources to Show Sites on the Map',
 		panelBodyId : 'choose-data-panel-body',
 
 		// Using the select2:selecting in order to intercept the event before the select2 is updated so that we can show

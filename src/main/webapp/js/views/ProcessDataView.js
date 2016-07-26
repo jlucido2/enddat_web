@@ -93,10 +93,10 @@ define([
 			// then return the values from the new object as an array
 			siteUrls = _.chain(siteOrganizedParams).mapObject(function(siteObject) {
 				return BASE_URL + 'service/execute?' + $.param(params.concat(siteObject.parameters));
-				}).values().value();
+				}).value();
 		}
 		else {
-			siteUrls = [dataProcessingUrl];
+			siteUrls = {'allSites' : dataProcessingUrl};
 		}
 		return siteUrls;
 	};
@@ -133,7 +133,7 @@ define([
 
 		initialize : function(options) {
 			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
-			this.maxUrlLength = options.maxUrlLength ? options.maxUrlLength : 2000; // max url character length before it gets broken down into urls by site
+			this.maxUrlLength = options.maxUrlLength ? options.maxUrlLength : 150; // max url character length before it gets broken down into urls by site
 		},
 
 		render : function() {
@@ -266,9 +266,8 @@ define([
 
 		showUrl : function(ev) {
 			var dataUrls = getUrls(this.model, this.maxUrlLength);
-			
 			ev.preventDefault();
-			this.context.dataUrls = dataUrls;
+			this.context.dataUrls = _.values(dataUrls);
 			$('.url-container').html(urlContainerTemplate({dataUrls : dataUrls})); // render content in the url-container div
 			var $message = this.$('#url-container-msg');
 			if (dataUrls.length > 1) {
@@ -298,8 +297,8 @@ define([
 			var selectedVars = this.model.getSelectedVariables();
 			var organizedParams = organizeParams(selectedVars, true);
 			var dataUrls = getUrls(this.model, 0);
-			console.log(organizedParams);
-			console.log(dataUrls);
+			// console.log(organizedParams);
+			// console.log(dataUrls);
 			var tsvHeaders = ['station_id',
 			                  'station_name',
 			                  'longitude',
@@ -308,8 +307,16 @@ define([
 			                  'elevation_units',
 			                  'variable_units',
 			                  'url'
-			                  ]
-			
+			                  ];
+			var paramKeys = _.keys(organizedParams);
+			// join dataUrls with organizedParams by key
+			_.map(paramKeys, function(paramKey) {
+				var paramUrl = dataUrls[paramKey];
+				var paramVarObject = organizedParams[paramKey];
+				paramVarObject.dataUrl = paramUrl;
+			});
+			var organizedValues = _.values(organizedParams);
+			console.log(organizedValues);
 		}
 	});
 

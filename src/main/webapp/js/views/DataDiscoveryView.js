@@ -5,6 +5,7 @@ define([
 	'underscore',
 	'Config',
 	'loglevel',
+	'bootstrap',
 	'utils/jqueryUtils',
 	'views/BaseView',
 	'views/NavView',
@@ -17,7 +18,7 @@ define([
 	'views/VariableSummaryView',
 	'views/ProcessDataView',
 	'hbs!hb_templates/dataDiscovery'
-], function (_, Config, log, $utils, BaseView, NavView, AlertView, MapView, LocationView, AOIBoxView, ChooseView,
+], function (_, Config, log, bootstrap, $utils, BaseView, NavView, AlertView, MapView, LocationView, AOIBoxView, ChooseView,
 		ChooseByVariableKindView, VariableSummaryView, ProcessDataView, hbTemplate) {
 	"use strict";
 
@@ -68,6 +69,7 @@ define([
 
 		render : function() {
 			BaseView.prototype.render.apply(this, arguments);
+			this.$('[data-toggle="tooltip"]').tooltip();
 			this.$(LOADING_SELECTOR).hide();
 
 			this.alertView.setElement(this.$(ALERTVIEW_SELECTOR));

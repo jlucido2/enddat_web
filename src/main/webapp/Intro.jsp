@@ -29,7 +29,7 @@
 	</head>
 	<body>
 		<jsp:include page="template/USGSHeader.jsp">
-			<jsp:param name="site-title" value="Environmental Data Discovery and Transformation" />
+			<jsp:param name="site-title" value="Environmental Data Discovery and Transformation - BETA" />
 		</jsp:include>
 
 

@@ -20,7 +20,7 @@ define([
 	var view = BaseCollapsiblePanelView.extend({
 		template : hbTemplate,
 
-		panelHeading : 'Specify Project Location',
+		panelHeading : 'Specify Project Location by Point and Radius',
 		panelBodyId : 'specify-project-location-panel-body',
 
 		additionalEvents : {

@@ -58,7 +58,8 @@ define([
 
 	var getUrls = function(workflowModel, maxUrlLength, download) {
 		var attrs = workflowModel.attributes;
-		var varParams = _.chain(workflowModel.getSelectedVariables())
+		var selectedVariables = workflowModel.getSelectedVariables();
+		var varParams = _.chain(selectedVariables)
 			.map(function(variable) {
 				return variable.get('variableParameter').getUrlParameters(variable.get('timeSeriesOptions'));
 			})
@@ -87,7 +88,7 @@ define([
 		var urlLength = dataProcessingUrl.length;
 		var siteUrls;
 		if (urlLength > maxUrlLength) {
-			var siteOrganizedParams = organizeParams(varParams);
+			var siteOrganizedParams = organizeParams(selectedVariables);
 			// take the site organized parameters and create a url for each site,
 			// then return the values from the new object as an array
 			siteUrls = _.chain(siteOrganizedParams).mapObject(function(siteObject) {
@@ -295,10 +296,20 @@ define([
 		
 		provideMetadata : function(ev) {
 			var selectedVars = this.model.getSelectedVariables();
-			//console.log(selectedVars);
 			var organizedParams = organizeParams(selectedVars, true);
+			var dataUrls = getUrls(this.model, 0);
 			console.log(organizedParams);
-			//return organizedParams;
+			console.log(dataUrls);
+			var tsvHeaders = ['station_id',
+			                  'station_name',
+			                  'longitude',
+			                  'latitude',
+			                  'elevation',
+			                  'elevation_units',
+			                  'variable_units',
+			                  'url'
+			                  ]
+			
 		}
 	});
 

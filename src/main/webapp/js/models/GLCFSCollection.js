@@ -89,7 +89,7 @@ define([
 					siteVar.y = y;
 					var sigma = -1; // not using any 3D datasets currently
 					var vectorOpts = ':::0'; // not doing any vector options currently
-					console.log(siteVar);
+
 					siteVar.variableParameter = new VariableParameter({
 						name : 'GRID',
 						siteNo : y + ':' + x,

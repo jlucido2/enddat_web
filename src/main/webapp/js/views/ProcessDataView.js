@@ -136,8 +136,9 @@ define([
 
 		initialize : function(options) {
 			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
-			this.maxUrlLength = options.maxUrlLength ? options.maxUrlLength : 2000; // max url character length before it gets broken down into urls by site
+			this.maxUrlLength = options.maxUrlLength ? options.maxUrlLength : 150; // max url character length before it gets broken down into urls by site
 		},
+
 
 		render : function() {
 			var self = this;
@@ -183,7 +184,7 @@ define([
 				maxDate : selectedVarsDateRange.end
 			});
 			this.listenTo(this.model, 'change:outputDateRange', this.updateOutputDateRangeInputs);
-			
+
 			return this;
 		},
 
@@ -211,7 +212,7 @@ define([
 
 		urlLengthBtnControl : function() {
 			var $message = this.$('#disabled-btn-msg');
-			var dataUrls = getUrls(this.model, this.maxUrlLength);
+			var dataUrls = _.values(getUrls(this.model, this.maxUrlLength));
 			var $getDataBtn = this.$('.get-data-btn');
 			var $downloadBtn = this.$('.download-data-btn');
 			if (dataUrls.length > 1) {
@@ -266,11 +267,11 @@ define([
 		},
 
 		showUrl : function(ev) {
-			var dataUrls = getUrls(this.model, this.maxUrlLength);
+			var dataUrls = _.values(getUrls(this.model, this.maxUrlLength));
 
 
 			ev.preventDefault();
-			this.context.dataUrls = _.values(dataUrls);
+			this.context.dataUrls = dataUrls;
 			$('.url-container').html(urlContainerTemplate({dataUrls : dataUrls})); // render content in the url-container div
 			var $message = this.$('#url-container-msg');
 			if (dataUrls.length > 1) {

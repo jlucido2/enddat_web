@@ -1,6 +1,6 @@
 /* jslint browser: true */
 
-/* global expect */
+/* global expect, spyOn */
 
 define([
 	'jquery',
@@ -21,6 +21,7 @@ define([
 			$testTable = $('#test-table');
 
 			testModel = new Backbone.Model();
+			testModel.set('selected', true);
 			testModel.set('variableParameter', new VariableParameter({
 				name : 'Dataset1',
 				colName : 'Column Name'
@@ -62,6 +63,7 @@ define([
 
 		describe('Model event listener tests', function() {
 			beforeEach(function() {
+				spyOn(testView, 'remove').and.callThrough();
 				testView.render();
 			});
 
@@ -115,6 +117,11 @@ define([
 				expect($rawInput.is(':checked')).toBe(true);
 				expect($minInput.val()).toEqual('24');
 				expect($maxInput.val()).toEqual('2');
+			});
+
+			it('Expects that if the model\'s selected property is changed, the view is removed', function() {
+				testModel.set('selected', false);
+				expect(testView.remove).toHaveBeenCalled();
 			});
 		});
 

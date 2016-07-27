@@ -135,7 +135,7 @@ define([
 
 		initialize : function(options) {
 			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
-			this.maxUrlLength = options.maxUrlLength ? options.maxUrlLength : 150; // max url character length before it gets broken down into urls by site
+			this.maxUrlLength = options.maxUrlLength ? options.maxUrlLength : 2000; // max url character length before it gets broken down into urls by site
 		},
 
 		render : function() {
@@ -298,8 +298,9 @@ define([
 		provideMetadata : function(ev) {
 			var selectedVars = this.model.getSelectedVariables();
 			var organizedParams = organizeParams(selectedVars, true);
-			var dataUrls = getUrls(this.model, 0);
+			var dataUrls = getUrls(this.model, 0); // create urls for each site regard of total URL length
 			var paramKeys = _.keys(organizedParams);
+			// prep the parameters to be rendered as a tsv
 			_.map(paramKeys, function(paramKey) {
 				// join dataUrls with organizedParams by key
 				var paramUrl = dataUrls[paramKey];
@@ -318,10 +319,10 @@ define([
 						var kvPairStr = kvPair[0] + ':' + kvPair[1];
 						return kvPairStr;
 					}).flatten().value();
-					return paramStr.join(';');
+					return paramStr.join(';'); // join metadata from the same site together with a semi-colon
 				});
-				paramVarObject.variables = varStr.join('||');
-				delete paramVarObject.parameters;
+				paramVarObject.variables = varStr.join('||'); // join site metadata together using a double-pipe
+				delete paramVarObject.parameters; // a bit nebulous and redundant... variable information is held in the variable property
 			});
 			var organizedValues = _.values(organizedParams);
 			var encoded = csv.encode(organizedValues, '\t');

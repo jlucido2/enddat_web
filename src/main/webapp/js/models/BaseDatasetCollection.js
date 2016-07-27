@@ -40,7 +40,6 @@ define([
 			return this.chain()
 				.map(function(datasetModel) {
 					var metaData = datasetModel.get('variables').getSelectedVariableMetadata();
-					//console.log(metaData);
 					return datasetModel.get('variables').getSelectedVariables();
 				})
 				.flatten()

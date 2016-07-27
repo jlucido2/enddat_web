@@ -73,10 +73,8 @@ define([
 		getSelectedVariableMetadata : function() {
 			var selectedVars = this.getSelectedVariables();
 			var selectedSites = _.map(selectedVars, function(selectedVar) {
-				//console.log(selectedVar);
 				return selectedVar.get("variableParameter");
 			});
-			//console.log(selectedSites);
 		},
 
 		/*

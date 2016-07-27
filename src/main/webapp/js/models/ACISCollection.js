@@ -49,7 +49,6 @@ define([
 			log.debug('ACIS sites received: ' + sites.length);
 			return _.map(sites, function(site) {
 				// Use first sid when retrieving information.
-				//console.log(site);
 				var sid = site.sids[0].split(' ')[0];
 				var variables = _.chain(site.valid_daterange)
 					.map(function(dateRange, varIndex) {
@@ -66,7 +65,7 @@ define([
 								latitude : site.ll[1],
 								longitude : site.ll[0],
 								elevation : site.elev,
-								elevationUnit : 'feet',
+								elevationUnit : 'ft',
 								variableUnit : result.unit
 							});
 						}

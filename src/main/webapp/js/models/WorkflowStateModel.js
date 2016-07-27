@@ -72,8 +72,6 @@ define([
 		 */
 		getSelectedVariables : function() {
 			var datasetCollections = this.get('datasetCollections');
-			//console.log('Dataset Collections:');
-			//console.log(datasetCollections);
 			return _.chain(datasetCollections)
 				.map(function(datasetCollection) {
 					return datasetCollection.getSelectedVariables();

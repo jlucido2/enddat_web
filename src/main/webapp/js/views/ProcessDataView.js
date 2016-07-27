@@ -22,7 +22,8 @@ define([
 
 	var BASE_URL = module.config().baseUrl;
 	
-	var organizeParams = function(selectedVariables, includeUnits=false){
+	var organizeParams = function(selectedVariables, includeUnits){
+		var includeUnits = includeUnits ? includeUnits : false;
 		var constructClassifer = function(selectedVariable) {
 			var varParams = selectedVariable.get('variableParameter');
 			var name = varParams.name;
@@ -181,15 +182,8 @@ define([
 				minDate : outputDateRange.start,
 				maxDate : selectedVarsDateRange.end
 			});
-			// do the initial check for URL length when rendering after the user selects data
-			this.urlLengthBtnControl();
 			this.listenTo(this.model, 'change:outputDateRange', this.updateOutputDateRangeInputs);
 			
-			var variableModels = this.model.getSelectedVariables();
-			_.each(variableModels, function(variableModel) {
-				this.listenTo(variableModel, 'change', this.urlLengthBtnControl);
-			},
-			this);
 			return this;
 		},
 

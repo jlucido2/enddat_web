@@ -13,7 +13,7 @@ define([
 	'models/BaseVariableCollection',
 	'views/BaseView'
 ], function(Squire, $, _, moment, Config, datetimepicker, VariableParameter, WorkflowStateModel, BaseVariableCollection, BaseView) {
-	describe('views/ProcessDataView', function() {
+	fdescribe('views/ProcessDataView', function() {
 		"use strict";
 		var testView, ProcessDataView;
 		var $testDiv;

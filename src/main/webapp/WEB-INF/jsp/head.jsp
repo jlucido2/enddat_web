@@ -33,7 +33,7 @@
 
 <link rel="shortcut icon" type="image/ico" href="img/favicon.ico">
 <jsp:include page="/template/USGSHead.jsp">
-	<jsp:param name="shortName" value="Environmental Data Discovery and Transformation Service"/>
+	<jsp:param name="shortName" value="Environmental Data Discovery and Transformation Service - BETA"/>
 	<jsp:param name="title" value="EnDDaT" />
 	<jsp:param name="description" value="EnDDaT is a data discovery, aggregation, and processing tool for scientific modelers focusing on Great Lakes beaches." />
 	<jsp:param name="author" value="" />

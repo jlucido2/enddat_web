@@ -20,7 +20,7 @@ define([
 
 		template : hbTemplate,
 
-		panelHeading : 'Choose Data',
+		panelHeading : 'Choose Data Variables of Interest',
 		panelBodyId : 'choose-by-variable-panel-body',
 
 		additionalEvents : {

@@ -299,15 +299,6 @@ define([
 			var selectedVars = this.model.getSelectedVariables();
 			var organizedParams = organizeParams(selectedVars, true);
 			var dataUrls = getUrls(this.model, 0);
-			var tsvHeaders = ['station_id',
-			                  'station_name',
-			                  'longitude',
-			                  'latitude',
-			                  'elevation',
-			                  'elevation_units',
-			                  'variable_units',
-			                  'url'
-			                  ];
 			var paramKeys = _.keys(organizedParams);
 			_.map(paramKeys, function(paramKey) {
 				// join dataUrls with organizedParams by key
@@ -318,10 +309,21 @@ define([
 				var stationId = paramKey.split('--')[1];
 				paramVarObject.stationId = stationId;
 				// make the variable information look presentable
-				paramVarObject.parameters = JSON.stringify(paramVarObject.parameters);
+				var varStr = _.map(paramVarObject.parameters, function(paramObject) {
+					paramObject.variableName = paramObject.value.split('!')[1].split(':')[0];
+					paramObject.dataSet = paramObject.name;
+					var paramSubset = _.omit(paramObject, 'name', 'siteNo', 'value'); // omit redundant keys from the parameters
+					// convert object key pairs to delimited strings
+					var paramStr = _.chain(paramSubset).pairs().map(function(kvPair) {
+						var kvPairStr = kvPair[0] + ':' + kvPair[1];
+						return kvPairStr;
+					}).flatten().value();
+					return paramStr.join(';');
+				});
+				paramVarObject.variables = varStr.join('||');
+				delete paramVarObject.parameters;
 			});
 			var organizedValues = _.values(organizedParams);
-			console.log(organizedValues);
 			var encoded = csv.encode(organizedValues, '\t');
 			var file = new File([encoded], 'sitemetadata.tsv', {type: 'type/tab-separated-values'});
 			saveAs(file);

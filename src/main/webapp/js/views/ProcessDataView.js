@@ -120,6 +120,9 @@ define([
 
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
 			this.stickit();
+			// do the initial check for URL length when rendering after the user selects data
+			this.urlLengthBtnControl();
+
 			$tbody = this.$('tbody');
 			this.variableTsOptionViews = [];
 			_.each(selectedVariableModels, function(variableModel) {
@@ -132,6 +135,8 @@ define([
 				$tbody.append($newRow);
 				optionView.render();
 				self.variableTsOptionViews.push(optionView);
+
+				self.listenTo(variableModel, 'change', self.urlLengthBtnControl);
 			});
 
 			//Set up date pickers
@@ -149,15 +154,8 @@ define([
 				minDate : outputDateRange.start,
 				maxDate : selectedVarsDateRange.end
 			});
-			// do the initial check for URL length when rendering after the user selects data
-			this.urlLengthBtnControl();
 			this.listenTo(this.model, 'change:outputDateRange', this.updateOutputDateRangeInputs);
-			
-			var variableModels = this.model.getSelectedVariables();
-			_.each(variableModels, function(variableModel) {
-				this.listenTo(variableModel, 'change', this.urlLengthBtnControl);
-			},
-			this);
+
 			return this;
 		},
 
@@ -182,7 +180,7 @@ define([
 			$endDate.data('DateTimePicker').minDate(outputDateRange.start);
 			$endDate.data('DateTimePicker').date(outputDateRange.end);
 		},
-		
+
 		urlLengthBtnControl : function() {
 			var $message = this.$('#disabled-btn-msg');
 			var dataUrls = getUrls(this.model, this.maxUrlLength);
@@ -200,7 +198,7 @@ define([
 				$getDataBtn.prop("disabled", false);
 				$downloadBtn.prop("disabled", false);
 				$message.html('');
-			}				
+			}
 		},
 
 		/*
@@ -241,7 +239,7 @@ define([
 
 		showUrl : function(ev) {
 			var dataUrls = getUrls(this.model, this.maxUrlLength);
-			
+
 			ev.preventDefault();
 			this.context.dataUrls = dataUrls;
 			$('.url-container').html(urlContainerTemplate({dataUrls : dataUrls})); // render content in the url-container div

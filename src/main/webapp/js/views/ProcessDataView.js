@@ -294,12 +294,12 @@ define([
 
 		getData : function(ev) {
 			ev.preventDefault();
-			window.open(getUrls(this.model, this.maxUrlLength)[0], '_blank'); // grab first item in the array
+			window.open(_.values(getUrls(this.model, this.maxUrlLength))[0], '_blank'); // grab first item in the array
 		},
 
 		downloadData : function(ev) {
 			ev.preventDefault();
-			window.location.assign(getUrls(this.model, this.maxUrlLength, true)[0]); // grab first item in the array
+			window.location.assign(_.values(getUrls(this.model, this.maxUrlLength, true))[0]); // grab first item in the array
 		},
 		
 		provideMetadata : function(ev) {

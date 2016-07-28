@@ -12,9 +12,12 @@ define([
 	'bootstrap-datetimepicker',
 	'utils/VariableParameter',
 	'models/WorkflowStateModel',
+	'models/BaseDatasetCollection',
 	'models/BaseVariableCollection',
 	'views/BaseView'
-], function(Squire, $, _, moment, csv, filesaver, Config, datetimepicker, VariableParameter, WorkflowStateModel, BaseVariableCollection, BaseView) {
+], function(Squire, $, _, moment, csv, filesaver, Config, datetimepicker, VariableParameter,
+	WorkflowStateModel, BaseDatasetCollection, BaseVariableCollection, BaseView) {
+	
 	describe('views/ProcessDataView', function() {
 		"use strict";
 		var testView, ProcessDataView;
@@ -410,6 +413,28 @@ define([
 
 				beforeEach(function() {
 					testModel.set({
+						datasetCollections : {
+							NWIS : new BaseDatasetCollection([
+          						{siteNo : '04453',
+          						 variables : new BaseVariableCollection([
+          								{selected : true, x : 1, variableParameter : {siteNo : '04453'}},
+          								{selected : true, x : 2, variableParameter : {siteNo : '04453'}}
+          						])},
+          						{siteNo : '12399',
+          						 variables : new BaseVariableCollection([
+          								{x: 3, variableParameter : {siteNo : '12399'}}
+          						])}
+          					]),
+          					GLCFS : new BaseDatasetCollection([
+          					    {lake : ''}
+          					    ]),
+          					PRECIP : new BaseDatasetCollection([
+          						{siteNo : '9:56',
+          						 variables : new BaseVariableCollection([
+          							{selected: true, x : 4, variableParameter : {siteNo : '9:56'}}
+          						])}
+          					])
+          				},     				
 						outputFileFormat : 'tab',
 						outputDateFormat : 'Excel',
 						outputTimeZone : '0_GMT',
@@ -464,6 +489,12 @@ define([
 					spyOn(window, 'open');
 					$testDiv.find('.get-data-btn').trigger('click');
 					expect(isExpectedUrl(window.open.calls.argsFor(0)[0])).toBe(true);
+				});
+				
+				xit('Expects that saveAs is called when download metadata is clicked', function() {
+					spyOn(window, 'saveAs');
+					$testDiv.find('.download-site-metadata').trigger('click');
+					expect(saveAs).toHaveBeenCalled();
 				});
 			});
 		});

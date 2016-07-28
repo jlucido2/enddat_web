@@ -25,25 +25,25 @@ define([
 	 * http://tds.glos.us/thredds/dodsC/glos/glcfs/archivecurrent/michigan/nowcast-forcing-fmrc-2d/Lake_Michigan_-_Nowcast_Forcing_-_2D_-_Current_Year_best.ncd.html
 	 */
 	var DATA_VARS = [
-		{dataset : 0, code : 'ci', description : 'Ice Concentration (fraction)', unit : 'fraction'},
-		{dataset : 0, code : 'depth', description : 'Bathymetry (meters)', unit : 'm'},
-		{dataset : 0, code : 'eta', description : 'Height Above Model Sea Level (meters)', unit : 'm'},
-		{dataset : 0, code : 'hi', description : 'Ice Thickness (meters)', unit : 'm'},
-		{dataset : 0, code : 'uc', description : 'Eastward Water Velocity at Surface (m/s)', unit : 'm/s'},
-		{dataset : 0, code : 'ui', description : 'Ice u-velocity (m/s)', unit : 'm/s'},
-		{dataset : 0, code : 'utm', description : 'Depth-Averaged Eastward Water Velocity (m/s)', unit : 'm/s'},
-		{dataset : 0, code : 'vc', description : 'Northward Water Velocity at Surface (m/s)', unit : 'm/s'},
-		{dataset : 0, code : 'vi', description : 'Ice v-velocity (m/s)', unit : 'm/s'},
-		{dataset : 0, code : 'vtm', description : 'Depth-Averaged Northward Water Velocity (m/s)', unit : 'm/s'},
-		{dataset : 0, code : 'wvd', description : 'Wave Direction (Degrees, Oceanographic Convention, 0=toward N, 90=toward E)', unit : 'Degrees, Oceanographic Convention, 0=toward N, 90=toward E'},
-		{dataset : 0, code : 'wvh', description : 'Significant Wave Height (meters)', unit : 'm'},
-		{dataset : 0, code : 'wvp', description : 'Wave Period (seconds)', unit : 's'},
-		{dataset : 1, code : 'air_u', description : 'Eastward Air Velocity (m/s)', unit : 'm/s'},
-		{dataset : 1, code : 'air_v', description : 'Northward Air Velocity (m/s)', unit : 'm/s'},
-		{dataset : 1, code : 'at', description : 'Air Temperature (Celsius)', unit : 'C'},
-		{dataset : 1, code : 'cl', description : 'Cloud Cover (fraction)', unit : 'fraction'},
-		{dataset : 1, code : 'depth', description : 'Bathymetry (meters)', unit : 'm'},
-		{dataset : 1, code : 'dp', description : 'Dew Point (Celsius)', unit : 'C'}
+		{dataset : 0, code : 'ci', description : 'Ice Concentration (fraction)', variableUnit : 'fraction'},
+		{dataset : 0, code : 'depth', description : 'Bathymetry (meters)', variableUnit : 'm'},
+		{dataset : 0, code : 'eta', description : 'Height Above Model Sea Level (meters)', variableUnit : 'm'},
+		{dataset : 0, code : 'hi', description : 'Ice Thickness (meters)', variableUnit : 'm'},
+		{dataset : 0, code : 'uc', description : 'Eastward Water Velocity at Surface (m/s)', variableUnit : 'm/s'},
+		{dataset : 0, code : 'ui', description : 'Ice u-velocity (m/s)', variableUnit : 'm/s'},
+		{dataset : 0, code : 'utm', description : 'Depth-Averaged Eastward Water Velocity (m/s)', variableUnit : 'm/s'},
+		{dataset : 0, code : 'vc', description : 'Northward Water Velocity at Surface (m/s)', variableUnit : 'm/s'},
+		{dataset : 0, code : 'vi', description : 'Ice v-velocity (m/s)', variableUnit : 'm/s'},
+		{dataset : 0, code : 'vtm', description : 'Depth-Averaged Northward Water Velocity (m/s)', variableUnit : 'm/s'},
+		{dataset : 0, code : 'wvd', description : 'Wave Direction (Degrees, Oceanographic Convention, 0=toward N, 90=toward E)', variableUnit : 'Degrees, Oceanographic Convention, 0=toward N, 90=toward E'},
+		{dataset : 0, code : 'wvh', description : 'Significant Wave Height (meters)', variableUnit : 'm'},
+		{dataset : 0, code : 'wvp', description : 'Wave Period (seconds)', variableUnit : 's'},
+		{dataset : 1, code : 'air_u', description : 'Eastward Air Velocity (m/s)', variableUnit : 'm/s'},
+		{dataset : 1, code : 'air_v', description : 'Northward Air Velocity (m/s)', variableUnit : 'm/s'},
+		{dataset : 1, code : 'at', description : 'Air Temperature (Celsius)', variableUnit : 'C'},
+		{dataset : 1, code : 'cl', description : 'Cloud Cover (fraction)', variableUnit : 'fraction'},
+		{dataset : 1, code : 'depth', description : 'Bathymetry (meters)', variableUnit : 'm'},
+		{dataset : 1, code : 'dp', description : 'Dew Point (Celsius)', variableUnit : 'C'}
 	];
 
 	var getInteger = function(str) {
@@ -90,7 +90,6 @@ define([
 					siteVar.y = y;
 					var sigma = -1; // not using any 3D datasets currently
 					var vectorOpts = ':::0'; // not doing any vector options currently
-
 					siteVar.variableParameter = new VariableParameter({
 						name : datasetName,
 						siteNo : y + ':' + x,

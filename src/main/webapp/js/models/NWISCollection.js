@@ -100,6 +100,7 @@ define([
 									startDate : moment(variable.begin_date, DATE_FORMAT),
 									endDate : moment(variable.end_date, DATE_FORMAT),
 									count : variable.count_nu,
+									variableUnit : pUnits,
 									variableParameter : new VariableParameter({
 										name : datasetName,
 										siteNo: variable.site_no,

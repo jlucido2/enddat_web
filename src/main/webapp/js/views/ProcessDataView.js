@@ -22,6 +22,18 @@ define([
 
 	var BASE_URL = module.config().baseUrl;
 	
+	var organizeVariables = function(selectedVariables) {
+		var constructClassifer = function(selectedVariable) {
+			var varParams = selectedVariable.get('variableParameter');
+			var name = varParams.name;
+			var siteNo = varParams.siteNo;
+			var classifier = name + '--' + siteNo;
+			return classifier;
+		};
+		var siteOrganizedVarModels = _.groupBy(selectedVariables, constructClassifer);
+		return siteOrganizedVarModels;
+	};
+	
 	var organizeParams = function(selectedVariables, includeUnits){
 		var includeUnits = includeUnits ? includeUnits : false;
 		var constructClassifer = function(selectedVariable) {
@@ -304,12 +316,19 @@ define([
 			});
 			var organizedSites = _.object(siteIdentifiers, sitesWithSelectedVariables);
 			var selectedVariables = this.model.getSelectedVariables();
-			var organizedParams = organizeParams(selectedVariables, true);
+			var organizedVariables = organizeVariables(selectedVariables);
+			var organizedParams = _.mapObject(organizedVariables, function(siteVariables) {
+				var siteVariableParmeters = _.map(siteVariables, function(siteVariable) {
+					console.log(siteVariable);
+					return siteVariable.get('variableParameter').getUrlParameters(siteVariable.get('timeSeriesOptions'));
+				});
+				return _.flatten(siteVariableParmeters);
+			});
 			var dataUrls = getUrls(this.model, 0);
 			var paramKeys = _.keys(organizedParams);
 			var output = _.map(paramKeys, function(paramKey) {
 				var siteModel = organizedSites[paramKey];
-				var siteVariables = organizedParams[paramKey];
+				var siteVariables = organizedVariables[paramKey];
 				// get data URL
 				var siteUrl = dataUrls[paramKey];
 				// get site metadata
@@ -321,9 +340,9 @@ define([
 				var siteElevation = siteModel.get('elevation');
 				var siteElevationUnit = siteModel.get('elevationUnit');
 				// get variable metadata
-				var varMetadata = _.map(siteVariables.parameters, function(parameter) {
-					var variableName = parameter.value.split('!')[1].split(':')[0];
-					var variableUnit = parameter.variableUnit;
+				var varMetadata = _.map(siteVariables, function(siteVariable) {
+					var variableName = siteVariable.get('name') ? variableName : siteVariable.get('description');
+					var variableUnit = siteVariable.get('variableUnit');
 					var variableDataStr = 'variableName:' + variableName + ';variableUnit:' + variableUnit;
 					return variableDataStr;
 				})
@@ -350,7 +369,6 @@ define([
 				            ];
 				return _.object(headers, data);
 			});
-			console.log(output);
 			var encoded = csv.encode(output, '\t')
 			var blob = new Blob([encoded], {type : 'tab-separated-values'});
 			saveAs(blob, 'sitemetadata.tsv');

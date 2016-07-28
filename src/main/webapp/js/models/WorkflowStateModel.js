@@ -83,7 +83,6 @@ define([
 		getSitesWithSelectedVariables : function() {
 			var datasetCollections = this.get('datasetCollections');
 			var selectedSites = _.chain(datasetCollections).map(function(datasetCollection) {
-				console.log(datasetCollection);
 				var selectedVariables = datasetCollection.getSelectedVariables();
 				var datasetCollectionSelectedSites = _.map(selectedVariables, function(selectedVariable) {
 					return selectedVariable.get('variableParameter').siteNo;

@@ -60,13 +60,8 @@ define([
 							result.variableParameter = new VariableParameter({
 								name : datasetName,
 								siteNo : sid,
-								siteName : site.name,
 								value : sid + ':' +  result.code,
 								colName : result.description + ':' + sid,
-								latitude : site.ll[1],
-								longitude : site.ll[0],
-								elevation : site.elev,
-								elevationUnit : 'ft',
 								variableUnit : result.unit
 							});
 						}
@@ -88,6 +83,8 @@ define([
 				return {
 					lon : site.ll[0],
 					lat : site.ll[1],
+					elevation : site.elev,
+					elevationUnit : 'ft',
 					name : site.name,
 					sid : sid,
 					siteNo : sid,

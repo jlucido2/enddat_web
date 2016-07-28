@@ -94,13 +94,8 @@ define([
 					siteVar.variableParameter = new VariableParameter({
 						name : datasetName,
 						siteNo : y + ':' + x,
-						siteName : y + ':' + x,
 						value : y + ':' + x + ':' + sigma + ':' + siteVar.dataset + ':' + siteVar.code + vectorOpts,
 						colName : siteVar.description + ': [' + x + ',' + y + ']',
-						latitude : $utils.xmlFind($this, 'sb', 'X2').text(),
-						longitude : $utils.xmlFind($this, 'sb', 'X1').text(),
-						elevation : null,
-						elevationUnit : null,
 						variableUnit : siteVar.unit
 					});
 					return siteVar;
@@ -109,6 +104,8 @@ define([
 				result.push({
 					lon : $utils.xmlFind($this, 'sb', 'X1').text(),
 					lat : $utils.xmlFind($this, 'sb', 'X2').text(),
+					elevation : null,
+					elevationUnit : null,
 					siteNo : y + ':' + x,
 					name : y + ':' + x,
 					datasetName : datasetName,

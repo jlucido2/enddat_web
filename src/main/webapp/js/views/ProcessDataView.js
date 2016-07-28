@@ -120,7 +120,7 @@ define([
 			'click .show-url-btn' : 'showUrl',
 			'click .get-data-btn' : 'getData',
 			'click .download-data-btn' : 'downloadData',
-			'click .download-site-metadata' : 'provideMetadata2',
+			'click .download-site-metadata' : 'provideMetadata',
 			//To set the model value from a datetimepicker, hand
 			'dp.change #output-start-date-div' : 'changeOutputStartDate',
 			'dp.change #output-end-date-div' : 'changeOutputEndDate'
@@ -297,44 +297,66 @@ define([
 			window.location.assign(_.values(getUrls(this.model, this.maxUrlLength, true))[0]); // grab first item in the array
 		},
 		
-		provideMetadata2 : function(ev) {
-			var sitesWithSelectedVariables = this.model.getSitesWithSelectedVariables();
-			console.log(sitesWithSelectedVariables);
-		},
-		
 		provideMetadata : function(ev) {
-			var selectedVars = this.model.getSelectedVariables();
-			var organizedParams = organizeParams(selectedVars, true);
-			var dataUrls = getUrls(this.model, 0); // create urls for each site regard of total URL length
-			var paramKeys = _.keys(organizedParams);
-			// prep the parameters to be rendered as a tsv
-			_.map(paramKeys, function(paramKey) {
-				// join dataUrls with organizedParams by key
-				var paramUrl = dataUrls[paramKey];
-				var paramVarObject = organizedParams[paramKey];
-				paramVarObject.dataUrl = paramUrl;
-				// make the station code easily accessible
-				var stationId = paramKey.split('--')[1];
-				paramVarObject.stationId = stationId;
-				// make the variable information look presentable
-				var varStr = _.map(paramVarObject.parameters, function(paramObject) {
-					paramObject.variableName = paramObject.value.split('!')[1].split(':')[0];
-					paramObject.dataSet = paramObject.name;
-					var paramSubset = _.omit(paramObject, 'name', 'siteNo', 'value'); // omit redundant keys from the parameters
-					// convert object key pairs to delimited strings
-					var paramStr = _.chain(paramSubset).pairs().map(function(kvPair) {
-						var kvPairStr = kvPair[0] + ':' + kvPair[1];
-						return kvPairStr;
-					}).flatten().value();
-					return paramStr.join(';'); // join metadata from the same site together with a semi-colon
-				});
-				paramVarObject.variables = varStr.join('||'); // join site metadata together using a double-pipe
-				delete paramVarObject.parameters; // a bit nebulous and redundant... variable information is held in the variable property
+			var sitesWithSelectedVariables = this.model.getSitesWithSelectedVariables();
+			var siteIdentifiers = _.map(sitesWithSelectedVariables, function(siteModel) {
+				return siteModel.get('datasetName') + '--' + siteModel.get('siteNo');
 			});
-			var organizedValues = _.values(organizedParams);
-			var encoded = csv.encode(organizedValues, '\t');
-			var file = new File([encoded], 'sitemetadata.tsv', {type: 'type/tab-separated-values'});
-			saveAs(file);
+			var organizedSites = _.object(siteIdentifiers, sitesWithSelectedVariables);
+			console.log(organizedSites);
+			var selectedVariables = this.model.getSelectedVariables();
+			var organizedParams = organizeParams(selectedVariables, true);
+			console.log(organizedParams);
+			var dataUrls = getUrls(this.model, 0);
+			console.log(dataUrls);
+			var paramKeys = _.keys(organizedParams);
+			var output = _.map(paramKeys, function(paramKey) {
+				var siteModel = organizedSites[paramKey];
+				var siteVariables = organizedParams[paramKey];
+				// get data URL
+				var siteUrl = dataUrls[paramKey];
+				// get site metadata
+				var siteDataset = siteModel.get('datasetName');
+				var siteName = siteModel.get('name');
+				var siteNo = siteModel.get('siteNo');
+				var siteLat = siteModel.get('lat');
+				var siteLon = siteModel.get('lon');
+				var siteElevation = siteModel.get('elevation');
+				var siteElevationUnit = siteModel.get('elevationUnit');
+				// get variable metadata
+				var varMetadata = _.map(siteVariables.parameters, function(parameter) {
+					var variableName = parameter.value.split('!')[1].split(':')[0];
+					var variableUnit = parameter.variableUnit;
+					var variableDataStr = 'variableName:' + variableName + ';variableUnit:' + variableUnit;
+					return variableDataStr;
+				})
+				.join('||');
+				var headers = ['dataset',
+				               'siteNo',
+				               'siteName',
+				               'longitude',
+				               'latitude',
+				               'elevation',
+				               'elevationUnit',
+				               'variables',
+				               'url'
+				               ];
+				var data = [siteDataset,
+				            siteNo,
+				            siteName,
+				            siteLon,
+				            siteLat,
+				            siteElevation,
+				            siteElevationUnit,
+				            varMetadata,
+				            siteUrl
+				            ];
+				return _.object(headers, data);
+			});
+			console.log(output);
+			var encoded = csv.encode(output, '\t')
+			var blob = new Blob([encoded], {type : 'tab-separated-values'});
+			saveAs(blob, 'sitemetadata.tsv');
 		}
 	});
 

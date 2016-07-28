@@ -54,6 +54,8 @@ define([
 				result.push({
 					lon : $utils.xmlFind($this, 'sb', 'X1').text(),
 					lat : $utils.xmlFind($this, 'sb', 'X2').text(),
+					elevation : null,
+					elevationUnit : null,
 					siteNo : y + ':' + x,
 					name : y + ':' + x,
 					datasetName : datasetName,
@@ -65,14 +67,9 @@ define([
 							endDate : today,
 							variableParameter : new VariableParameter({
 								name : datasetName,
-								siteNo: y + ':' + x,
-								siteName : y + ':' + x,
+								site_id: y + ':' + x,
 								value : y + ':' + x + ':' + self.timeBounds + ':' + variableId,
 								colName : variableName + ' [' + y + ',' + x + ']',
-								latitude : $utils.xmlFind($this, 'sb', 'X2').text(),
-								longitude : $utils.xmlFind($this, 'sb', 'X1').text(),
-								elevation : null,
-								elevationUnit : null,
 								variableUnit : 'kg m^-2'
 							})
 						}

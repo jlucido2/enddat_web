@@ -102,13 +102,8 @@ define([
 									variableParameter : new VariableParameter({
 										name : datasetName,
 										siteNo: variable.site_no,
-										siteName : variable.station_nm,
 										value : variable.site_no + ':' + variable.parm_cd + ':' +  statCd,
 										colName : name + ':' + variable.site_no,
-										latitude : variable.dec_lat_va,
-										longitude : variable.dec_long_va,
-										elevation : null,
-										elevationUnit : null,
 										variableUnit : pUnits
 									})
 								};
@@ -125,6 +120,8 @@ define([
 								name : siteParameterData[0].station_nm,
 								lat : siteParameterData[0].dec_lat_va,
 								lon : siteParameterData[0].dec_long_va,
+								elevation : siteParameterData[0].alt_va,
+								elevationUnit : 'ft',
 								variables : new BaseVariableCollection(variables)
 							};
 							return result;

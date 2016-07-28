@@ -46,6 +46,7 @@ define([
 
 		parse : function(response) {
 			var sites = response.meta;
+			var datasetName = 'ACIS';
 			log.debug('ACIS sites received: ' + sites.length);
 			return _.map(sites, function(site) {
 				// Use first sid when retrieving information.
@@ -57,7 +58,7 @@ define([
 							result.startDate = moment(dateRange[0], Config.DATE_FORMAT);
 							result.endDate = moment(dateRange[1], Config.DATE_FORMAT);
 							result.variableParameter = new VariableParameter({
-								name : 'ACIS',
+								name : datasetName,
 								siteNo : sid,
 								siteName : site.name,
 								value : sid + ':' +  result.code,
@@ -89,6 +90,8 @@ define([
 					lat : site.ll[1],
 					name : site.name,
 					sid : sid,
+					siteNo : sid,
+					datasetName : datasetName,
 					networks : _.map(site.sids, getNetwork),
 					variables : new BaseVariableCollection(variables)
 				};

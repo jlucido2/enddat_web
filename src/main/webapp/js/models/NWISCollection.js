@@ -56,7 +56,8 @@ define([
 						var siteDataBySiteNo = _.groupBy(parsedSites, function(site) {
 							return site.site_no;
 						});
-
+						var datasetName = 'NWIS';
+						
 						var parseVariables = function(rawVariables) {
 							var parseVariable = function(variable) {
 								var name = '';
@@ -99,7 +100,7 @@ define([
 									endDate : moment(variable.end_date, DATE_FORMAT),
 									count : variable.count_nu,
 									variableParameter : new VariableParameter({
-										name : 'NWIS',
+										name : datasetName,
 										siteNo: variable.site_no,
 										siteName : variable.station_nm,
 										value : variable.site_no + ':' + variable.parm_cd + ':' +  statCd,
@@ -119,6 +120,7 @@ define([
 							var variables = parseVariables(siteParameterData);
 
 							var result= {
+								datasetName : datasetName,
 								siteNo : siteParameterData[0].site_no,
 								name : siteParameterData[0].station_nm,
 								lat : siteParameterData[0].dec_lat_va,

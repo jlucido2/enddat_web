@@ -120,7 +120,7 @@ define([
 			'click .show-url-btn' : 'showUrl',
 			'click .get-data-btn' : 'getData',
 			'click .download-data-btn' : 'downloadData',
-			'click .download-site-metadata' : 'provideMetadata',
+			'click .download-site-metadata' : 'provideMetadata2',
 			//To set the model value from a datetimepicker, hand
 			'dp.change #output-start-date-div' : 'changeOutputStartDate',
 			'dp.change #output-end-date-div' : 'changeOutputEndDate'
@@ -295,6 +295,11 @@ define([
 		downloadData : function(ev) {
 			ev.preventDefault();
 			window.location.assign(_.values(getUrls(this.model, this.maxUrlLength, true))[0]); // grab first item in the array
+		},
+		
+		provideMetadata2 : function(ev) {
+			var sitesWithSelectedVariables = this.model.getSitesWithSelectedVariables();
+			console.log(sitesWithSelectedVariables);
 		},
 		
 		provideMetadata : function(ev) {

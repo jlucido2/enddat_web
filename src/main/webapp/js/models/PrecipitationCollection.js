@@ -44,6 +44,7 @@ define([
 			var result = [];
 			var today = moment();
 			var self = this;
+			var datasetName = 'Precip';
 
 			$utils.xmlFind($(xml), 'wfs', 'member').each(function() {
 				var $this = $(this);
@@ -53,6 +54,9 @@ define([
 				result.push({
 					lon : $utils.xmlFind($this, 'sb', 'X1').text(),
 					lat : $utils.xmlFind($this, 'sb', 'X2').text(),
+					siteNo : y + ':' + x,
+					name : y + ':' + x,
+					datasetName : datasetName,
 					variables : new BaseVariableCollection([
 						{
 							x : x,
@@ -60,7 +64,7 @@ define([
 							startDate : START_DATE,
 							endDate : today,
 							variableParameter : new VariableParameter({
-								name : 'Precip',
+								name : datasetName,
 								siteNo: y + ':' + x,
 								siteName : y + ':' + x,
 								value : y + ':' + x + ':' + self.timeBounds + ':' + variableId,

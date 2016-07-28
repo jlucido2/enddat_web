@@ -75,6 +75,7 @@ define([
 		parse : function(xml) {
 			var result = [];
 			var today = moment();
+			var datasetName = 'GRID';
 
 			$utils.xmlFind($(xml), 'wfs', 'member').each(function() {
 				var $this = $(this);
@@ -91,7 +92,7 @@ define([
 					var vectorOpts = ':::0'; // not doing any vector options currently
 
 					siteVar.variableParameter = new VariableParameter({
-						name : 'GRID',
+						name : datasetName,
 						siteNo : y + ':' + x,
 						siteName : y + ':' + x,
 						value : y + ':' + x + ':' + sigma + ':' + siteVar.dataset + ':' + siteVar.code + vectorOpts,
@@ -108,6 +109,9 @@ define([
 				result.push({
 					lon : $utils.xmlFind($this, 'sb', 'X1').text(),
 					lat : $utils.xmlFind($this, 'sb', 'X2').text(),
+					siteNo : y + ':' + x,
+					name : y + ':' + x,
+					datasetName : datasetName,
 					variables : new BaseVariableCollection(variables)
 				});
 			});

@@ -6,13 +6,15 @@ define([
 	'jquery',
 	'underscore',
 	'moment',
+	'csv',
+	'filesaver',
 	'Config',
 	'bootstrap-datetimepicker',
 	'utils/VariableParameter',
 	'models/WorkflowStateModel',
 	'models/BaseVariableCollection',
 	'views/BaseView'
-], function(Squire, $, _, moment, Config, datetimepicker, VariableParameter, WorkflowStateModel, BaseVariableCollection, BaseView) {
+], function(Squire, $, _, moment, csv, filesaver, Config, datetimepicker, VariableParameter, WorkflowStateModel, BaseVariableCollection, BaseView) {
 	describe('views/ProcessDataView', function() {
 		"use strict";
 		var testView, ProcessDataView;
@@ -462,6 +464,14 @@ define([
 					spyOn(window, 'open');
 					$testDiv.find('.get-data-btn').trigger('click');
 					expect(isExpectedUrl(window.open.calls.argsFor(0)[0])).toBe(true);
+				});
+				
+				fit('Expects that the metadata save proceeds as expected', function() {
+					spyOn(window, 'saveAs');
+					spyOn(window, 'File');
+					$testDiv.find('.download-site-metadata').trigger('click');
+					expect(File).toHaveBeenCalled();
+					expect(saveAs).toHaveBeenCalled();
 				});
 			});
 		});

@@ -98,6 +98,11 @@ define([
 				var variableCollection0 = testCollection.at(0);
 				expect(variableCollection0.attributes.lat).toEqual('42');
 				expect(variableCollection0.attributes.lon).toEqual('-87');
+				expect(variableCollection0.attributes.elevation).toBe(null);
+				expect(variableCollection0.attributes.elevationUnit).toBe(null);
+				expect(variableCollection0.attributes.siteNo).toBe('19:16');
+				expect(variableCollection0.attributes.name).toBe('19:16');
+				expect(variableCollection0.attributes.datasetName).toBe('GRID');
 				
 				var variable0 = variableCollection0.get('variables').at(0);
 				expect(variable0.attributes.x).toEqual('16');

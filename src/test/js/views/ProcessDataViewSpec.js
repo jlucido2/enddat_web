@@ -465,14 +465,6 @@ define([
 					$testDiv.find('.get-data-btn').trigger('click');
 					expect(isExpectedUrl(window.open.calls.argsFor(0)[0])).toBe(true);
 				});
-				
-				fit('Expects that the metadata save proceeds as expected', function() {
-					spyOn(window, 'saveAs');
-					spyOn(window, 'File');
-					$testDiv.find('.download-site-metadata').trigger('click');
-					expect(File).toHaveBeenCalled();
-					expect(saveAs).toHaveBeenCalled();
-				});
 			});
 		});
 	});

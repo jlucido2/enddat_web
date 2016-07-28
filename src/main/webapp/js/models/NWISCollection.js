@@ -93,6 +93,7 @@ define([
 									name += ' ' + statCd;
 								}
 								return {
+									datasetName : datasetName,
 									name : name,
 									parameterCd : variable.parm_cd,
 									statCd : statCd,

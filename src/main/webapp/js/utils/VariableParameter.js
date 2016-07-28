@@ -15,13 +15,8 @@ define([
 	var VariableParameter = function(attributes) {
 		this.name = attributes.name;
 		this.siteNo = attributes.siteNo;
-		this.siteName = attributes.siteName;
 		this.value = attributes.value;
 		this.colName = attributes.colName;
-		this.latitude = attributes.latitude;
-		this.longitude = attributes.longitude;
-		this.elevation = attributes.elevation;
-		this.elevationUnit = attributes.elevationUnit;
 		this.variableUnit = attributes.variableUnit;
 
 		/*

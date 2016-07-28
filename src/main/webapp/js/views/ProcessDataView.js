@@ -303,12 +303,9 @@ define([
 				return siteModel.get('datasetName') + '--' + siteModel.get('siteNo');
 			});
 			var organizedSites = _.object(siteIdentifiers, sitesWithSelectedVariables);
-			console.log(organizedSites);
 			var selectedVariables = this.model.getSelectedVariables();
 			var organizedParams = organizeParams(selectedVariables, true);
-			console.log(organizedParams);
 			var dataUrls = getUrls(this.model, 0);
-			console.log(dataUrls);
 			var paramKeys = _.keys(organizedParams);
 			var output = _.map(paramKeys, function(paramKey) {
 				var siteModel = organizedSites[paramKey];

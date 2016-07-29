@@ -94,8 +94,7 @@ define([
 						name : datasetName,
 						siteNo : y + ':' + x,
 						value : y + ':' + x + ':' + sigma + ':' + siteVar.dataset + ':' + siteVar.code + vectorOpts,
-						colName : siteVar.description + ': [' + x + ',' + y + ']',
-						variableUnit : siteVar.unit
+						colName : siteVar.description + ': [' + x + ',' + y + ']'
 					});
 					return siteVar;
 				});

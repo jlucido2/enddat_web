@@ -70,8 +70,7 @@ define([
 								name : datasetName,
 								site_id : y + ':' + x,
 								value : y + ':' + x + ':' + self.timeBounds + ':' + variableId,
-								colName : variableName + ' [' + y + ',' + x + ']',
-								variableUnit : 'kg m^-2'
+								colName : variableName + ' [' + y + ',' + x + ']'
 							})
 						}
 					])

@@ -61,8 +61,7 @@ define([
 								name : datasetName,
 								siteNo : sid,
 								value : sid + ':' +  result.code,
-								colName : result.description + ':' + sid,
-								variableUnit : result.unit
+								colName : result.description + ':' + sid
 							});
 						}
 						return result;

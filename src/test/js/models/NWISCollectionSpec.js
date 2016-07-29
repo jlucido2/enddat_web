@@ -12,11 +12,11 @@ define([
 
 		var PM_CODES = '# Date Retrieved: 2016-05-31 14:19:19 EDT\n' +
 			'#\n' +
-			'parameter_cd\tparameter_nm\n' +
+			'parameter_cd\tparameter_nm\tparameter_units\n' +
 			'5s\t170s\n' +
-			'00004\tStream width, feet\n' +
-			'00010\tTemperature, water, degrees Celsius\n' +
-			'00011\tTemperature, water, degrees Fahrenheit';
+			'00004\tStream width, feet\tfeet\n' +
+			'00010\tTemperature, water, degrees Celsius\tdegrees Celsius\n' +
+			'00011\tTemperature, water, degrees Fahrenheit\tdegrees Fahrenheit\n';
 
 		var STAT_CODES = '# Date Retrieved: USGS Water Data for the Nation Help System\n' +
 			'#\n' +
@@ -59,9 +59,9 @@ define([
 			fakeServer.respond();
 
 			expect(testCollection.parameterCodes).toBeDefined();
-			expect(testCollection.parameterCodes['00004']).toEqual('Stream width, feet');
-			expect(testCollection.parameterCodes['00010']).toEqual('Temperature, water, degrees Celsius');
-			expect(testCollection.parameterCodes['00011']).toEqual('Temperature, water, degrees Fahrenheit');
+			expect(testCollection.parameterCodes['00004']).toEqual({ parameter_nm : 'Stream width, feet', parameter_units : 'feet'});
+			expect(testCollection.parameterCodes['00010']).toEqual({ parameter_nm : 'Temperature, water, degrees Celsius', parameter_units : 'degrees Celsius'});
+			expect(testCollection.parameterCodes['00011']).toEqual({ parameter_nm : 'Temperature, water, degrees Fahrenheit', parameter_units : 'degrees Fahrenheit'});
 		});
 
 		it('Expects that a failed parameter codes call sets the parameterCodes to be undefined', function() {

@@ -65,18 +65,22 @@ define([
 								var pName, sName;
 								var statCd = variable.stat_cd;
 								var pUnits = '';
+								var variableCode = undefined;
 								if ((self.parameterCodes) && (variable.parm_cd)) {
-									pName = self.parameterCodes[variable.parm_cd];
+									variableCode = self.parameterCodes[variable.parm_cd];
+									if (variableCode) {
+										pName = self.parameterCodes[variable.parm_cd].parameter_nm;
+										pUnits = self.parameterCodes[variable.parm_cd].parameter_units;
+									}
+									else {
+										pName = undefined;
+										pUnits = undefined;
+									}
 									name = (pName ? pName : "PCode " + variable.parm_cd);
 									name += ((variable.loc_web_ds) ?" (" + variable.loc_web_ds + ")" : "");
 								}
 								else {
 									name = 'Unknown parameter ' + variable.parm_cd;
-								}
-								if ((self.parameterUnits) && (variable.parm_cd)) {
-									pUnits = self.parameterUnits[variable.parm_cd];
-								}
-								else {
 									pUnits = 'Unknown units';
 								}
 								if (self.statisticCodes) {
@@ -163,15 +167,16 @@ define([
 				dataType: 'text',
 				success: function(data) {
 					var parsedParams = rdbUtils.parseRDB(data);
-					self.parameterCodes = _.object(_.pluck(parsedParams, 'parameter_cd'), _.pluck(parsedParams, 'parameter_nm'));
-					self.parameterUnits = _.object(_.pluck(parsedParams, 'parameter_cd'), _.pluck(parsedParams, 'parameter_units'));
+					self.parameterCodes = _.object(_.pluck(parsedParams, 'parameter_cd'), _.map(parsedParams, function(parsedParam) {
+						return { 'parameter_nm' : parsedParam.parameter_nm, 'parameter_units' : parsedParam.parameter_units };
+					})
+					);
 					log.debug('Fetched parameter codes ' + _.size(self.parameterCodes));
 					deferred.resolve();
 				},
 				error : function(jqXHR, textStatus, error) {
 					log.debug('Error in loading NWIS Parameter definitions: ' + textStatus);
 					self.parameterCodes = undefined;
-					self.parameterUnits = undefined;
 					deferred.resolve();
 				}
 			});

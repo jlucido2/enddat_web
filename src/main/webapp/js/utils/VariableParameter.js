@@ -17,7 +17,6 @@ define([
 		this.siteNo = attributes.siteNo;
 		this.value = attributes.value;
 		this.colName = attributes.colName;
-		this.variableUnit = attributes.variableUnit;
 
 		/*
 		 * @param {Array of Objects} timeSeriesOptions -  Object has statistic and optional timeSpan properties representing the statistics to apply to this variable

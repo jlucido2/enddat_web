@@ -80,6 +80,18 @@ define([
 				.value();
 		},
 		
+		/*
+		 * @returns {Array of arrays} - contains arrays of selected site for each dataset
+		 */
+		
+		getSitesWithSelectedVariables : function() {
+			var datasetCollections = this.get('datasetCollections');
+			datasetSelectedSites = _.map(datasetCollections, function(datasetCollection) {
+				return datasetCollection.getSitesWithSelectedVariables();
+			});
+			return datasetSelectedSites;
+		},
+		/*
 		getSitesWithSelectedVariables : function() {
 			var datasetCollections = this.get('datasetCollections');
 			var selectedSites = _.chain(datasetCollections).map(function(datasetCollection) {
@@ -98,7 +110,7 @@ define([
 			.value();
 			return selectedSites;
 		},
-
+		*/
 		/*
 		 * Model event handlers
 		 */

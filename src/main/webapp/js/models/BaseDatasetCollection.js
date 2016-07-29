@@ -39,11 +39,33 @@ define([
 		getSelectedVariables : function() {
 			return this.chain()
 				.map(function(datasetModel) {
-					var metaData = datasetModel.get('variables').getSelectedVariableMetadata();
 					return datasetModel.get('variables').getSelectedVariables();
 				})
 				.flatten()
 				.value();
+		},
+		/*
+		 * @ returns {Array of Backbone.Models} - each model represents a site with one or more selected variables
+		 */
+		
+		getSitesWithSelectedVariables : function() {
+			var selectedSites = _.map(this.models, function(datasetModel) {
+				console.log(datasetModel);
+				var datasetVariables = datasetModel.get('variables');
+				var selectedVars = _.map(datasetVariables.models, function(datasetVariable) {
+					if (datasetVariable.has('selected') && datasetVariable.get('selected')) {
+						var selectedSite = true;
+					}
+					else {
+						var selectedSite = false;
+					}
+					return selectedSite;
+				});
+				if (_.indexOf(selectedVars, true) > -1) {
+					return datasetModel;
+				}
+			});
+			return _.without(selectedSites, undefined);
 		},
 
 		/*

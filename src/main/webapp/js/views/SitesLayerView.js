@@ -142,11 +142,11 @@ define([
 							model : this.model,
 							el : this.el,
 							datasetKind : dataset,
-							filters : variableDatasetMapping.getFilters(dataset, this.model.get('variableKinds')),
 							siteIcon : siteIcons[dataset],
 							getTitle : getTitle[dataset]
 						});
 					}, this);
+					break;
 			}
 		},
 

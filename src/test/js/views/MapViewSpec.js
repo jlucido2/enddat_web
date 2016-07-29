@@ -18,7 +18,6 @@ define([
 		var testView;
 		var $testDiv;
 		var testModel;
-		var testSiteCollection, testPrecipCollection, testACISCollection, testGLCFSCollection;
 		var fakeServer;
 		var addLayerSpy, removeLayerSpy, addControlSpy, removeControlSpy, hasLayerSpy, removeMapSpy, fitBoundsSpy;
 
@@ -61,10 +60,6 @@ define([
 			});
 			testModel.set('step', Config.SPECIFY_AOI_STEP);
 			testModel.initializeDatasetCollections();
-			testSiteCollection = testModel.get('datasetCollections')[Config.NWIS_DATASET];
-			testPrecipCollection = testModel.get('datasetCollections')[Config.PRECIP_DATASET];
-			testACISCollection = testModel.get('datasetCollections')[Config.ACIS_DATASET];
-			testGLCFSCollection = testModel.get('datasetCollections')[Config.GLCFS_DATASET];
 
 			testView = new MapView({
 				el : '#test-div',

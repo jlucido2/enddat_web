@@ -20,7 +20,7 @@ define([
 		var testModel;
 		var testSiteCollection, testPrecipCollection, testACISCollection, testGLCFSCollection;
 		var fakeServer;
-		var addLayerSpy, removeLayerSpy, addControlSpy, hasLayerSpy, removeMapSpy, fitBoundsSpy;
+		var addLayerSpy, removeLayerSpy, addControlSpy, removeControlSpy, hasLayerSpy, removeMapSpy, fitBoundsSpy;
 
 		beforeEach(function() {
 			fakeServer = sinon.fakeServer.create();
@@ -31,6 +31,7 @@ define([
 			addLayerSpy = jasmine.createSpy('addLayerSpy');
 			removeLayerSpy = jasmine.createSpy('removeLayerSpy');
 			addControlSpy = jasmine.createSpy('addControlSpy');
+			removeControlSpy = jasmine.createSpy('removeControlSpy');
 			removeMapSpy = jasmine.createSpy('removeMapSpy');
 			hasLayerSpy = jasmine.createSpy('hasLayerSpy');
 			fitBoundsSpy = jasmine.createSpy('fitBoundsSpy');
@@ -38,6 +39,7 @@ define([
 				addLayer : addLayerSpy,
 				removeLayer : removeLayerSpy,
 				addControl : addControlSpy,
+				removeControl : removeControlSpy,
 				hasLayer : hasLayerSpy,
 				remove : removeMapSpy,
 				fitBounds : fitBoundsSpy,
@@ -57,7 +59,7 @@ define([
 				longitude : '',
 				radius : ''
 			});
-			testModel.set('step', Config.CHOOSE_DATA_STEP);
+			testModel.set('step', Config.SPECIFY_AOI_STEP);
 			testModel.initializeDatasetCollections();
 			testSiteCollection = testModel.get('datasetCollections')[Config.NWIS_DATASET];
 			testPrecipCollection = testModel.get('datasetCollections')[Config.PRECIP_DATASET];
@@ -96,14 +98,6 @@ define([
 			expect(testView.drawAOIControl).toBeDefined();
 		});
 
-		it('Expects that the dataset model\'s layer group\'s are created', function() {
-			expect(testView.siteLayerGroups).toBeDefined();
-			expect(testView.siteLayerGroups[Config.NWIS_DATASET]).toBeDefined();
-			expect(testView.siteLayerGroups[Config.PRECIP_DATASET]).toBeDefined();
-			expect(testView.siteLayerGroups[Config.ACIS_DATASET]).toBeDefined();
-			expect(testView.siteLayerGroups[Config.GLCFS_DATASET]).toBeDefined();
-		});
-
 		describe('Tests for render', function() {
 			it('Expects that the map is created in the mapDiv with a single base layer', function() {
 				testView.render();
@@ -113,18 +107,6 @@ define([
 			it('Expects the layer switch control to be added to the map', function() {
 				testView.render();
 				expect(addControlSpy).toHaveBeenCalledWith(testView.defaultControls[0]);
-			});
-
-			it('Expects that the siteLayerGroup and precipLayerGroup are added to the map', function() {
-				var layersAdded;
-				testView.render();
-				layersAdded = _.map(addLayerSpy.calls.allArgs(), function(args) {
-					return args[0];
-				});
-				expect(_.contains(layersAdded, testView.siteLayerGroups[Config.NWIS_DATASET])).toBe(true);
-				expect(_.contains(layersAdded, testView.siteLayerGroups[Config.PRECIP_DATASET])).toBe(true);
-				expect(_.contains(layersAdded, testView.siteLayerGroups[Config.ACIS_DATASET])).toBe(true);
-				expect(_.contains(layersAdded, testView.siteLayerGroups[Config.GLCFS_DATASET])).toBe(true);
 			});
 
 			it('Expects that the project location marker is not added to the map if location is not defined in the workflow state', function() {
@@ -138,7 +120,7 @@ define([
 
 			it('Expect that the project location marker is added to the map if the location is defined in the workflow state', function() {
 				var layersAdded;
-				testModel.get('aoi').set({latitude : 43.0, longitude : -100.0});
+				testModel.get('aoi').set({latitude : 43.0, longitude : -100.0, radius : 2});
 				testView.render();
 				layersAdded = _.map(addLayerSpy.calls.allArgs(), function(args) {
 					return args[0];
@@ -260,46 +242,18 @@ define([
 				expect(L.map.calls.count()).toBe(2);
 			});
 
-			it('Expect that the site location marker is added to the map if there are sites in the site model', function() {
+			it('Expects that the sitesLayerView is created if the workflow step if CHOOSE_DATA_BY_SITE_FILTERS_STEP', function() {
 				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
-				testSiteCollection.reset([{siteNo : '05464220','name': 'test', 'lat': '42.25152778', 'lon': '-92.2988889',
-					variables : new BaseVariableCollection()}]);
-				spyOn(testView.siteLayerGroups[Config.NWIS_DATASET], 'addLayer').and.callThrough();
 				testView.render();
-				expect(testView.siteLayerGroups[Config.NWIS_DATASET].addLayer.calls.count()).toBe(1);
+
+				expect(testView.sitesLayerView).toBeDefined();
 			});
 
-			it('Expects that the precipitation layer group contains markers for each grid', function() {
-				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
-				testPrecipCollection.reset([
-					{lon : '-100', lat : '43.0', variables : new BaseVariableCollection([{x : '1', y: '2'}])},
-					{lon : '-100', lat : '44.0', variables : new BaseVariableCollection([{x : '1', y: '3'}])}
-				]);
-				spyOn(testView.siteLayerGroups[Config.PRECIP_DATASET], 'addLayer').and.callThrough();
+			it('Expects that the sitesLayerView is created if the workflow step if CHOOSE_DATA_BY_VARIABLES_STEP', function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_VARIABLES_STEP);
 				testView.render();
-				expect(testView.siteLayerGroups[Config.PRECIP_DATASET].addLayer.calls.count()).toBe(2);
-			});
 
-			it('Expects that the GLCFS layer group contains markers for each grid', function() {
-				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
-				testGLCFSCollection.reset([
-					{lon : '-100', lat : '43.0', variables : new BaseVariableCollection([{x : '1', y: '2'}])},
-					{lon : '-100', lat : '44.0', variables : new BaseVariableCollection([{x : '1', y: '3'}])}
-				]);
-				spyOn(testView.siteLayerGroups[Config.GLCFS_DATASET], 'addLayer').and.callThrough();
-				testView.render();
-				expect(testView.siteLayerGroups[Config.GLCFS_DATASET].addLayer.calls.count()).toBe(2);
-			});
-
-			it('Expects that the ACIS layer group contains markers for each site in collection', function() {
-				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
-				testACISCollection.reset([
-					{name : 'Name1', lon : '-100', lat : '43.0', variables : new BaseVariableCollection()},
-					{name : 'Name2', lon : '-100', lat : '44.0', variables : new BaseVariableCollection()}
-				]);
-				spyOn(testView.siteLayerGroups[Config.ACIS_DATASET], 'addLayer').and.callThrough();
-				testView.render();
-				expect(testView.siteLayerGroups[Config.ACIS_DATASET].addLayer.calls.count()).toBe(2);
+				expect(testView.sitesLayerView).toBeDefined();
 			});
 		});
 
@@ -318,60 +272,69 @@ define([
 				expect(removeMapSpy).toHaveBeenCalled();
 			});
 
-			it('Expects selectedSite\'s data view to be removed ', function() {
-				var dataViewRemoveSpy = jasmine.createSpy('nwisRemoveSpy');
-				testView.selectedSite = {
-					dataView : {
-						remove : dataViewRemoveSpy
-					}
-				};
+			it('Expects the sitesLayerView to be removed if it has been created', function() {
+				var sitesLayerView;
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testView.render();
+				sitesLayerView = testView.sitesLayerView;
+				spyOn(sitesLayerView, 'remove').and.callThrough();
 				testView.remove();
 
-				expect(dataViewRemoveSpy).toHaveBeenCalled();
-				expect(testView.selectedSite).not.toBeDefined();
+				expect(sitesLayerView.remove).toHaveBeenCalled();
 			});
 		});
 
 		describe('Tests for workflow model event handlers', function() {
-			beforeEach(function() {
+
+			it('Expects that if the step changes from CHOOSE_DATA_BY_SITE_STEP to SPECIFY_AOI_STEP, the sitesLayerView is removed', function() {
+				var sitesLayerView;
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testView.render();
-			});
-
-			it('Expects that if the testModel changes the step to SPECIFY_AOI_STEP, that the dataViews are removed and assigned undefined', function() {
-				var dataViewRemoveSpy = jasmine.createSpy('nwisRemoveSpy');
-				testView.selectedSite = {
-					dataView : {
-						remove : dataViewRemoveSpy
-					}
-				};
-
+				sitesLayerView = testView.sitesLayerView;
+				spyOn(sitesLayerView, 'remove').and.callThrough();
 				testModel.set('step', Config.SPECIFY_AOI_STEP);
 
-				expect(dataViewRemoveSpy).toHaveBeenCalled();
-				expect(testView.selectedSite).toBeUndefined();
+				expect(sitesLayerView.remove).toHaveBeenCalled();
+				expect(testView.sitesLayerView).toBeUndefined();
+			});
+
+			it('Expects that if the step changes from SPECIFY_AOI_STEP to CHOOSE_DATA_BY_SITE_FILTERS_STEP, the sitesLayerView is created', function() {
+				testView.render();
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
+
+				expect(testView.sitesLayerView).toBeDefined();
+			});
+
+			it('Expects that if the step changes from SPECIFY_AOI_STEP to CHOOSE_DATA_BY_VARIABLES_STEP, the sitesLayerView is created', function() {
+				testView.render();
+				testModel.set('step', Config.CHOOSE_DATA_BY_VARIABLES_STEP);
+
+				expect(testView.sitesLayerView).toBeDefined();
 			});
 
 			it('Expects that if location goes from unset to set the marker is added to the map and it\'s location is set', function() {
+				testView.render();
 				hasLayerSpy.and.returnValue(false);
-				testModel.get('aoi').set({latitude : 43.0, longitude : -100.0});
+				testModel.get('aoi').set({latitude : 43.0, longitude : -100.0, radius: 2});
 				expect(addLayerSpy.calls.mostRecent().args[0]).toEqual(testView.projLocationMarker);
 				expect(testView.projLocationMarker.getLatLng()).toEqual(L.latLng(43.0, -100.0));
 			});
 
 			it('Expects that if the location is changed once the marker is on the map, that its location is updated', function() {
 				var aoiModel = testModel.get('aoi');
+				testView.render();
 				addLayerSpy.calls.reset();
 				hasLayerSpy.and.returnValue(false);
-				aoiModel.set({latitude : 43.0, longitude : -100.0});
+				aoiModel.set({latitude : 43.0, longitude : -100.0, radius: 2});
 				hasLayerSpy.and.returnValue(true);
-				aoiModel.set({latitude: 42.0, longitude : -101.0});
+				aoiModel.set({latitude: 42.0, longitude : -101.0, radius: 2});
 
 				expect(addLayerSpy.calls.count()).toBe(1);
 				expect(testView.projLocationMarker.getLatLng()).toEqual(L.latLng(42.0, -101.0));
 			});
 
 			it('Expects that if the map has the marker and the location is not set, the marker will be removed from the map', function() {
+				testView.render();
 				hasLayerSpy.and.returnValue(true);
 				expect(removeLayerSpy).not.toHaveBeenCalled();
 				testModel.get('aoi').set({radius : '5'});
@@ -380,91 +343,20 @@ define([
 
 			it('Expect that the extent will only be updated when location and radius are defined', function() {
 				var aoiModel = testModel.get('aoi');
+				testView.render();
 				fitBoundsSpy.calls.reset();
 				aoiModel.set({
 					latitude : '',
-					longitude : '-100.0'
+					longitude : '-100.0',
+					radius: 2
 				});
 				expect(fitBoundsSpy).not.toHaveBeenCalled();
 
 				aoiModel.set('radius', '2');
 				expect(fitBoundsSpy).not.toHaveBeenCalled();
 
-				aoiModel.set({latitude : '43.0', longitude : '-100.0'});
+				aoiModel.set({latitude : '43.0', longitude : '-100.0', radius: 2});
 				expect(fitBoundsSpy).toHaveBeenCalled();
-			});
-
-			it('Expects that if the NWIS model is updated, an updated NWIS marker is added to the map', function() {
-				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
-				testSiteCollection.reset([{siteNo : '05464220','name': 'test', 'lat': '42.25152778', 'lon': '-92.2988889'}]);
-
-				expect(testView.siteLayerGroups[Config.NWIS_DATASET].getLayers().length).toBe(1);
-			});
-
-			it('Expects that if the NWIS model is updated and then cleared, no NWIS markers will be on the map', function() {
-				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
-				testSiteCollection.reset([{siteNo : '05464220','name': 'test', 'lat': '42.25152778', 'lon': '-92.2988889'}]);
-				testSiteCollection.reset();
-
-				expect(testView.siteLayerGroups[Config.NWIS_DATASET].getLayers().length).toBe(0);
-			});
-
-			it('Expects that if the precipitation collection is updated, precipitation grid points will be on the map', function() {
-				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
-				testPrecipCollection.reset([
-					{lon : '-100', lat : '43.0', variables : new Backbone.Collection([{x : '1', y: '2'}])},
-					{lon : '-100', lat : '44.0', variables : new Backbone.Collection([{x : '1', y: '3'}])}
-				]);
-				expect(testView.siteLayerGroups[Config.PRECIP_DATASET].getLayers().length).toBe(2);
-			});
-
-			it('Expects that if the precipitation collection is updated then cleared, no precipitation grid points will be on the map', function() {
-				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
-				testPrecipCollection.reset([
-					{lon : '-100', lat : '43.0', variables : new Backbone.Collection([{x : '1', y: '2'}])},
-					{lon : '-100', lat : '44.0', variables : new Backbone.Collection([{x : '1', y: '3'}])}
-				]);
-				testPrecipCollection.reset([]);
-				expect(testView.siteLayerGroups[Config.PRECIP_DATASET].getLayers().length).toBe(0);
-			});
-
-			it('Expects that if the GLCFS collection is updated, precipitation grid points will be on the map', function() {
-				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
-				testGLCFSCollection.reset([
-					{lon : '-100', lat : '43.0', variables : new Backbone.Collection([{x : '1', y: '2'}])},
-					{lon : '-100', lat : '44.0', variables : new Backbone.Collection([{x : '1', y: '3'}])}
-				]);
-				expect(testView.siteLayerGroups[Config.GLCFS_DATASET].getLayers().length).toBe(2);
-			});
-
-
-			it('Expects that if the GLCFS collection is updated then cleared, no precipitation grid points will be on the map', function() {
-				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
-				testGLCFSCollection.reset([
-					{lon : '-100', lat : '43.0', variables : new Backbone.Collection([{x : '1', y: '2'}])},
-					{lon : '-100', lat : '44.0', variables : new Backbone.Collection([{x : '1', y: '3'}])}
-				]);
-				testGLCFSCollection.reset([]);
-				expect(testView.siteLayerGroups[Config.GLCFS_DATASET].getLayers().length).toBe(0);
-			});
-
-			it('Expects that if the ACIS collection is updated, ACIS markers will be added to the map', function() {
-				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
-				testACISCollection.reset([
-					{name : 'Name1', lon : '-100', lat : '43.0'},
-					{name : 'Name2', lon : '-100', lat : '44.0'}
-				]);
-				expect(testView.siteLayerGroups[Config.ACIS_DATASET].getLayers().length).toBe(2);
-			});
-
-			it('Expects that if the ACIS collection is updated then cleared, no ACIS markers will be on the map', function() {
-				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
-				testACISCollection.reset([
-					{x : '1', y: '2', lon : '-100', lat : '43.0'},
-					{x : '1', y: '3', lon : '-100', lat : '44.0'}
-				]);
-				testACISCollection.reset([]);
-				expect(testView.siteLayerGroups[Config.ACIS_DATASET].getLayers().length).toBe(0);
 			});
 		});
 

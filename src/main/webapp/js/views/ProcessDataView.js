@@ -129,7 +129,7 @@ define([
 
 		initialize : function(options) {
 			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
-			this.maxUrlLength = options.maxUrlLength ? options.maxUrlLength : 150; // max url character length before it gets broken down into urls by site
+			this.maxUrlLength = options.maxUrlLength ? options.maxUrlLength : 2000; // max url character length before it gets broken down into urls by site
 		},
 
 

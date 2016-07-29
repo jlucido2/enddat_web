@@ -23,10 +23,16 @@ define([
 	var BASE_URL = module.config().baseUrl;
 	
 	var organizeVariables = function(selectedVariables) {
+		var siteNo = '';
 		var constructClassifer = function(selectedVariable) {
 			var varParams = selectedVariable.get('variableParameter');
 			var name = varParams.name;
-			var siteNo = varParams.siteNo;
+			if (name === Config.PRECIP_DATASET) {
+				siteNo = varParams.site_id;
+			}
+			else {
+				siteNo = varParams.siteNo;
+			}
 			var classifier = name + '--' + siteNo;
 			return classifier;
 		};
@@ -34,39 +40,12 @@ define([
 		return siteOrganizedVarModels;
 	};
 	
-	var organizeParams = function(selectedVariables, includeUnits){
-		var includeUnits = includeUnits ? includeUnits : false;
-		var constructClassifer = function(selectedVariable) {
-			var varParams = selectedVariable.get('variableParameter');
-			var name = varParams.name;
-			var siteNo = varParams.siteNo;
-			var classifier = name + '--' + siteNo;
-			return classifier;
-		};
-		var siteOrganizedVarModels = _.groupBy(selectedVariables, constructClassifer);
-		var organizedParams = _.mapObject(siteOrganizedVarModels, function(variableModels) {
-			var varParams = _.chain(variableModels)
-			.map(function(variable) {
-				var varParam = variable.get('variableParameter').getUrlParameters(variable.get('timeSeriesOptions'));
-				if (includeUnits) {
-					varParam[0].variableUnit = variable.get('variableParameter').variableUnit;
-				}
-				return varParam;
-			})
-			.flatten()
-			.value();
-			var latitude = variableModels[0].get('variableParameter').latitude;
-			var longitude = variableModels[0].get('variableParameter').longitude;
-			var elevation = variableModels[0].get('variableParameter').elevation;
-			var elevationUnit = variableModels[0].get('variableParameter').elevationUnit;
-			var siteName = variableModels[0].get('variableParameter').siteName;
-			return { parameters : varParams,
-				latitude : latitude,
-				longitude : longitude,
-				elevation : elevation,
-				elevationUnit : elevationUnit,
-				siteName : siteName
-				};
+	var organizeParamsBySite = function(organizedVariables) {
+		var organizedParams = _.mapObject(organizedVariables, function(siteVariables) {
+			var siteVariableParameters = _.map(siteVariables, function(siteVariable) {
+				return siteVariable.get('variableParameter').getUrlParameters(siteVariable.get('timeSeriesOptions'));
+			});
+			return _.flatten(siteVariableParameters);
 		});
 		return organizedParams;
 	};
@@ -81,7 +60,7 @@ define([
 			.flatten()
 			.value();
 
-		var glcfsLake = workflowModel.get('datasetCollections')[Config.GLCFS_DATASET].getLake();
+		var glcfsLake = workflowModel.get('datasetCollections')[Config.GLCFS_DATASET].getLake() ? glcfsLake : false;
 
 		var params = [
 			{name : 'style', value : attrs.outputFileFormat},
@@ -103,11 +82,13 @@ define([
 		var urlLength = dataProcessingUrl.length;
 		var siteUrls;
 		if (urlLength > maxUrlLength) {
-			var siteOrganizedParams = organizeParams(selectedVariables);
+			var siteOrganizedVariables = organizeVariables(selectedVariables);
+			var siteOrganizedParams = organizeParamsBySite(siteOrganizedVariables);
+			console.log(siteOrganizedParams);
 			// take the site organized parameters and create a url for each site,
 			// then return the values from the new object as an array
-			siteUrls = _.chain(siteOrganizedParams).mapObject(function(siteObject) {
-				return BASE_URL + 'service/execute?' + $.param(params.concat(siteObject.parameters));
+			siteUrls = _.chain(siteOrganizedParams).mapObject(function(siteParams) {
+				return BASE_URL + 'service/execute?' + $.param(params.concat(siteParams));
 				}).value();
 		}
 		else {
@@ -148,7 +129,7 @@ define([
 
 		initialize : function(options) {
 			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
-			this.maxUrlLength = options.maxUrlLength ? options.maxUrlLength : 2000; // max url character length before it gets broken down into urls by site
+			this.maxUrlLength = options.maxUrlLength ? options.maxUrlLength : 150; // max url character length before it gets broken down into urls by site
 		},
 
 
@@ -317,13 +298,7 @@ define([
 			var organizedSites = _.object(siteIdentifiers, sitesWithSelectedVariables);
 			var selectedVariables = this.model.getSelectedVariables();
 			var organizedVariables = organizeVariables(selectedVariables);
-			var organizedParams = _.mapObject(organizedVariables, function(siteVariables) {
-				var siteVariableParmeters = _.map(siteVariables, function(siteVariable) {
-					console.log(siteVariable);
-					return siteVariable.get('variableParameter').getUrlParameters(siteVariable.get('timeSeriesOptions'));
-				});
-				return _.flatten(siteVariableParmeters);
-			});
+			var organizedParams = organizeParamsBySite(organizedVariables);
 			var dataUrls = getUrls(this.model, 0);
 			var paramKeys = _.keys(organizedParams);
 			var output = _.map(paramKeys, function(paramKey) {

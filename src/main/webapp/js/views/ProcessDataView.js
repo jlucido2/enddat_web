@@ -60,7 +60,7 @@ define([
 			.flatten()
 			.value();
 
-		var glcfsLake = workflowModel.get('datasetCollections')[Config.GLCFS_DATASET].getLake() ? glcfsLake : false;
+		var glcfsLake = workflowModel.get('datasetCollections')[Config.GLCFS_DATASET].getLake();
 
 		var params = [
 			{name : 'style', value : attrs.outputFileFormat},

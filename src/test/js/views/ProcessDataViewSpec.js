@@ -412,29 +412,7 @@ define([
 				};
 
 				beforeEach(function() {
-					testModel.set({
-						datasetCollections : {
-							NWIS : new BaseDatasetCollection([
-          						{siteNo : '04453',
-          						 variables : new BaseVariableCollection([
-          								{selected : true, x : 1, variableParameter : {siteNo : '04453'}},
-          								{selected : true, x : 2, variableParameter : {siteNo : '04453'}}
-          						])},
-          						{siteNo : '12399',
-          						 variables : new BaseVariableCollection([
-          								{x: 3, variableParameter : {siteNo : '12399'}}
-          						])}
-          					]),
-          					GLCFS : new BaseDatasetCollection([
-          					    {lake : ''}
-          					    ]),
-          					PRECIP : new BaseDatasetCollection([
-          						{siteNo : '9:56',
-          						 variables : new BaseVariableCollection([
-          							{selected: true, x : 4, variableParameter : {siteNo : '9:56'}}
-          						])}
-          					])
-          				},     				
+					testModel.set({   				
 						outputFileFormat : 'tab',
 						outputDateFormat : 'Excel',
 						outputTimeZone : '0_GMT',

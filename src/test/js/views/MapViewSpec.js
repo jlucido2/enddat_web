@@ -46,8 +46,6 @@ define([
 				off : jasmine.createSpy('offSpy')
 			});
 			spyOn(L.control, 'layers').and.callThrough();
-			spyOn(L, 'marker').and.callThrough();
-			spyOn(L, 'layerGroup').and.callThrough();
 
 			spyOn(BaseView.prototype, 'initialize').and.callThrough();
 			spyOn(BaseView.prototype, 'remove').and.callThrough();

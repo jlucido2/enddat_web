@@ -56,7 +56,7 @@ define([
 
 			injector.require(['views/ProcessDataView'], function(view) {
 				ProcessDataView = view;
-
+				
 				// generates a URL with 186 characters (give or take depending on other parameters
 				var variableCollection = new BaseVariableCollection([
 					{x : '2', y: '2', selected : true,
@@ -86,6 +86,25 @@ define([
  	 				     timeSeriesOptions : [{statistic : 'raw'}]
  	 			    }
  	  			]);
+				
+				var siteCollection = new BaseDatasetCollection([
+				    {datasetName : 'DatasetId',
+				    	siteNo : '2:2',
+				    	name : 'Some Site Name 2:2',
+				    	lat : '-43.33',
+				    	lon : '97.01',
+				    	elevation : '17',
+				    	elevationUnit : 'm'
+				    },
+				    {datasetName : 'DatasetId',
+				    	siteNo : '3:3',
+				    	name : 'Some Site Name 3:3',
+				    	lat : '46.79',
+				    	lon : '28.11',
+				    	elevation : '-89',
+				    	elevationUnits : 'm'
+				    }
+				]);
 
 				testModel = new WorkflowStateModel({
 					step : Config.PROCESS_DATA_STEP,
@@ -95,7 +114,8 @@ define([
 					}
 				});
 				testModel.initializeDatasetCollections();
-
+				
+				spyOn(testModel, 'getSitesWithSelectedVariables').and.returnValue(siteCollection.models);
 				spyOn(testModel, 'getSelectedVariables').and.returnValue(variableCollection.models);
 
 				maxUrlLength = 215;
@@ -469,7 +489,7 @@ define([
 					expect(isExpectedUrl(window.open.calls.argsFor(0)[0])).toBe(true);
 				});
 				
-				xit('Expects that saveAs is called when download metadata is clicked', function() {
+				it('Expects that saveAs is called when download metadata is clicked', function() {
 					spyOn(window, 'saveAs');
 					$testDiv.find('.download-site-metadata').trigger('click');
 					expect(saveAs).toHaveBeenCalled();

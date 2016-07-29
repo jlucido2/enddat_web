@@ -84,7 +84,6 @@ define([
 		if (urlLength > maxUrlLength) {
 			var siteOrganizedVariables = organizeVariables(selectedVariables);
 			var siteOrganizedParams = organizeParamsBySite(siteOrganizedVariables);
-			console.log(siteOrganizedParams);
 			// take the site organized parameters and create a url for each site,
 			// then return the values from the new object as an array
 			siteUrls = _.chain(siteOrganizedParams).mapObject(function(siteParams) {

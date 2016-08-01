@@ -43,6 +43,10 @@ define([
 			return this;
 		},
 
+		/*
+		 * Model event handlers
+		 */
+		
 		updateSiteMarkers : function() {
 			var self = this;
 			var dateFilter = this.model.has('dataDateFilter') ? this.model.get('dataDateFilter') : undefined;

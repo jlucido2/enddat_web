@@ -94,7 +94,16 @@ define([
 				    	lat : '-43.33',
 				    	lon : '97.01',
 				    	elevation : '17',
-				    	elevationUnit : 'm'
+				    	elevationUnit : 'm',
+				    	variables : new BaseVariableCollection([
+        					{x : '2', y: '2', selected : true,
+        						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var1'}),
+        						timeSeriesOptions : [{statistic : 'raw'}]
+        					},
+        					{x : '2', y: '2', selected : true,
+        						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var1'}),
+        						timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]}
+        				])
 				    },
 				    {datasetName : 'DatasetId',
 				    	siteNo : '3:3',
@@ -102,7 +111,16 @@ define([
 				    	lat : '46.79',
 				    	lon : '28.11',
 				    	elevation : '-89',
-				    	elevationUnits : 'm'
+				    	elevationUnits : 'm',
+				    	variables : new BaseVariableCollection([
+        					{x : '3', y: '3', selected : true,
+        						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var1'}),
+        						timeSeriesOptions : [{statistic : 'raw'}]
+        					},
+        					{x : '3', y: '3', selected : true,
+        						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var1'}),
+        						timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]}
+        				])
 				    }
 				]);
 
@@ -115,7 +133,7 @@ define([
 				});
 				testModel.initializeDatasetCollections();
 				
-				spyOn(testModel, 'getSitesWithSelectedVariables').and.returnValue(siteCollection.models);
+				spyOn(testModel, 'getSitesWithSelectedVariables').and.returnValue([siteCollection.models]);
 				spyOn(testModel, 'getSelectedVariables').and.returnValue(variableCollection.models);
 
 				maxUrlLength = 215;
@@ -405,13 +423,10 @@ define([
 					$testDiv.find('.show-url-btn').trigger('click');
 					var firstUrl = decodeURIComponent($testDiv.find('ul.url-links li:nth-child(1)').html());
 					var secondUrl = decodeURIComponent($testDiv.find('ul.url-links li:nth-child(2)').html());
-					var thirdUrl = decodeURIComponent($testDiv.find('ul.url-links li:nth-child(3)').html());
-					var firstInspect = (firstUrl.search('DatasetId=2:2!Var1') !== -1) && (firstUrl.search('DatasetId=3:3:Min:2!Var1') === -1) && (firstUrl.search('DatasetId=4:4!Var3') === -1);
-					var secondInspect = (secondUrl.search('DatasetId=2:2!Var1') === -1) && (secondUrl.search('DatasetId=3:3:Min:2!Var1') !== -1 ) && (secondUrl.search('DatasetId=4:4!Var3') === -1);
-					var thirdInspect = (thirdUrl.search('DatasetId=2:2!Var1') === -1) && (thirdUrl.search('DatasetId=3:3:Min:2!Var1') === -1 ) && (thirdUrl.search('DatasetId=4:4!Var3') !== -1);
+					var firstInspect = (firstUrl.search('DatasetId=2:2!Var1') !== -1) && (firstUrl.search('DatasetId=3:3:Min:2!Var1') === -1);
+					var secondInspect = (secondUrl.search('DatasetId=2:2!Var1') === -1) && (secondUrl.search('DatasetId=3:3:Min:2!Var1') !== -1);
 					expect(firstInspect).toBe(true);
 					expect(secondInspect).toBe(true);
-					expect(thirdInspect).toBe(true);
 				});
 			});
 

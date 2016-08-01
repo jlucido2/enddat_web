@@ -55,7 +55,6 @@ define([
 	 */
 	
 	var getSiteUrl = function(workflowModel, siteModel, download) {
-		console.log('Hit!!!');
 		var siteDataset = siteModel.get('datasetName');
 		var siteVariables = siteModel.get('variables');
 		var selectedVariables = siteVariables.getSelectedVariables();
@@ -100,7 +99,6 @@ define([
 		}
 		var dataProcessingUrl = BASE_URL + 'service/execute?' + $.param(params.concat(varParams));
 		var urlLength = dataProcessingUrl.length;
-		console.log(urlLength);
 		var siteUrls;
 		if (urlLength > maxUrlLength) {
 			var sitesWithSelectedVariables = _.flatten(workflowModel.getSitesWithSelectedVariables());
@@ -312,7 +310,6 @@ define([
 			var sitesWithSelectedVariablesByDataset = workflowModel.getSitesWithSelectedVariables();
 			var metaDataByDataset = _.map(sitesWithSelectedVariablesByDataset, function(datasetSelectedSites) {
 				var siteMetadata = _.map(datasetSelectedSites, function(datasetSelectedSite) {
-					console.log(datasetSelectedSite);
 					var siteDataset = datasetSelectedSite.get('datasetName');
 					var siteNo = datasetSelectedSite.get('siteNo');
 					var siteName = datasetSelectedSite.get('name');
@@ -323,7 +320,6 @@ define([
 					var siteVariables = datasetSelectedSite.get('variables');
 					var selectedVariables = siteVariables.getSelectedVariables();
 					var siteVariableMetadata = _.map(selectedVariables, function(selectedVariable) {
-						console.log(selectedVariable);
 						var variableName = '';
 						if (selectedVariable.has('name')) {
 							variableName = selectedVariable.get('name');

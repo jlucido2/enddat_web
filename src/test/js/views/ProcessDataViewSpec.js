@@ -74,17 +74,16 @@ define([
  	  					variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var1'}),
  	  					timeSeriesOptions : [{statistic : 'raw'}]
  	  				},
- 	  				{x : '3', y: '3', selected : true,
- 	  					variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var1'}),
- 	  					timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]},
- 	  				{x : '4', y : '4', selected : true,
- 	  				     variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '4:4', value : '4:4', colName : 'Var3'}),
- 	  				     timeSeriesOptions : [{statistic : 'raw'}]
- 	  				},
- 	  				{x : '5', y : '5', selected : true,
- 	 				     variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '5:5', value : '5:5', colName : 'Var4'}),
- 	 				     timeSeriesOptions : [{statistic : 'raw'}]
- 	 			    }
+					{x : '2', y: '2', selected : true,
+						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var2'}),
+						timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]},
+					{x : '3', y: '3', selected : true,
+						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var1'}),
+						timeSeriesOptions : [{statistic : 'raw'}]
+					},
+					{x : '3', y: '3', selected : true,
+						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var2'}),
+						timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]}
  	  			]);
 				
 				var siteCollection = new BaseDatasetCollection([
@@ -101,7 +100,7 @@ define([
         						timeSeriesOptions : [{statistic : 'raw'}]
         					},
         					{x : '2', y: '2', selected : true,
-        						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var1'}),
+        						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var2'}),
         						timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]}
         				])
 				    },
@@ -118,7 +117,7 @@ define([
         						timeSeriesOptions : [{statistic : 'raw'}]
         					},
         					{x : '3', y: '3', selected : true,
-        						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var1'}),
+        						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var2'}),
         						timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]}
         				])
 				    }
@@ -424,7 +423,7 @@ define([
 					var firstUrl = decodeURIComponent($testDiv.find('ul.url-links li:nth-child(1)').html());
 					var secondUrl = decodeURIComponent($testDiv.find('ul.url-links li:nth-child(2)').html());
 					var firstInspect = (firstUrl.search('DatasetId=2:2!Var1') !== -1) && (firstUrl.search('DatasetId=3:3:Min:2!Var1') === -1);
-					var secondInspect = (secondUrl.search('DatasetId=2:2!Var1') === -1) && (secondUrl.search('DatasetId=3:3:Min:2!Var1') !== -1);
+					var secondInspect = (secondUrl.search('DatasetId=2:2!Var1') === -1) && (secondUrl.search('DatasetId=3:3:Min:2!Var2') !== -1);
 					expect(firstInspect).toBe(true);
 					expect(secondInspect).toBe(true);
 				});

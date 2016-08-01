@@ -59,8 +59,9 @@ define([
 
 	/*
 	 * This view will be rendered at initialization. A call to render will be a no op.
+	 * The workflow step value determines whether the BySiteLayer or ByVariableTypeLayer view is created.
 	 * @constructs
-	 * Expects that the workflow step a
+	 *
 	 * @param {Object} options
 	 *		@prop {Leaflet.Map} map
 	 *		@prop {Jquery element} el - This should be the parent div of the div that contains the map.

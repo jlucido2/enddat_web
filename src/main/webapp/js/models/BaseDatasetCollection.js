@@ -49,10 +49,9 @@ define([
 		 */
 		
 		getSitesWithSelectedVariables: function() {
-			var selectedSites = this.chain().filter(function(datasetModel) {
+			var selectedSites = this.filter(function(datasetModel) {
 				return datasetModel.get('variables').hasSelectedVariables();
-			})
-			.value();
+			});
 			return selectedSites;
 		},
 

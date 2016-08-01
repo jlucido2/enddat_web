@@ -5,16 +5,17 @@ define([
 	'backbone',
 	'leaflet',
 	'Config',
-	'utils/VariableDatasetMapping',
+	'leafletCustomControls/selectFilterControl',
 	'utils/jqueryUtils',
 	'utils/LUtils',
+	'utils/VariableDatasetMapping',
 	'views/BySiteLayerView',
 	'views/ByVariableTypeLayerView',
 	'views/GLCFSDataView',
 	'views/ACISDataView',
 	'views/NWISDataView',
 	'views/PrecipDataView'
-], function(_, Backbone, L, Config, variableDatasetMapping, $utils, LUtils, BySiteLayerView, ByVariableTypeLayerView,
+], function(_, Backbone, L, Config, selectFilterControl, $utils, LUtils, VariableDatasetMapping, BySiteLayerView, ByVariableTypeLayerView,
 			GLCFSDataView, ACISDataView, NWISDataView, PrecipDataView) {
 	"use strict";
 
@@ -51,6 +52,19 @@ define([
 		[Config.PRECIP_DATASET, PrecipDataView],
 		[Config.ACIS_DATASET, ACISDataView]
 	]);
+
+	var getVariableKindsOptions = function(model) {
+		var variableKinds = model.get('variableKinds');
+		var variableKindsMapping = _.pick(VariableDatasetMapping.getMapping(), variableKinds);
+
+		return _.map(variableKindsMapping, function(varMapValue, varMapKey) {
+			return {
+				id : varMapKey,
+				text : varMapValue.displayName
+			}
+		});
+	};
+
 	var MAP_WIDTH_CLASS = 'col-md-6';
 	var DATA_VIEW_WIDTH_CLASS = 'col-md-6';
 
@@ -75,6 +89,7 @@ define([
 				radius : 15
 			});
 			this.dataView = undefined;
+			this.variableTypeFilterControl = undefined;
 			this.siteLayers = _.object([
 				[Config.GLCFS_DATASET, undefined],
 				[Config.NWIS_DATASET, undefined],
@@ -108,6 +123,10 @@ define([
 				this.map.invalidateSize();
 			}
 
+			if (this.variableTypeFilterControl) {
+				this.map.removeControl(this.variableTypeFilterControl);
+			}
+
 			if (this.map.hasLayer(this.circleMarker)) {
 				this.map.removeLayer(this.circleMarker);
 			}
@@ -137,6 +156,14 @@ define([
 					break;
 
 				case Config.CHOOSE_DATA_BY_VARIABLES_STEP:
+					this.listenTo(this.model, 'change:variableKinds', this.updateVariableTypeControl);
+					this.variableTypeFilterControl = selectFilterControl({
+						filterOptions : getVariableKindsOptions(this.model),
+						initialValue : ((this.model.attributes.variableKinds.length > 0)) ? this.model.attributes.variableKinds[0] : '',
+						changeHandler : this.updateVariableTypeFilter
+					});
+					this.map.addControl(this.variableTypeFilterControl);
+
 					_.each(Config.ALL_DATASETS, function(dataset) {
 						this.siteLayers[dataset] = new ByVariableTypeLayerView({
 							map : this.map,
@@ -150,6 +177,10 @@ define([
 					break;
 			}
 		},
+
+		/*
+		 * Model event listeners
+		 */
 
 		updateSelectedSite : function() {
 			var selectedSite = (this.model.has('selectedSite')) ? this.model.get('selectedSite') : undefined;
@@ -185,6 +216,36 @@ define([
 				$dataViewDiv.removeClass(DATA_VIEW_WIDTH_CLASS);
 				this.map.invalidateSize();
 			}
+		},
+
+		updateVariableTypeControl : function() {
+			var prevVarKinds = this.model.previous('variableKinds');
+			var newVarKinds = this.model.get('variableKinds');
+			var addedKinds = _.difference(newVarKinds, prevVarKinds);
+			var filterVarKind = this.variableTypeFilterControl.getValue();
+
+			var newFilterValue;
+
+			this.variableTypeFilterControl.updateFilterOptions(getVariableKindsOptions(this.model));
+			if (newVarKinds > 0) {
+				if (addedKinds.length > 0) {
+					newFilterValue = addedKinds[0];
+				}
+				else if (_.contains(newVarKinds, filterVarKind)) {
+					newFilterValue = filterVarKind;
+				}
+				else {
+					newFilterValue = newVarKinds[0];
+				}
+				this.variableTypeFilterControl.setValue(newFilterValue);
+			}
+		},
+
+		/*
+		 * DOM event handler
+		 */
+		updateVariableTypeFilter : function(ev) {
+			console.log('Updated filter to ' + $(ev.target).val());
 		}
 	});
 

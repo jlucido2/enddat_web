@@ -102,12 +102,12 @@ define([
 				expect(variableCollection0.attributes.elevationUnit).toBe(null);
 				expect(variableCollection0.attributes.siteNo).toBe('19:16');
 				expect(variableCollection0.attributes.name).toBe('19:16');
-				expect(variableCollection0.attributes.datasetName).toBe('GRID');
+				expect(variableCollection0.attributes.datasetName).toBe('GLCFS');
 				
 				var variable0 = variableCollection0.get('variables').at(0);
 				expect(variable0.attributes.x).toEqual('16');
 				expect(variable0.attributes.y).toEqual('19');
-				expect(variable0.attributes.variableParameter.name).toEqual('GRID');
+				expect(variable0.attributes.variableParameter.name).toEqual('GLCFS');
 				expect(variable0.attributes.variableParameter.value).toEqual('19:16:-1:0:ci:::0');
 				expect(variable0.attributes.variableParameter.colName).toEqual('Ice Concentration (fraction): [16,19]');
 			});

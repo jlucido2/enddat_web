@@ -55,6 +55,7 @@ define([
 	 */
 	
 	var getSiteUrl = function(workflowModel, siteModel, download) {
+		console.log('Hit!!!');
 		var siteDataset = siteModel.get('datasetName');
 		var siteVariables = siteModel.get('variables');
 		var selectedVariables = siteVariables.getSelectedVariables();
@@ -99,6 +100,7 @@ define([
 		}
 		var dataProcessingUrl = BASE_URL + 'service/execute?' + $.param(params.concat(varParams));
 		var urlLength = dataProcessingUrl.length;
+		console.log(urlLength);
 		var siteUrls;
 		if (urlLength > maxUrlLength) {
 			var sitesWithSelectedVariables = _.flatten(workflowModel.getSitesWithSelectedVariables());

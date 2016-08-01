@@ -18,7 +18,7 @@ define([
 ], function(Squire, $, _, moment, csv, filesaver, Config, datetimepicker, VariableParameter,
 	WorkflowStateModel, BaseDatasetCollection, BaseVariableCollection, BaseView) {
 	
-	describe('views/ProcessDataView', function() {
+	fdescribe('views/ProcessDataView', function() {
 		"use strict";
 		var testView, ProcessDataView;
 		var $testDiv;

@@ -83,6 +83,22 @@ define([
 				})).toBeDefined();
 			});
 		});
+		
+		describe('Tests for getSitesWithSelectedVariables', function() {
+			
+			var testCollection;
+			
+			it('Expects only site models with selected variables are returned', function() {
+				testCollection = new BaseDatasetCollection([
+					{id : 1, siteNo : '9901', variables : new BaseVariableCollection([{x : 1, selected : true}, {x : 2}])},
+					{id : 2, siteNo : '9002', variables : new BaseVariableCollection([{x : 3}])},
+					{id : 3, siteNo : '0032', variables : new BaseVariableCollection([{x : 4}, {x: 5, selected : true}])}
+				]);
+				var result = testCollection.getSitesWithSelectedVariables();
+				expect(result.length).toEqual(2);
+			});
+			
+		});
 
 		describe('Tests for getSiteModelsWithinDateFilter', function() {
 

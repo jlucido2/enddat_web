@@ -61,7 +61,7 @@ define([
 			return {
 				id : varMapKey,
 				text : varMapValue.displayName
-			}
+			};
 		});
 	};
 
@@ -156,14 +156,8 @@ define([
 					break;
 
 				case Config.CHOOSE_DATA_BY_VARIABLES_STEP:
-					this.listenTo(this.model, 'change:variableKinds', this.updateVariableTypeControl);
-					this.variableTypeFilterControl = selectFilterControl({
-						filterOptions : getVariableKindsOptions(this.model),
-						initialValue : ((this.model.attributes.variableKinds.length > 0)) ? this.model.attributes.variableKinds[0] : '',
-						changeHandler : this.updateVariableTypeFilter
-					});
-					this.map.addControl(this.variableTypeFilterControl);
-
+					this.listenTo(this.model, 'change:variableKinds', this.updateVariableKindControl);
+					this.updateVariableKindControl();
 					_.each(Config.ALL_DATASETS, function(dataset) {
 						this.siteLayers[dataset] = new ByVariableTypeLayerView({
 							map : this.map,
@@ -218,34 +212,54 @@ define([
 			}
 		},
 
-		updateVariableTypeControl : function() {
+		updateVariableKindControl : function() {
 			var prevVarKinds = this.model.previous('variableKinds');
-			var newVarKinds = this.model.get('variableKinds');
+			var newVarKinds = this.model.has('variableKinds') ? this.model.get('variableKinds') : [];
 			var addedKinds = _.difference(newVarKinds, prevVarKinds);
-			var filterVarKind = this.variableTypeFilterControl.getValue();
 
-			var newFilterValue;
-
-			this.variableTypeFilterControl.updateFilterOptions(getVariableKindsOptions(this.model));
-			if (newVarKinds > 0) {
-				if (addedKinds.length > 0) {
-					newFilterValue = addedKinds[0];
-				}
-				else if (_.contains(newVarKinds, filterVarKind)) {
-					newFilterValue = filterVarKind;
+			if (this.variableTypeFilterControl)  {
+				if (newVarKinds.length === 0) {
+					this.map.removeControl(this.variableTypeFilterControl);
+					this.variableTypeFilterControl = undefined;
+					this.model.unset('selectedVarKind');
 				}
 				else {
-					newFilterValue = newVarKinds[0];
+					var filterVarKind = this.variableTypeFilterControl.getValue();
+					var newFilterValue;
+
+					this.variableTypeFilterControl.updateFilterOptions(getVariableKindsOptions(this.model));
+					if (addedKinds.length > 0) {
+						newFilterValue = addedKinds[0];
+					}
+					else if (_.contains(newVarKinds, filterVarKind)) {
+						newFilterValue = filterVarKind;
+					}
+					else {
+						newFilterValue = newVarKinds[0];
+					}
+					this.variableTypeFilterControl.setValue(newFilterValue);
+					this.model.set('selectedVarKind', newFilterValue);
 				}
-				this.variableTypeFilterControl.setValue(newFilterValue);
+			}
+			else if (newVarKinds.length > 0) {
+				this.variableTypeFilterControl = selectFilterControl({
+					filterOptions : getVariableKindsOptions(this.model),
+					initialValue : newVarKinds[0],
+					changeHandler : _.bind(this.updateSelectedVarKind, this)
+				});
+				this.map.addControl(this.variableTypeFilterControl);
+				this.model.set('selectedVarKind', newVarKinds[0]);
 			}
 		},
+		/*
+		 * DOM event handlers
+		 */
 
 		/*
-		 * DOM event handler
+		 * Handles the change event for the Leaflet variable type control
 		 */
-		updateVariableTypeFilter : function(ev) {
-			console.log('Updated filter to ' + $(ev.target).val());
+		updateSelectedVarKind : function(ev) {
+			this.model.set('selectedVarKind', $(ev.target).val());
 		}
 	});
 

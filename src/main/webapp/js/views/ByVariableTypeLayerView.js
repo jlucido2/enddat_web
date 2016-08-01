@@ -36,6 +36,7 @@ define([
 			this.listenTo(this.model, 'change:dataDateFilter', this.updateSiteMarkers);
 			this.listenTo(this.collection, 'reset', this.updateSiteMarkers);
 			this.listenTo(this.collection, 'dataset:updateVariablesInFilter', this.updateSiteMarkers);
+			this.listenTo(this.model, 'change:selectedVarKind', this.updateSiteMarkers);
 			this.updateSiteMarkers();
 		},
 
@@ -48,7 +49,7 @@ define([
 		updateSiteMarkers : function() {
 			var self = this;
 			var dateFilter = this.model.has('dataDateFilter') ? this.model.get('dataDateFilter') : undefined;
-			var varFilters = variableDatasetMapping.getFilters(this.datasetKind, this.model.get('variableKinds'));
+			var varFilters = (this.model.has('selectedVarKind')) ? variableDatasetMapping.getFilters(this.datasetKind, [this.model.get('selectedVarKind')]) : [];
 			var filteredSiteModels = this.collection.getSitesWithVariableInFilters(varFilters, dateFilter);
 
 			this.siteLayerGroup.clearLayers();

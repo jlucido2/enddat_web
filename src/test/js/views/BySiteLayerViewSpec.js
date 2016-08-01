@@ -159,6 +159,13 @@ define([
 					return ((latLng.lat === 42) && (latLng.lng === -101));
 				})).toBeDefined();
 			});
+
+			it('Expects that if the selectedSite is set in the model, but the siteModel is not being displayed that the selectedSite is unset', function() {
+				testModel.set('selectedSite', {siteModel : testCollection.at(0), datasetKind : 'ACIS'});
+				testModel.set('dataDateFilter', {start : moment('2008-01-01', Config.DATE_FORMAT), end : moment('2010-01-01', Config.DATE_FORMAT)});
+
+				expect(testModel.has('selectedSite')).toBe(false);
+			});
 		});
 	});
 });

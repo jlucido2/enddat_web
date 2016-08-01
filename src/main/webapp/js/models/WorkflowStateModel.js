@@ -86,31 +86,12 @@ define([
 		
 		getSitesWithSelectedVariables : function() {
 			var datasetCollections = this.get('datasetCollections');
-			datasetSelectedSites = _.map(datasetCollections, function(datasetCollection) {
+			var datasetSelectedSites = _.map(datasetCollections, function(datasetCollection) {
 				return datasetCollection.getSitesWithSelectedVariables();
 			});
 			return datasetSelectedSites;
 		},
-		/*
-		getSitesWithSelectedVariables : function() {
-			var datasetCollections = this.get('datasetCollections');
-			var selectedSites = _.chain(datasetCollections).map(function(datasetCollection) {
-				var selectedVariables = datasetCollection.getSelectedVariables();
-				var datasetCollectionSelectedSites = _.map(selectedVariables, function(selectedVariable) {
-					return selectedVariable.get('variableParameter').siteNo;
-				});
-				var uniqueSelectedSiteIds = _.uniq(datasetCollectionSelectedSites);
-				var selectedSiteModels = _.map(uniqueSelectedSiteIds, function(selectedSiteId) {
-					var selectedSiteModel = datasetCollection.where({siteNo : selectedSiteId});
-					return selectedSiteModel;
-				});
-				return selectedSiteModels;
-			})
-			.flatten()
-			.value();
-			return selectedSites;
-		},
-		*/
+		
 		/*
 		 * Model event handlers
 		 */

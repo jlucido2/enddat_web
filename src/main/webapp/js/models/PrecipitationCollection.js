@@ -65,6 +65,7 @@ define([
 							y : y,
 							startDate : START_DATE,
 							endDate : today,
+							name : variableName,
 							variableUnit : 'kg m^-2',
 							variableParameter : new VariableParameter({
 								name : datasetName,

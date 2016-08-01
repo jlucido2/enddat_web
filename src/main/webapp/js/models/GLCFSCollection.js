@@ -75,7 +75,7 @@ define([
 		parse : function(xml) {
 			var result = [];
 			var today = moment();
-			var datasetName = 'GRID';
+			var datasetName = 'GLCFS';
 
 			$utils.xmlFind($(xml), 'wfs', 'member').each(function() {
 				var $this = $(this);

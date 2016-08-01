@@ -80,7 +80,6 @@ define([
 		},
 
 		render : function() {
-			var self = this;
 			var aoiModel = this.model.get('aoi');
 
 			BaseView.prototype.render.apply(this, arguments);
@@ -95,7 +94,7 @@ define([
 				layers : [this.baseLayers['World Street']]
 			});
 			_.each(this.defaultControls, function(control) {
-				self.map.addControl(control);
+				this.map.addControl(control);
 			}, this);
 
 			// Set up the map event handlers for the draw control to update the aoi model.

@@ -52,7 +52,7 @@
 
 				<a href="datadiscovery"><button class="splashButton">Begin Data Discovery</button></a>
 
-				<a href="UserGuide.jsp"><button class="splashButton">User Guide</button></a>
+				<a href="userguide"><button class="splashButton">User Guide</button></a>
 
 				<h2>Motivation</h2>
 				<p>

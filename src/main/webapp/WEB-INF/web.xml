@@ -15,6 +15,14 @@
 		<url-pattern>/datadiscovery</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>UserGuide</servlet-name>
+		<jsp-file>/UserGuide.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UserGuide</servlet-name>
+		<url-pattern>/userguide</url-pattern>
+	</servlet-mapping>
+	<servlet>
 		<servlet-name>EnddatServiceServlet</servlet-name>
 		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
 		<init-param>

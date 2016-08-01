@@ -107,7 +107,7 @@ define([
 				var variable0 = variableCollection0.get('variables').at(0);
 				expect(variable0.attributes.x).toEqual('16');
 				expect(variable0.attributes.y).toEqual('19');
-				expect(variable0.attributes.variableParameter.name).toEqual('GLCFS');
+				expect(variable0.attributes.variableParameter.name).toEqual('GRID');
 				expect(variable0.attributes.variableParameter.value).toEqual('19:16:-1:0:ci:::0');
 				expect(variable0.attributes.variableParameter.colName).toEqual('Ice Concentration (fraction): [16,19]');
 			});

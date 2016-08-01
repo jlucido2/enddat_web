@@ -69,7 +69,6 @@ define([
 							variableUnit : 'kg m^-2',
 							variableParameter : new VariableParameter({
 								name : datasetName,
-								siteNo : y + ':' + x,
 								value : y + ':' + x + ':' + self.timeBounds + ':' + variableId,
 								colName : variableName + ' [' + y + ',' + x + ']'
 							})

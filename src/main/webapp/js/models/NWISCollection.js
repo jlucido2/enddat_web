@@ -107,7 +107,6 @@ define([
 									variableUnit : pUnits,
 									variableParameter : new VariableParameter({
 										name : datasetName,
-										siteNo: variable.site_no,
 										value : variable.site_no + ':' + variable.parm_cd + ':' +  statCd,
 										colName : name + ':' + variable.site_no
 									})

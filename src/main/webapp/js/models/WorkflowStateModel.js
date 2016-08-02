@@ -79,7 +79,19 @@ define([
 				.flatten()
 				.value();
 		},
-
+		
+		/*
+		 * @returns {Array of Backbone.models} - contains selected site models for each dataset
+		 */
+		
+		getSitesWithSelectedVariables : function() {
+			var datasetCollections = this.get('datasetCollections');
+			var datasetSelectedSites = _.map(datasetCollections, function(datasetCollection) {
+				return datasetCollection.getSitesWithSelectedVariables();
+			});
+			return _.flatten(datasetSelectedSites);
+		},
+		
 		/*
 		 * Model event handlers
 		 */

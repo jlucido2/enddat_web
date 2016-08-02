@@ -125,6 +125,10 @@ define([
 				expect(testCollection.length).toBe(2);
 				expect(testCollection.at(0).attributes.lat).toEqual('43.10');
 				expect(testCollection.at(0).attributes.lon).toEqual('-89.53');
+				expect(testCollection.at(0).attributes.elevation).toBe(null);
+				expect(testCollection.at(0).attributes.elevationUnit).toBe(null);
+				expect(testCollection.at(0).attributes.name).toEqual('557:689');
+				expect(testCollection.at(0).attributes.siteNo).toEqual('557:689');
 				expect(variable0.x).toEqual('689');
 				expect(variable0.y).toEqual('557');
 				expect(variable0.variableParameter.name).toEqual('Precip');

@@ -7,6 +7,8 @@ define([
 	'handlebars',
 	'bootstrap-datetimepicker',
 	'backbone.stickit',
+	'csv',
+	'filesaver',
 	'module',
 	'Config',
 	'utils/jqueryUtils',
@@ -14,45 +16,80 @@ define([
 	'views/VariableTsOptionView',
 	'hbs!hb_templates/processData',
 	'hbs!hb_templates/urlContainer'
-], function($, _, moment, Handlebars, datetimepicker, stickit, module, Config, $utils, BaseCollapsiblePanelView,
-	VariableTsOptionView, hbTemplate, urlContainerTemplate) {
+], function($, _, moment, Handlebars, datetimepicker, stickit, csv, filesaver, module, Config, $utils,
+	BaseCollapsiblePanelView, VariableTsOptionView, hbTemplate, urlContainerTemplate) {
 	"use strict";
 
 	var BASE_URL = module.config().baseUrl;
-
-	var organizeParams = function(params) {
-		var constructClassifier = function(param) {
-				var name = param.name;
-				var siteNo = param.siteNo;
-				var classifier = name + '--' + siteNo;  // make a simple string to identify each dataset type and site number pair
-				return classifier;
-			};
-		// make an object containing of parameters for each site
-		// e.g. {site1 : [parameters for site 1], site2 : [parameters for site2], ...}
-		var masterParams = _.groupBy(params, constructClassifier);
-		return masterParams;
-	};
-
-	var getUrls = function(workflowModel, maxUrlLength, download) {
+	
+	var TSV_HEADERS = [
+       'dataset',
+       'siteNo',
+       'siteName',
+       'longitude',
+       'latitude',
+       'elevation',
+       'elevationUnit',
+       'variables',
+       'url'
+   ];
+	/*
+	 * @returns {Array of objects} - an array of URL parameters
+	 */
+	var buildParams = function(workflowModel) {
 		var attrs = workflowModel.attributes;
-		var varParams = _.chain(workflowModel.getSelectedVariables())
+		var params = [
+  			{name : 'style', value : attrs.outputFileFormat},
+  			{name : 'DateFormat', value : attrs.outputDateFormat},
+  			{name : 'TZ', value : attrs.outputTimeZone},
+  			{name : 'timeInt', value : attrs.outputTimeGapInterval},
+  			{name : 'fill', value : attrs.outputMissingValue},
+  			{name : 'beginPosition', value : attrs.outputDateRange.start.format(Config.DATE_FORMAT)},
+  			{name : 'endPosition', value : attrs.outputDateRange.end.format(Config.DATE_FORMAT)}
+		];
+		return params;
+	};
+	
+	/*
+	 * @return {String} - URL for a single site
+	 */
+	
+	var getSiteUrl = function(workflowModel, siteModel, download) {
+		var siteDataset = siteModel.get('datasetName');
+		var siteVariables = siteModel.get('variables');
+		var selectedVariables = siteVariables.getSelectedVariables();
+		var varParams = _.chain(selectedVariables)
 			.map(function(variable) {
 				return variable.get('variableParameter').getUrlParameters(variable.get('timeSeriesOptions'));
 			})
 			.flatten()
 			.value();
+		var params = buildParams(workflowModel);		
+		
+		if (siteDataset === Config.GLCFS_DATASET) {
+			var glcfsLake = workflowModel.get('datasetCollections')[Config.GLCFS_DATASET].getLake();
+			params.push({name: 'Lake', value : glcfsLake.toLowerCase()});
+		}
+		if (download) {
+			params.push({name : 'download', value: 'true'});
+		}
+		var dataProcessingUrl = BASE_URL + 'service/execute?' + $.param(params.concat(varParams));
+		return dataProcessingUrl;
+	};
 
+	var getUrls = function(workflowModel, maxUrlLength, download) {
+		var selectedVariables = workflowModel.getSelectedVariables();
+		var varParams = _.chain(selectedVariables)
+			.map(function(variable) {
+				return variable.get('variableParameter').getUrlParameters(variable.get('timeSeriesOptions'));
+			})
+			.flatten()
+			.value();
+		
 		var glcfsLake = workflowModel.get('datasetCollections')[Config.GLCFS_DATASET].getLake();
-
-		var params = [
-			{name : 'style', value : attrs.outputFileFormat},
-			{name : 'DateFormat', value : attrs.outputDateFormat},
-			{name : 'TZ', value : attrs.outputTimeZone},
-			{name : 'timeInt', value : attrs.outputTimeGapInterval},
-			{name : 'fill', value : attrs.outputMissingValue},
-			{name : 'beginPosition', value : attrs.outputDateRange.start.format(Config.DATE_FORMAT)},
-			{name : 'endPosition', value : attrs.outputDateRange.end.format(Config.DATE_FORMAT)}
-		];
+		
+		var params = buildParams(workflowModel);
+		
 		if (download) {
 			params.push({name : 'download', value: 'true'});
 		}
@@ -64,12 +101,10 @@ define([
 		var urlLength = dataProcessingUrl.length;
 		var siteUrls;
 		if (urlLength > maxUrlLength) {
-			var siteOrganizedParams = organizeParams(varParams);
-			// take the site organized parameters and create a url for each site,
-			// then return the values from the new object as an array
-			siteUrls = _.chain(siteOrganizedParams).mapObject(function(siteParams) {
-				return BASE_URL + 'service/execute?' + $.param(params.concat(siteParams));
-				}).values().value();
+			var sitesWithSelectedVariables = _.flatten(workflowModel.getSitesWithSelectedVariables());
+			siteUrls = _.map(sitesWithSelectedVariables, function(siteWithSelectedVariable) {
+				return getSiteUrl(workflowModel, siteWithSelectedVariable, download);
+			});
 		}
 		else {
 			siteUrls = [dataProcessingUrl];
@@ -93,6 +128,7 @@ define([
 			'click .show-url-btn' : 'showUrl',
 			'click .get-data-btn' : 'getData',
 			'click .download-data-btn' : 'downloadData',
+			'click .download-site-metadata' : 'provideMetadata',
 			//To set the model value from a datetimepicker, hand
 			'dp.change #output-start-date-div' : 'changeOutputStartDate',
 			'dp.change #output-end-date-div' : 'changeOutputEndDate'
@@ -110,6 +146,7 @@ define([
 			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
 			this.maxUrlLength = options.maxUrlLength ? options.maxUrlLength : 2000; // max url character length before it gets broken down into urls by site
 		},
+
 
 		render : function() {
 			var self = this;
@@ -240,6 +277,7 @@ define([
 		showUrl : function(ev) {
 			var dataUrls = getUrls(this.model, this.maxUrlLength);
 
+
 			ev.preventDefault();
 			this.context.dataUrls = dataUrls;
 			$('.url-container').html(urlContainerTemplate({dataUrls : dataUrls})); // render content in the url-container div
@@ -265,6 +303,52 @@ define([
 		downloadData : function(ev) {
 			ev.preventDefault();
 			window.location.assign(getUrls(this.model, this.maxUrlLength, true)[0]); // grab first item in the array
+		},
+		
+		provideMetadata : function(ev) {
+			var workflowModel = this.model;
+			var sitesWithSelectedVariables = workflowModel.getSitesWithSelectedVariables();
+			var selectedSiteMetadata = _.map(sitesWithSelectedVariables, function(siteWithSelectedVariables) {
+				var siteDataset = siteWithSelectedVariables.get('datasetName');
+				var siteNo = siteWithSelectedVariables.get('siteNo');
+				var siteName = siteWithSelectedVariables.get('name');
+				var siteLon = siteWithSelectedVariables.get('lon');
+				var siteLat = siteWithSelectedVariables.get('lat');
+				var siteElevation = siteWithSelectedVariables.get('elevation');
+				var siteElevationUnit = siteWithSelectedVariables.get('elevationUnit');
+				var siteVariables = siteWithSelectedVariables.get('variables');
+				var selectedVariables = siteVariables.getSelectedVariables();
+				var siteVariableMetadata = _.map(selectedVariables, function(selectedVariable) {
+					var variableName = '';
+					if (selectedVariable.has('name')) {
+						variableName = selectedVariable.get('name');
+					}
+					else {
+						variableName = selectedVariable.get('description');
+					}
+					var variableUnit = selectedVariable.get('variableUnit');
+					var variableDataStr = 'variableName:' + variableName + ';variableUnit:' + variableUnit;
+					return variableDataStr;
+				})
+				.join('||');
+				var siteUrl = getSiteUrl(workflowModel, siteWithSelectedVariables);
+				var data = [
+		            siteDataset,
+		            siteNo,
+		            siteName,
+		            siteLon,
+		            siteLat,
+		            siteElevation,
+		            siteElevationUnit,
+		            siteVariableMetadata,
+		            siteUrl
+	            ];
+				var result = _.object(TSV_HEADERS, data);
+				return result;
+			});
+			var encoded = csv.encode(selectedSiteMetadata, '\t');
+			var blob = new Blob([encoded], {type : 'tab-separated-values'});
+			saveAs(blob, 'sitemetadata.tsv');		
 		}
 	});
 

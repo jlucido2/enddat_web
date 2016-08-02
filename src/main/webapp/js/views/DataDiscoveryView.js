@@ -153,7 +153,6 @@ define([
 					if (!this.mapView) {
 						this.mapView = new MapView({
 							el : $utils.createDivInContainer(this.$(MAPVIEW_SELECTOR)),
-							mapDivId : 'map-div',
 							model : model
 						});
 						this.mapView.render();
@@ -308,7 +307,6 @@ define([
 			if (!this.mapView) {
 				this.mapView = new MapView({
 					el : $utils.createDivInContainer(this.$(MAPVIEW_SELECTOR)),
-					mapDivId : 'map-div',
 					model : this.model
 				});
 				this.mapView.render();

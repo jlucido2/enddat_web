@@ -13,54 +13,14 @@ define([
 	'utils/LUtils',
 	'leafletCustomControls/legendControl',
 	'views/BaseView',
-	'views/PrecipDataView',
-	'views/GLCFSDataView',
-	'views/ACISDataView',
-	'views/NWISDataView',
+	'views/SitesLayerView',
 	'hbs!hb_templates/mapOps'
-], function(_, L, leafletDraw, leafletProviders, log, module, Config, variableDatasetMapping, $utils, LUtils, legendControl, BaseView,
-		PrecipDataView, GLCFSDataView, ACISDataView, NWISDataView, hbTemplate) {
+], function(_, L, leafletDraw, leafletProviders, log, module, Config, variableDatasetMapping, $utils, LUtils, legendControl,
+		BaseView, SitesLayerView, hbTemplate) {
 
 	L.Icon.Default.imagePath = 'bower_components/leaflet/dist/images';
 
-	var siteIcons = _.mapObject(Config.DATASET_ICON, function(value) {
-		return L.icon(value);
-	});
-
-	var getGLCFSTitle = function(model) {
-		return model.get('variables').at(0).get('y') + ':' + model.get('variables').at(0).get('x');
-	};
-
-	var getNWISTitle = function(model) {
-		return model.get('name');
-	};
-
-	var getPrecipTitle = function(model) {
-		return model.get('variables').at(0).get('y') + ':' + model.get('variables').at(0).get('x');
-	};
-
-	var getACISTitle = function(model) {
-		return model.get('name');
-	};
-
-	var DataViews =_.object([
-  		[Config.GLCFS_DATASET, GLCFSDataView],
-		[Config.NWIS_DATASET, NWISDataView],
-		[Config.PRECIP_DATASET, PrecipDataView],
-		[Config.ACIS_DATASET, ACISDataView]
-	]);
-
-	var siteMarkerOptions = _.object([
-  		[Config.GLCFS_DATASET, {icon : siteIcons[Config.GLCFS_DATASET], getTitle : getGLCFSTitle}],
-		[Config.NWIS_DATASET, {icon : siteIcons[Config.NWIS_DATASET], getTitle : getNWISTitle}],
-		[Config.PRECIP_DATASET, {icon : siteIcons[Config.PRECIP_DATASET], getTitle : getPrecipTitle}],
-		[Config.ACIS_DATASET, {icon : siteIcons[Config.ACIS_DATASET], getTitle : getACISTitle}]
-	]);
-
-	var MAP_WIDTH_CLASS = 'col-md-6';
-	var DATA_VIEW_WIDTH_CLASS = 'col-md-6';
-
-	var VARIABLE_CONTAINER_SEL = '.dataset-variable-container';
+	var MAP_DIV_ID = 'map-div';
 
 	var view = BaseView.extend({
 
@@ -69,12 +29,10 @@ define([
 		/*
 		 * @param {Object} options
 		 *		@prop {Jquery element or selector} el
-		 *		@prop {String} mapDivId - id of the div where the map should be rendered
 		 *		@prop {WorkflowStateModel} model
 		 */
 		initialize : function(options) {
 			BaseView.prototype.initialize.apply(this, arguments);
-			this.mapDivId = options.mapDivId;
 
 			this.baseLayers = {
 				'World Street' : L.tileLayer.provider('Esri.WorldStreetMap'),
@@ -100,13 +58,6 @@ define([
 				});
 			}, this);
 
-			this.siteLayerGroups = _.object([
-				[Config.GLCFS_DATASET, L.layerGroup()],
-				[Config.NWIS_DATASET, L.layerGroup()],
-				[Config.PRECIP_DATASET, L.layerGroup()],
-				[Config.ACIS_DATASET, L.layerGroup()]
-			]);
-
 			// Initialize draw control
 			this.drawnAOIFeature = L.featureGroup();
 			this.drawAOIControl = new L.Control.Draw({
@@ -125,18 +76,20 @@ define([
 				}
 			});
 
-			this.selectedSite = undefined;
+			this.sitesLayerView = undefined;
 		},
 
 		render : function() {
 			var self = this;
 			var aoiModel = this.model.get('aoi');
+
 			BaseView.prototype.render.apply(this, arguments);
 
 			if (_.has(this, 'map')) {
 				this.map.remove();
+				this.removeSitesLayerView();
 			}
-			this.map = L.map(this.mapDivId, {
+			this.map = L.map(MAP_DIV_ID, {
 				center: [41.0, -100.0],
 				zoom : 4,
 				layers : [this.baseLayers['World Street']]
@@ -144,9 +97,6 @@ define([
 			_.each(this.defaultControls, function(control) {
 				self.map.addControl(control);
 			}, this);
-			_.each(this.siteLayerGroups, function(layerGroup) {
-				self.map.addLayer(layerGroup);
-			});
 
 			// Set up the map event handlers for the draw control to update the aoi model.
 			this.map.on('draw:created', function(ev) {
@@ -157,8 +107,8 @@ define([
 			}, this);
 
 			// Set up model event listeners and update the map state to match the current state of the workflow model.
-			this.listenTo(this.model, 'change:step', this.updateWorkflowStep);
 			this.updateWorkflowStep(this.model, this.model.get('step'));
+			this.listenTo(this.model, 'change:step', this.updateWorkflowStep);
 
 			this.updateAOILayerAndExtent(aoiModel);
 			this.listenTo(aoiModel, 'change', this.updateAOILayerAndExtent);
@@ -166,32 +116,23 @@ define([
 			this.updateUploadFeatureLayer(this.model, this.model.get('uploadedFeatureName'));
 			this.listenTo(this.model, 'change:uploadedFeatureName', this.updateUploadFeatureLayer);
 
-			// If the dataset collection models have already been created, then setup their listeners. Otherwise
-			// wait until they have been created.
-			if (this.model.has('datasetCollections')) {
-				this.setupDatasetListeners(this.model, this.model.attributes.datasetCollections);
-			}
-			else {
-				this.listenTo(this.model, 'change:datasetCollections', this.setupDatasetListeners);
-			}
-
 			return this;
 		},
 
 		remove : function() {
+			this.removeSitesLayerView();
 			if (_.has(this, 'map')) {
 				this.map.remove();
 			}
-			this.removeDataView();
 
 			BaseView.prototype.remove.apply(this, arguments);
 			return this;
 		},
 
-		removeDataView : function() {
-			if (this.selectedSite) {
-				this.selectedSite.dataView.remove();
-				this.selectedSite = undefined;
+		removeSitesLayerView : function() {
+			if (this.sitesLayerView) {
+				this.sitesLayerView.remove();
+				this.sitesLayerView = undefined;
 			}
 		},
 
@@ -241,24 +182,21 @@ define([
 		 * @param {String} newStep
 		 */
 		updateWorkflowStep: function (model, newStep) {
-			var $map = this.$('#' + this.mapDivId);
+			var $map = this.$('#' + MAP_DIV_ID);
 			switch (newStep) {
 				case Config.SPECIFY_AOI_STEP:
-					this.removeDataView();
-
-					if (this.map.hasLayer(this.circleMarker)) {
-						this.map.removeLayer(this.circleMarker);
-					}
-
-					if ($map.hasClass(MAP_WIDTH_CLASS)) {
-						$map.removeClass(MAP_WIDTH_CLASS);
-						this.map.invalidateSize();
-					}
+					this.removeSitesLayerView();
 					break;
 
 				case Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP:
 				case Config.CHOOSE_DATA_BY_VARIABLES_STEP:
 					this.legendControl.setVisibility(true);
+					this.removeSitesLayerView();
+					this.sitesLayerView = new SitesLayerView({
+						map : this.map,
+						el : this.el,
+						model : model
+					});
 					break;
 			}
 		},
@@ -342,131 +280,6 @@ define([
 				});
 				this.uploadFeatureLayer.addTo(this.map).bringToFront();
 			}
-		},
-
-		setupDatasetListeners : function(model, datasetCollections) {
-			this.updateAllSiteMarkers();
-
-			this.listenTo(model, 'change:dataDateFilter', this.updateAllSiteMarkers);
-
-			this.listenTo(datasetCollections[Config.NWIS_DATASET], 'reset', this.updateNWISMarkers);
-			this.listenTo(datasetCollections[Config.PRECIP_DATASET], 'reset', this.updatePrecipMarkers);
-			this.listenTo(datasetCollections[Config.ACIS_DATASET], 'reset', this.updateACISMarkers);
-			this.listenTo(datasetCollections[Config.GLCFS_DATASET], 'reset', this.updateGLCFSMarkers);
-
-			this.listenTo(datasetCollections[Config.NWIS_DATASET], 'dataset:updateVariablesInFilter', this.updateNWISMarkers);
-			this.listenTo(datasetCollections[Config.PRECIP_DATASET], 'dataset:updateVariablesInFilter', this.updatePrecipMarkers);
-			this.listenTo(datasetCollections[Config.ACIS_DATASET], 'dataset:updateVariablesInFilter', this.updateACISMarkers);
-			this.listenTo(datasetCollections[Config.GLCFS_DATASET], 'dataset:updateVariablesInFilter', this.updateGLCFSMarkers);
-		},
-
-		updateSiteMarkerLayer : function(datasetKind) {
-			var self = this;
-			var $mapDiv = this.$('#' + self.mapDivId);
-
-			var siteCollection = this.model.get('datasetCollections')[datasetKind];
-			var filteredSiteModels;
-			var step = self.model.get('step');
-			var dateFilter = this.model.has('dataDateFilter') ? this.model.get('dataDateFilter') : undefined;
-			var isInChooseDataBySiteWorkflow = (step === Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP) || (step === Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP);
-
-			var moveCircleMarker = function(latLng) {
-				if (self.circleMarker) {
-					self.circleMarker.setLatLng(latLng);
-					if (!self.map.hasLayer(self.circleMarker)) {
-						self.map.addLayer(self.circleMarker);
-					}
-				}
-				else {
-					self.circleMarker = new L.circleMarker(latLng,{
-						radius : 15
-					});
-					self.map.addLayer(self.circleMarker);
-				}
-			};
-
-			var updateDataView = function(siteModel, siteLatLng) {
-				var bounds = LUtils.getLatLngBounds(self.model.get('aoi').getBoundingBox());
-				var	projectLocation = bounds.getCenter();
-
-				self.removeDataView();
-				self.selectedSite = {
-					datasetKind : datasetKind,
-					model : siteModel,
-					dataView : new DataViews[datasetKind]({
-						el : $utils.createDivInContainer(self.$(VARIABLE_CONTAINER_SEL)),
-						distanceToProjectLocation : LUtils.milesBetween(projectLocation, siteLatLng).toFixed(3),
-						model : siteModel,
-						opened : true
-					})
-				};
-
-				if (!$mapDiv.hasClass(MAP_WIDTH_CLASS)) {
-					$mapDiv.addClass(MAP_WIDTH_CLASS);
-					self.map.invalidateSize();
-					self.$(VARIABLE_CONTAINER_SEL).addClass(DATA_VIEW_WIDTH_CLASS);
-				}
-				self.selectedSite.dataView.render();
-			};
-
-			if (isInChooseDataBySiteWorkflow) {
-				filteredSiteModels = siteCollection.getSiteModelsWithinDateFilter(dateFilter);
-			}
-			else {
-				filteredSiteModels =
-					siteCollection.getSitesWithVariableInFilters(
-						variableDatasetMapping.getFilters(datasetKind, self.model.get('variableKinds')),
-						dateFilter
-					);
-			}
-			// Determine if the selected site is still in the collection
-			if (this.selectedSite && (this.selectedSite.datasetKind === datasetKind) &&
-				!_.contains(filteredSiteModels, this.selectedSite.model)) {
-				this.selectedSite.dataView.remove();
-				$mapDiv.removeClass(MAP_WIDTH_CLASS);
-				this.map.invalidateSize();
-				this.map.removeLayer(this.circleMarker);
-			}
-
-			this.siteLayerGroups[datasetKind].clearLayers();
-			_.each(filteredSiteModels, function(siteModel) {
-				var latLng = L.latLng(siteModel.attributes.lat, siteModel.attributes.lon);
-				var marker = L.marker(latLng, {
-					icon : siteMarkerOptions[datasetKind].icon,
-					title : siteMarkerOptions[datasetKind].getTitle(siteModel)
-				});
-
-				self.siteLayerGroups[datasetKind].addLayer(marker);
-				if (isInChooseDataBySiteWorkflow) {
-					marker.on('click', function(ev) {
-						moveCircleMarker(latLng);
-						updateDataView(siteModel, latLng);
-						self.model.set('step', Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP);
-					});
-				}
-			});
-		},
-
-		updateAllSiteMarkers : function() {
-			_.each(Config.ALL_DATASETS, function(datasetKind) {
-				this.updateSiteMarkerLayer(datasetKind);
-			}, this);
-		},
-
-		updateNWISMarkers : function() {
-			this.updateSiteMarkerLayer(Config.NWIS_DATASET);
-		},
-
-		updatePrecipMarkers : function() {
-			this.updateSiteMarkerLayer(Config.PRECIP_DATASET);
-		},
-
-		updateACISMarkers : function() {
-			this.updateSiteMarkerLayer(Config.ACIS_DATASET);
-		},
-
-		updateGLCFSMarkers : function() {
-			this.updateSiteMarkerLayer(Config.GLCFS_DATASET);
 		}
 	});
 

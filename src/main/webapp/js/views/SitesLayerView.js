@@ -245,6 +245,7 @@ define([
 				this.variableTypeFilterControl = selectFilterControl({
 					filterOptions : getVariableKindsOptions(this.model),
 					initialValue : newVarKinds[0],
+					tooltip : 'Select variable to show on map',
 					changeHandler : _.bind(this.updateSelectedVarKind, this)
 				});
 				this.map.addControl(this.variableTypeFilterControl);

@@ -92,9 +92,9 @@ define([
 				this.workflowState.get('datasetCollections')[Config.GLCFS_DATASET].setLake(glcfsLake);
 			}
 			this.workflowState.get('aoi').set(state.aoi);
-			this.workflowState.set({
-				'startDate' : (state.startDate) ? moment(state.startDate, Config.DATE_FORMAT_URL) : '',
-				'endDate' : (state.endDate) ? moment(state.endDate, Config.DATE_FORMAT_URL) : ''
+			this.workflowState.set('dataDateFilter', {
+				'start' : (state.startDate) ? moment(state.startDate, Config.DATE_FORMAT_URL) : '',
+				'end' : (state.endDate) ? moment(state.endDate, Config.DATE_FORMAT_URL) : ''
 			});
 			this.workflowState.set('step', workflowStep);
 			this.createView(DataDiscoveryView, {

@@ -57,7 +57,8 @@ define([
 			]);
 			testModel = new Backbone.Model({
 				datasetCollections : {'ACIS' : testCollection, NWIS : new BaseDatasetCollection([])},
-				variableKinds : ['precipitation']
+				variableKinds : ['precipitation', 'maxTemperature'],
+				selectedVarKind : 'precipitation'
 			});
 			testView = new ByVariableTypeLayerView({
 				map : testMap,
@@ -187,13 +188,12 @@ define([
 				})).toBeDefined();
 			});
 
-			it('Expects if the variable kinds are updated, the expected markers are updated', function() {
+			it('Expects if the selected variable kinds is updated, the expected markers are updated', function() {
 				var markers;
-				testModel.set('variableKinds', ['precipitation', 'maxTemperature']);
-				testCollection.trigger('dataset:updateVariablesInFilter');
+				testModel.set('selectedVarKind', 'maxTemperature');
 				markers = testView.siteLayerGroup.getLayers();
 
-				expect(markers.length).toBe(2);
+				expect(markers.length).toBe(1);
 			});
 		});
 	});

@@ -15,7 +15,7 @@ define([
 ], function(Squire, _, $, L, Backbone, Config, BaseDatasetCollection, WorkflowStateModel, BaseView, mapOpsTemplate) {
 	"use strict";
 
-	fdescribe('views/SitesLayerViewSpec', function() {
+	describe('views/SitesLayerViewSpec', function() {
 		var testView, SitesLayerView;
 		var $testDiv;
 		var testMap;

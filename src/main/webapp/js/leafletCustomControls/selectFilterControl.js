@@ -43,7 +43,7 @@ define([
 		},
 
 		getValue : function() {
-			this._selectEl.value;
+			return this._selectEl.value;
 		},
 
 		updateFilterOptions : function(newFilterOptions) {
@@ -57,6 +57,7 @@ define([
 				this._selectEl.title = this.options.tooltip;
 			}
 			this._selectEl.innerHTML = toOptionsHtml(this.options.filterOptions);
+			this.setValue(this.options.initialValue);
 			if (this.options.changeHandler) {
 				L.DomEvent.addListener(this._selectEl, 'change', this.options.changeHandler);
 				L.DomEvent.disableClickPropagation(this._selectEl);

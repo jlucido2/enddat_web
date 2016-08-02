@@ -275,7 +275,7 @@ define([
 		},
 
 		showUrl : function(ev) {
-			var dataUrls = _.values(getUrls(this.model, this.maxUrlLength));
+			var dataUrls = getUrls(this.model, this.maxUrlLength);
 
 
 			ev.preventDefault();

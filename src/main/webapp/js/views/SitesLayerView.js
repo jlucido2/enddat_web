@@ -230,6 +230,9 @@ define([
 					var newFilterValue;
 
 					this.variableTypeFilterControl.updateFilterOptions(getVariableKindsOptions(this.model));
+					// Set the newFilterValue to the variableKind that was added. If none were added,
+					// then set the filter value to the current value of the filter if it is still in variableKinds.
+					// Otherwise set to the first value in variableKinds
 					if (addedKinds.length > 0) {
 						newFilterValue = addedKinds[0];
 					}

@@ -12,7 +12,6 @@ define([
 			beforeEach(function() {
 				testObject = new VariableParameter({
 					name : 'DatasetId',
-					siteNo : '145:88',
 					value : '145:88:77',
 					colName : 'Temperature'
 				});
@@ -25,7 +24,6 @@ define([
 			it('Expects that if the timeSeriesOptions are passed a single value and the statistic value is raw, no statistic is appended to the value', function() {
 				expect(testObject.getUrlParameters([{statistic : 'raw'}])).toEqual([{
 					name : 'DatasetId',
-					siteNo : '145:88',
 					value : '145:88:77!Temperature'
 				}]);
 			});
@@ -33,7 +31,6 @@ define([
 			it('Expects that if the timeSeriesOption is passed a statistic other than raw then the value and col name reflect the statistic', function() {
 				expect(testObject.getUrlParameters([{statistic : 'Min', timeSpan : '24'}])).toEqual([{
 					name : 'DatasetId',
-					siteNo: '145:88',
 					value : '145:88:77:Min:24!Temperature Min 24 hr'
 				}]);
 			});

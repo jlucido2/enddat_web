@@ -6,13 +6,18 @@ define([
 	'jquery',
 	'underscore',
 	'moment',
+	'csv',
+	'filesaver',
 	'Config',
 	'bootstrap-datetimepicker',
 	'utils/VariableParameter',
 	'models/WorkflowStateModel',
+	'models/BaseDatasetCollection',
 	'models/BaseVariableCollection',
 	'views/BaseView'
-], function(Squire, $, _, moment, Config, datetimepicker, VariableParameter, WorkflowStateModel, BaseVariableCollection, BaseView) {
+], function(Squire, $, _, moment, csv, filesaver, Config, datetimepicker, VariableParameter,
+	WorkflowStateModel, BaseDatasetCollection, BaseVariableCollection, BaseView) {
+	
 	describe('views/ProcessDataView', function() {
 		"use strict";
 		var testView, ProcessDataView;
@@ -51,7 +56,7 @@ define([
 
 			injector.require(['views/ProcessDataView'], function(view) {
 				ProcessDataView = view;
-
+				
 				// generates a URL with 186 characters (give or take depending on other parameters
 				var variableCollection = new BaseVariableCollection([
 					{x : '2', y: '2', selected : true,
@@ -69,18 +74,54 @@ define([
  	  					variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var1'}),
  	  					timeSeriesOptions : [{statistic : 'raw'}]
  	  				},
- 	  				{x : '3', y: '3', selected : true,
- 	  					variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var1'}),
- 	  					timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]},
- 	  				{x : '4', y : '4', selected : true,
- 	  				     variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '4:4', value : '4:4', colName : 'Var3'}),
- 	  				     timeSeriesOptions : [{statistic : 'raw'}]
- 	  				},
- 	  				{x : '5', y : '5', selected : true,
- 	 				     variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '5:5', value : '5:5', colName : 'Var4'}),
- 	 				     timeSeriesOptions : [{statistic : 'raw'}]
- 	 			    }
+					{x : '2', y: '2', selected : true,
+						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var2'}),
+						timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]},
+					{x : '3', y: '3', selected : true,
+						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var1'}),
+						timeSeriesOptions : [{statistic : 'raw'}]
+					},
+					{x : '3', y: '3', selected : true,
+						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var2'}),
+						timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]}
  	  			]);
+				
+				var siteCollection = new BaseDatasetCollection([
+				    {datasetName : 'DatasetId',
+				    	siteNo : '2:2',
+				    	name : 'Some Site Name 2:2',
+				    	lat : '-43.33',
+				    	lon : '97.01',
+				    	elevation : '17',
+				    	elevationUnit : 'm',
+				    	variables : new BaseVariableCollection([
+        					{x : '2', y: '2', selected : true,
+        						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var1'}),
+        						timeSeriesOptions : [{statistic : 'raw'}]
+        					},
+        					{x : '2', y: '2', selected : true,
+        						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '2:2', value : '2:2', colName : 'Var2'}),
+        						timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]}
+        				])
+				    },
+				    {datasetName : 'DatasetId',
+				    	siteNo : '3:3',
+				    	name : 'Some Site Name 3:3',
+				    	lat : '46.79',
+				    	lon : '28.11',
+				    	elevation : '-89',
+				    	elevationUnits : 'm',
+				    	variables : new BaseVariableCollection([
+        					{x : '3', y: '3', selected : true,
+        						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var1'}),
+        						timeSeriesOptions : [{statistic : 'raw'}]
+        					},
+        					{x : '3', y: '3', selected : true,
+        						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var2'}),
+        						timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]}
+        				])
+				    }
+				]);
 
 				testModel = new WorkflowStateModel({
 					step : Config.PROCESS_DATA_STEP,
@@ -90,7 +131,8 @@ define([
 					}
 				});
 				testModel.initializeDatasetCollections();
-
+				
+				spyOn(testModel, 'getSitesWithSelectedVariables').and.returnValue(siteCollection.models);
 				spyOn(testModel, 'getSelectedVariables').and.returnValue(variableCollection.models);
 
 				maxUrlLength = 215;
@@ -380,13 +422,10 @@ define([
 					$testDiv.find('.show-url-btn').trigger('click');
 					var firstUrl = decodeURIComponent($testDiv.find('ul.url-links li:nth-child(1)').html());
 					var secondUrl = decodeURIComponent($testDiv.find('ul.url-links li:nth-child(2)').html());
-					var thirdUrl = decodeURIComponent($testDiv.find('ul.url-links li:nth-child(3)').html());
-					var firstInspect = (firstUrl.search('DatasetId=2:2!Var1') !== -1) && (firstUrl.search('DatasetId=3:3:Min:2!Var1') === -1) && (firstUrl.search('DatasetId=4:4!Var3') === -1);
-					var secondInspect = (secondUrl.search('DatasetId=2:2!Var1') === -1) && (secondUrl.search('DatasetId=3:3:Min:2!Var1') !== -1 ) && (secondUrl.search('DatasetId=4:4!Var3') === -1);
-					var thirdInspect = (thirdUrl.search('DatasetId=2:2!Var1') === -1) && (thirdUrl.search('DatasetId=3:3:Min:2!Var1') === -1 ) && (thirdUrl.search('DatasetId=4:4!Var3') !== -1);
+					var firstInspect = (firstUrl.search('DatasetId=2:2!Var1') !== -1) && (firstUrl.search('DatasetId=3:3:Min:2!Var1') === -1);
+					var secondInspect = (secondUrl.search('DatasetId=2:2!Var1') === -1) && (secondUrl.search('DatasetId=3:3:Min:2!Var2') !== -1);
 					expect(firstInspect).toBe(true);
 					expect(secondInspect).toBe(true);
-					expect(thirdInspect).toBe(true);
 				});
 			});
 
@@ -407,7 +446,7 @@ define([
 				};
 
 				beforeEach(function() {
-					testModel.set({
+					testModel.set({   				
 						outputFileFormat : 'tab',
 						outputDateFormat : 'Excel',
 						outputTimeZone : '0_GMT',
@@ -462,6 +501,12 @@ define([
 					spyOn(window, 'open');
 					$testDiv.find('.get-data-btn').trigger('click');
 					expect(isExpectedUrl(window.open.calls.argsFor(0)[0])).toBe(true);
+				});
+				
+				it('Expects that saveAs is called when download metadata is clicked', function() {
+					spyOn(window, 'saveAs');
+					$testDiv.find('.download-site-metadata').trigger('click');
+					expect(saveAs).toHaveBeenCalled();
 				});
 			});
 		});

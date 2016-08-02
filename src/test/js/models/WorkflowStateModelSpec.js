@@ -103,6 +103,41 @@ define([
 			expect(testModel.attributes.datasetCollections[Config.ACIS_DATASET]).toBeDefined();
 			expect(testModel.attributes.datasetCollections[Config.GLCFS_DATASET]).toBeDefined();
 		});
+		
+		describe('Tests for getSitesWithSelectedVariables', function() {
+			it('Expects an empty array if dataCollections have not been initialized', function() {
+				expect(testModel.getSelectedVariables()).toEqual([]);
+			});
+			
+			it('Expects an empty array if dataCollections is empty', function() {
+				testModel.initializeDatasetCollections();
+				expect(testModel.getSelectedVariables()).toEqual([]);
+			});
+			
+			it('Expects model containing the sites to be returned if variables are selected', function() {
+				testModel.set('datasetCollections', {
+					NWIS : new BaseDatasetCollection([
+						{siteNo : '04453',
+						 variables : new BaseVariableCollection([
+								{selected : true, x : 1, variableParameter : {siteNo : '04453'}},
+								{selected : true, x : 2, variableParameter : {siteNo : '04453'}}
+						])},
+						{siteNo : '12399',
+						 variables : new BaseVariableCollection([
+								{x: 3, variableParameter : {siteNo : '12399'}}
+						])}
+					]),
+					PRECIP : new BaseDatasetCollection([
+						{siteNo : '9:56',
+						 variables : new BaseVariableCollection([
+							{selected: true, x : 4, variableParameter : {siteNo : '9:56'}}
+						])}
+					])
+				});
+				var result = testModel.getSitesWithSelectedVariables();
+				expect(result.length).toEqual(2);
+			});
+		});
 
 		describe('Tests for getSelectedVariables', function() {
 			it('Expects that an empty array is returned if the datasetCollections have not been initialized', function() {

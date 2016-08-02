@@ -83,12 +83,17 @@
 					'loglevel' : '../bower_components/loglevel/dist/loglevel',
 					'backbone.stickit' : '../bower_components/backbone.stickit/backbone.stickit',
 					'moment' : '../bower_components/moment/moment',
-					'bootstrap-datetimepicker' : '../bower_components/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker'
+					'bootstrap-datetimepicker' : '../bower_components/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker',
+					'csv' : '../bower_components/csv/lib/csv',
+					'filesaver' : '../bower_components/filesaverjs/FileSaver'
 				},
 				shim: {
 					"bootstrap": [ "jquery" ],
 					'leaflet' : {
 						exports: 'L'
+					},
+					'filesaver' : {
+						exports: 'Filesaver'
 					},
 					'leaflet-draw' : ['leaflet'],
 					'leaflet-providers' : ['leaflet'],

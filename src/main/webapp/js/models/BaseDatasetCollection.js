@@ -25,7 +25,7 @@ define([
 		},
 
 		/*
-		 * @returns {Boolean} - ture if any of the models contain a variable that has been selected
+		 * @returns {Boolean} - true if any of the models contain a variable that has been selected
 		 */
 		hasSelectedVariables : function() {
 			return this.some(function(model) {
@@ -43,6 +43,16 @@ define([
 				})
 				.flatten()
 				.value();
+		},
+		/*
+		 * @ returns {Array of Backbone.Models} - each model represents a site with one or more selected variables
+		 */
+		
+		getSitesWithSelectedVariables: function() {
+			var selectedSites = this.filter(function(datasetModel) {
+				return datasetModel.get('variables').hasSelectedVariables();
+			});
+			return selectedSites;
 		},
 
 		/*

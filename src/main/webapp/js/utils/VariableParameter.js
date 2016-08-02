@@ -14,7 +14,6 @@ define([
 	*/
 	var VariableParameter = function(attributes) {
 		this.name = attributes.name;
-		this.siteNo = attributes.siteNo;
 		this.value = attributes.value;
 		this.colName = attributes.colName;
 
@@ -33,7 +32,6 @@ define([
 
 				return {
 					name : this.name,
-					siteNo: this.siteNo,
 					value : value + '!' + colName
 				};
 			}, this);

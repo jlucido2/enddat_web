@@ -19,12 +19,17 @@
 		'moment' : '../bower_components/moment/moment',
 		'bootstrap-datetimepicker' : '../bower_components/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker',
 		'handlebars' : '../bower_components/handlebars/handlebars',
-		'handlebars-compiler' : '../bower_components/handlebars/handlebars'
+		'handlebars-compiler' : '../bower_components/handlebars/handlebars',
+		'csv' : '../bower_components/csv/lib/csv',
+		'filesaver' : '../bower_components/filesaverjs/FileSaver'
 	},
 	shim: {
 		"bootstrap": [ "jquery" ],
 		'leaflet' : {
 			exports: 'L'
+		},
+		'filesaver' : {
+			exports: 'Filesaver'
 		},
 		'leaflet-draw': ['leaflet'],
 		'leaflet-providers': ['leaflet'],

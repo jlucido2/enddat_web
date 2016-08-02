@@ -81,7 +81,7 @@ define([
 		},
 		
 		/*
-		 * @returns {Array of arrays} - contains arrays of selected site for each dataset
+		 * @returns {Array of Backbone.models} - contains selected site models for each dataset
 		 */
 		
 		getSitesWithSelectedVariables : function() {
@@ -89,7 +89,7 @@ define([
 			var datasetSelectedSites = _.map(datasetCollections, function(datasetCollection) {
 				return datasetCollection.getSitesWithSelectedVariables();
 			});
-			return datasetSelectedSites;
+			return _.flatten(datasetSelectedSites);
 		},
 		
 		/*

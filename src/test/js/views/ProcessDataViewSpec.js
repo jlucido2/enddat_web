@@ -132,7 +132,7 @@ define([
 				});
 				testModel.initializeDatasetCollections();
 				
-				spyOn(testModel, 'getSitesWithSelectedVariables').and.returnValue([siteCollection.models]);
+				spyOn(testModel, 'getSitesWithSelectedVariables').and.returnValue(siteCollection.models);
 				spyOn(testModel, 'getSelectedVariables').and.returnValue(variableCollection.models);
 
 				maxUrlLength = 215;

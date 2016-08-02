@@ -307,51 +307,48 @@ define([
 		
 		provideMetadata : function(ev) {
 			var workflowModel = this.model;
-			var sitesWithSelectedVariablesByDataset = workflowModel.getSitesWithSelectedVariables();
-			var metaDataByDataset = _.map(sitesWithSelectedVariablesByDataset, function(datasetSelectedSites) {
-				var siteMetadata = _.map(datasetSelectedSites, function(datasetSelectedSite) {
-					var siteDataset = datasetSelectedSite.get('datasetName');
-					var siteNo = datasetSelectedSite.get('siteNo');
-					var siteName = datasetSelectedSite.get('name');
-					var siteLon = datasetSelectedSite.get('lon');
-					var siteLat = datasetSelectedSite.get('lat');
-					var siteElevation = datasetSelectedSite.get('elevation');
-					var siteElevationUnit = datasetSelectedSite.get('elevationUnit');
-					var siteVariables = datasetSelectedSite.get('variables');
-					var selectedVariables = siteVariables.getSelectedVariables();
-					var siteVariableMetadata = _.map(selectedVariables, function(selectedVariable) {
-						var variableName = '';
-						if (selectedVariable.has('name')) {
-							variableName = selectedVariable.get('name');
-						}
-						else {
-							variableName = selectedVariable.get('description');
-						}
-						var variableUnit = selectedVariable.get('variableUnit');
-						var variableDataStr = 'variableName:' + variableName + ';variableUnit:' + variableUnit;
-						return variableDataStr;
-					})
-					.join('||');
-					var siteUrl = getSiteUrl(workflowModel, datasetSelectedSite);
-					var data = [
-			            siteDataset,
-			            siteNo,
-			            siteName,
-			            siteLon,
-			            siteLat,
-			            siteElevation,
-			            siteElevationUnit,
-			            siteVariableMetadata,
-			            siteUrl
-		            ];
-					var result = _.object(TSV_HEADERS, data);
-					return result;
-				});
-				return siteMetadata;
+			var sitesWithSelectedVariables = workflowModel.getSitesWithSelectedVariables();
+			var selectedSiteMetadata = _.map(sitesWithSelectedVariables, function(siteWithSelectedVariables) {
+				var siteDataset = siteWithSelectedVariables.get('datasetName');
+				var siteNo = siteWithSelectedVariables.get('siteNo');
+				var siteName = siteWithSelectedVariables.get('name');
+				var siteLon = siteWithSelectedVariables.get('lon');
+				var siteLat = siteWithSelectedVariables.get('lat');
+				var siteElevation = siteWithSelectedVariables.get('elevation');
+				var siteElevationUnit = siteWithSelectedVariables.get('elevationUnit');
+				var siteVariables = siteWithSelectedVariables.get('variables');
+				var selectedVariables = siteVariables.getSelectedVariables();
+				var siteVariableMetadata = _.map(selectedVariables, function(selectedVariable) {
+					var variableName = '';
+					if (selectedVariable.has('name')) {
+						variableName = selectedVariable.get('name');
+					}
+					else {
+						variableName = selectedVariable.get('description');
+					}
+					var variableUnit = selectedVariable.get('variableUnit');
+					var variableDataStr = 'variableName:' + variableName + ';variableUnit:' + variableUnit;
+					return variableDataStr;
+				})
+				.join('||');
+				var siteUrl = getSiteUrl(workflowModel, siteWithSelectedVariables);
+				var data = [
+		            siteDataset,
+		            siteNo,
+		            siteName,
+		            siteLon,
+		            siteLat,
+		            siteElevation,
+		            siteElevationUnit,
+		            siteVariableMetadata,
+		            siteUrl
+	            ];
+				var result = _.object(TSV_HEADERS, data);
+				return result;
 			});
-			var encoded = csv.encode(_.flatten(metaDataByDataset), '\t');
+			var encoded = csv.encode(selectedSiteMetadata, '\t');
 			var blob = new Blob([encoded], {type : 'tab-separated-values'});
-			saveAs(blob, 'sitemetadata.tsv')			
+			saveAs(blob, 'sitemetadata.tsv');		
 		}
 	});
 

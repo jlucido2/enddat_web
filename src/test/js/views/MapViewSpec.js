@@ -235,14 +235,14 @@ define([
 				expect(L.map.calls.count()).toBe(2);
 			});
 
-			it('Expects that the sitesLayerView is created if the workflow step if CHOOSE_DATA_BY_SITE_FILTERS_STEP', function() {
+			it('Expects that the sitesLayerView is created if the workflow step is CHOOSE_DATA_BY_SITE_FILTERS_STEP', function() {
 				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 				testView.render();
 
 				expect(testView.sitesLayerView).toBeDefined();
 			});
 
-			it('Expects that the sitesLayerView is created if the workflow step if CHOOSE_DATA_BY_VARIABLES_STEP', function() {
+			it('Expects that the sitesLayerView is created if the workflow step is CHOOSE_DATA_BY_VARIABLES_STEP', function() {
 				testModel.set('step', Config.CHOOSE_DATA_BY_VARIABLES_STEP);
 				testView.render();
 

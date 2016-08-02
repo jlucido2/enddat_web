@@ -15,7 +15,7 @@ define([
 ], function(Squire, _, $, L, Backbone, Config, BaseDatasetCollection, WorkflowStateModel, BaseView, mapOpsTemplate) {
 	"use strict";
 
-	describe('views/SitesLayerViewSpec', function() {
+	fdescribe('views/SitesLayerViewSpec', function() {
 		var testView, SitesLayerView;
 		var $testDiv;
 		var testMap;
@@ -164,6 +164,26 @@ define([
 			});
 		});
 
+		it('Expects that the variableTypeFilterControl is created if the workflow step is CHOOSE_BY_SITE and variableKinds are set', function() {
+			testModel.set('datasetCollections', _.object([
+				[Config.GLCFS_DATASET, testGLCFSCollection],
+				[Config.NWIS_DATASET, testNWISCollection],
+				[Config.Precip_DATASET, testPrecipCollection],
+				[Config.ACIS_DATASET, testACISCollection]
+			]));
+			testModel.set({
+				variableKinds : ['precipiation'],
+				step : Config.CHOOSE_DATA_BY_VARIABLES_STEP
+			});
+
+			testView = new SitesLayerView({
+				map : testMap,
+				el : $testDiv,
+				model : testModel
+			});
+			expect(testView.variableTypeFilterControl).toBeDefined();
+		});
+
 		describe('Tests that site layers are created if the datasetCollections are initialized after the view is created', function() {
 			beforeEach(function() {
 				testView = new SitesLayerView({
@@ -209,6 +229,55 @@ define([
 						return arg.datasetKind = datasetKind;
 					})).toBeDefined();
 				});
+			});
+		});
+
+		describe('Tests for change in variableKinds attribute in model', function() {
+			beforeEach(function() {
+				testModel.set('step', Config.CHOOSE_DATA_BY_VARIABLES_STEP);
+				testModel.set('datasetCollections', _.object([
+					[Config.GLCFS_DATASET, testGLCFSCollection],
+					[Config.NWIS_DATASET, testNWISCollection],
+					[Config.Precip_DATASET, testPrecipCollection],
+					[Config.ACIS_DATASET, testACISCollection]
+				]));
+				testView = new SitesLayerView({
+					map : testMap,
+					el : $testDiv,
+					model : testModel
+				});
+			});
+
+			it('Expects that if variableKinds is changed to have a non-empty value that the variableTypeFilter is created and the selectedVarKind set to the first value in the list', function() {
+				testModel.set('variableKinds', ['precipitation']);
+
+				expect(testView.variableTypeFilterControl).toBeDefined();
+				expect(testModel.get('selectedVarKind')).toEqual('precipitation');
+			});
+
+			it('Expects that if variableKinds is changed to add an additional value that the variableTypeFilter is set to that new value', function() {
+				testModel.set('variableKinds', ['precipitation']);
+				spyOn(testView.variableTypeFilterControl, 'updateFilterOptions').and.callThrough();
+				testModel.set('variableKinds', ['precipitation', 'maxTemperature']);
+
+				expect(testView.variableTypeFilterControl.updateFilterOptions).toHaveBeenCalled();
+				expect(testModel.get('selectedVarKind')).toEqual('maxTemperature');
+			});
+
+			it('Expects that if the variableKinds is change to remove the current value, than the first value in the last is set', function() {
+				testModel.set('variableKinds', ['precipitation', 'maxTemperature']);
+				testModel.set('variableKinds', ['maxTemperature']);
+
+				expect(testModel.get('selectedVarKind')).toEqual('maxTemperature');
+			});
+
+			it('Expects that if variableKinds is unset, the variableControl is removed and the selectedVarKind unset', function() {
+				testModel.set('variableKinds', ['maxTemperature']);
+				spyOn(testMap, 'removeControl').and.callThrough();
+				testModel.set('variableKinds', []);
+
+				expect(testMap.removeControl).toHaveBeenCalled();
+				expect(testModel.has('selectedVarKind')).toBe(false);
 			});
 		});
 
@@ -348,6 +417,7 @@ define([
 					[Config.Precip_DATASET, testPrecipCollection],
 					[Config.ACIS_DATASET, testACISCollection]
 				]));
+				testModel.set('variableKinds', ['precipitation']);
 				testView = new SitesLayerView({
 					map : testMap,
 					el : $testDiv,
@@ -356,9 +426,12 @@ define([
 			});
 
 			it('Expects that if the view is remove, the expected ByVariableLayerViews are removed', function() {
+				var variableTypeFilterControl = testView.variableTypeFilterControl;
+				spyOn(testMap, 'removeControl');
 				testView.remove();
 
 				expect(removeByVariableLayerViewSpy.calls.count()).toBe(4);
+				expect(testMap.removeControl).toHaveBeenCalledWith(variableTypeFilterControl);
 			});
 		});
 	});

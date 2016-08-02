@@ -131,7 +131,9 @@ define([
 				this.map.removeLayer(this.circleMarker);
 			}
 			_.each(this.siteLayers, function(siteLayer) {
-				siteLayer.remove();
+				if (siteLayer) {
+					siteLayer.remove();
+				}
 			});
 
 			this.model.unset('selectedSite');

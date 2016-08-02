@@ -47,9 +47,14 @@
 	}
 }
 
-.leaflet-select-filter-div select {
-	height : 34px;
+.leaflet-select-filter-div {
 	font-family : @font-family-sans-serif;
+	select {
+		height : @input-height-base;
+		font-family : @font-family-sans-serif;
+		border-color : @input-border;
+		border-radius : @input-border-radius;
+	}
 }
 .dataset-variable-container {
 	max-height: 100%;

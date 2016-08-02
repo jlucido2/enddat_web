@@ -94,6 +94,8 @@ define([
 				expect(testView.$(projLocSel + ' a').hasClass('active')).toBe(true);
 				expect(testView.$(chooseDataSel + ' a').hasClass('active')).toBe(false);
 				expect(testView.$(processDataSel + ' a').hasClass('active')).toBe(false);
+				expect(testView.$(chooseDataSel + ' a').prop('disabled')).toBe(true);
+				expect(testView.$(processDataSel + ' a').prop('disabled')).toBe(true);
 				expect(testView.$(projLocSel).hasClass('disabled')).toBe(false);
 				expect(testView.$(chooseDataSel).hasClass('disabled')).toBe(true);
 				expect(testView.$(processDataSel).hasClass('disabled')).toBe(true);
@@ -112,6 +114,8 @@ define([
 				expect(testView.$(projLocSel).hasClass('disabled')).toBe(false);
 				expect(testView.$(chooseDataSel).hasClass('disabled')).toBe(false);
 				expect(testView.$(processDataSel).hasClass('disabled')).toBe(true);
+				expect(testView.$(chooseDataSel + ' a').prop('disabled')).toBe(false);
+				expect(testView.$(processDataSel + ' a').prop('disabled')).toBe(true);
 			});
 
 			it('Expects that if the workflow step is CHOOSE_DATA_BY_SITE_FILTERS_STEP the choose data btn is active and the process data step is disabled', function() {
@@ -127,6 +131,8 @@ define([
 				expect(testView.$(projLocSel + ' a').hasClass('active')).toBe(false);
 				expect(testView.$(chooseDataSel + ' a').hasClass('active')).toBe(true);
 				expect(testView.$(processDataSel + ' a').hasClass('active')).toBe(false);
+				expect(testView.$(chooseDataSel + ' a').prop('disabled')).toBeUndefined();
+				expect(testView.$(processDataSel + ' a').prop('disabled')).toBe(true);
 				expect(testView.$(projLocSel).hasClass('disabled')).toBe(false);
 				expect(testView.$(chooseDataSel).hasClass('disabled')).toBe(false);
 				expect(testView.$(processDataSel).hasClass('disabled')).toBe(true);
@@ -145,6 +151,8 @@ define([
 				expect(testView.$(projLocSel + ' a').hasClass('active')).toBe(false);
 				expect(testView.$(chooseDataSel + ' a').hasClass('active')).toBe(true);
 				expect(testView.$(processDataSel + ' a').hasClass('active')).toBe(false);
+				expect(testView.$(chooseDataSel + ' a').prop('disabled')).toBeUndefined();
+				expect(testView.$(processDataSel + ' a').prop('disabled')).toBe(true);
 				expect(testView.$(projLocSel).hasClass('disabled')).toBe(false);
 				expect(testView.$(chooseDataSel).hasClass('disabled')).toBe(false);
 				expect(testView.$(processDataSel).hasClass('disabled')).toBe(true);
@@ -304,6 +312,8 @@ define([
 				expect(testView.$(projLocSel).hasClass('disabled')).toBe(false);
 				expect(testView.$(chooseDataSel).hasClass('disabled')).toBe(false);
 				expect(testView.$(processDataSel).hasClass('disabled')).toBe(true);
+				expect(testView.$(chooseDataSel + ' a').prop('disabled')).toBe(false);
+				expect(testView.$(processDataSel + ' a').prop('disabled')).toBe(true);
 			});
 
 			it('Expects that if the step is changed to CHOOSE_DATA_BY_SITE_FILTERS_STEP, the choose data btn is active', function() {
@@ -313,6 +323,8 @@ define([
 				expect(testView.$(projLocSel + ' a').hasClass('active')).toBe(false);
 				expect(testView.$(chooseDataSel + ' a').hasClass('active')).toBe(true);
 				expect(testView.$(processDataSel + ' a').hasClass('active')).toBe(false);
+				expect(testView.$(chooseDataSel + ' a').prop('disabled')).toBe(false);
+				expect(testView.$(processDataSel + ' a').prop('disabled')).toBe(true);
 				expect(testView.$(projLocSel).hasClass('disabled')).toBe(false);
 				expect(testView.$(chooseDataSel).hasClass('disabled')).toBe(false);
 				expect(testView.$(processDataSel).hasClass('disabled')).toBe(true);
@@ -381,6 +393,8 @@ define([
 				expect(testView.$(projLocSel + ' a').hasClass('active')).toBe(false);
 				expect(testView.$(chooseDataSel + ' a').hasClass('active')).toBe(true);
 				expect(testView.$(processDataSel + ' a').hasClass('active')).toBe(false);
+				expect(testView.$(chooseDataSel + ' a').prop('disabled')).toBe(false);
+				expect(testView.$(processDataSel + ' a').prop('disabled')).toBe(true);
 				expect(testView.$(projLocSel).hasClass('disabled')).toBe(false);
 				expect(testView.$(chooseDataSel).hasClass('disabled')).toBe(false);
 				expect(testView.$(processDataSel).hasClass('disabled')).toBe(true);
@@ -405,6 +419,8 @@ define([
 				expect(testView.$(projLocSel + ' a').hasClass('active')).toBe(false);
 				expect(testView.$(chooseDataSel + ' a').hasClass('active')).toBe(true);
 				expect(testView.$(processDataSel + ' a').hasClass('active')).toBe(false);
+				expect(testView.$(chooseDataSel + ' a').prop('disabled')).toBe(false);
+				expect(testView.$(processDataSel + ' a').prop('disabled')).toBe(true);
 				expect(testView.$(projLocSel).hasClass('disabled')).toBe(false);
 				expect(testView.$(chooseDataSel).hasClass('disabled')).toBe(false);
 				expect(testView.$(processDataSel).hasClass('disabled')).toBe(true);

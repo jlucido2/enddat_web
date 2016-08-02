@@ -57,6 +57,16 @@ define([
 		return aoiFragment + startDate + endDate + datasetFragment + variableKindFragment;
 	};
 
+	var setBtnDisabled = function($el, isDisabled) {
+		if (isDisabled) {
+			$el.addClass('disabled');
+		}
+		else {
+			$el.removeClass('disabled');
+		};
+		$el.find('a').prop('disabled', isDisabled);
+	};
+
 	var view = BaseView.extend({
 		template : hb_template,
 
@@ -164,13 +174,8 @@ define([
 			}
 			switch(newStep) {
 				case Config.SPECIFY_AOI_STEP:
-					if (model.get('aoi').hasValidAOI()) {
-						$chooseDataBtn.removeClass('disabled');
-					}
-					else {
-						$chooseDataBtn.addClass('disabled');
-					}
-					$processDataBtn.addClass('disabled');
+					setBtnDisabled($chooseDataBtn, !model.get('aoi').hasValidAOI());
+					setBtnDisabled($processDataBtn, true);
 
 					this.router.navigate('');
 					break;
@@ -178,12 +183,7 @@ define([
 				case Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP:
 				case Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP:
 				case Config.CHOOSE_DATA_BY_VARIABLES_STEP:
-					if (model.get('hasSelectedVariables')) {
-						$processDataBtn.removeClass('disabled');
-					}
-					else {
-						$processDataBtn.addClass('disabled');
-					}
+					setBtnDisabled($processDataBtn, !model.get('hasSelectedVariables'));
 
 					if (model.get('aoi').hasValidAOI()) {
 						this.router.navigate(getChooseDataUrl(model));
@@ -200,12 +200,7 @@ define([
 
 			switch(this.model.get('step')) {
 				case Config.SPECIFY_AOI_STEP:
-					if (this.model.get('aoi').hasValidAOI()) {
-							$chooseDataBtn.removeClass('disabled');
-					}
-					else {
-						$chooseDataBtn.addClass('disabled');
-					}
+					setBtnDisabled($chooseDataBtn, !this.model.get('aoi').hasValidAOI());
 					break;
 
 				case Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP:

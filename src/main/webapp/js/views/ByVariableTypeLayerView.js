@@ -71,14 +71,19 @@ define([
 					title : self.getTitle(siteModel)
 				});
 
-				marker.bindPopup(variablePopupTemplate({
-					datasetKind : self.datasetKind,
-					siteNo : siteModel.get('siteNo'),
-					siteId : siteModel.cid,
-					variableName : selectedVarDisplayName,
-					variableId : variableModel.cid,
-					selected : (variableModel.has('selected') ? variableModel.get('selected') : false)
-				}));
+				marker.on('click', function(ev) {
+					L.popup()
+						.setLatLng(ev.latlng)
+						.setContent(variablePopupTemplate({
+							datasetKind : self.datasetKind,
+							siteNo : siteModel.get('siteNo'),
+							siteId : siteModel.cid,
+							variableName : selectedVarDisplayName,
+							variableId : variableModel.cid,
+							selected : (variableModel.has('selected') ? variableModel.get('selected') : false)
+						}))
+						.openOn(self.map);
+				})
 
 				self.siteLayerGroup.addLayer(marker);
 			});

@@ -159,8 +159,12 @@ define([
 			}
 		},
 
+		/*
+		 * Model event handlers
+		 */
+
 		updateNavigation : function(model, isRendering) {
-			var stepHasChanged = isRendering ? true : model.hasChanged('step');
+			var stepHasChanged = _.isBoolean(isRendering) ? isRendering : model.hasChanged('step');
 			var newStep = model.get('step');
 
 			var $chooseDataBtn = this.$(this.navSelector[Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP]);
@@ -181,6 +185,13 @@ define([
 					break;
 
 				case Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP:
+					setBtnDisabled($processDataBtn, true);
+
+					if (model.get('aoi').hasValidAOI()) {
+						this.router.navigate(getChooseDataUrl(model));
+					}
+					break;
+
 				case Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP:
 				case Config.CHOOSE_DATA_BY_VARIABLES_STEP:
 					setBtnDisabled($processDataBtn, !model.get('hasSelectedVariables'));

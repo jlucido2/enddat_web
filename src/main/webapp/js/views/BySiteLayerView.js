@@ -3,8 +3,9 @@
 define([
 	'underscore',
 	'leaflet',
-	'backbone'
-], function(_, L, Backbone) {
+	'backbone',
+	'Config',
+], function(_, L, Backbone, Config) {
 	"use strict";
 	/*
 	 * This view will be rendered at initialization. A call to render will be a no op.
@@ -46,7 +47,7 @@ define([
 		/*
 		 * Model event handlers
 		 */
-		
+
 		updateSiteMarkers : function() {
 			var self = this;
 			var dateFilter = this.model.has('dataDateFilter') ? this.model.get('dataDateFilter') : undefined;
@@ -69,9 +70,12 @@ define([
 
 				self.siteLayerGroup.addLayer(marker);
 				marker.on('click', function(ev) {
-					self.model.set('selectedSite', {
-						siteModel : siteModel,
-						datasetKind : self.datasetKind
+					self.model.set({
+						selectedSite : {
+							siteModel : siteModel,
+							datasetKind : self.datasetKind
+						},
+						step : Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP
 					});
 				});
 			});

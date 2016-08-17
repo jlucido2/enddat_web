@@ -214,6 +214,7 @@ define([
 		_createFileUploader : function($fileUploaderInput) {
 			var self = this;
 			var filename;
+			var $loadingIndicator = this.$('.filter-file-loading-indicator');
 
 			$fileUploaderInput.fileupload({
 				url : 'timeFilterFileUpload',
@@ -222,11 +223,14 @@ define([
 				send : function(e, data) {
 					filename = data.files[0].name;
 					data.url = data.url + '?qqfile=' + filename + '&tz=' + self.$('#time-filter-timezone-input').val();
+					$loadingIndicator.show();
 				},
 				done : function(e, data) {
 					self.$('#time-filter-id-input').val(data.fileId);
+					$loadingIndicator.hide();
 				},
 				fail : function() {
+					$loadingIndicator.hide();
 					self.alertFilterFileView.showDangerAlert('Unable to upload time filter file');
 				}
 			});

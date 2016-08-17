@@ -192,7 +192,7 @@ define([
 			var deferred = $.Deferred();
 			$.ajax({
 				type : "GET",
-				url : 'https://help.waterdata.usgs.gov/code/stat_code_query?fmt=rdb',//stcodes/?fmt=rdb',
+				url : 'stcodes/?fmt=rdb',
 				dataType: 'text',
 
 				success: function(data) {

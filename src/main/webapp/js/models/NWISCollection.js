@@ -57,7 +57,7 @@ define([
 							return site.site_no;
 						});
 						var datasetName = 'NWIS';
-						
+
 						var parseVariables = function(rawVariables) {
 							var parseVariable = function(variable) {
 								var name = '';
@@ -192,8 +192,9 @@ define([
 			var deferred = $.Deferred();
 			$.ajax({
 				type : "GET",
-				url : 'stcodes/?fmt=rdb',
+				url : 'https://help.waterdata.usgs.gov/code/stat_code_query?fmt=rdb',//stcodes/?fmt=rdb',
 				dataType: 'text',
+
 				success: function(data) {
 					var parsedStats = rdbUtils.parseRDB(data);
 

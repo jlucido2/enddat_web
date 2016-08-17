@@ -42,9 +42,27 @@
 			</div>
 		</div>
 	</div>
-	<div class="form-group">
-		<label for="acceptable-data-gap-input">Acceptable Data Gap (in hours)</label>
-		<input type="number" min="1" size="4" class="form-control" id="acceptable-data-gap-input" />
+	<div>OR</div>
+	<div>
+		<div class="form-group">
+			<div class="upload-timefilter-input-container">
+				<span class="btn btn-primary fileinput-button">
+					<i class="fa fa-upload"></i>
+					<span>&nbsp;Select shapefile to display...</span>
+					<!-- The file input field used as target for the file upload widget -->
+					<input id="time-filter-file-input" type="file" name="qqfile">
+				</span>
+				<div>
+					<label for="time-filter-id-input">Filter File Id</label>
+					<input type="text" id="time-filter-id-input" />
+				</div>
+				<div class="time-filter-file-alert-container"></div>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="acceptable-data-gap-input">Acceptable Data Gap (in hours)</label>
+			<input type="number" min="1" size="4" class="form-control" id="acceptable-data-gap-input" />
+		</div>
 	</div>
 </div>
 <div class="output-file-inputs-container">

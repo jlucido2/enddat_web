@@ -222,7 +222,7 @@ define([
 				dataType : 'json',
 				send : function(e, data) {
 					filename = data.files[0].name;
-					data.url = data.url + '?qqfile=' + filename + '&tz=' + self.$('#time-filter-timezone-input').val();
+					data.url = data.url + '?qqfile=' + filename;
 					$loadingIndicator.show();
 				},
 				done : function(e, data) {
@@ -240,6 +240,7 @@ define([
 			_.each(this.variableTsOptionViews, function(view) {
 				view.remove();
 			});
+			this.alertFilterFileView.remove();
 			this.variableTsOptionViews = undefined;
 			BaseCollapsiblePanelView.prototype.remove.apply(this, arguments);
 		},

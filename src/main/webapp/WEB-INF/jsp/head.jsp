@@ -35,7 +35,7 @@
 <jsp:include page="/template/USGSHead.jsp">
 	<jsp:param name="shortName" value="Environmental Data Discovery and Transformation Service - BETA"/>
 	<jsp:param name="title" value="EnDDaT" />
-	<jsp:param name="description" value="EnDDaT is a data discovery, aggregation, and processing tool for scientific modelers focusing on Great Lakes beaches." />
+	<jsp:param name="description" value="EnDDaT is a data discovery, aggregation, and processing tool for scientific modelers focusing on Great Lakes beaches and hydro-climate data." />
 	<jsp:param name="author" value="" />
 	<jsp:param name="keywords" value="USGS, U.S. Geological Survey, water, earth science, hydrology, hydrologic, data, streamflow, stream, river, lake, flood, drought, quality, basin, watershed, environment, ground water, groundwater" />
 	<jsp:param name="publisher" value="" />

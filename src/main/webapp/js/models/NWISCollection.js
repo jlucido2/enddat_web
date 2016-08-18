@@ -57,7 +57,7 @@ define([
 							return site.site_no;
 						});
 						var datasetName = 'NWIS';
-						
+
 						var parseVariables = function(rawVariables) {
 							var parseVariable = function(variable) {
 								var name = '';
@@ -194,6 +194,7 @@ define([
 				type : "GET",
 				url : 'stcodes/?fmt=rdb',
 				dataType: 'text',
+
 				success: function(data) {
 					var parsedStats = rdbUtils.parseRDB(data);
 

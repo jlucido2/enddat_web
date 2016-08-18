@@ -3,6 +3,7 @@
 define([
 	'jquery',
 	'underscore',
+	'blueimp-file-upload',
 	'moment',
 	'handlebars',
 	'bootstrap-datetimepicker',
@@ -12,16 +13,17 @@ define([
 	'module',
 	'Config',
 	'utils/jqueryUtils',
+	'views/AlertView',
 	'views/BaseCollapsiblePanelView',
 	'views/VariableTsOptionView',
 	'hbs!hb_templates/processData',
 	'hbs!hb_templates/urlContainer'
-], function($, _, moment, Handlebars, datetimepicker, stickit, csv, filesaver, module, Config, $utils,
-	BaseCollapsiblePanelView, VariableTsOptionView, hbTemplate, urlContainerTemplate) {
+], function($, _, $fileUpload, moment, Handlebars, datetimepicker, stickit, csv, filesaver, module, Config, $utils,
+	AlertView, BaseCollapsiblePanelView, VariableTsOptionView, hbTemplate, urlContainerTemplate) {
 	"use strict";
 
 	var BASE_URL = module.config().baseUrl;
-	
+
 	var TSV_HEADERS = [
        'dataset',
        'siteNo',
@@ -42,18 +44,23 @@ define([
   			{name : 'style', value : attrs.outputFileFormat},
   			{name : 'DateFormat', value : attrs.outputDateFormat},
   			{name : 'TZ', value : attrs.outputTimeZone},
-  			{name : 'timeInt', value : attrs.outputTimeGapInterval},
-  			{name : 'fill', value : attrs.outputMissingValue},
-  			{name : 'beginPosition', value : attrs.outputDateRange.start.format(Config.DATE_FORMAT)},
-  			{name : 'endPosition', value : attrs.outputDateRange.end.format(Config.DATE_FORMAT)}
+  			{name : 'fill', value : attrs.outputMissingValue}
 		];
+		if (workflowModel.has('timeFilterId') && (attrs.timeFilterId)) {
+			params.push({name : 'filterId', value : attrs.timeFilterId});
+			params.push({name : 'timeInt', value : attrs.outputTimeGapInterval});
+		}
+		else {
+			params.push({name : 'beginPosition', value : attrs.outputDateRange.start.format(Config.DATE_FORMAT)});
+			params.push({name : 'endPosition', value : attrs.outputDateRange.end.format(Config.DATE_FORMAT)});
+		}
 		return params;
 	};
-	
+
 	/*
 	 * @return {String} - URL for a single site
 	 */
-	
+
 	var getSiteUrl = function(workflowModel, siteModel, download) {
 		var siteDataset = siteModel.get('datasetName');
 		var siteVariables = siteModel.get('variables');
@@ -64,8 +71,8 @@ define([
 			})
 			.flatten()
 			.value();
-		var params = buildParams(workflowModel);		
-		
+		var params = buildParams(workflowModel);
+
 		if (siteDataset === Config.GLCFS_DATASET) {
 			var glcfsLake = workflowModel.get('datasetCollections')[Config.GLCFS_DATASET].getLake();
 			params.push({name: 'Lake', value : glcfsLake.toLowerCase()});
@@ -85,11 +92,11 @@ define([
 			})
 			.flatten()
 			.value();
-		
+
 		var glcfsLake = workflowModel.get('datasetCollections')[Config.GLCFS_DATASET].getLake();
-		
+
 		var params = buildParams(workflowModel);
-		
+
 		if (download) {
 			params.push({name : 'download', value: 'true'});
 		}
@@ -136,6 +143,7 @@ define([
 
 		bindings: {
 			'#output-date-format-input' : 'outputDateFormat',
+			'#time-filter-id-input' : 'timeFilterId',
 			'#output-time-zone-input' : 'outputTimeZone',
 			'#acceptable-data-gap-input' : 'outputTimeGapInterval',
 			'#output-file-format-input' : 'outputFileFormat',
@@ -145,6 +153,9 @@ define([
 		initialize : function(options) {
 			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
 			this.maxUrlLength = options.maxUrlLength ? options.maxUrlLength : 2000; // max url character length before it gets broken down into urls by site
+			this.alertFilterFileView = new AlertView({
+				el : '.time-filter-file-alert-container'
+			});
 		},
 
 
@@ -193,13 +204,43 @@ define([
 			});
 			this.listenTo(this.model, 'change:outputDateRange', this.updateOutputDateRangeInputs);
 
+			// Set up file uploader
+			this.alertFilterFileView.setElement('.time-filter-file-alert-container');
+			this._createFileUploader(this.$('#time-filter-file-input'));
+
 			return this;
+		},
+
+		_createFileUploader : function($fileUploaderInput) {
+			var self = this;
+			var filename;
+			var $loadingIndicator = this.$('.filter-file-loading-indicator');
+
+			$fileUploaderInput.fileupload({
+				url : 'timeFilterFileUpload',
+				type : 'POST',
+				dataType : 'json',
+				send : function(e, data) {
+					filename = data.files[0].name;
+					data.url = data.url + '?qqfile=' + filename;
+					$loadingIndicator.show();
+				},
+				done : function(e, data) {
+					self.$('#time-filter-id-input').val(data.fileId);
+					$loadingIndicator.hide();
+				},
+				fail : function() {
+					$loadingIndicator.hide();
+					self.alertFilterFileView.showDangerAlert('Unable to upload time filter file');
+				}
+			});
 		},
 
 		remove : function() {
 			_.each(this.variableTsOptionViews, function(view) {
 				view.remove();
 			});
+			this.alertFilterFileView.remove();
 			this.variableTsOptionViews = undefined;
 			BaseCollapsiblePanelView.prototype.remove.apply(this, arguments);
 		},
@@ -277,7 +318,6 @@ define([
 		showUrl : function(ev) {
 			var dataUrls = getUrls(this.model, this.maxUrlLength);
 
-
 			ev.preventDefault();
 			this.context.dataUrls = dataUrls;
 			$('.url-container').html(urlContainerTemplate({dataUrls : dataUrls})); // render content in the url-container div
@@ -304,7 +344,7 @@ define([
 			ev.preventDefault();
 			window.location.assign(getUrls(this.model, this.maxUrlLength, true)[0]); // grab first item in the array
 		},
-		
+
 		provideMetadata : function(ev) {
 			var workflowModel = this.model;
 			var sitesWithSelectedVariables = workflowModel.getSitesWithSelectedVariables();
@@ -348,7 +388,7 @@ define([
 			});
 			var encoded = csv.encode(selectedSiteMetadata, '\t');
 			var blob = new Blob([encoded], {type : 'tab-separated-values'});
-			saveAs(blob, 'sitemetadata.tsv');		
+			saveAs(blob, 'sitemetadata.tsv');
 		}
 	});
 

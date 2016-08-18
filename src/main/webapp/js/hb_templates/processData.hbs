@@ -27,24 +27,46 @@
 </div>
 <div class="output-data-inputs-container">
 	<h4>Data Processing Filters</h4>
-	<div class="form-group">
-		<label>Output Date Range</label>
-		<div class="form-inline">
-			<label for="output-start-date">Start:&nbsp;</label>
-			<div class="input-group date" id="output-start-date-div" >
-				<input type="text" id="output-start-date" class="form-control" size="10"/>
-				<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+	<div class="panel panel-default date-range-container">
+		<h5>Output Date Range</h5>
+		<div class="panel-body form-inline">
+			<div class="form-group">
+				<label for="output-start-date">Start:&nbsp;</label>
+				<div class="input-group date" id="output-start-date-div" >
+					<input type="text" id="output-start-date" class="form-control" size="10"/>
+					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+				</div>
 			</div>
-			<label for="output-end-date">End:&nbsp;</label>
-			<div class="input-group date" id="output-end-date-div">
-				<input type="text" id="output-end-date" class="form-control" size="10"/>
-				<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+			<div class="form-group">
+				<label for="output-end-date">End:&nbsp;</label>
+				<div class="input-group date" id="output-end-date-div">
+					<input type="text" id="output-end-date" class="form-control" size="10"/>
+					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+				</div>
 			</div>
 		</div>
 	</div>
-	<div class="form-group">
-		<label for="acceptable-data-gap-input">Acceptable Data Gap (in hours)</label>
-		<input type="number" min="1" size="4" class="form-control" id="acceptable-data-gap-input" />
+	<span class="output-date-span">Or</span>
+	<div class="time-filter-container panel panel-default">
+		<h5>Time Filters</h5>
+		<div class="form-group panel-body upload-timefilter-input-container">
+			<span class="btn btn-primary fileinput-button">
+				<i class="fa fa-upload"></i>
+				<span>&nbsp;Select file containing times to filter the output</span>
+				<!-- The file input field used as target for the file upload widget -->
+				<input id="time-filter-file-input" type="file" name="qqfile">
+			</span>
+			<i class="filter-file-loading-indicator fa fa-spinner fa-spin fa-2x"></i>
+			<div class="time-filter-file-alert-container"></div>
+		</div>
+		<div class="form-group">
+			<label for="time-filter-id-input">Filter File Id</label>
+			<input type="text" id="time-filter-id-input" class="form-control" />
+		</div>
+		<div class="form-group">
+			<label for="acceptable-data-gap-input">Acceptable Data Gap (in hours)</label>
+			<input type="number" min="1" size="4" class="form-control" id="acceptable-data-gap-input" />
+		</div>
 	</div>
 </div>
 <div class="output-file-inputs-container">
@@ -66,8 +88,8 @@
 			<option value="-4_EDT">EDT (-4:00 GMT)</option>
 			<option value="-7_MST">MST (-7:00 GMT)</option>
 			<option value="-6_MDT">MDT (-6:00 GMT)</option>
-			<option value="-8_PST">CST (-8:00 GMT)</option>
-			<option value="-7_PDT">CST (-7:00 GMT)</option>
+			<option value="-8_PST">PST (-8:00 GMT)</option>
+			<option value="-7_PDT">PST (-7:00 GMT)</option>
 		</select>
 	</div>
 	<div class="form-group">

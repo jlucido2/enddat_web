@@ -17,7 +17,7 @@ define([
 	'views/BaseView'
 ], function(Squire, $, _, moment, csv, filesaver, Config, datetimepicker, VariableParameter,
 	WorkflowStateModel, BaseDatasetCollection, BaseVariableCollection, BaseView) {
-	
+
 	describe('views/ProcessDataView', function() {
 		"use strict";
 		var testView, ProcessDataView;
@@ -56,7 +56,7 @@ define([
 
 			injector.require(['views/ProcessDataView'], function(view) {
 				ProcessDataView = view;
-				
+
 				// generates a URL with 186 characters (give or take depending on other parameters
 				var variableCollection = new BaseVariableCollection([
 					{x : '2', y: '2', selected : true,
@@ -85,7 +85,7 @@ define([
 						variableParameter : new VariableParameter({name : 'DatasetId', siteNo : '3:3', value : '3:3', colName : 'Var2'}),
 						timeSeriesOptions : [{statistic : 'Min', timeSpan : '2'}]}
  	  			]);
-				
+
 				var siteCollection = new BaseDatasetCollection([
 				    {datasetName : 'DatasetId',
 				    	siteNo : '2:2',
@@ -131,7 +131,7 @@ define([
 					}
 				});
 				testModel.initializeDatasetCollections();
-				
+
 				spyOn(testModel, 'getSitesWithSelectedVariables').and.returnValue(siteCollection.models);
 				spyOn(testModel, 'getSelectedVariables').and.returnValue(variableCollection.models);
 
@@ -187,7 +187,6 @@ define([
 			});
 
 			it('Expects a message explaining the disabled buttons', function() {
-				var message = $testDiv.find('#url-container-msg').html();
 				var messageText = ("The get data buttons have been disabled because the URL for the selected variables exceeds "
 						+ maxUrlLength +
 						" characters.");
@@ -209,6 +208,10 @@ define([
 					outputTimeGapInterval : '6',
 					outputMissingValue : 'NaN'
 				});
+
+				spyOn($.fn, 'fileupload');
+				spyOn(testView.alertFilterFileView, 'render').and.callThrough();
+				spyOn(testView.alertFilterFileView, 'setElement').and.callThrough();
 				testView.render();
 			});
 
@@ -232,6 +235,16 @@ define([
 				expect(testView.variableTsOptionViews.length).toBe(2);
 			});
 
+			it('Expects that an alert view\'s setElement is called but the view is not rendered', function() {
+				expect(testView.alertFilterFileView.render).not.toHaveBeenCalled();
+				expect(testView.alertFilterFileView.setElement).toHaveBeenCalled();
+			});
+
+			it('Expects that the file uploader is initialized', function() {
+				expect($.fn.fileupload).toHaveBeenCalled();
+				expect($.fn.fileupload.calls.first().object.attr('id')).toEqual('time-filter-file-input');
+			});
+
 			it('Expects the download button is enabled when the variable URL is less than 215 characters.', function() {
 				var isDisabled = $testDiv.find('.download-data-btn').is(':disabled');
 				expect(isDisabled).toBe(false);
@@ -243,7 +256,6 @@ define([
 			});
 
 			it('Expects that there is not a message explaining the disabled buttons', function() {
-				var message = $testDiv.find('#url-container-msg').html();
 				var messageText = '';
 				var message = $testDiv.find('#disabled-btn-msg').html();
 			    expect(message).toEqual(messageText);
@@ -272,6 +284,13 @@ define([
 				testView.remove();
 				expect(removeVariableTsOptionView.calls.count()).toBe(2);
 			});
+
+			it('Expects that the alerview will be removed', function() {
+				spyOn(testView.alertFilterFileView, 'remove');
+				testView.remove();
+
+				expect(testView.alertFilterFileView.remove).toHaveBeenCalled();
+			})
 		});
 
 		describe('Model event listener tests', function() {
@@ -308,12 +327,14 @@ define([
 			it('Expects the remaining output configuration DOM elements to be updated when the model is updated', function() {
 				testModel.set({
 					outputFileFormat : 'tab',
+					timeFilterId : '01234567',
 					outputDateFormat : 'Excel',
 					outputTimeZone : '0_GMT',
 					outputTimeGapInterval : '6',
 					outputMissingValue : 'NaN'
 				});
 				expect($testDiv.find('#output-date-format-input').val()).toEqual('Excel');
+				expect($testDiv.find('#time-filter-id-input').val()).toEqual('01234567');
 				expect($testDiv.find('#output-time-zone-input').val()).toEqual('0_GMT');
 				expect($testDiv.find('#output-file-format-input').val()).toEqual('tab');
 				expect($testDiv.find('#missing-value-input').val()).toEqual('NaN');
@@ -382,6 +403,9 @@ define([
 				$('#output-time-zone-input').val('-5_CDT').trigger('change');
 				expect(testModel.get('outputTimeZone')).toEqual('-5_CDT');
 
+				$('#time-filter-id-input').val('12345').trigger('change');
+				expect(testModel.get('timeFilterId')).toEqual('12345');
+
 				$('#output-file-format-input').val('csv').trigger('change');
 				expect(testModel.get('outputFileFormat')).toEqual('csv');
 
@@ -400,7 +424,6 @@ define([
 						outputFileFormat : 'tab',
 						outputDateFormat : 'Excel',
 						outputTimeZone : '0_GMT',
-						outputTimeGapInterval : '6',
 						outputMissingValue : 'NaN',
 						outputDateRange : {
 							start : moment('2001-04-05', Config.DATE_FORMAT),
@@ -437,7 +460,6 @@ define([
 						(testUrl.search('style=tab') !== -1) &&
 						(testUrl.search('DateFormat=Excel') !== -1) &&
 						(testUrl.search('TZ=0_GMT') !== -1) &&
-						(testUrl.search('timeInt=6') !== -1) &&
 						(testUrl.search('fill=NaN') !== -1) &&
 						(testUrl.search('endPosition=2006-06-30') !== -1) &&
 						(testUrl.search('beginPosition=2001-04-05') !== -1) &&
@@ -446,7 +468,7 @@ define([
 				};
 
 				beforeEach(function() {
-					testModel.set({   				
+					testModel.set({
 						outputFileFormat : 'tab',
 						outputDateFormat : 'Excel',
 						outputTimeZone : '0_GMT',
@@ -497,16 +519,28 @@ define([
 					expect(isExpectedUrl($testDiv.find('.url-container ul').html())).toBe(true);
 				});
 
+				it('Expects that if the timeFilterId is set, the url shown does not contain the beginPosition and endPosition', function() {
+					var url;
+					testModel.set('timeFilterId', '12345');
+					$testDiv.find('.show-url-btn').trigger('click');
+					url = $testDiv.find('.url-container ul').html();
+
+					expect(url).toContain('filterId=12345');
+					expect(url).toContain('timeInt=6');
+					expect(url).not.toContain('beginPosition');
+					expect(url).not.toContain('endPosition');
+				});
+
 				it('Expects that the expected url is used to open a new window', function() {
 					spyOn(window, 'open');
 					$testDiv.find('.get-data-btn').trigger('click');
 					expect(isExpectedUrl(window.open.calls.argsFor(0)[0])).toBe(true);
 				});
-				
+
 				it('Expects that saveAs is called when download metadata is clicked', function() {
 					spyOn(window, 'saveAs');
 					$testDiv.find('.download-site-metadata').trigger('click');
-					expect(saveAs).toHaveBeenCalled();
+					expect(window.saveAs).toHaveBeenCalled();
 				});
 			});
 		});

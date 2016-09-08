@@ -3,7 +3,7 @@
 
 	<groupId>gov.usgs.owi</groupId>
 	<artifactId>enddat_web</artifactId>
-	<version>2.10</version>
+	<version>2.11-SNAPSHOT</version>
 	<packaging>war</packaging>
 
 	<name>EnDDaT UI</name>
@@ -41,7 +41,7 @@
 		<connection>scm:git:git@github.com:USGS-CIDA/enddat_web.git</connection>
 		<developerConnection>scm:git:git@github.com:USGS-CIDA/enddat_web.git</developerConnection>
 		<url>https://github.com/USGS-CIDA/enddat_web</url>
-		<tag>enddat_web-2.10</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<distributionManagement>

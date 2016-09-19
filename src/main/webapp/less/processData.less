@@ -2,6 +2,10 @@
 	h4 {
 		color : @brand-primary;
 	}
+	.time-series-options-container {
+		height : 300px;
+		overflow : auto;
+	}
 	.url-container {
 		display: block;
 		overflow-x: scroll;
@@ -9,7 +13,30 @@
 	.output-file-inputs-container > div {
 		.make-md-column(6);
 	}
-	.output-data-inputs-container > div {
-		.make-md-column(6);
+	.output-data-inputs-container {
+		h5 {
+			font-weight : bold;
+			font-size : medium;
+		}
+		.date-range-container {
+			.make-md-column(5);
+		}
+		.output-date-span {
+			.make-md-column(1);
+			text-align : center;
+			margin-top : 40px;
+			color : @brand-primary;
+			font-size : x-large;
+		}
+		.time-filter-container {
+			.make-md-column(6);
+			
+			.filter-file-loading-indicator {
+				display: none;
+			}
+			.time-filter-file-alert-container {
+				display: inline-block;
+			}
+		}
 	}
 }

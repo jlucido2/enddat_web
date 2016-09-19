@@ -15,6 +15,14 @@
 		<url-pattern>/datadiscovery</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>UserGuide</servlet-name>
+		<jsp-file>/UserGuide.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UserGuide</servlet-name>
+		<url-pattern>/userguide</url-pattern>
+	</servlet-mapping>
+	<servlet>
 		<servlet-name>EnddatServiceServlet</servlet-name>
 		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
 		<init-param>
@@ -73,6 +81,42 @@
 	</servlet-mapping>
 	
 	<servlet>
+		<servlet-name>PMCodesServlet</servlet-name>
+		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
+		<init-param>
+			<param-name>forward-url-param</param-name>
+			<param-value>enddat.endpoint.nwis.pmcodes</param-value>
+		</init-param>
+		<init-param>
+			<param-name>readTimeout</param-name>
+			<param-value>300000</param-value>
+		</init-param>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>PMCodesServlet</servlet-name>
+		<url-pattern>/pmcodes/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>ACISServlet</servlet-name>
+		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
+		<init-param>
+			<param-name>forward-url-param</param-name>
+			<param-value>enddat.endpoint.acis</param-value>
+		</init-param>
+		<init-param>
+			<param-name>readTimeout</param-name>
+			<param-value>300000</param-value>
+		</init-param>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>ACISServlet</servlet-name>
+		<url-pattern>/acis/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
 		<servlet-name>CidaThreddsServlet</servlet-name>
 		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
 		<init-param>
@@ -95,7 +139,7 @@
 		<servlet-class>gov.usgs.cida.geoutils.geoserver.servlet.ShapefileUploadServlet</servlet-class>
 		<init-param>
 			<param-name>application.name</param-name>
-			<param-value>enddat</param-value>
+			<param-value>enddat.shapefileupload</param-value>
 		</init-param>
 		<init-param>
 		<!-- [OPTIONAL] max upload size in bytes. 0 = Integer.MAX_VALUE -->
@@ -105,7 +149,7 @@
 		<init-param>
 			<!-- URL of the geoserver instances receiving the upload. -->
 			<param-name>geoserver.endpoint</param-name>
-			<param-value>http://cida-eros-gdpdev.er.usgs.gov:8082/geoserver</param-value>
+			<param-value />
 		</init-param>
 		<init-param>
 		<!-- geoserver username -->
@@ -159,7 +203,7 @@
 			there is no way to recover the previous layer.
 		 -->
 			<param-name>overwrite.existing.layer</param-name>
-			<param-value/>
+			<param-value>true</param-value>
 		</init-param>
 		<init-param>
 		<!-- 

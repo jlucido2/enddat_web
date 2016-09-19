@@ -11,8 +11,11 @@ module.exports = function (config) {
 		// list of files / patterns to load in the browser
 		files: [
 			'src/test/js/test-main.js',
+			{pattern: 'src/test/json/variableDatasetMapping.json', included: false},
 			{pattern: 'src/main/webapp/bower_components/Squire.js/src/Squire.js', included: false},
 			{pattern: 'src/main/webapp/bower_components/jquery/dist/jquery.js', included: false},
+			{pattern: 'src/main/webapp/bower_components/blueimp-file-upload/js/vendor/jquery.ui.widget.js', included : false},
+			{pattern: 'src/main/webapp/bower_components/blueimp-file-upload/js/jquery.fileupload.js', included : false},
 			{pattern: 'src/main/webapp/bower_components/select2/dist/js/select2.full.js', included: false},
 			{pattern: 'src/main/webapp/bower_components/underscore/underscore.js', included: false},
 			{pattern: 'src/main/webapp/bower_components/backbone/backbone.js', included: false},
@@ -27,6 +30,8 @@ module.exports = function (config) {
 			{pattern: 'src/main/webapp/bower_components/backbone.stickit/backbone.stickit.js', included : false},
 			{pattern: 'src/main/webapp/bower_components/moment/moment.js', included : false},
 			{pattern: 'src/main/webapp/bower_components/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker.js', included : false},
+			{pattern: 'src/main/webapp/bower_components/csv/lib/csv.js', included : false},
+			{pattern: 'src/main/webapp/bower_components/filesaverjs/FileSaver.js', included : false},
 			{pattern: 'src/main/webapp/js/**/*.js', included: false},
 			{pattern: 'src/main/webapp/js/hb_templates/*.hbs', included: false},
 			{pattern: 'src/test/js/views/*.js', included: false},

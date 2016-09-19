@@ -28,6 +28,7 @@ define([
 
 			this.updateTimeSeriesOptions(this.model, this.model.get('timeSeriesOptions'));
 			this.listenTo(this.model, 'change:timeSeriesOptions', this.updateTimeSeriesOptions);
+			this.listenTo(this.model, 'change:selected', this.remove);
 			return this;
 		},
 

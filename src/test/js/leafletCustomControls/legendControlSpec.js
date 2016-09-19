@@ -1,5 +1,5 @@
 /* jslint browser */
-/* global expect, sinon */
+/* global expect */
 
 define([
 	'jquery',
@@ -8,6 +8,7 @@ define([
 	'Config',
 	'leafletCustomControls/legendControl'
 ], function($, _, L, Config, legendControl) {
+	"use strict";
 	describe('leafletCustomControls/legendControl', function() {
 		var $testDiv;
 		var testMap;
@@ -24,6 +25,7 @@ define([
 		});
 
 		afterEach(function() {
+			testMap.remove();
 			$testDiv.remove();
 		});
 

@@ -15,11 +15,13 @@ define([
 			meta : [{
 				valid_daterange : [[], ['2000-01-04', '2005-01-30'], ['2002-04-06', '2005-03-30'], [], [], [], [], [], [], [], [], []],
 				ll : [-89.51722, 43.08528],
+				elev : 19,
 				sids : ['475471 2', 'USC00475471 6', 'MDDW3 7'],
 				name : 'MIDDLETON'
 			}, {
 				valid_daterange : [['2000-01-04', '2006-01-30'], [], [], [], [], [], [], [], [], [], [], []],
 				ll : [-89.4961, 43.1022],
+				elev : 67,
 				sids : ['US1WIDA0002 6'],
 				name : 'MIDDLETON 0.5 E'
 			}]
@@ -59,7 +61,6 @@ define([
 				var serviceUrl;
 				expect(fakeServer.requests.length).toBe(1);
 				serviceUrl = decodeURIComponent(fakeServer.requests[0].url);
-				expect(serviceUrl).toContain('http:dummyservice/acis/StnMeta');
 				expect(serviceUrl).toContain('bbox=-92.4,42.1,-92.2,42.2');
 				expect(serviceUrl).toContain('meta=');
 				expect(serviceUrl).toContain('elems=');
@@ -98,6 +99,10 @@ define([
 					code : '2',
 					name : 'COOP'
 				});
+				expect(siteModel.attributes.elevation).toEqual(19);
+				expect(siteModel.attributes.elevationUnit).toEqual('ft');
+				expect(siteModel.attributes.datasetName).toEqual('ACIS');
+				expect(siteModel.attributes.name).toEqual('MIDDLETON');
 				siteModel = testCollection.find(function(model) {
 					return (model.attributes.sid === 'US1WIDA0002') &&
 						(model.attributes.lat === 43.1022) &&

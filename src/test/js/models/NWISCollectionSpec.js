@@ -12,11 +12,11 @@ define([
 
 		var PM_CODES = '# Date Retrieved: 2016-05-31 14:19:19 EDT\n' +
 			'#\n' +
-			'parameter_cd\tparameter_nm\n' +
+			'parameter_cd\tparameter_nm\tparameter_units\n' +
 			'5s\t170s\n' +
-			'00004\tStream width, feet\n' +
-			'00010\tTemperature, water, degrees Celsius\n' +
-			'00011\tTemperature, water, degrees Fahrenheit';
+			'00004\tStream width, feet\tfeet\n' +
+			'00010\tTemperature, water, degrees Celsius\tdegrees Celsius\n' +
+			'00011\tTemperature, water, degrees Fahrenheit\tdegrees Fahrenheit\n';
 
 		var STAT_CODES = '# Date Retrieved: USGS Water Data for the Nation Help System\n' +
 			'#\n' +
@@ -29,8 +29,8 @@ define([
 		var SITE_INFO = '#\n' +
 			'agency_cd\tsite_no\tstation_nm\tsite_tp_cd\tdec_lat_va\tdec_long_va\tcoord_acy_cd\tdec_coord_datum_cd\talt_va\talt_acy_va\talt_datum_cd\thuc_cd\tdata_type_cd\tparm_cd\tstat_cd\tdd_nu\tloc_web_ds\tmedium_grp_cd\tparm_grp_cd\tsrs_id\taccess_cd\tbegin_date\tend_date\tcount_nu\n' +
 			'5s\t19s\t34s\n' +
-			'USGS\t05427945\tS FK PHEASANT BRANCH AT HWY 14 NEAR MIDDLETON, WI\tST\t43.0966617\t-89.5284545\tS\tNAD83\t\t\t\t\tdv\t80154\t00003\t2\t\twat\t\t17164666\t0t1977-10-01\t1981-09-30\t1409\n' +
-			'USGS\t05427945\tS FK PHEASANT BRANCH AT HWY 14 NEAR MIDDLETON, WI\tST\t43.0966617\t-89.5284545\tS\tNAD83\t\t\t\t\tdv\t80155\t00003\t3\t\twat\t\t17164591\t0\t1977-10-01\t1991-09-30\t1409\n' +
+			'USGS\t05427945\tS FK PHEASANT BRANCH AT HWY 14 NEAR MIDDLETON, WI\tST\t43.0966617\t-89.5284545\tS\tNAD83\t17\t0.1\tNGVD29\t\tdv\t80154\t00003\t2\t\twat\t\t17164666\t0t1977-10-01\t1981-09-30\t1409\n' +
+			'USGS\t05427945\tS FK PHEASANT BRANCH AT HWY 14 NEAR MIDDLETON, WI\tST\t43.0966617\t-89.5284545\tS\tNAD83\t17\t0.1\tNGVD29\t\tdv\t80155\t00003\t3\t\twat\t\t17164591\t0\t1977-10-01\t1991-09-30\t1409\n' +
 			'USGS\t05427946\tESSER\'S POND AT MIDDLETON, WI\tLK\t43.09277297\t-89.52289889\tS\tNAD83\t925.48\t.01\tNGVD29\t07090001\tdv\t00065\t00003\t1\t\twat\t\t17164583\t0\t1981-10-20\t1982-11-05\t30';
 
 		beforeEach(function() {
@@ -47,7 +47,7 @@ define([
 		it('Expects that the parameter codes and statistic codes are fetched at initialization', function() {
 			expect(fakeServer.requests.length).toBe(2);
 			expect(_.find(fakeServer.requests, function(request) {
-				return request.url.includes('http:dummyservice/nwis/info/pmcodes');
+				return request.url.includes('pmcodes');
 			})).toBeDefined();
 			expect(_.find(fakeServer.requests, function(request) {
 				return request.url.includes('stcodes/?fmt=rdb');
@@ -55,17 +55,17 @@ define([
 		});
 
 		it('Expects that a successful parameter codes call sets the parameterCodes object values', function() {
-			fakeServer.respondWith(/http:dummyservice\/nwis\/info\/pmcodes/, [200, {'Content-Type' : 'text'}, PM_CODES]);
+			fakeServer.respondWith(/pmcodes/, [200, {'Content-Type' : 'text'}, PM_CODES]);
 			fakeServer.respond();
 
 			expect(testCollection.parameterCodes).toBeDefined();
-			expect(testCollection.parameterCodes['00004']).toEqual('Stream width, feet');
-			expect(testCollection.parameterCodes['00010']).toEqual('Temperature, water, degrees Celsius');
-			expect(testCollection.parameterCodes['00011']).toEqual('Temperature, water, degrees Fahrenheit');
+			expect(testCollection.parameterCodes['00004']).toEqual({ parameter_nm : 'Stream width, feet', parameter_units : 'feet'});
+			expect(testCollection.parameterCodes['00010']).toEqual({ parameter_nm : 'Temperature, water, degrees Celsius', parameter_units : 'degrees Celsius'});
+			expect(testCollection.parameterCodes['00011']).toEqual({ parameter_nm : 'Temperature, water, degrees Fahrenheit', parameter_units : 'degrees Fahrenheit'});
 		});
 
 		it('Expects that a failed parameter codes call sets the parameterCodes to be undefined', function() {
-			fakeServer.respondWith(/http:dummyservice\/nwis\/info\/pmcodes/, [500, {'Content-Type' : 'text'}, 'Internal servier error']);
+			fakeServer.respondWith(/pmcodes/, [500, {'Content-Type' : 'text'}, 'Internal servier error']);
 			fakeServer.respond();
 
 			expect(testCollection.parameterCodes).toBeUndefined();
@@ -163,6 +163,8 @@ define([
 				expect(result.attributes.name).toEqual('S FK PHEASANT BRANCH AT HWY 14 NEAR MIDDLETON, WI');
 				expect(result.attributes.lat).toEqual('43.0966617');
 				expect(result.attributes.lon).toEqual('-89.5284545');
+				expect(result.attributes.elevation).toEqual('17');
+				expect(result.attributes.elevationUnit).toEqual('ft');
 			});
 
 			it('Expects that the correct number of variable models are added to each site model', function() {

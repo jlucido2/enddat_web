@@ -17,8 +17,7 @@
 <%
 	Boolean development = Boolean.parseBoolean(props.getProperty("enddat.development"));
 	String baseUrl = props.getProperty("enddat.base.url", request.getContextPath());
-	if (!baseUrl.endsWith("/")) { baseUrl += "/"; }
-	String version = props.getProperty("application.version");
+	if (!baseUrl.endsWith("/")) { baseUrl += "/"; }	String version = props.getProperty("application.version");
 
 	String parameterCodesUrl = props.getProperty("enddat.endpoint.nwis.pmcodes");
 	String precipWFSGetFeatureUrl = props.getProperty("enddat.endpoint.precip.wfsgetfeature");
@@ -28,16 +27,15 @@
 	String glcfsWFSGetFeatureUrlMichigan = props.getProperty("enddat.endpoint.glcfs.wfsgetfeature.michigan");
 	String glcfsWFSGetFeatureUrlOntario = props.getProperty("enddat.endpoint.glcfs.wfsgetfeature.ontario");
 	String glcfsWFSGetFeatureUrlSuperior = props.getProperty("enddat.endpoint.glcfs.wfsgetfeature.superior");
-	String glosThreddsGLCFSData = props.getProperty("enddat.glosthredds.glcfsdata");
 	String acisStnMetaUrl = props.getProperty("enddat.endpoint.acis.stnmeta");
+	String shapefileuploadGeoserverUrl = props.getProperty("enddat.shapefileupload.geoserver.endpoint");
 %>
 
 <link rel="shortcut icon" type="image/ico" href="img/favicon.ico">
 <jsp:include page="/template/USGSHead.jsp">
-	<jsp:param name="shortName" value="Environmental Data Discovery and Transformation Service"/>
-	<jsp:param name="relPath" value="<%= baseUrl %>" />
+	<jsp:param name="shortName" value="Environmental Data Discovery and Transformation Service - BETA"/>
 	<jsp:param name="title" value="EnDDaT" />
-	<jsp:param name="description" value="EnDDaT is a data discovery, aggregation, and processing tool for scientific modelers focusing on Great Lakes beaches." />
+	<jsp:param name="description" value="EnDDaT is a data discovery, aggregation, and processing tool for scientific modelers focusing on Great Lakes beaches and hydro-climate data." />
 	<jsp:param name="author" value="" />
 	<jsp:param name="keywords" value="USGS, U.S. Geological Survey, water, earth science, hydrology, hydrologic, data, streamflow, stream, river, lake, flood, drought, quality, basin, watershed, environment, ground water, groundwater" />
 	<jsp:param name="publisher" value="" />

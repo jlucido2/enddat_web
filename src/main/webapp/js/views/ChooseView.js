@@ -4,12 +4,12 @@ define([
 	'underscore',
 	'jquery',
 	'select2',
-	'moment',
-	'bootstrap-datetimepicker',
+	'bootstrap',
 	'Config',
 	'views/BaseCollapsiblePanelView',
+	'views/DataDateFilterView',
 	'hbs!hb_templates/choose'
-], function(_, $, select2, moment, datetimepicker, Config, BaseCollapsiblePanelView, hbTemplate) {
+], function(_, $, select2, bootstrap, Config, BaseCollapsiblePanelView, DataDateFilterView, hbTemplate) {
 	"use strict";
 
 	/*
@@ -22,46 +22,59 @@ define([
 	var view = BaseCollapsiblePanelView.extend({
 		template : hbTemplate,
 
-		panelHeading : 'Choose Data',
+		panelHeading : 'Choose Data Sources to Show Sites on the Map',
 		panelBodyId : 'choose-data-panel-body',
 
+		// Using the select2:selecting in order to intercept the event before the select2 is updated so that we can show
+		// the GLCFS lake modal before changing the selection.
 		additionalEvents : {
-			'select2:select #datasets-select' : 'selectDataset',
+			'select2:selecting #datasets-select' : 'selectDataset',
 			'select2:unselect #datasets-select' : 'resetDataset',
-			// To set the model value from a datetimepicker, handle the event of the input's div
-			'dp.change #start-date-div' : 'changeStartDate',
-			'dp.change #end-date-div' : 'changeEndDate'
+			'change .glcfs-lake-select-modal select' : 'selectGLCFSLake'
+		},
+
+		initialize : function(options) {
+			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
+
+			this.dateFilterView = new DataDateFilterView({
+				el : this.$('.date-filter-container'),
+				model : this.model
+			});
 		},
 
 		render : function() {
-			var now = new Date();
+			var self = this;
 
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
+			this.dateFilterView.setElement(this.$('.date-filter-container')).render();
 
-			//Set up date pickers
-			this.$('#start-date-div').datetimepicker({
-				format : Config.DATE_FORMAT,
-				useCurrent: false,
-				maxDate : now
-			});
-			this.$('#end-date-div').datetimepicker({
-				format : Config.DATE_FORMAT,
-				useCurrent : false,
-				maxDate : now
+			this.$('.glcfs-lake-select-modal').modal({
+				show : false
 			});
 
 			this.$('#datasets-select').select2({
 				allowClear : true,
-				theme : 'bootstrap'
+				theme : 'bootstrap',
+				templateSelection : function(data) {
+					if (data.id === Config.GLCFS_DATASET) {
+						return data.text + ' - ' +
+							self.model.get('datasetCollections')[data.id].getLake();
+					}
+					else {
+						return data.text;
+					}
+				}
 			});
 			this.updateDatasets();
-			this.updateStartDate();
-			this.updateEndDate();
+			this.gaSelectTracker();
 
 			this.listenTo(this.model, 'change:datasets', this.updateDatasets);
-			this.listenTo(this.model, 'change:startDate', this.updateStartDate);
-			this.listenTo(this.model, 'change:endDate', this.updateEndDate);
 			return this;
+		},
+
+		remove : function() {
+			this.dateFilterView.remove();
+			BaseCollapsiblePanelView.prototype.remove.apply(this, arguments);
 		},
 
 		/*
@@ -73,25 +86,23 @@ define([
 			this.$('#datasets-select').val(chosenDatasets).trigger('change');
 		},
 
-		updateStartDate : function() {
-			var startDate = (this.model.has('startDate') && (this.model.attributes.startDate)) ? this.model.attributes.startDate : null;
-
-			this.$('#start-date-div').data('DateTimePicker').date(startDate);
-		},
-
-		updateEndDate : function() {
-			var endDate = (this.model.has('endDate')  && (this.model.attributes.endDate)) ? this.model.attributes.endDate : null;
-			this.$('#end-date-div').data('DateTimePicker').date(endDate);
-		},
-
 		/*
 		 * DOM event handlers
 		 */
 
 		selectDataset : function(ev) {
 			var datasets = _.clone((this.model.has('datasets')) ? this.model.get('datasets') : []);
-			datasets.push(ev.params.data.id);
-			this.model.set('datasets', datasets);
+			var $modal;
+			if (ev.params.args.data.id === Config.GLCFS_DATASET) {
+				ev.preventDefault();
+				$modal = this.$('.glcfs-lake-select-modal');
+				$modal.modal('show');
+				$modal.find('select').val('');
+			}
+			else {
+				datasets.push(ev.params.args.data.id);
+				this.model.set('datasets', datasets);
+			}
 		},
 
 		resetDataset : function(ev) {
@@ -102,30 +113,25 @@ define([
 			this.model.set('datasets', datasets);
 		},
 
-		changeStartDate : function(ev) {
-			var $endDate = this.$('#end-date-div');
-			if (ev.date) {
-				this.model.set('startDate', moment(ev.date));
-				$endDate.data('DateTimePicker').minDate(ev.date);
-			}
-			else {
-				this.model.unset('startDate');
-				$endDate.data('DateTimePicker').minDate(false);
-			}
+		selectGLCFSLake : function(ev) {
+			var datasets = _.clone((this.model.has('datasets')) ? this.model.get('datasets') : []);
+			this.model.get('datasetCollections')[Config.GLCFS_DATASET].setLake(ev.target.value);
+			datasets.push(Config.GLCFS_DATASET);
+			this.model.set('datasets', datasets);
+			this.$('.glcfs-lake-select-modal').modal('hide');
 		},
 
-		changeEndDate : function(ev) {
-			var $startDate = this.$('#start-date-div');
-			if (ev.date) {
-				this.model.set('endDate', moment(ev.date));
-				$startDate.data('DateTimePicker').maxDate(ev.date);
-			}
-			else {
-				this.model.unset('endDate');
-				$startDate.data('DateTimePicker').maxDate(new Date());
-			}
-		}
+		gaSelectTracker: function () {
+			$('#datasets-select').on('select2:select', function (e) {
+				var lastSelectedItem = e.params.data.text;
+				ga('send', 'event', 'Dataset Selected', 'clicked', lastSelectedItem);
+			});
 
+			$('#datasets-select').on('select2:unselect', function (e) {
+				var lastRemovedItem = e.params.data.text;
+				ga('send', 'event', 'Dataset Removed', 'clicked', lastRemovedItem);
+			});
+		}
 	});
 
 	return view;

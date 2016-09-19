@@ -37,7 +37,6 @@ define([
 			testModel = new Backbone.Model({
 				lat : '43.1346',
 				lon : '-100.2121',
-				lake : 'Erie',
 				variables : variables
 			});
 
@@ -74,7 +73,8 @@ define([
 				startDate : '2002-01-01',
 				endDate : '2016-04-18'
 			});
-			expect(testView.context.lake).toEqual('Erie');
+			expect(testView.context.lat).toEqual('43.1346');
+			expect(testView.context.lon).toEqual('-100.2121');
 		});
 
 		it('Expects that a variables checkbox is checked if the variable has selected set to true', function() {

@@ -4,9 +4,10 @@
 	<head>
 		<%@include file="/WEB-INF/jsp/head.jsp"%>
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<link rel="stylesheet" type="text/css" href="<%=baseUrl%>bower_components/select2/dist/css/select2.min.css" />
-		<link rel="stylesheet" type="text/css" href="<%=baseUrl%>bower_components/leaflet/dist/leaflet.css" />
-		<link rel="stylesheet" type="text/css" href="<%=baseUrl%>bower_components/leaflet-draw/dist/leaflet.draw.css" />
+		<link rel="stylesheet" type="text/css" href="bower_components/select2/dist/css/select2.min.css" />
+		<link rel="stylesheet" type="text/css" href="bower_components/leaflet/dist/leaflet.css" />
+		<link rel="stylesheet" type="text/css" href="bower_components/leaflet-draw/dist/leaflet.draw.css" />
+		<link rel="stylesheet" type="text/css" href="bower_components/blueimp-file-upload/css/jquery.fileupload.css" />
 		<link rel="stylesheet" type="text/css" href="css/custom.css" />
                 <script>
                     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -23,13 +24,13 @@
 		<div class="container-fluid">
 			<header>
 				<jsp:include page="template/USGSHeader.jsp">
-					<jsp:param name="site-title" value="Environmental Data Discovery and Transformation" />
+					<jsp:param name="site-title" value="Environmental Data Discovery and Transformation - BETA" />
 				</jsp:include>
 			</header>
 			<div id="main-content"></div>
 			<footer>
 				<jsp:include page="template/USGSFooter.jsp">
-					<jsp:param name="site-url" value="http://cida.usgs.gov/enddat" />
+					<jsp:param name="site-url" value="https://cida.usgs.gov/enddat" />
 					<jsp:param name="contact-info" value="<a href='mailto:enddat@usgs.gov'>Enddat Team</a>" />
 				</jsp:include>
 			</footer>	
@@ -41,9 +42,9 @@
 						'baseUrl': '<%=baseUrl%>',
 						'development': '<%=development%>'
 					},
-					'models/NWISCollection': {
-						'parameterCodesPath': '<%=parameterCodesUrl%>'
-				 	},
+					'utils/VariableDatasetMapping' : {
+						'variableDatasetMappingUrl' : 'json/variableDatasetMapping.json'
+					},
 					'models/PrecipitationCollection' : {
 						'precipWFSGetFeatureUrl' : '<%=precipWFSGetFeatureUrl%>',
 						'cidaThreddsPrecipData' : '<%=cidaThreddsPrecipData%>'
@@ -55,40 +56,44 @@
 							'Michigan' : '<%=glcfsWFSGetFeatureUrlMichigan%>',
 							'Ontario' : '<%=glcfsWFSGetFeatureUrlOntario%>',
 							'Superior' : '<%=glcfsWFSGetFeatureUrlSuperior%>'
-						},
-						'glosThreddsGLCFSData' : '<%=glosThreddsGLCFSData%>'
-					},
-					'models/ACISCollection' : {
-						'acisStnMetaUrl' : '<%=acisStnMetaUrl%>'
+						}
 					},
 					'views/ProcessDataView' : {
 						'baseUrl' : '<%=baseUrl%>'
+					},
+					'views/MapView' : {
+						'uploadGeoserverUrl' : '<%=shapefileuploadGeoserverUrl%>'
 					}
 				},
-				baseUrl: "<%=baseUrl%>js/",
+				baseUrl: "js/",
 				paths: {
-					"bootstrap" :  '<%=baseUrl%>bower_components/bootstrap/dist/js/bootstrap<%= development ? "" : ".min"%>',
-					"jquery": '<%=baseUrl%>bower_components/jquery/dist/jquery<%= development ? "" : ".min"%>',
-					"jquery-ui": '<%=baseUrl%>bower_components/jquery-ui/ui/jquery-ui',
-					'blueimp-file-upload': '<%=baseUrl%>bower_components/blueimp-file-upload/js/jquery.fileupload',
-					"backbone": '<%=baseUrl%>bower_components/backbone/backbone<%= development ? "" : "-min"%>',
-					"underscore": '<%=baseUrl%>bower_components/underscore/underscore<%= development ? "" : "-min"%>',
-					"select2": '<%=baseUrl%>bower_components/select2/dist/js/select2.full<%= development ? "" : ".min"%>',
-					"handlebars": '<%=baseUrl%>bower_components/handlebars/handlebars<%= development ? "" : ".min"%>',
-					"text": '<%=baseUrl%>bower_components/text/text',
-					"hbs" : '<%=baseUrl%>bower_components/requirejs-hbs/hbs',
-					'leaflet' : '<%=baseUrl%>bower_components/leaflet/dist/leaflet',
-					'leaflet-providers' : '<%=baseUrl%>bower_components/leaflet-providers/leaflet-providers',
-					'leaflet-draw' : '<%=baseUrl%>bower_components/leaflet-draw/dist/leaflet.draw',
-					'loglevel' : '<%=baseUrl%>bower_components/loglevel/dist/loglevel<%= development ? "" : ".min"%>',
-					'backbone.stickit' : '<%=baseUrl%>bower_components/backbone.stickit/backbone.stickit',
-					'moment' : '<%=baseUrl%>bower_components/moment/<%=development ? "" : "min/"%>moment<%=development ? "" : ".min"%>',
-					'bootstrap-datetimepicker' : '<%=baseUrl%>bower_components/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker'
+					"bootstrap" :  '../bower_components/bootstrap/dist/js/bootstrap',
+					"jquery": '../bower_components/jquery/dist/jquery',
+					'jquery.ui.widget' : '../bower_components/blueimp-file-upload/js/vendor/jquery.ui.widget',
+					'blueimp-file-upload': '../bower_components/blueimp-file-upload/js/jquery.fileupload',
+					"backbone": '../bower_components/backbone/backbone',
+					"underscore": '../bower_components/underscore/underscore',
+					"select2": '../bower_components/select2/dist/js/select2.full',
+					"handlebars": '../bower_components/handlebars/handlebars',
+					"text": '../bower_components/text/text',
+					"hbs" : '../bower_components/requirejs-hbs/hbs',
+					'leaflet' : '../bower_components/leaflet/dist/leaflet',
+					'leaflet-providers' : '../bower_components/leaflet-providers/leaflet-providers',
+					'leaflet-draw' : '../bower_components/leaflet-draw/dist/leaflet.draw',
+					'loglevel' : '../bower_components/loglevel/dist/loglevel',
+					'backbone.stickit' : '../bower_components/backbone.stickit/backbone.stickit',
+					'moment' : '../bower_components/moment/moment',
+					'bootstrap-datetimepicker' : '../bower_components/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker',
+					'csv' : '../bower_components/csv/lib/csv',
+					'filesaver' : '../bower_components/filesaverjs/FileSaver'
 				},
 				shim: {
 					"bootstrap": [ "jquery" ],
 					'leaflet' : {
 						exports: 'L'
+					},
+					'filesaver' : {
+						exports: 'Filesaver'
 					},
 					'leaflet-draw' : ['leaflet'],
 					'leaflet-providers' : ['leaflet'],
@@ -101,23 +106,25 @@
 						exports: 'Backgrid'
 					},
 					'backbone.stickit' : ['backbone', 'underscore'],
-					'blueimp-file-upload' : ['jquery', 'jquery-ui', 'jquery.ui.widget'],
 					'bootstrap-datetimepicker' : ['jquery', 'bootstrap', 'moment']
 				},
 				packages : [
 					{
 						name : 'hbs',
-						location: "<%=baseUrl%>bower_components/requirejs-hbs",
+						location: "../bower_components/requirejs-hbs",
 						main : 'hbs'
-					},
-					{
-						name : 'jquery.ui.widget',
-						location : "<%=baseUrl%>bower_components/jquery-ui/ui",
-						main : 'jquery.ui.widget'
 					}
 				]
 			};
 		</script>
-		<script data-main="init" src="<%=baseUrl%>bower_components/requirejs/require.js"></script>
+		<% if (development) {
+		%>
+			<script data-main="init" src="bower_components/requirejs/require.js"></script>
+		<%	}
+			else {
+		%>
+			<script src="assets-build/init.js"></script>
+		<% }
+		%>
 	</body>
 </html>

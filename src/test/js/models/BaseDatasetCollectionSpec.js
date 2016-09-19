@@ -4,10 +4,11 @@
 define([
 	'moment',
 	'underscore',
+	'Config',
 	'utils/VariableParameter',
 	'models/BaseDatasetCollection',
 	'models/BaseVariableCollection'
-], function(moment, _, VariableParameter, BaseDatasetCollection, BaseVariableCollection) {
+], function(moment, _, Config, VariableParameter, BaseDatasetCollection, BaseVariableCollection) {
 	"use strict";
 
 	describe('models/BaseDatasetCollection', function() {
@@ -82,6 +83,22 @@ define([
 				})).toBeDefined();
 			});
 		});
+		
+		describe('Tests for getSitesWithSelectedVariables', function() {
+			
+			var testCollection;
+			
+			it('Expects only site models with selected variables are returned', function() {
+				testCollection = new BaseDatasetCollection([
+					{id : 1, siteNo : '9901', variables : new BaseVariableCollection([{x : 1, selected : true}, {x : 2}])},
+					{id : 2, siteNo : '9002', variables : new BaseVariableCollection([{x : 3}])},
+					{id : 3, siteNo : '0032', variables : new BaseVariableCollection([{x : 4}, {x: 5, selected : true}])}
+				]);
+				var result = testCollection.getSitesWithSelectedVariables();
+				expect(result.length).toEqual(2);
+			});
+			
+		});
 
 		describe('Tests for getSiteModelsWithinDateFilter', function() {
 
@@ -100,20 +117,41 @@ define([
 				]);
 			});
 
-			it ('Expects that if either the startDate or endDate is falsy, the entire collection is returned', function() {
-				expect(testCollection.getSiteModelsWithinDateFilter(moment('01-01-2003', DATE_FORMAT), '').length).toBe(2);
-				expect(testCollection.getSiteModelsWithinDateFilter('', moment('01-01-2003', DATE_FORMAT)).length).toBe(2);
+			it ('Expects that if either the start or end is falsy, the entire collection is returned', function() {
+				expect(testCollection.getSiteModelsWithinDateFilter({
+					start : moment('01-01-2003', DATE_FORMAT)
+				}).length).toBe(2);
+				expect(testCollection.getSiteModelsWithinDateFilter({
+					start : moment('01-01-2003', DATE_FORMAT),
+					end : ''
+				}).length).toBe(2);
+				expect(testCollection.getSiteModelsWithinDateFilter({
+					end : moment('01-01-2003', DATE_FORMAT)
+				}).length).toBe(2);
+				expect(testCollection.getSiteModelsWithinDateFilter({
+					start : '',
+					end : moment('01-01-2003', DATE_FORMAT)
+				}).length).toBe(2);
 			});
 
 			it('Expects that only models within the date range will be returned', function() {
 				var results;
-				results = testCollection.getSiteModelsWithinDateFilter(moment('03-01-2003', DATE_FORMAT), moment('01-01-2004', DATE_FORMAT));
+				results = testCollection.getSiteModelsWithinDateFilter({
+					start : moment('03-01-2003', DATE_FORMAT),
+					end : moment('01-01-2004', DATE_FORMAT)
+				});
 				expect(results.length).toBe(1);
 
-				results = testCollection.getSiteModelsWithinDateFilter(moment('01-01-1999', DATE_FORMAT), moment('01-01-2014', DATE_FORMAT));
+				results = testCollection.getSiteModelsWithinDateFilter({
+					start : moment('01-01-1999', DATE_FORMAT),
+					end : moment('01-01-2014', DATE_FORMAT)
+				});
 				expect(results.length).toBe(2);
 
-				results = testCollection.getSiteModelsWithinDateFilter(moment('01-01-2013', DATE_FORMAT), moment('01-01-2015', DATE_FORMAT));
+				results = testCollection.getSiteModelsWithinDateFilter({
+					start : moment('01-01-2013', DATE_FORMAT),
+					end : moment('01-01-2015', DATE_FORMAT)
+				});
 				expect(results.length).toBe(0);
 			});
 		});
@@ -227,6 +265,172 @@ define([
 
 				expect(result.start.format(DATE_FORMAT)).toEqual('01-01-1999');
 				expect(result.end.format(DATE_FORMAT)).toEqual('01-01-2011');
+			});
+		});
+
+		describe('Tests for getSitesWithVariableInFilters', function() {
+			var testCollection;
+
+			it('Expects an empty testCollection to return an empty array', function() {
+				testCollection = new BaseDatasetCollection();
+
+				expect(testCollection.getSitesWithVariableInFilters({x : 1})).toEqual([]);
+			});
+
+			it('Expects a testCollection with an empty filters array to return an empty array', function() {
+				testCollection = new BaseDatasetCollection([
+					{id : 1, variables : new BaseVariableCollection([
+							{x : 1, y : 2},
+							{x : 1, y : 3},
+							{x : 2, y : 3}
+						])
+					},
+					{id : 2, variables : new BaseVariableCollection([
+							{x : 2, y : 4},
+							{x : 3, y : 4}
+						])
+					}
+				]);
+
+				expect(testCollection.getSitesWithVariableInFilters([])).toEqual([]);
+			});
+
+			it('Expects the expected models to be returned for filters', function() {
+				var result;
+				testCollection = new BaseDatasetCollection([
+					{id : 1, variables : new BaseVariableCollection([
+							{x : 1, y : 2},
+							{x : 1, y : 3},
+							{x : 2, y : 3}
+						])
+					},
+					{id : 2, variables : new BaseVariableCollection([
+							{x : 2, y : 4},
+							{x : 3, y : 4}
+						])
+					}
+				]);
+
+				expect(testCollection.getSitesWithVariableInFilters([{x : 4}])).toEqual([]);
+
+				result = testCollection.getSitesWithVariableInFilters([{x : 3}]);
+
+				expect(result.length).toBe(1);
+				expect(result[0]).toEqual(testCollection.at(1));
+
+				result = testCollection.getSitesWithVariableInFilters([{x : 2}]);
+
+				expect(result.length).toBe(2);
+
+				result = testCollection.getSitesWithVariableInFilters([{x : 1}, {x : 3}]);
+				expect(result.length).toBe(2);
+			});
+
+			it('Expects the expected models to be filtered by date if date filter is used', function() {
+				var result;
+				testCollection = new BaseDatasetCollection([
+					{id : 1, variables : new BaseVariableCollection([
+							{x : 1, y : 2, startDate : moment('2001-01-03', Config.DATE_FORMAT), endDate : moment('2007-01-01', Config.DATE_FORMAT)},
+							{x : 1, y : 3, startDate : moment('2011-01-03', Config.DATE_FORMAT), endDate : moment('2015-01-01', Config.DATE_FORMAT)},
+							{x : 2, y : 3, startDate : moment('2001-01-03', Config.DATE_FORMAT), endDate : moment('2007-01-01', Config.DATE_FORMAT)}
+						])
+					},
+					{id : 2, variables : new BaseVariableCollection([
+							{x : 2, y : 4, startDate : moment('2011-01-03', Config.DATE_FORMAT), endDate : moment('2015-01-01', Config.DATE_FORMAT)},
+							{x : 3, y : 4, startDate : moment('2001-01-03', Config.DATE_FORMAT), endDate : moment('2007-01-01', Config.DATE_FORMAT)}
+						])
+					}
+				]);
+
+				result = testCollection.getSitesWithVariableInFilters(
+					[{x : 2}],
+					{start : moment('2001-01-01', Config.DATE_FORMAT), end : moment('2010-01-01', Config.DATE_FORMAT)}
+				);
+				expect(result.length).toBe(1);
+				expect(result[0]).toEqual(testCollection.at(0));
+			});
+		});
+
+		describe('Tests for selectAllVariablesInFilters', function() {
+			var testCollection;
+
+			beforeEach(function() {
+				testCollection = new BaseDatasetCollection([
+					{id : 1, variables : new BaseVariableCollection([
+							{x : 1, y : 2, startDate : moment('2001-01-03', Config.DATE_FORMAT), endDate : moment('2007-01-01', Config.DATE_FORMAT)},
+							{x : 1, y : 3, startDate : moment('2011-01-03', Config.DATE_FORMAT), endDate : moment('2015-01-01', Config.DATE_FORMAT)},
+							{x : 2, y : 3, startDate : moment('2001-01-03', Config.DATE_FORMAT), endDate : moment('2007-01-01', Config.DATE_FORMAT)}
+						])
+					},
+					{id : 2, variables : new BaseVariableCollection([
+							{x : 2, y : 4, startDate : moment('2011-01-03', Config.DATE_FORMAT), endDate : moment('2015-01-01', Config.DATE_FORMAT)},
+							{x : 3, y : 4, startDate : moment('2001-01-03', Config.DATE_FORMAT), endDate : moment('2007-01-01', Config.DATE_FORMAT)}
+						])
+					}
+				]);
+			});
+
+			it('Expects that none of the variables will be selected if not in the filters', function() {
+				testCollection.selectAllVariablesInFilters([{x : 5}, {x : 0}]);
+				expect(testCollection.getSelectedVariables()).toEqual([]);
+			});
+
+			it('Expects that the variables in the filters will be selected', function() {
+				var selectedVars;
+				testCollection.selectAllVariablesInFilters([{x : 1}, {x:2}]);
+				selectedVars = testCollection.getSelectedVariables();
+
+				expect(selectedVars.length).toBe(4);
+				expect(_.contains(selectedVars, testCollection.at(0).attributes.variables.at(0))).toBe(true);
+				expect(_.contains(selectedVars, testCollection.at(0).attributes.variables.at(1))).toBe(true);
+				expect(_.contains(selectedVars, testCollection.at(0).attributes.variables.at(2))).toBe(true);
+				expect(_.contains(selectedVars, testCollection.at(1).attributes.variables.at(0))).toBe(true);
+			});
+
+			it('Expects that if the dateFilter is specified the variables selected will be within both filters', function() {
+				var selectedVars;
+				testCollection.selectAllVariablesInFilters([{x : 1}, {x:2}],
+					{start : moment('2001-01-01', Config.DATE_FORMAT), end : moment('2010-01-01', Config.DATE_FORMAT)}
+				);
+				selectedVars = testCollection.getSelectedVariables();
+
+				expect(selectedVars.length).toBe(2);
+				expect(_.contains(selectedVars, testCollection.at(0).attributes.variables.at(0))).toBe(true);
+				expect(_.contains(selectedVars, testCollection.at(0).attributes.variables.at(2))).toBe(true);
+			});
+		});
+
+		describe('Tests for unSelectAllVariablesInFilters', function() {
+			var testCollection;
+
+			beforeEach(function() {
+				testCollection = new BaseDatasetCollection([
+					{id : 1, variables : new BaseVariableCollection([
+							{x : 1, y : 2, selected : true},
+							{x : 1, y : 3, selected : true},
+							{x : 2, y : 3, selected : true}
+						])
+					},
+					{id : 2, variables : new BaseVariableCollection([
+							{x : 2, y : 4, selected : true},
+							{x : 3, y : 4, selected : true}
+						])
+					}
+				]);
+			});
+
+			it('Expects that none of the variables will be unselected if not in the filters', function() {
+				testCollection.unselectAllVariablesInFilters([{x : 5}, {x : 0}]);
+				expect(testCollection.getSelectedVariables().length).toBe(5);
+			});
+
+			it('Expects that the variables in the filters will be unselected', function() {
+				var selectedVars;
+				testCollection.unselectAllVariablesInFilters([{x : 1}, {x:2}]);
+				selectedVars = testCollection.getSelectedVariables();
+
+				expect(selectedVars.length).toBe(1);
+				expect(_.contains(selectedVars, testCollection.at(1).attributes.variables.at(1)));
 			});
 		});
 	});

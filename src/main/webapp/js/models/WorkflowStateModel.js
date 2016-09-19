@@ -6,12 +6,13 @@ define([
 	'moment',
 	'backbone',
 	'Config',
+	'utils/VariableDatasetMapping',
 	'models/GLCFSCollection',
 	'models/NWISCollection',
 	'models/PrecipitationCollection',
 	'models/ACISCollection',
 	'models/AOIModel'
-], function(_, $, moment, Backbone, Config, GLCFSCollection, NWISCollection, PrecipitationCollection, ACISCollection, AOIModel) {
+], function(_, $, moment, Backbone, Config, VariableDatasetMapping, GLCFSCollection, NWISCollection, PrecipitationCollection, ACISCollection, AOIModel) {
 	"use strict";
 
 	var DEFAULT_CHOSEN_DATASETS = ['NWIS'];
@@ -52,11 +53,7 @@ define([
 			}
 			else {
 				datasetCollections = _.object([
-					[Config.GLCFS_DATASET_ERIE, new GLCFSCollection([],{lake:'Erie'})],
-					[Config.GLCFS_DATASET_HURON, new GLCFSCollection([],{lake:'Huron'})],
-					[Config.GLCFS_DATASET_MICHIGAN, new GLCFSCollection([],{lake:'Michigan'})],
-					[Config.GLCFS_DATASET_ONTARIO, new GLCFSCollection([],{lake:'Ontario'})],
-					[Config.GLCFS_DATASET_SUPERIOR, new GLCFSCollection([],{lake:'Superior'})],
+					[Config.GLCFS_DATASET, new GLCFSCollection()],
 					[Config.NWIS_DATASET, new NWISCollection()],
 					[Config.PRECIP_DATASET, new PrecipitationCollection()],
 					[Config.ACIS_DATASET, new ACISCollection()]
@@ -65,6 +62,8 @@ define([
 
 				this.get('aoi').on('change', this.changeAOI, this);
 				this.on('change:datasets', this.updateDatasetCollections, this);
+				this.on('change:variableKinds', this.updateSelectedVariables, this);
+				this.on('change:dataDateFilter', this.updateSelectedVariablesInDateFilter, this);
 			}
 		},
 
@@ -80,7 +79,19 @@ define([
 				.flatten()
 				.value();
 		},
-
+		
+		/*
+		 * @returns {Array of Backbone.models} - contains selected site models for each dataset
+		 */
+		
+		getSitesWithSelectedVariables : function() {
+			var datasetCollections = this.get('datasetCollections');
+			var datasetSelectedSites = _.map(datasetCollections, function(datasetCollection) {
+				return datasetCollection.getSitesWithSelectedVariables();
+			});
+			return _.flatten(datasetSelectedSites);
+		},
+		
 		/*
 		 * Model event handlers
 		 */
@@ -108,14 +119,72 @@ define([
 		 * fetch all chosen datasets. Otherwise clear all datasets.
 		 */
 		changeAOI : function() {
+			var self = this;
 			var boundingBox = this.get('aoi').getBoundingBox();
 			var chosenDatasets = this.has('datasets') ? this.get('datasets') : [];
-			if (boundingBox) {
-				this.fetchDatasets(chosenDatasets, boundingBox);
+			var chosenVariableKinds = this.has('variableKinds') ? this.get('variableKinds') : [];
+			var dateFilter = this.get('dataDateFilter');
+			if (chosenDatasets.length > 0) {
+				if (boundingBox) {
+					this.fetchDatasets(chosenDatasets, boundingBox);
+				}
+				else {
+					this.clearDatasets(Config.ALL_DATASETS);
+				}
 			}
-			else {
-				this.clearDatasets(Config.ALL_DATASETS);
+			else if (chosenVariableKinds.length > 0) {
+				var variableDatasets = VariableDatasetMapping.getDatasets(chosenVariableKinds);
+				var updateSelectedVariableKindsCallback = function() {
+					_.each(variableDatasets, function(dataset) {
+						var filters = VariableDatasetMapping.getFilters(dataset, chosenVariableKinds);
+						self.get('datasetCollections')[dataset].selectAllVariablesInFilters(filters, dateFilter);
+					});
+				};
+
+				this.fetchDatasets(variableDatasets, boundingBox, updateSelectedVariableKindsCallback);
 			}
+		},
+
+
+		updateSelectedVariables : function() {
+			var self = this;
+			var prevVariableKinds = this.previous('variableKinds');
+			var variableKinds = this.get('variableKinds');
+			var variableKindsToSelect = _.difference(variableKinds, prevVariableKinds);
+			var variableKindsToUnselect = _.difference(prevVariableKinds, variableKinds);
+
+			var datasetsToSelect = VariableDatasetMapping.getDatasets(variableKindsToSelect);
+			var datasetsToUnselect = VariableDatasetMapping.getDatasets(variableKindsToUnselect);
+			var datasetsToRetrieve = _.filter(datasetsToSelect, function(datasetKind) {
+				return self.attributes.datasetCollections[datasetKind].length === 0;
+			});
+
+			var dateFilter = this.get('dataDateFilter');
+
+			var finishFetchingCallback = function() {
+				_.each(datasetsToSelect, function(dataset) {
+					var filters = VariableDatasetMapping.getFilters(dataset, variableKindsToSelect);
+					self.attributes.datasetCollections[dataset].selectAllVariablesInFilters(filters, dateFilter);
+				});
+
+				_.each(datasetsToUnselect, function(dataset) {
+					var filters = VariableDatasetMapping.getFilters(dataset, variableKindsToUnselect);
+					self.attributes.datasetCollections[dataset].unselectAllVariablesInFilters(filters);
+				});
+			};
+
+			this.fetchDatasets(datasetsToRetrieve, this.attributes.aoi.getBoundingBox(), finishFetchingCallback);
+		},
+
+		updateSelectedVariablesInDateFilter : function() {
+			var self = this;
+			var dateFilter = this.has('dataDateFilter') ? this.get('dataDateFilter') : undefined;
+			var variableKinds = this.get('variableKinds');
+			var datasetsToUpdate = VariableDatasetMapping.getDatasets(variableKinds);
+			_.each(datasetsToUpdate, function(dataset) {
+				var filters = VariableDatasetMapping.getFilters(dataset, variableKinds);
+				self.attributes.datasetCollections[dataset].selectAllVariablesInFilters(filters, dateFilter);
+			});
 		},
 
 		/*
@@ -133,31 +202,39 @@ define([
 						});
 					};
 					this.unset('datasets');
-					this.unset('startDate');
-					this.unset('endDate');
-					//TODO add code to allow switching between project location and aoi box.
+					this.unset('variableKinds');
+					this.unset('dataDateFilter');
+					this.unset('uploadedFeatureName');
 					this.get('aoi').clear();
 					break;
 
-				case Config.CHOOSE_DATA_FILTERS_STEP:
-					if (previousStep === Config.SPECIFY_AOI_STEP) {
+				case Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP:
+					if ((previousStep === Config.SPECIFY_AOI_STEP) || (previousStep === Config.CHOOSE_DATA_BY_VARIABLES_STEP)) {
 						this.initializeDatasetCollections();
+						this.set('variableKinds', []);
 						this.set('datasets', DEFAULT_CHOSEN_DATASETS);
+					}
+					break;
+
+				case Config.CHOOSE_DATA_BY_VARIABLES_STEP:
+					if ((previousStep === Config.SPECIFY_AOI_STEP) ||
+						(previousStep === Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP) ||
+						(previousStep === Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP)) {
+						this.initializeDatasetCollections();
+						this.set('datasets', []);
+						this.set('variableKinds', []);
 					}
 					break;
 
 				case Config.PROCESS_DATA_STEP:
 					var outputDateRange;
-					var startDate = this.get('startDate');
-					var endDate = this.get('endDate');
+					var dataDateFilter = this.has('dataDateFilter') ? this.get('dataDateFilter') : {};
+
 					var selectedVarsDateRange = this.getSelectedVarsDateRange();
 					var selectedVars = this.getSelectedVariables();
 
-					if ((startDate) && (endDate)) {
-						outputDateRange = {
-							start : startDate,
-							end : endDate
-						};
+					if ((dataDateFilter.start) && (dataDateFilter.end)) {
+						outputDateRange = dataDateFilter;
 					}
 					else {
 						outputDateRange = {
@@ -212,7 +289,7 @@ define([
 		 * @param {Array of String} datasetKinds
 		 * @param {Object with north, south, east, west properties} boundingBox
 		 */
-		fetchDatasets : function(datasetKinds, boundingBox) {
+		fetchDatasets : function(datasetKinds, boundingBox, finishedFnc) {
 			var self = this;
 			var datasetsToFetch = _.pick(this.get('datasetCollections'), datasetKinds);
 			var fetchDonePromises = [];
@@ -242,11 +319,23 @@ define([
 					var datasetKindErrors = _.filter(arguments, function(arg) {
 						return (arg) ? true : false;
 					});
+					if (finishedFnc) {
+						finishedFnc();
+					}
 					self.trigger('dataset:updateFinished', datasetKindErrors);
 				});
 			}
 			else {
-				this.trigger('dataset:updateFinished', []);
+				if (finishedFnc) {
+					// This gives the view's time to call any dataset:updateStart handlers before the dataset:updateFinisihed is triggered
+					setTimeout(function() {
+						finishedFnc();
+						self.trigger('dataset:updateFinished', []);
+					}, 10);
+				}
+				else {
+					self.trigger('dataset:updateFinished', []);
+				}
 			}
 		},
 

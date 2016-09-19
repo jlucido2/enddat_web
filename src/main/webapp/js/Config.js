@@ -5,20 +5,14 @@ define([], function() {
 	 * Contains constants used by multiple modules
 	 */
 	var config = {
-		GLCFS_DATASET_ERIE : 'GLCFS_ERIE',
-		GLCFS_DATASET_HURON : 'GLCFS_HURON',
-		GLCFS_DATASET_MICHIGAN : 'GLCFS_MICHIGAN',
-		GLCFS_DATASET_ONTARIO : 'GLCFS_ONTARIO',
-		GLCFS_DATASET_SUPERIOR : 'GLCFS_SUPERIOR',
+		GLCFS_DATASET : 'GLCFS',
 		NWIS_DATASET : 'NWIS',
 		PRECIP_DATASET : 'PRECIP',
 		ACIS_DATASET : 'ACIS',
-		ALL_DATASETS : ['GLCFS_ERIE', 'GLCFS_HURON', 'GLCFS_MICHIGAN', 'GLCFS_ONTARIO', 'GLCFS_SUPERIOR', 'NWIS', 'PRECIP', 'ACIS'],
+		ALL_DATASETS : ['GLCFS', 'NWIS', 'PRECIP', 'ACIS'],
 
 		PROJ_LOC_ICON_URL : 'bower_components/leaflet/dist/images/marker-icon.png',
-		
-		GLCFS_DATASET_ICON : 'GLCFS',
-		
+
 		DATASET_ICON : {
 			'GLCFS' : {
 				iconUrl : 'img/forecast-system.png',
@@ -39,8 +33,9 @@ define([], function() {
 		},
 
 		SPECIFY_AOI_STEP : 'specifyAOI',
-		CHOOSE_DATA_FILTERS_STEP : 'chooseDataFilters',
-		CHOOSE_DATA_VARIABLES_STEP : 'chooseDataVariables',
+		CHOOSE_DATA_BY_SITE_FILTERS_STEP : 'chooseDataBySiteFilters',
+		CHOOSE_DATA_BY_SITE_VARIABLES_STEP : 'chooseDataBySiteVariables',
+		CHOOSE_DATA_BY_VARIABLES_STEP : 'chooseDataByVariables',
 		PROCESS_DATA_STEP :'processData',
 
 		DATE_FORMAT : 'YYYY-MM-DD',

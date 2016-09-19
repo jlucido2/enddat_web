@@ -20,12 +20,10 @@
                 <a class="accordion-section-title" href="#accordion-2">Data Sources</a>
                 
                 <div id="accordion-2" class="accordion-section-content">
-                    <p><a href="http://waterdata.usgs.gov/nwis" target="_blank">NWIS</a></p>
-                    <p><a href="http://data.glos.us/glcfs/" target="_blank">GLCFS</a></p>
-                    <p><a href="http://www.waterqualitydata.us/" target="_blank">Water Quality Portal</a></p>
-                    <p><a href="http://cida.usgs.gov/gdp/" target="_blank">Geo Data Portal</a></p>
-                    <p><a href="http://www.hpc.ncep.noaa.gov/npvu/" target="_blank">Precipitation</a></p>
-					<p><a href="http://www.rcc-acis.org/" target="_blank">ACIS</a></p>
+                    <p><a href="http://waterdata.usgs.gov/nwis" target="_blank">USGS Surface Water Timeseries</a></p>
+                    <p><a href="http://www.rcc-acis.org/" target="_blank">Applied Climate Information System</a></p>
+                    <p><a href="http://data.glos.us/glcfs/" target="_blank">Great Lakes Coastal Forecasting System</a></p>
+                    <p><a href="http://cida.usgs.gov/thredds/catalog.html?dataset=cida.usgs.gov/thredds/stageiv_combined/" target="_blank">Radar Indicated Precipitation</a></p>
                 </div><!--end .accordion-section-content-->
             </div><!--accordion section-->
             
@@ -33,8 +31,9 @@
                 <a class="accordion-section-title" href="#accordion-3">Partners</a>
                 
                 <div id="accordion-3" class="accordion-section-content">
-                    <p><a href="http://cida.usgs.gov/glri/" target="_blank">GLRI</a></p>
-                    <p><a href="http://data.glos.us/obs/" target="_blank">GLOS</a></p>
+                    <p><a href="http://data.glos.us/obs/" target="_blank">National Water Census</a></p>
+                    <p><a href="http://cida.usgs.gov/glri/" target="_blank">Great Lakes Restoration Initiative</a></p>
+                    <p><a href="http://data.glos.us/obs/" target="_blank">Great Lakes Observing System</a></p>
                 </div><!--end .accordion-section-content-->
             </div><!--accordion section-->
             

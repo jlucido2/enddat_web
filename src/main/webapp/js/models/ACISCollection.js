@@ -14,18 +14,18 @@ define([
 
 	var ENDPOINT = module.config().acisStnMetaUrl;
 	var ELEMS = [
-			{code : 'maxt', description : 'Maximum temperature (F)'},
-			{code : 'mint', description : 'Minimum temperature (F)'},
-			{code : 'avgt', description : 'Average temperature (F)'},
-			{code : 'obst', description : 'Obs time temperature (F)'},
-			{code : 'pcpn', description : 'Precipitation (inches)'},
-			{code : 'snow', description : 'Snowfall (inches)'},
-			{code : 'snwd', description : 'Snow depth (inches)'},
-			{code : '13', description : 'Water equivalent of snow depth (inches)'},
-			{code : '7', description : 'Pan evaporation (inches)'},
-			{code : 'cdd', description : 'Cooling Degree Days (default base 65)'},
-			{code : 'hdd', description : 'Degree days below base (default base 65)'},
-			{code : 'gdd', description : 'Degree days above base (default base 50)'}
+			{code : 'maxt', description : 'Maximum temperature (F)', variableUnit : 'F'},
+			{code : 'mint', description : 'Minimum temperature (F)', variableUnit : 'F'},
+			{code : 'avgt', description : 'Average temperature (F)', variableUnit : 'F'},
+			{code : 'obst', description : 'Obs time temperature (F)', variableUnit : 'F'},
+			{code : 'pcpn', description : 'Precipitation (inches)', variableUnit : 'inches'},
+			{code : 'snow', description : 'Snowfall (inches)', variableUnit : 'inches'},
+			{code : 'snwd', description : 'Snow depth (inches)', variableUnit : 'inches'},
+			{code : '13', description : 'Water equivalent of snow depth (inches)', variableUnit : 'inches'},
+			{code : '7', description : 'Pan evaporation (inches)', variableUnit : 'inches'},
+			{code : 'cdd', description : 'Cooling Degree Days (default base 65)', variableUnit : 'days'},
+			{code : 'hdd', description : 'Degree days below base (default base 65)', variableUnit : 'days'},
+			{code : 'gdd', description : 'Degree days above base (default base 50)', variableUnit : 'days'}
 	];
 	var NETWORKS = [
 		{code : '1', name : 'WBAN'},
@@ -42,10 +42,12 @@ define([
 
 	var collection = BaseDatasetCollection.extend({
 
-		url : ENDPOINT + '?meta=name,valid_daterange,ll,sids&elems=' + _.pluck(ELEMS, 'code').join(','),
+		url : 'acis/StnMeta?meta=name,valid_daterange,ll,elev,sids&elems=' + _.pluck(ELEMS, 'code').join(','),
 
 		parse : function(response) {
 			var sites = response.meta;
+			var datasetName = 'ACIS';
+			log.debug('ACIS sites received: ' + sites.length);
 			return _.map(sites, function(site) {
 				// Use first sid when retrieving information.
 				var sid = site.sids[0].split(' ')[0];
@@ -56,7 +58,7 @@ define([
 							result.startDate = moment(dateRange[0], Config.DATE_FORMAT);
 							result.endDate = moment(dateRange[1], Config.DATE_FORMAT);
 							result.variableParameter = new VariableParameter({
-								name : 'ACIS',
+								name : datasetName,
 								value : sid + ':' +  result.code,
 								colName : result.description + ':' + sid
 							});
@@ -79,8 +81,12 @@ define([
 				return {
 					lon : site.ll[0],
 					lat : site.ll[1],
+					elevation : site.elev,
+					elevationUnit : 'ft',
 					name : site.name,
 					sid : sid,
+					siteNo : sid,
+					datasetName : datasetName,
 					networks : _.map(site.sids, getNetwork),
 					variables : new BaseVariableCollection(variables)
 				};

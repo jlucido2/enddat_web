@@ -2,20 +2,33 @@
 
 define([
 	'jquery',
+	'underscore',
 	'backbone',
 	'loglevel',
 	'moment',
 	'Config',
 	'models/WorkflowStateModel',
 	'views/DataDiscoveryView'
-], function ($, Backbone, log, moment, Config, WorkflowStateModel, DataDiscoveryView) {
+], function ($, _, Backbone, log, moment, Config, WorkflowStateModel, DataDiscoveryView) {
 	"use strict";
+
+	var getAOIBox = function(bboxStr) {
+		var bboxArr = bboxStr.split(',');
+		return {
+			south : parseFloat(bboxArr[0]),
+			west : parseFloat(bboxArr[1]),
+			north : parseFloat(bboxArr[2]),
+			east : parseFloat(bboxArr[3])
+		};
+	};
 
 	var appRouter = Backbone.Router.extend({
 		routes: {
 			'': 'specifyProjectLocationState',
-			'lat/:lat/lng/:lng/radius/:radius(/startdate/:startDate)(/enddate/:endDate)(/dataset/*datasets)' : 'chooseDataStateProjLoc',
-			'aoiBbox/:bbox(/startdate/:startDate)(/enddate/:endDate)(/dataset/*datasets)' : 'chooseDataStateAOIBox'
+			'lat/:lat/lng/:lng/radius/:radius(/startdate/:startDate)(/enddate/:endDate)/dataset/*datasets' : 'chooseDataStateProjLoc',
+			'aoiBbox/:bbox(/startdate/:startDate)(/enddate/:endDate)/dataset/*datasets' : 'chooseDataStateAOIBox',
+			'lat/:lat/lng/:lng/radius/:radius(/startdate/:startDate)(/enddate/:endDate)/variable/*variables' : 'chooseByVariableStateProjLoc',
+			'aoiBbox/:bbox(/startdate/:startDate)(/enddate/:endDate)/variable/*variables' : 'chooseByVariableStateAOIBox'
 	},
 
 		initialize : function(options) {
@@ -59,40 +72,94 @@ define([
 			}).render();
 		},
 
-		chooseDataState : function(aoi, startDate, endDate, datasets) {
-			this.workflowState.initializeDatasetCollections();
-			this.workflowState.get('aoi').set(aoi);
-			this.workflowState.set({
-				'startDate' : (startDate) ? moment(startDate, Config.DATE_FORMAT_URL) : '',
-				'endDate' : (endDate) ? moment(endDate, Config.DATE_FORMAT_URL) : ''
+		chooseDataState : function(workflowStep, state) {
+			var datasetsInUrl = state.datasets ? state.datasets.split('/') : [];
+			var glcfsLake = '';
+			var datasets = [];
+			_.each(datasetsInUrl, function(dataset) {
+				var glcfsIndex = dataset.search(Config.GLCFS_DATASET);
+				if (glcfsIndex > -1) {
+					datasets.push(Config.GLCFS_DATASET);
+					glcfsLake = dataset.slice(glcfsIndex + Config.GLCFS_DATASET.length + 1);
+				}
+				else {
+					datasets.push(dataset);
+				}
 			});
-			this.workflowState.set('step', Config.CHOOSE_DATA_FILTERS_STEP);
+
+			this.workflowState.initializeDatasetCollections();
+			if (glcfsLake) {
+				this.workflowState.get('datasetCollections')[Config.GLCFS_DATASET].setLake(glcfsLake);
+			}
+			this.workflowState.get('aoi').set(state.aoi);
+			this.workflowState.set('dataDateFilter', {
+				'start' : (state.startDate) ? moment(state.startDate, Config.DATE_FORMAT_URL) : '',
+				'end' : (state.endDate) ? moment(state.endDate, Config.DATE_FORMAT_URL) : ''
+			});
+			this.workflowState.set('step', workflowStep);
 			this.createView(DataDiscoveryView, {
 				model : this.workflowState
 			}).render();
-			this.workflowState.set('datasets', datasets ? datasets.split('/') : []);
+			this.workflowState.set('datasets', datasets);
+			this.workflowState.set('variableKinds', state.variables ? state.variables.split('/') : []);
 		},
 
 		chooseDataStateProjLoc : function(lat, lng, radius, startDate, endDate, datasets) {
-			var aoi = {
-				latitude : lat,
-				longitude : lng,
-				radius : radius
+			var state = {
+				aoi : {
+					latitude : lat,
+					longitude : lng,
+					radius : radius
+				},
+				startDate : startDate,
+				endDate : endDate,
+				datasets : datasets,
+				variables : undefined
 			};
-			this.chooseDataState(aoi, startDate, endDate, datasets);
+
+			this.chooseDataState(Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP, state);
 		},
 
 		chooseDataStateAOIBox : function(bboxStr, startDate, endDate, datasets) {
-			var bboxArr = bboxStr.split(',');
-			var aoi = {
-				aoiBox : {
-					south : parseFloat(bboxArr[0]),
-					west : parseFloat(bboxArr[1]),
-					north : parseFloat(bboxArr[2]),
-					east : parseFloat(bboxArr[3])
-				}
+			var state = {
+				aoi : {
+					aoiBox : getAOIBox(bboxStr)
+				},
+				startDate : startDate,
+				endDate : endDate,
+				datasets : datasets,
+				variables : undefined
 			};
-			this.chooseDataState(aoi, startDate, endDate, datasets);
+			this.chooseDataState(Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP, state);
+		},
+
+		chooseByVariableStateProjLoc : function(lat, lng, radius, startDate, endDate, variables) {
+			var state = {
+				aoi : {
+					latitude : lat,
+					longitude : lng,
+					radius : radius
+				},
+				startDate : startDate,
+				endDate : endDate,
+				datasets : undefined,
+				variables : variables
+			};
+
+			this.chooseDataState(Config.CHOOSE_DATA_BY_VARIABLES_STEP, state);
+		},
+
+		chooseByVariableStateAOIBox : function(bboxStr, startDate, endDate, variables) {
+			var state = {
+				aoi : {
+					aoiBox : getAOIBox(bboxStr)
+				},
+				startDate : startDate,
+				endDate : endDate,
+				datasets : undefined,
+				variables : variables
+			};
+			this.chooseDataState(Config.CHOOSE_DATA_BY_VARIABLES_STEP, state);
 		}
 	});
 

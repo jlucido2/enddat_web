@@ -32,7 +32,8 @@ define([
 				return result;
 			};
 
-			this.context.lake = this.model.get('lake');
+			this.context.lat = this.model.get('lat');
+			this.context.lon = this.model.get('lon');
 			this.context.distance = this.distanceToProjectLocation;
 			this.context.variables = this.model.get('variables').map(getContextForVariable);
 
@@ -44,4 +45,3 @@ define([
 
 	return view;
 });
-

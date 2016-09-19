@@ -22,18 +22,14 @@ define([
 		panelBodyId : 'variable-summary-panel-body',
 
 		additionalEvents : {
-			'click button' : 'removeVariable'
+			'click tbody button' : 'removeVariable'
 		},
 
 		initialize : function(options) {
 			BaseCollapsiblePanelView.prototype.initialize.apply(this, arguments);
 
 			this.selectedDatasets = _.object([
-  				[Config.GLCFS_DATASET_ERIE, []],
-  				[Config.GLCFS_DATASET_HURON, []],
-  				[Config.GLCFS_DATASET_MICHIGAN, []],
-  				[Config.GLCFS_DATASET_ONTARIO, []],
-  				[Config.GLCFS_DATASET_SUPERIOR, []],
+  				[Config.GLCFS_DATASET, []],
 				[Config.PRECIP_DATASET, []],
 				[Config.NWIS_DATASET, []],
 				[Config.ACIS_DATASET, []]
@@ -118,42 +114,35 @@ define([
 		 * @returns {undefined}
 		 */
 		setupDatasetCollectionsListeners : function(model, datasetCollections) {
-			var glcfsCollectionErie = datasetCollections[Config.GLCFS_DATASET_ERIE];
-			var glcfsCollectionHuron = datasetCollections[Config.GLCFS_DATASET_HURON];
-			var glcfsCollectionMichigan = datasetCollections[Config.GLCFS_DATASET_MICHIGAN];
-			var glcfsCollectionOntario = datasetCollections[Config.GLCFS_DATASET_ONTARIO];
-			var glcfsCollectionSuperior = datasetCollections[Config.GLCFS_DATASET_SUPERIOR];
+			var glcfsCollection = datasetCollections[Config.GLCFS_DATASET];
 			var precipCollection = datasetCollections[Config.PRECIP_DATASET];
 			var nwisCollection = datasetCollections[Config.NWIS_DATASET];
 			var acisCollection = datasetCollections[Config.ACIS_DATASET];
 
-			this.listenTo(glcfsCollectionErie, 'reset', this.setupGLCFSErieModelListeners);
-			this.listenTo(glcfsCollectionHuron, 'reset', this.setupGLCFSHuronModelListeners);
-			this.listenTo(glcfsCollectionMichigan, 'reset', this.setupGLCFSMichiganModelListeners);
-			this.listenTo(glcfsCollectionOntario, 'reset', this.setupGLCFSOntarioModelListeners);
-			this.listenTo(glcfsCollectionSuperior, 'reset', this.setupGLCFSSuperiorModelListeners);
+			this.listenTo(glcfsCollection, 'reset', this.setupGLCFSModelListeners);
+
 			this.listenTo(precipCollection, 'reset', this.setupPrecipModelListeners);
 			this.listenTo(nwisCollection, 'reset', this.setupNWISModelListeners);
 			this.listenTo(acisCollection, 'reset', this.setupACISModelListeners);
 
-			this.setupGLCFSErieModelListeners(glcfsCollectionErie);
-			this.setupGLCFSHuronModelListeners(glcfsCollectionHuron);
-			this.setupGLCFSMichiganModelListeners(glcfsCollectionMichigan);
-			this.setupGLCFSOntarioModelListeners(glcfsCollectionOntario);
-			this.setupGLCFSSuperiorModelListeners(glcfsCollectionSuperior);
+			this.setupGLCFSModelListeners(glcfsCollection);
 			this.setupPrecipModelListeners(precipCollection);
 			this.setupNWISModelListeners(nwisCollection);
 			this.setupACISModelListeners(acisCollection);
 		},
 
 		/*
+		 * Sets up the event listeners for changes in the selected property for each site's variable for the GLCFS dataset
 		 * @param {BaseDatasetCollection} collection
 		 */
-		setupGLCFSErieModelListeners : function(collection) {
-			this._setupDatasetVariableListeners(collection, this.updateSelectedGLCFSEriePoints);
+		setupGLCFSModelListeners : function(collection) {
+			this._setupDatasetVariableListeners(collection, this.updateSelectedGLCFSPoints);
 		},
 
-		updateSelectedGLCFSEriePoints : function() {
+		/*
+		 * Updates the selectedDatasets for GLCFS points
+		 */
+		updateSelectedGLCFSPoints : function() {
 			var getContextVariable = function(variableModel, glcfsModel) {
 				return {
 					modelId : glcfsModel.cid,
@@ -164,84 +153,8 @@ define([
 					property : variableModel.attributes.description
 				};
 			};
-			var datasetCollection = this.model.get('datasetCollections')[Config.GLCFS_DATASET_ERIE];
-			this._updateSelectedVariableContext(datasetCollection, Config.GLCFS_DATASET_ERIE, getContextVariable);
-		},
-
-		setupGLCFSHuronModelListeners : function(collection) {
-			this._setupDatasetVariableListeners(collection, this.updateSelectedGLCFSHuronPoints);
-		},
-
-		updateSelectedGLCFSHuronPoints : function() {
-			var getContextVariable = function(variableModel, glcfsModel) {
-				return {
-					modelId : glcfsModel.cid,
-					variableId : variableModel.cid,
-					siteId : (parseFloat(glcfsModel.attributes.lat)).toFixed(3) + ', ' + (parseFloat(glcfsModel.attributes.lon)).toFixed(3),
-					startDate : variableModel.attributes.startDate.format(Config.DATE_FORMAT),
-					endDate : variableModel.attributes.endDate.format(Config.DATE_FORMAT),
-					property : variableModel.attributes.description
-				};
-			};
-			var datasetCollection = this.model.get('datasetCollections')[Config.GLCFS_DATASET_HURON];
-			this._updateSelectedVariableContext(datasetCollection, Config.GLCFS_DATASET_HURON, getContextVariable);
-		},
-
-		setupGLCFSMichiganModelListeners : function(collection) {
-			this._setupDatasetVariableListeners(collection, this.updateSelectedGLCFSMichiganPoints);
-		},
-
-		updateSelectedGLCFSMichiganPoints : function() {
-			var getContextVariable = function(variableModel, glcfsModel) {
-				return {
-					modelId : glcfsModel.cid,
-					variableId : variableModel.cid,
-					siteId : (parseFloat(glcfsModel.attributes.lat)).toFixed(3) + ', ' + (parseFloat(glcfsModel.attributes.lon)).toFixed(3),
-					startDate : variableModel.attributes.startDate.format(Config.DATE_FORMAT),
-					endDate : variableModel.attributes.endDate.format(Config.DATE_FORMAT),
-					property : variableModel.attributes.description
-				};
-			};
-			var datasetCollection = this.model.get('datasetCollections')[Config.GLCFS_DATASET_MICHIGAN];
-			this._updateSelectedVariableContext(datasetCollection, Config.GLCFS_DATASET_MICHIGAN, getContextVariable);
-		},
-
-		setupGLCFSOntarioModelListeners : function(collection) {
-			this._setupDatasetVariableListeners(collection, this.updateSelectedGLCFSOntarioPoints);
-		},
-
-		updateSelectedGLCFSOntarioPoints : function() {
-			var getContextVariable = function(variableModel, glcfsModel) {
-				return {
-					modelId : glcfsModel.cid,
-					variableId : variableModel.cid,
-					siteId : (parseFloat(glcfsModel.attributes.lat)).toFixed(3) + ', ' + (parseFloat(glcfsModel.attributes.lon)).toFixed(3),
-					startDate : variableModel.attributes.startDate.format(Config.DATE_FORMAT),
-					endDate : variableModel.attributes.endDate.format(Config.DATE_FORMAT),
-					property : variableModel.attributes.description
-				};
-			};
-			var datasetCollection = this.model.get('datasetCollections')[Config.GLCFS_DATASET_ONTARIO];
-			this._updateSelectedVariableContext(datasetCollection, Config.GLCFS_DATASET_ONTARIO, getContextVariable);
-		},
-
-		setupGLCFSSuperiorModelListeners : function(collection) {
-			this._setupDatasetVariableListeners(collection, this.updateSelectedGLCFSSuperiorPoints);
-		},
-
-		updateSelectedGLCFSSuperiorPoints : function() {
-			var getContextVariable = function(variableModel, glcfsModel) {
-				return {
-					modelId : glcfsModel.cid,
-					variableId : variableModel.cid,
-					siteId : (parseFloat(glcfsModel.attributes.lat)).toFixed(3) + ', ' + (parseFloat(glcfsModel.attributes.lon)).toFixed(3),
-					startDate : variableModel.attributes.startDate.format(Config.DATE_FORMAT),
-					endDate : variableModel.attributes.endDate.format(Config.DATE_FORMAT),
-					property : variableModel.attributes.description
-				};
-			};
-			var datasetCollection = this.model.get('datasetCollections')[Config.GLCFS_DATASET_SUPERIOR];
-			this._updateSelectedVariableContext(datasetCollection, Config.GLCFS_DATASET_SUPERIOR, getContextVariable);
+			var datasetCollection = this.model.get('datasetCollections')[Config.GLCFS_DATASET];
+			this._updateSelectedVariableContext(datasetCollection, Config.GLCFS_DATASET, getContextVariable);
 		},
 
 		/*

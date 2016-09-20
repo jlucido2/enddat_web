@@ -95,7 +95,7 @@
 
 				<h2>Feedback</h2>
 				<p>
-					Questions, comments, and requests are welcome.  Please email <a href="enddat@usgs.gov?Subject=EnDDaT%20BETA%20Feedback">enddat@usgs.gov</a>.
+					Questions, comments, and requests are welcome.  Please email <a href="mailto:enddat@usgs.gov?Subject=EnDDaT%20BETA%20Feedback">enddat@usgs.gov</a>.
 				</p>
 
 				<h2>Disclaimer</h2>
@@ -111,7 +111,7 @@
 
 		<jsp:include page="template/USGSFooter.jsp">
 			<jsp:param name="site-url" value="https://cida.usgs.gov/enddat" />
-			<jsp:param name="contact-info" value="<a href='mailto:enddat@usgs.gov'>Enddat Team</a>" />
+			<jsp:param name="contact-info" value="<a href='mailto:enddat@usgs.gov'>EnDDaT Team</a>" />
 		</jsp:include>
 
 

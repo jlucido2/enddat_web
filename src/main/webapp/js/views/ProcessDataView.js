@@ -213,20 +213,17 @@ define([
 
 		_createFileUploader : function($fileUploaderInput) {
 			var self = this;
-			var filename;
 			var $loadingIndicator = this.$('.filter-file-loading-indicator');
 
 			$fileUploaderInput.fileupload({
-				url : 'timeFilterFileUpload',
+				url : 'datefile/upload',
 				type : 'POST',
 				dataType : 'json',
 				send : function(e, data) {
-					filename = data.files[0].name;
-					data.url = data.url + '?qqfile=' + filename;
 					$loadingIndicator.show();
 				},
 				done : function(e, data) {
-					self.$('#time-filter-id-input').val(data.fileId);
+					self.model.set('timeFilterId', data.result.fileId);
 					$loadingIndicator.hide();
 				},
 				fail : function() {

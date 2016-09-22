@@ -31,8 +31,8 @@
                 <a class="accordion-section-title" href="#accordion-3">Partners</a>
                 
                 <div id="accordion-3" class="accordion-section-content">
-                    <p><a href="http://data.glos.us/obs/" target="_blank">National Water Census</a></p>
-                    <p><a href="http://cida.usgs.gov/glri/" target="_blank">Great Lakes Restoration Initiative</a></p>
+                    <p><a href="https://water.usgs.gov/watercensus/" target="_blank">National Water Census</a></p>
+                    <p><a href="https://cida.usgs.gov/glri/" target="_blank">Great Lakes Restoration Initiative</a></p>
                     <p><a href="http://data.glos.us/obs/" target="_blank">Great Lakes Observing System</a></p>
                 </div><!--end .accordion-section-content-->
             </div><!--accordion section-->

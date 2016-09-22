@@ -43,9 +43,9 @@
 				<h2>Overview</h2>
 				<p>
 					Welcome to the Environmental Data Discovery and Transformation (EnDDaT) service;  
-					a system you can use to discover data from our natural environment.  This tool 
+					a system you can use to discover data from our natural environment. This tool 
 					accesses data from a variety of data sources, compiles and processes the data, 
-					and performs common transformations.  The result is that environmental data 
+					and performs common transformations. The result is that environmental data 
 					from multiple sources is sorted into a single table that aids model development and 
 					similar tasks. See the user guide for step-by-step instructions on obtaining data, 
 					specifying transforms, and processing data.
@@ -68,7 +68,7 @@
 				</p>	
 				<p>
 					Furthermore, real-time or near real-time data is necessary to run models for accurate and time-relevant 
-					forecasting.  In order to run the model from the previous example, real-time data with as little lag time 
+					forecasting. In order to run the model from the previous example, real-time data with as little lag time 
 					as possible (< 6 hours) is necessary in order to predict the bacteria concentrations for that day at a particular 
 					beach. 
 				</p>
@@ -89,13 +89,13 @@
 				<p>
 					EnDDaT is not the owner or provider of any data.  Instead, EnDDaT gathers data from a variety of data providers. 
 					The data providers are listed on the left side bar. EnDDaT has been designed especially to gather data that uses 
-					recognized web standards such as SOS, WQX, and Thredds. However, if data is deemed useful for environmental modeling, 
+					recognized web standards such as SOS, WQX, and THREDDS. However, if data is deemed useful for environmental modeling, 
 					custom data gathering tools and data parsers can be included.
 				</p>
 
 				<h2>Feedback</h2>
 				<p>
-					Questions, comments, and requests are welcome.  Please email enddat@usgs.gov
+					Questions, comments, and requests are welcome.  Please email <a href="mailto:enddat@usgs.gov?Subject=EnDDaT%20BETA%20Feedback">enddat@usgs.gov</a>.
 				</p>
 
 				<h2>Disclaimer</h2>
@@ -111,7 +111,7 @@
 
 		<jsp:include page="template/USGSFooter.jsp">
 			<jsp:param name="site-url" value="https://cida.usgs.gov/enddat" />
-			<jsp:param name="contact-info" value="<a href='mailto:enddat@usgs.gov'>Enddat Team</a>" />
+			<jsp:param name="contact-info" value="<a href='mailto:enddat@usgs.gov'>EnDDaT Team</a>" />
 		</jsp:include>
 
 

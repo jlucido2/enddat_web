@@ -2,6 +2,7 @@
 
 define([
 	'underscore',
+	'jquery',
 	'leaflet',
 	'leaflet-draw',
 	'leaflet-providers',
@@ -15,7 +16,7 @@ define([
 	'views/BaseView',
 	'views/SitesLayerView',
 	'hbs!hb_templates/mapOps'
-], function(_, L, leafletDraw, leafletProviders, log, module, Config, variableDatasetMapping, $utils, LUtils, legendControl,
+], function(_, $, L, leafletDraw, leafletProviders, log, module, Config, variableDatasetMapping, $utils, LUtils, legendControl,
 		BaseView, SitesLayerView, hbTemplate) {
 
 	L.Icon.Default.imagePath = 'bower_components/leaflet/dist/images';
@@ -104,6 +105,28 @@ define([
 			this.map.on('draw:edited', function(ev) {
 				this.model.get('aoi').set('aoiBox', LUtils.getBbox(ev.layers.getLayers()[0].getBounds()));
 			}, this);
+			
+			// add public beaches
+			var publicBeachMarkerOpts = {
+					radius: 4,
+					fillColor: "#FFFF00",
+					color: "#000",
+					weight: 1,
+					opacity: 1,
+					fillOpacity: 0.8
+			};
+			this.addGeoJsonLayer('json/publicBeaches.json', publicBeachMarkerOpts);
+			
+			// add USGS model beaches
+			var usgsModelBeachesMarkerOpts = {
+					radius: 4,
+					fillColor: "#229954",
+					color: "#000",
+					weight: 1,
+					opacity: 1,
+					fillOpacity: 0.8
+			};
+			this.addGeoJsonLayer('json/usgsModelBeaches.json', usgsModelBeachesMarkerOpts);
 
 			// Set up model event listeners and update the map state to match the current state of the workflow model.
 			this.updateWorkflowStep(this.model, this.model.get('step'));
@@ -133,6 +156,17 @@ define([
 				this.sitesLayerView.remove();
 				this.sitesLayerView = undefined;
 			}
+		},
+		
+		addGeoJsonLayer : function(dataPath, markerOptions) {
+			var self = this;
+			$.getJSON(dataPath, function(data) {
+				L.geoJson(data, {
+					pointToLayer: function (feature, latlng) {
+						return L.circleMarker(latlng, markerOptions);
+					}
+				}).addTo(self.map);
+			});
 		},
 
 		/*

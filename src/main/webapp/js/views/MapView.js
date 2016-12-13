@@ -40,10 +40,39 @@ define([
 				'World Physical': L.tileLayer.provider('Esri.WorldPhysical'),
 				'World Imagery' : L.tileLayer.provider('Esri.WorldImagery')
 			};
+			
+			// add public beaches
+			var publicBeachMarkerOpts = {
+					radius: 4,
+					fillColor: "#FFFF00",
+					color: "#000",
+					weight: 1,
+					opacity: 1,
+					fillOpacity: 0.8
+			};
+			var publicBeachesLayer = this.addGeoJsonLayer('json/publicBeaches.json', publicBeachMarkerOpts);
+			
+			// add USGS model beaches
+			var usgsModelBeachesMarkerOpts = {
+					radius: 4,
+					fillColor: "#229954",
+					color: "#000",
+					weight: 1,
+					opacity: 1,
+					fillOpacity: 0.8
+			};
+			var usgsModelBeachesLayer = this.addGeoJsonLayer('json/usgsModelBeaches.json', usgsModelBeachesMarkerOpts);
+			
+			this.beachOverlays = {
+				"Public Beaches": publicBeachesLayer,
+				"USGS Model Beaches": usgsModelBeachesLayer
+			};
+			
+			console.log(this.beachOverlays);
 
 			this.legendControl = legendControl({opened : false});
 			this.defaultControls = [
-				L.control.layers(this.baseLayers, {}),
+				L.control.layers(this.baseLayers, this.beachOverlays),
 				this.legendControl
 			];
 
@@ -94,6 +123,7 @@ define([
 				zoom : 4,
 				layers : [this.baseLayers['World Street']]
 			});
+			
 			_.each(this.defaultControls, function(control) {
 				this.map.addControl(control);
 			}, this);
@@ -105,28 +135,6 @@ define([
 			this.map.on('draw:edited', function(ev) {
 				this.model.get('aoi').set('aoiBox', LUtils.getBbox(ev.layers.getLayers()[0].getBounds()));
 			}, this);
-			
-			// add public beaches
-			var publicBeachMarkerOpts = {
-					radius: 4,
-					fillColor: "#FFFF00",
-					color: "#000",
-					weight: 1,
-					opacity: 1,
-					fillOpacity: 0.8
-			};
-			this.addGeoJsonLayer('json/publicBeaches.json', publicBeachMarkerOpts);
-			
-			// add USGS model beaches
-			var usgsModelBeachesMarkerOpts = {
-					radius: 4,
-					fillColor: "#229954",
-					color: "#000",
-					weight: 1,
-					opacity: 1,
-					fillOpacity: 0.8
-			};
-			this.addGeoJsonLayer('json/usgsModelBeaches.json', usgsModelBeachesMarkerOpts);
 
 			// Set up model event listeners and update the map state to match the current state of the workflow model.
 			this.updateWorkflowStep(this.model, this.model.get('step'));
@@ -160,13 +168,15 @@ define([
 		
 		addGeoJsonLayer : function(dataPath, markerOptions) {
 			var self = this;
+			var deferred = $.Deferred();
 			$.getJSON(dataPath, function(data) {
-				L.geoJson(data, {
+				var layer = L.geoJson(data, {
 					pointToLayer: function (feature, latlng) {
 						return L.circleMarker(latlng, markerOptions);
 					}
-				}).addTo(self.map);
+				});
 			});
+			return deferred.promise();
 		},
 
 		/*

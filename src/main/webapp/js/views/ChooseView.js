@@ -44,7 +44,6 @@ define([
 
 		render : function() {
 			var self = this;
-
 			BaseCollapsiblePanelView.prototype.render.apply(this, arguments);
 			this.dateFilterView.setElement(this.$('.date-filter-container')).render();
 

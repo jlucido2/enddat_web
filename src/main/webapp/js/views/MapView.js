@@ -67,8 +67,6 @@ define([
 				"Public Beaches": publicBeachesLayer,
 				"USGS Model Beaches": usgsModelBeachesLayer
 			};
-			
-			console.log(this.beachOverlays);
 
 			this.legendControl = legendControl({opened : false});
 			this.defaultControls = [
@@ -121,7 +119,7 @@ define([
 			this.map = L.map(MAP_DIV_ID, {
 				center: [41.0, -100.0],
 				zoom : 4,
-				layers : [this.baseLayers['World Street']]
+				layers : [this.baseLayers['World Street'], this.beachOverlays['Public Beaches'], this.beachOverlays['USGS Model Beaches']]
 			});
 			
 			_.each(this.defaultControls, function(control) {
@@ -168,15 +166,15 @@ define([
 		
 		addGeoJsonLayer : function(dataPath, markerOptions) {
 			var self = this;
-			var deferred = $.Deferred();
-			$.getJSON(dataPath, function(data) {
-				var layer = L.geoJson(data, {
-					pointToLayer: function (feature, latlng) {
-						return L.circleMarker(latlng, markerOptions);
+			var layer = L.geoJson(null, {
+				pointToLayer: function (feature, latlng) {
+					return L.circleMarker(latlng, markerOptions);
 					}
-				});
 			});
-			return deferred.promise();
+			$.getJSON(dataPath, function(data) {
+				layer.addData(data);
+			});
+			return layer;
 		},
 
 		/*

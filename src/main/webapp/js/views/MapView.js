@@ -33,6 +33,13 @@ define([
 		 *		@prop {WorkflowStateModel} model
 		 */
 		initialize : function(options) {
+			
+			var yellowTriangleIcon;
+			var greenTriangleIcon;
+			var publicBeachesLayer;
+			var usgsModelBeachesLayer
+			
+			
 			BaseView.prototype.initialize.apply(this, arguments);
 
 			this.baseLayers = {
@@ -42,20 +49,18 @@ define([
 			};
 			
 			// add public beaches
-			var yellowTriangleIcon = L.icon({
+			yellowTriangleIcon = L.icon({
 				iconUrl: Config.BEACH_ICONS['Public Beaches'].iconUrl,
 				iconSize: Config.BEACH_ICONS['Public Beaches'].iconSize
 			});
-			
-			var publicBeachesLayer = this.addGeoJsonLayer('json/publicBeaches.json', yellowTriangleIcon);
+			publicBeachesLayer = this.createGeoJsonLayer('json/publicBeaches.json', yellowTriangleIcon);
 			
 			// add USGS model beaches
-
-			var greenTriangleIcon = L.icon({
+			greenTriangleIcon = L.icon({
 				iconUrl: Config.BEACH_ICONS['USGS Model Beaches'].iconUrl,
 				iconSize: Config.BEACH_ICONS['USGS Model Beaches'].iconSize
 			});
-			var usgsModelBeachesLayer = this.addGeoJsonLayer('json/usgsModelBeaches.json', greenTriangleIcon);
+			usgsModelBeachesLayer = this.createGeoJsonLayer('json/usgsModelBeaches.json', greenTriangleIcon);
 			
 			this.beachOverlays = {
 				"Public Beaches": publicBeachesLayer,
@@ -113,7 +118,7 @@ define([
 			this.map = L.map(MAP_DIV_ID, {
 				center: [41.0, -100.0],
 				zoom : 4,
-				layers : [this.baseLayers['World Street'], this.beachOverlays['Public Beaches'], this.beachOverlays['USGS Model Beaches']]
+				layers : [this.baseLayers['World Street']]
 			});
 			
 			_.each(this.defaultControls, function(control) {
@@ -158,8 +163,12 @@ define([
 			}
 		},
 		
-		addGeoJsonLayer : function(dataPath, markerIcon) {
-			var self = this;
+		/*
+		 * @param {String} dataPath - absolute or relative path to GeoJSON data
+		 * @param {L.Icon} markerIcon - Leaflet icon (i.e. L.icon)
+		 * @return {L.Layer} - Leaflet layer
+		 */
+		createGeoJsonLayer : function(dataPath, markerIcon) {
 			var layer = L.geoJson(null, {
 				pointToLayer: function (feature, latlng) {
 					return L.marker(latlng, {icon: markerIcon});
@@ -172,9 +181,6 @@ define([
 					});
 					layer.on('mouseout', function() {
 						layer.closePopup();
-					});
-					layer.on('click', function() {
-						
 					});
 				}
 			});

@@ -58,7 +58,7 @@ define([
 			testModel.set('step', Config.SPECIFY_AOI_STEP);
 			testModel.initializeDatasetCollections();
 			
-			spyOn(MapView.prototype, 'addGeoJsonLayer').and.callThrough();
+			spyOn(MapView.prototype, 'createGeoJsonLayer').and.callThrough();
 			testView = new MapView({
 				el : '#test-div',
 				mapDivId : 'test-map-div',
@@ -90,6 +90,13 @@ define([
 			expect(testView.drawnAOIFeature).toBeDefined();
 			expect(testView.drawAOIControl).toBeDefined();
 		});
+		
+		it('Expects layers to be created from geoJSON', function() {
+			expect(testView.createGeoJsonLayer).toHaveBeenCalledWith(jasmine.any(String), jasmine.any(L.Icon));
+			expect(testView.createGeoJsonLayer.calls.count()).toEqual(2);
+			expect(testView.beachOverlays['Public Beaches']).toBeDefined();
+			expect(testView.beachOverlays['USGS Model Beaches']).toBeDefined();
+		});
 
 		describe('Tests for render', function() {
 			it('Expects that the map is created in the mapDiv with a single base layer', function() {
@@ -100,13 +107,6 @@ define([
 			it('Expects the layer switch control to be added to the map', function() {
 				testView.render();
 				expect(addControlSpy).toHaveBeenCalledWith(testView.defaultControls[0]);
-			});
-			
-			it('Expects layers to be created from geoJSON', function() {
-				testView.render();
-				expect(testView.addGeoJsonLayer).toHaveBeenCalledWith(jasmine.any(String), jasmine.any(L.Icon));
-				expect(testView.beachOverlays['Public Beaches']).toBeDefined();
-				expect(testView.beachOverlays['USGS Model Beaches']).toBeDefined();
 			});
 
 			it('Expects that the project location marker is not added to the map if location is not defined in the workflow state', function() {

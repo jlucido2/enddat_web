@@ -42,26 +42,20 @@ define([
 			};
 			
 			// add public beaches
-			var publicBeachMarkerOpts = {
-					radius: 4,
-					fillColor: "#FFFF00",
-					color: "#000",
-					weight: 1,
-					opacity: 1,
-					fillOpacity: 0.8
-			};
-			var publicBeachesLayer = this.addGeoJsonLayer('json/publicBeaches.json', publicBeachMarkerOpts);
+			var yellowTriangleIcon = L.icon({
+				iconUrl: Config.BEACH_ICONS['Public Beaches'].iconUrl,
+				iconSize: Config.BEACH_ICONS['Public Beaches'].iconSize
+			});
+			
+			var publicBeachesLayer = this.addGeoJsonLayer('json/publicBeaches.json', yellowTriangleIcon);
 			
 			// add USGS model beaches
-			var usgsModelBeachesMarkerOpts = {
-					radius: 4,
-					fillColor: "#229954",
-					color: "#000",
-					weight: 1,
-					opacity: 1,
-					fillOpacity: 0.8
-			};
-			var usgsModelBeachesLayer = this.addGeoJsonLayer('json/usgsModelBeaches.json', usgsModelBeachesMarkerOpts);
+
+			var greenTriangleIcon = L.icon({
+				iconUrl: Config.BEACH_ICONS['USGS Model Beaches'].iconUrl,
+				iconSize: Config.BEACH_ICONS['USGS Model Beaches'].iconSize
+			});
+			var usgsModelBeachesLayer = this.addGeoJsonLayer('json/usgsModelBeaches.json', greenTriangleIcon);
 			
 			this.beachOverlays = {
 				"Public Beaches": publicBeachesLayer,
@@ -164,12 +158,25 @@ define([
 			}
 		},
 		
-		addGeoJsonLayer : function(dataPath, markerOptions) {
+		addGeoJsonLayer : function(dataPath, markerIcon) {
 			var self = this;
 			var layer = L.geoJson(null, {
 				pointToLayer: function (feature, latlng) {
-					return L.circleMarker(latlng, markerOptions);
-					}
+					return L.marker(latlng, {icon: markerIcon});
+					},
+				onEachFeature: function (feature, layer) {
+					var featureName = feature.properties.name;
+					layer.bindPopup(featureName);
+					layer.on('mouseover', function() {
+						layer.openPopup();
+					});
+					layer.on('mouseout', function() {
+						layer.closePopup();
+					});
+					layer.on('click', function() {
+						
+					});
+				}
 			});
 			$.getJSON(dataPath, function(data) {
 				layer.addData(data);

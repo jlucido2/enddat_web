@@ -18,11 +18,11 @@ define([], function() {
 		BEACH_ICONS: {
 			'Public Beaches': {
 				iconUrl : 'img/yellow_triangle.png',
-				iconSize : [12, 12]
+				iconSize : [10, 10]
 			},
 			'USGS Model Beaches': {
 				iconUrl : 'img/green_triangle.png',
-				iconSize : [12, 12]
+				iconSize : [10, 10]
 			}
 		},
 

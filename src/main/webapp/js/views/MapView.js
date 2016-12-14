@@ -2,6 +2,7 @@
 
 define([
 	'underscore',
+	'jquery',
 	'leaflet',
 	'leaflet-draw',
 	'leaflet-providers',
@@ -15,7 +16,7 @@ define([
 	'views/BaseView',
 	'views/SitesLayerView',
 	'hbs!hb_templates/mapOps'
-], function(_, L, leafletDraw, leafletProviders, log, module, Config, variableDatasetMapping, $utils, LUtils, legendControl,
+], function(_, $, L, leafletDraw, leafletProviders, log, module, Config, variableDatasetMapping, $utils, LUtils, legendControl,
 		BaseView, SitesLayerView, hbTemplate) {
 
 	L.Icon.Default.imagePath = 'bower_components/leaflet/dist/images';
@@ -32,6 +33,13 @@ define([
 		 *		@prop {WorkflowStateModel} model
 		 */
 		initialize : function(options) {
+			
+			var yellowTriangleIcon;
+			var greenTriangleIcon;
+			var publicBeachesLayer;
+			var usgsModelBeachesLayer
+			
+			
 			BaseView.prototype.initialize.apply(this, arguments);
 
 			this.baseLayers = {
@@ -39,10 +47,29 @@ define([
 				'World Physical': L.tileLayer.provider('Esri.WorldPhysical'),
 				'World Imagery' : L.tileLayer.provider('Esri.WorldImagery')
 			};
+			
+			// add public beaches
+			yellowTriangleIcon = L.icon({
+				iconUrl: Config.BEACH_ICONS['Public Beaches'].iconUrl,
+				iconSize: Config.BEACH_ICONS['Public Beaches'].iconSize
+			});
+			publicBeachesLayer = this.createGeoJsonLayer('json/publicBeaches.json', yellowTriangleIcon);
+			
+			// add USGS model beaches
+			greenTriangleIcon = L.icon({
+				iconUrl: Config.BEACH_ICONS['USGS Model Beaches'].iconUrl,
+				iconSize: Config.BEACH_ICONS['USGS Model Beaches'].iconSize
+			});
+			usgsModelBeachesLayer = this.createGeoJsonLayer('json/usgsModelBeaches.json', greenTriangleIcon);
+			
+			this.beachOverlays = {
+				"Public Beaches": publicBeachesLayer,
+				"USGS Model Beaches": usgsModelBeachesLayer
+			};
 
 			this.legendControl = legendControl({opened : false});
 			this.defaultControls = [
-				L.control.layers(this.baseLayers, {}),
+				L.control.layers(this.baseLayers, this.beachOverlays),
 				this.legendControl
 			];
 
@@ -93,6 +120,7 @@ define([
 				zoom : 4,
 				layers : [this.baseLayers['World Street']]
 			});
+			
 			_.each(this.defaultControls, function(control) {
 				this.map.addControl(control);
 			}, this);
@@ -133,6 +161,33 @@ define([
 				this.sitesLayerView.remove();
 				this.sitesLayerView = undefined;
 			}
+		},
+		
+		/*
+		 * @param {String} dataPath - absolute or relative path to GeoJSON data
+		 * @param {L.Icon} markerIcon - Leaflet icon (i.e. L.icon)
+		 * @return {L.Layer} - Leaflet layer
+		 */
+		createGeoJsonLayer : function(dataPath, markerIcon) {
+			var layer = L.geoJson(null, {
+				pointToLayer: function (feature, latlng) {
+					return L.marker(latlng, {icon: markerIcon});
+					},
+				onEachFeature: function (feature, layer) {
+					var featureName = feature.properties.name;
+					layer.bindPopup(featureName);
+					layer.on('mouseover', function() {
+						layer.openPopup();
+					});
+					layer.on('mouseout', function() {
+						layer.closePopup();
+					});
+				}
+			});
+			$.getJSON(dataPath, function(data) {
+				layer.addData(data);
+			});
+			return layer;
 		},
 
 		/*

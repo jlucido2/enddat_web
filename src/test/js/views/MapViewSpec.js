@@ -46,7 +46,6 @@ define([
 				off : jasmine.createSpy('offSpy')
 			});
 			spyOn(L.control, 'layers').and.callThrough();
-
 			spyOn(BaseView.prototype, 'initialize').and.callThrough();
 			spyOn(BaseView.prototype, 'remove').and.callThrough();
 
@@ -58,7 +57,8 @@ define([
 			});
 			testModel.set('step', Config.SPECIFY_AOI_STEP);
 			testModel.initializeDatasetCollections();
-
+			
+			spyOn(MapView.prototype, 'createGeoJsonLayer').and.callThrough();
 			testView = new MapView({
 				el : '#test-div',
 				mapDivId : 'test-map-div',
@@ -89,6 +89,13 @@ define([
 		it('Expects that a draw control and feature group is created', function() {
 			expect(testView.drawnAOIFeature).toBeDefined();
 			expect(testView.drawAOIControl).toBeDefined();
+		});
+		
+		it('Expects layers to be created from geoJSON', function() {
+			expect(testView.createGeoJsonLayer).toHaveBeenCalledWith(jasmine.any(String), jasmine.any(L.Icon));
+			expect(testView.createGeoJsonLayer.calls.count()).toEqual(2);
+			expect(testView.beachOverlays['Public Beaches']).toBeDefined();
+			expect(testView.beachOverlays['USGS Model Beaches']).toBeDefined();
 		});
 
 		describe('Tests for render', function() {

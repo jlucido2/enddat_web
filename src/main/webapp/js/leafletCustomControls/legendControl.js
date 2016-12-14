@@ -47,11 +47,11 @@ define([
 			_.each(Config.BEACH_ICONS, function (value, key) {
 				var beachImgDiv = L.DomUtil.create('div', 'beach-legend-marker', this._legendDisplayDiv);
 				var cleanKey = key.toLowerCase().replace(' ', '_');
-				beachImgDiv.innerHTML = '<img class="' + cleanKey + '-icon" src="' + value.iconUrl + '" /><span>' + key + '</span>';
+				beachImgDiv.innerHTML = '<img src="' + value.iconUrl + '" /><span>' + key + '</span>';
 			}, this);
 			_.each(Config.DATASET_ICON, function(value, key) {
 				var imgDiv = L.DomUtil.create('div', 'leaflet-legend-marker', this._legendDisplayDiv);
-			    imgDiv.innerHTML = '<img class="' + key + '-icon" src="' + value.iconUrl + '" /><span>' + key + '</span>';
+			    imgDiv.innerHTML = '<img src="' + value.iconUrl + '" /><span>' + key + '</span>';
 			}, this);
 
 			this.setVisibility(this.options.opened);

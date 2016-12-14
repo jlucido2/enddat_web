@@ -51,7 +51,7 @@ define([
 			}, this);
 			_.each(Config.DATASET_ICON, function(value, key) {
 				var imgDiv = L.DomUtil.create('div', 'leaflet-legend-marker', this._legendDisplayDiv);
-			    imgDiv.innerHTML = '<img src="' + value.iconUrl + '" /><span>' + key + '</span>';
+				imgDiv.innerHTML = '<img class="' + key + '-icon" src="' + value.iconUrl + '" /><span>' + key + '</span>';
 			}, this);
 
 			this.setVisibility(this.options.opened);

@@ -46,7 +46,6 @@ define([
 				off : jasmine.createSpy('offSpy')
 			});
 			spyOn(L.control, 'layers').and.callThrough();
-
 			spyOn(BaseView.prototype, 'initialize').and.callThrough();
 			spyOn(BaseView.prototype, 'remove').and.callThrough();
 
@@ -58,7 +57,8 @@ define([
 			});
 			testModel.set('step', Config.SPECIFY_AOI_STEP);
 			testModel.initializeDatasetCollections();
-
+			
+			spyOn(MapView.prototype, 'addGeoJsonLayer').and.callThrough();
 			testView = new MapView({
 				el : '#test-div',
 				mapDivId : 'test-map-div',
@@ -100,6 +100,13 @@ define([
 			it('Expects the layer switch control to be added to the map', function() {
 				testView.render();
 				expect(addControlSpy).toHaveBeenCalledWith(testView.defaultControls[0]);
+			});
+			
+			it('Expects layers to be created from geoJSON', function() {
+				testView.render();
+				expect(testView.addGeoJsonLayer).toHaveBeenCalledWith(jasmine.any(String), jasmine.any(L.Icon));
+				expect(testView.beachOverlays['Public Beaches']).toBeDefined();
+				expect(testView.beachOverlays['USGS Model Beaches']).toBeDefined();
 			});
 
 			it('Expects that the project location marker is not added to the map if location is not defined in the workflow state', function() {

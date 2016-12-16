@@ -39,10 +39,9 @@
                         <h1>The Environmental Data Discovery and Transformation System</h1>
                         
                         <p>
-                            <em>This user guide was written in late August 2016 and is based on the initial 
-                                BETA re-implementation of the EnDDaT user interface. The latest functionality 
-                                is available at: <a href="https://cida-test.er.usgs.gov/enddat/">https://cida-test.er.usgs.gov/enddat/</a> 
-                                and production will be available at: <a href="https://cida.usgs.gov/enddat/">https://cida.usgs.gov/enddat/</a></em>
+                            <em>This user guide is based on the BETA re-implementation of the EnDDaT user interface. The latest functionality 
+                                is available at: <a href="https://cida-test.er.usgs.gov/enddatv2/">https://cida-test.er.usgs.gov/enddatv2/</a> 
+                                and production is available at: <a href="https://cida.usgs.gov/enddatv2/">https://cida.usgs.gov/enddatv2/</a></em>
                         </p>
                         
                         <h2>Overview</h2>
@@ -163,7 +162,7 @@
                             <img src="img/siteMetadata.png" alt="">
                         </p>
                         
-                        <p>Here is s snipit of R code that can be used to download data from the sitemetadata file.  </p>
+                        <p>Here is a snipit of R code that can be used to download data from the sitemetadata file.  </p>
 
                         <pre><code>sitemetadata&lt;-read.delim(&#39;./sitemetadata.tsv&#39;,stringsAsFactors = FALSE)
                         dlFiles&lt;-c()

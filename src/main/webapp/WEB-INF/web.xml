@@ -103,24 +103,6 @@
 	</servlet-mapping>
 	
 	<servlet>
-		<servlet-name>PMCodesServlet</servlet-name>
-		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
-		<init-param>
-			<param-name>forward-url-param</param-name>
-			<param-value>enddat.endpoint.nwis.pmcodes</param-value>
-		</init-param>
-		<init-param>
-			<param-name>readTimeout</param-name>
-			<param-value>300000</param-value>
-		</init-param>
-	</servlet>
-
-	<servlet-mapping>
-		<servlet-name>PMCodesServlet</servlet-name>
-		<url-pattern>/pmcodes/*</url-pattern>
-	</servlet-mapping>
-	
-	<servlet>
 		<servlet-name>ACISServlet</servlet-name>
 		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
 		<init-param>

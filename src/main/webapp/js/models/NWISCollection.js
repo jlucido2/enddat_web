@@ -162,7 +162,7 @@ define([
 			var deferred = $.Deferred();
 			$.ajax({
 				type : "GET",
-				url : 'pmcodes/?radio_pm_search=param_group&pm_group=Physical&format=rdb&show=parameter_nm&show=parameter_units', // output is a bit cleaner than show=parameter_nm,parameter_units
+				url : module.config().pmCodesUrl + '?radio_pm_search=param_group&pm_group=Physical&format=rdb&show=parameter_nm&show=parameter_units', // output is a bit cleaner than show=parameter_nm,parameter_units
 				dataType: 'text',
 				success: function(data) {
 					var parsedParams = rdbUtils.parseRDB(data);

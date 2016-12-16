@@ -19,6 +19,9 @@ require.config({
 			precipWFSGetFeatureUrl : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',
 			cidaThreddsPrecipData : 'dodsC/fakedata'
 		},
+		'models/NWISCollection' : {
+			pmCodesUrl : 'https:dummyservice/pmcodes'
+		},
 		'models/GLCFSCollection' : {
 			glcfsWFSGetFeatureUrls : {
 				'Erie' : 'http:dummyservice/wfs/?service=wfs&amp;version=2.0.0',

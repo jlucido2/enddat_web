@@ -20,7 +20,8 @@ require.config({
 			cidaThreddsPrecipData : 'dodsC/fakedata'
 		},
 		'models/NWISCollection' : {
-			pmCodesUrl : 'https:dummyservice/pmcodes'
+			pmCodesUrl : 'https:dummyservice/pmcodes',
+			sitesUrl : 'https:dummyservice/waterService/',
 		},
 		'models/GLCFSCollection' : {
 			glcfsWFSGetFeatureUrls : {

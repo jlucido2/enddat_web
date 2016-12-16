@@ -59,7 +59,8 @@
 						}
 					},
 					'models/NWISCollection' : {
-						'pmCodesUrl' : '<%=parameterCodesUrl%>'
+						'pmCodesUrl' : '<%=parameterCodesUrl%>',
+						'sitesUrl' : '<%=nwisSitesUrl%>'
 					},
 					'views/ProcessDataView' : {
 						'baseUrl' : '<%=baseUrl%>'

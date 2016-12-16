@@ -38,7 +38,7 @@ define([
 			var self = this;
 			var sitesDeferred = $.Deferred();
 
-			this.url = 'waterService/?format=rdb&bBox=' +
+			this.url = module.config().sitesUrl + '?format=rdb&bBox=' +
 				boundingBox.west.toFixed(6) + ',' +
 				boundingBox.south.toFixed(6) + ',' +
 				boundingBox.east.toFixed(6) + ',' +

@@ -6,7 +6,7 @@ define([
 	'Config',
 	'models/NWISCollection'
 ], function(_, Config, NWISCollection) {
-	describe('models/NWISCollection', function() {
+	fdescribe('models/NWISCollection', function() {
 		var fakeServer;
 		var testCollection;
 

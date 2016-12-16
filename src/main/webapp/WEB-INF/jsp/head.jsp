@@ -20,6 +20,7 @@
 	if (!baseUrl.endsWith("/")) { baseUrl += "/"; }	String version = props.getProperty("application.version");
 
 	String parameterCodesUrl = props.getProperty("enddat.endpoint.nwis.pmcodes");
+	String nwisSitesUrl = props.getProperty("enddat.endpoint.nwis.site");
 	String precipWFSGetFeatureUrl = props.getProperty("enddat.endpoint.precip.wfsgetfeature");
 	String cidaThreddsPrecipData = props.getProperty("enddat.cidathredds.precipdata");
 	String glcfsWFSGetFeatureUrlErie = props.getProperty("enddat.endpoint.glcfs.wfsgetfeature.erie");

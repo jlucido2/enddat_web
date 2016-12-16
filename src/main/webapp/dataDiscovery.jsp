@@ -58,6 +58,9 @@
 							'Superior' : '<%=glcfsWFSGetFeatureUrlSuperior%>'
 						}
 					},
+					'models/NWISCollection' : {
+						'pmCodesUrl' : '<%=parameterCodesUrl%>'
+					},
 					'views/ProcessDataView' : {
 						'baseUrl' : '<%=baseUrl%>'
 					},

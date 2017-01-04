@@ -25,9 +25,10 @@ define([
 		var setElNWISDataViewSpy, renderNWISDataViewSpy, removeNWISDataViewSpy;
 		var setElPrecipDataViewSpy, renderPrecipDataViewSpy, removePrecipDataViewSpy;
 		var setElACISDataViewSpy, renderACISDataViewSpy, removeACISDataViewSpy;
+		var setElECDataViewSpy, renderECDataViewSpy, removeECDataViewSpy;
 
 		var testModel;
-		var testGLCFSCollection, testNWISCollection, testPrecipCollection, testACISCollection;
+		var testGLCFSCollection, testNWISCollection, testPrecipCollection, testACISCollection, testECCollection;
 
 		var injector;
 
@@ -63,6 +64,10 @@ define([
 			renderACISDataViewSpy = jasmine.createSpy('renderACISDataViewSpy');
 			removeACISDataViewSpy = jasmine.createSpy('removeACISDataViewSpy');
 
+			setElECDataViewSpy = jasmine.createSpy('setElECDataViewSpy');
+			renderECDataViewSpy = jasmine.createSpy('renderECDataViewSpy');
+			removeECDataViewSpy = jasmine.createSpy('removeECDataViewSpy');
+
 			injector = new Squire();
 			injector.mock('leaflet', L);
 			injector.mock('views/BySiteLayerView', Backbone.View.extend({
@@ -93,12 +98,18 @@ define([
 				render : renderACISDataViewSpy,
 				remove : removeACISDataViewSpy
 			}));
+			injector.mock('views/ECDataView', BaseView.extend({
+				setElement : setElECDataViewSpy,
+				render : renderECDataViewSpy,
+				remove : removeECDataViewSpy
+			}));
 
 			testModel = new WorkflowStateModel();
 			testGLCFSCollection = new BaseDatasetCollection();
 			testNWISCollection = new BaseDatasetCollection();
 			testPrecipCollection = new BaseDatasetCollection();
 			testACISCollection = new BaseDatasetCollection();
+			testECCollection = new BaseDatasetCollection();
 
 			injector.require(['views/SitesLayerView'], function(View) {
 				SitesLayerView = View;
@@ -122,7 +133,8 @@ define([
 				[Config.GLCFS_DATASET, testGLCFSCollection],
 				[Config.NWIS_DATASET, testNWISCollection],
 				[Config.Precip_DATASET, testPrecipCollection],
-				[Config.ACIS_DATASET, testACISCollection]
+				[Config.ACIS_DATASET, testACISCollection],
+				[Config.EC_DATASET, testECCollection]
 			]));
 			testModel.set('step', Config.CHOOSE_DATA_BY_SITE_FILTERS_STEP);
 			testView = new SitesLayerView({
@@ -132,7 +144,7 @@ define([
 			});
 			viewArgs = initializeBySiteLayerViewSpy.calls.allArgs();
 
-			expect(initializeBySiteLayerViewSpy.calls.count()).toBe(4);
+			expect(initializeBySiteLayerViewSpy.calls.count()).toBe(5);
 			_.each(Config.ALL_DATASETS, function(datasetKind) {
 				expect(_.find(viewArgs, function(arg) {
 					return arg.datasetKind = datasetKind;
@@ -146,7 +158,8 @@ define([
 				[Config.GLCFS_DATASET, testGLCFSCollection],
 				[Config.NWIS_DATASET, testNWISCollection],
 				[Config.Precip_DATASET, testPrecipCollection],
-				[Config.ACIS_DATASET, testACISCollection]
+				[Config.ACIS_DATASET, testACISCollection],
+				[Config.EC_DATASET, testECCollection]
 			]));
 			testModel.set('step', Config.CHOOSE_DATA_BY_VARIABLES_STEP);
 			testView = new SitesLayerView({
@@ -156,7 +169,7 @@ define([
 			});
 			viewArgs = initializeByVariableLayerViewSpy.calls.allArgs();
 
-			expect(initializeByVariableLayerViewSpy.calls.count()).toBe(4);
+			expect(initializeByVariableLayerViewSpy.calls.count()).toBe(5);
 			_.each(Config.ALL_DATASETS, function(datasetKind) {
 				expect(_.find(viewArgs, function(arg) {
 					return arg.datasetKind = datasetKind;
@@ -169,7 +182,8 @@ define([
 				[Config.GLCFS_DATASET, testGLCFSCollection],
 				[Config.NWIS_DATASET, testNWISCollection],
 				[Config.Precip_DATASET, testPrecipCollection],
-				[Config.ACIS_DATASET, testACISCollection]
+				[Config.ACIS_DATASET, testACISCollection],
+				[Config.EC_DATASET, testECCollection]
 			]));
 			testModel.set({
 				variableKinds : ['precipiation'],
@@ -200,11 +214,12 @@ define([
 					[Config.GLCFS_DATASET, testGLCFSCollection],
 					[Config.NWIS_DATASET, testNWISCollection],
 					[Config.Precip_DATASET, testPrecipCollection],
-					[Config.ACIS_DATASET, testACISCollection]
+					[Config.ACIS_DATASET, testACISCollection],
+					[Config.EC_DATASET, testECCollection]
 				]));
 				viewArgs = initializeBySiteLayerViewSpy.calls.allArgs();
 
-				expect(initializeBySiteLayerViewSpy.calls.count()).toBe(4);
+				expect(initializeBySiteLayerViewSpy.calls.count()).toBe(5);
 				_.each(Config.ALL_DATASETS, function(datasetKind) {
 					expect(_.find(viewArgs, function(arg) {
 						return arg.datasetKind = datasetKind;
@@ -219,11 +234,12 @@ define([
 					[Config.GLCFS_DATASET, testGLCFSCollection],
 					[Config.NWIS_DATASET, testNWISCollection],
 					[Config.Precip_DATASET, testPrecipCollection],
-					[Config.ACIS_DATASET, testACISCollection]
+					[Config.ACIS_DATASET, testACISCollection],
+					[Config.EC_DATASET, testECCollection]
 				]));
 				viewArgs = initializeByVariableLayerViewSpy.calls.allArgs();
 
-				expect(initializeByVariableLayerViewSpy.calls.count()).toBe(4);
+				expect(initializeByVariableLayerViewSpy.calls.count()).toBe(5);
 				_.each(Config.ALL_DATASETS, function(datasetKind) {
 					expect(_.find(viewArgs, function(arg) {
 						return arg.datasetKind = datasetKind;
@@ -239,7 +255,8 @@ define([
 					[Config.GLCFS_DATASET, testGLCFSCollection],
 					[Config.NWIS_DATASET, testNWISCollection],
 					[Config.Precip_DATASET, testPrecipCollection],
-					[Config.ACIS_DATASET, testACISCollection]
+					[Config.ACIS_DATASET, testACISCollection],
+					[Config.EC_DATASET, testECCollection]
 				]));
 				testView = new SitesLayerView({
 					map : testMap,
@@ -294,7 +311,8 @@ define([
 					[Config.GLCFS_DATASET, testGLCFSCollection],
 					[Config.NWIS_DATASET, testNWISCollection],
 					[Config.Precip_DATASET, testPrecipCollection],
-					[Config.ACIS_DATASET, testACISCollection]
+					[Config.ACIS_DATASET, testACISCollection],
+					[Config.EC_DATASET, testECCollection]
 				]));
 				testView = new SitesLayerView({
 					map : testMap,
@@ -373,7 +391,8 @@ define([
 					[Config.GLCFS_DATASET, testGLCFSCollection],
 					[Config.NWIS_DATASET, testNWISCollection],
 					[Config.Precip_DATASET, testPrecipCollection],
-					[Config.ACIS_DATASET, testACISCollection]
+					[Config.ACIS_DATASET, testACISCollection],
+					[Config.EC_DATASET, testECCollection]
 				]));
 				testView = new SitesLayerView({
 					map : testMap,
@@ -386,7 +405,7 @@ define([
 					testView.remove();
 
 					expect(removeACISDataViewSpy).toHaveBeenCalled();
-					expect(removeBySiteLayerViewSpy.calls.count()).toBe(4);
+					expect(removeBySiteLayerViewSpy.calls.count()).toBe(5);
 			});
 			it('Expects that if the step is CHOOSE_DATA_BY_SITE and an selectedSite is set, the selectedSite is unset', function() {
 				testModel.set('selectedSite', {siteModel : testSite1Model, datasetKind : 'ACIS'});
@@ -415,7 +434,8 @@ define([
 					[Config.GLCFS_DATASET, testGLCFSCollection],
 					[Config.NWIS_DATASET, testNWISCollection],
 					[Config.Precip_DATASET, testPrecipCollection],
-					[Config.ACIS_DATASET, testACISCollection]
+					[Config.ACIS_DATASET, testACISCollection],
+					[Config.EC_DATASET, testECCollection]
 				]));
 				testModel.set('variableKinds', ['precipitation']);
 				testView = new SitesLayerView({
@@ -430,7 +450,7 @@ define([
 				spyOn(testMap, 'removeControl');
 				testView.remove();
 
-				expect(removeByVariableLayerViewSpy.calls.count()).toBe(4);
+				expect(removeByVariableLayerViewSpy.calls.count()).toBe(5);
 				expect(testMap.removeControl).toHaveBeenCalledWith(variableTypeFilterControl);
 			});
 		});

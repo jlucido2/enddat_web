@@ -6,7 +6,7 @@ define([
 	'utils/geoSpatialUtils'
 ], function(geoSpatialUtils) {
 
-	fdescribe('utils/geoSpatilutils', function() {
+	describe('utils/geoSpatilutils', function() {
 
 		var boundingBox = {
 			south : 42.0,

@@ -8,8 +8,18 @@ define([
 ], function(_, moment, Backbone, dateUtils) {
 	"use strict";
 	/*
-	 * @constructs - the collection contains models with startDate and endDate properties, both moment objects and a
-	 * variables property which is BaseVariableCollection.
+	 * @constructs - the collection contains models which describe a site's data. At minimum this
+	 * includes the following properties:
+	 *		@prop {String} siteNo - uniquely identifies the site
+	 *		@prop {String} name - a human readable name for the site
+	 *		@prop {String} lat - the latitude in degrees of the location of the site
+	 *		@prop {String} lon - the longitude in degrees of the location of the site
+	 *		@prop {String} elevation - elevation of the site (may be null)
+	 *		@prop {String} elevationUnit - describes the units of elevation (may be null)
+	 *		@prop {String} datasetName - unique id for the dataset. All sites from the same source should have the same
+	 *			datasetName
+	 *		@prop {BaseVariableCollection) variables
+	 *	Other properties are used to define collection specific site meta data properties
 	 */
 	var collection = Backbone.Collection.extend({
 
@@ -47,7 +57,7 @@ define([
 		/*
 		 * @ returns {Array of Backbone.Models} - each model represents a site with one or more selected variables
 		 */
-		
+
 		getSitesWithSelectedVariables: function() {
 			var selectedSites = this.filter(function(datasetModel) {
 				return datasetModel.get('variables').hasSelectedVariables();

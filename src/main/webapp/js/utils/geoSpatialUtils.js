@@ -52,6 +52,20 @@ define([
 			};
 
 		};
+
+		/*
+		 * @param {String or Number} latitude - in degrees
+		 * @param {String or Number} longitude - in degrees
+		 * @param {Object - with Number properties west, south, east, and north} boundingBox - properties are in degrees
+		 * @return {Boolean} - True if the point represented by latitude/longitude is within boundingBox
+		 */
+		self.isInBoundingBox = function(latitude, longitude, boundingBox) {
+			var lat = (_.isString(latitude)) ? parseFloat(latitude) : latitude;
+			var lng = (_.isString(longitude)) ? parseFloat(longitude) : longitude;
+
+			return (lat >= boundingBox.south) && (lat <= boundingBox.north) && (lng >= boundingBox.west) && (lng <= boundingBox.east);
+		};
+
 		return self;
 	})();
 

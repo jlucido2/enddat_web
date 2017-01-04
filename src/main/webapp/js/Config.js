@@ -9,12 +9,13 @@ define([], function() {
 		NWIS_DATASET : 'NWIS',
 		PRECIP_DATASET : 'PRECIP',
 		ACIS_DATASET : 'ACIS',
-		ALL_DATASETS : ['GLCFS', 'NWIS', 'PRECIP', 'ACIS'],
+		EC_DATASET : 'EC',
+		ALL_DATASETS : ['GLCFS', 'NWIS', 'PRECIP', 'ACIS', 'EC'],
 
 		PROJ_LOC_ICON_URL : 'bower_components/leaflet/dist/images/marker-icon.png',
 		PUBLIC_BEACH_ICON : 'img/yellow_triangle.png',
 		USGS_MODEL_BEACH_ICON : 'img/green_triangle.png',
-		
+
 		BEACH_ICONS: {
 			'Public Beaches': {
 				iconUrl : 'img/yellow_triangle.png',
@@ -42,6 +43,10 @@ define([], function() {
 			'ACIS' : {
 				iconUrl : 'img/acis.png',
 				iconSize : [12, 12]
+			},
+			'EC' : {
+				iconUrl: 'img/ec.png',
+				iconSize: [12, 12]
 			}
 		},
 

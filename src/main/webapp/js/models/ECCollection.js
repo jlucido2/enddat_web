@@ -7,12 +7,11 @@ define([
 	'jquery',
 	'moment',
 	'backbone',
-	'Config',
 	'utils/VariableParameter',
 	'utils/geoSpatialUtils',
 	'models/BaseDatasetCollection',
 	'models/BaseVariableCollection'
-], function(log, module, _, $, moment, Backbone, Config, VariableParameter, geoSpatialUtils, BaseDatasetCollection, BaseVariableCollection) {
+], function(log, module, _, $, moment, Backbone, VariableParameter, geoSpatialUtils, BaseDatasetCollection, BaseVariableCollection) {
 	"use strict";
 
 	var ENDPOINT = 'http://dd.weather.gc.ca/hycrometric/doc/hydrometric_StationList.csv';
@@ -41,8 +40,9 @@ define([
 					variableParameter : new VariableParameter({
 						name: DATASET_NAME,
 						value: site.id + ':' + site.prov + ':' + varValue,
-						colName: colName + ':' + site.id
-					})
+						colName: colName + ':' + site.id,
+					}),
+					description: colName
 				};
 			};
 
@@ -95,9 +95,11 @@ define([
 						deferred.resolve();
 					},
 					error : function(jqXHR) {
+						log.error('Unable to connect to ' + ENDPOINT)
 						this.reset();
 						deferred.reject(jqXHR);
-					}
+					},
+					context : this
 				});
 			} else {
 				this.reset(getModelsInBoundingBox(boundingBox));

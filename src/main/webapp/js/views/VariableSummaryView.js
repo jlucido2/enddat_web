@@ -32,7 +32,8 @@ define([
   				[Config.GLCFS_DATASET, []],
 				[Config.PRECIP_DATASET, []],
 				[Config.NWIS_DATASET, []],
-				[Config.ACIS_DATASET, []]
+				[Config.ACIS_DATASET, []],
+				[Config.EC_DATASET, []]
 			]);
 			this.hasBeenRendered = false;
 
@@ -118,17 +119,19 @@ define([
 			var precipCollection = datasetCollections[Config.PRECIP_DATASET];
 			var nwisCollection = datasetCollections[Config.NWIS_DATASET];
 			var acisCollection = datasetCollections[Config.ACIS_DATASET];
+			var ecCollection = datasetCollections[Config.EC_DATASET];
 
 			this.listenTo(glcfsCollection, 'reset', this.setupGLCFSModelListeners);
-
 			this.listenTo(precipCollection, 'reset', this.setupPrecipModelListeners);
 			this.listenTo(nwisCollection, 'reset', this.setupNWISModelListeners);
 			this.listenTo(acisCollection, 'reset', this.setupACISModelListeners);
+			this.listenTo(ecCollection, 'reset', this.setupECModelListeners);
 
 			this.setupGLCFSModelListeners(glcfsCollection);
 			this.setupPrecipModelListeners(precipCollection);
 			this.setupNWISModelListeners(nwisCollection);
 			this.setupACISModelListeners(acisCollection);
+			this.setupECModelListeners(ecCollection);
 		},
 
 		/*
@@ -234,6 +237,33 @@ define([
 		setupACISModelListeners : function(collection) {
 			this._setupDatasetVariableListeners(collection, this.updateSelectedACISVariables);
 		},
+
+		/*
+		 * Updates the selectedDatasets for ACIS sites
+		 */
+		updateSelectedECVariables : function() {
+			var getContextVariable = function(variableModel, ecModel) {
+				return {
+					modelId : ecModel.cid,
+					variableId : variableModel.cid,
+					siteId : ecModel.attributes.siteId,
+					startDate : variableModel.attributes.startDate.format(Config.DATE_FORMAT),
+					endDate : variableModel.attributes.endDate.format(Config.DATE_FORMAT),
+					property : variableModel.attributes.description
+				};
+			};
+			var datasetCollection = this.model.get('datasetCollections')[Config.EC_DATASET];
+			this._updateSelectedVariableContext(datasetCollection, Config.EC_DATASET, getContextVariable);
+		},
+
+		/*
+		 * Sets up the event listeners for changes in the selected property for each site's variable for the ACIS dataset
+		 * @param {BaseDatasetCollection} collection
+		 */
+		setupECModelListeners : function(collection) {
+			this._setupDatasetVariableListeners(collection, this.updateSelectedECVariables);
+		},
+
 
 		/*
 		 * DOM Event handlers

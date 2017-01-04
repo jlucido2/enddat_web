@@ -2,17 +2,15 @@
 
 define([
 	'loglevel',
-	'module',
 	'underscore',
 	'moment',
 	'Config',
 	'utils/VariableParameter',
 	'models/BaseDatasetCollection',
 	'models/BaseVariableCollection'
-], function(log, module, _, moment, Config, VariableParameter, BaseDatasetCollection, BaseVariableCollection) {
+], function(log, _, moment, Config, VariableParameter, BaseDatasetCollection, BaseVariableCollection) {
 	"use strict";
 
-	var ENDPOINT = module.config().acisStnMetaUrl;
 	var ELEMS = [
 			{code : 'maxt', description : 'Maximum temperature (F)', variableUnit : 'F'},
 			{code : 'mint', description : 'Minimum temperature (F)', variableUnit : 'F'},

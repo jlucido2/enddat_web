@@ -27,7 +27,7 @@ define([
 				var result = _.clone(variableModel.attributes);
 				result.startDate = variableModel.attributes.startDate.format(Config.DATE_FORMAT);
 				result.endDate = variableModel.attributes.endDate.format(Config.DATE_FORMAT);
-				result.id = variableModel.siteId;
+				result.id = variableModel.cid;
 				return result;
 			};
 

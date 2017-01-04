@@ -2,7 +2,6 @@
 
 define([
 	'loglevel',
-	'module',
 	'underscore',
 	'jquery',
 	'moment',
@@ -11,10 +10,9 @@ define([
 	'utils/geoSpatialUtils',
 	'models/BaseDatasetCollection',
 	'models/BaseVariableCollection'
-], function(log, module, _, $, moment, Backbone, VariableParameter, geoSpatialUtils, BaseDatasetCollection, BaseVariableCollection) {
+], function(log, _, $, moment, Backbone, VariableParameter, geoSpatialUtils, BaseDatasetCollection, BaseVariableCollection) {
 	"use strict";
 
-	var ENDPOINT = 'http://dd.weather.gc.ca/hycrometric/doc/hydrometric_StationList.csv';
 	// STATION_PROPS should match the columns found in ENDPOINT's csv
 	var STATION_PROPS = ['id', 'name', 'latitude', 'longitude', 'prov', 'timezone'];
 	var DATASET_NAME = 'EC';
@@ -24,8 +22,8 @@ define([
 
 		_getModelsInBoundingBox : function(boundingBox) {
 			var endDate = moment();
-			var startDateDaily = endDate.subtract(30, 'days');
-			var startDateHourly = endDate.subtract(2, 'days');
+			var startDateDaily = moment().subtract(31, 'days');
+			var startDateHourly = moment().subtract(2, 'days');
 
 			/*
 			 * @param {Object} site
@@ -46,21 +44,20 @@ define([
 				};
 			};
 
-
 			return _.chain(this.allSites)
-				.find(function(site) {
+				.filter(function(site) {
 					return geoSpatialUtils.isInBoundingBox(site.latitude, site.longitude, boundingBox);
 				})
 				.map(function(site) {
 					var variables = [
-						getVariable(site, true, 'hourly_water_level', 'Hourly Water Level (m)'),
-						getVariable(site, true, 'hourly_discharge', 'Hourly Discharge (cms)'),
-						getVariable(site, false, 'daily_water_level', 'Daily Water Level (m)'),
-						getVaraibel(site, false, 'daily_discharge', 'Daily Discharge (cms)')
+						getVariable(site, true, 'hourly:water', 'Hourly Water Level (m)'),
+						getVariable(site, true, 'hourly:discharge', 'Hourly Discharge (cms)'),
+						getVariable(site, false, 'daily:water', 'Daily Water Level (m)'),
+						getVariable(site, false, 'daily:discharge', 'Daily Discharge (cms)')
 					];
 					return new Backbone.Model({
 						siteId : site.id,
-						name: site.name,
+						name: site.name.replace(/"/g, ''),
 						lat: site.latitude,
 						lon: site.longitude,
 						elevation: null,
@@ -69,7 +66,8 @@ define([
 						prov: site.prov,
 						variables: new BaseVariableCollection(variables)
 					});
-				});
+				})
+				.value();
 		},
 
 		/*
@@ -84,18 +82,19 @@ define([
 
 			if (!_.has(this, 'allSites')) {
 				$.ajax({
-					url : ENDPOINT,
+					url : 'ecan/doc/hydrometric_StationList.csv',
 					success : function(response) {
-						var rows = response.split('\n').splice(0,1);
+						var rows = response.split('\n').slice(1);
 						this.allSites = _.map(rows, function(row) {
 							return _.object(STATION_PROPS, row.split(','));
 						});
 
-						this.reset(getModelsInBoundingBox(boundingBox));
+						this.reset(this._getModelsInBoundingBox(boundingBox));
+						log.debug('There are ' + this.length + ' EC sites');
 						deferred.resolve();
 					},
 					error : function(jqXHR) {
-						log.error('Unable to connect to ' + ENDPOINT)
+						log.error('Unable to connect to the EC site');
 						this.reset();
 						deferred.reject(jqXHR);
 					},
@@ -103,6 +102,7 @@ define([
 				});
 			} else {
 				this.reset(getModelsInBoundingBox(boundingBox));
+				log.debug('There are ' + this.length + ' EC sites');
 				deferred.resolve();
 			}
 

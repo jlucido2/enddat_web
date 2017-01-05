@@ -100,6 +100,9 @@ define([
 			var isGLCFS = function(selectedDataset) {
 				return selectedDataset.datasetName === Config.GLCFS_DATASET;
 			};
+			var isEC = function(selectedDataset) {
+				return selectedDataset.datasetName === Config.EC_DATASET;
+			}
 
 			beforeEach(function() {
 				var startDate = moment('2002-04-11', 'YYYY-MM-DD');
@@ -123,6 +126,11 @@ define([
 				datasetCollections[Config.GLCFS_DATASET].reset([
 					{lat : '43', lon : '-90', variables : new BaseVariableCollection([{x : '1', y : '2', startDate : startDate, endDate : endDate, description : 'Erie variable'}])}
 				]);
+				datasetCollections[Config.EC_DATASET].reset([
+					{lat: '43', lon: '-91', siteId: '01A234', variables: new BaseVariableCollection([
+						{startDate: startDate, endDate: endDate, description: 'EC Variable 1'}
+					])}
+				]);
 
 				testView = new VariableSummaryView({
 					$el : $testDiv,
@@ -134,7 +142,7 @@ define([
 			});
 
 			it('Expects that if a glcfs variable is selected the view is rendered with the appropriate context', function() {
-				var glcfsSelected, precipSelected, nwisSelected, acisSelected;
+				var glcfsSelected, precipSelected, nwisSelected, acisSelected, ecSelected;
 				var glcfsModelToUpdate = datasetCollections[Config.GLCFS_DATASET].at(0);
 				var glcfsVariableToUpdate = glcfsModelToUpdate.get('variables').at(0);
 
@@ -143,6 +151,7 @@ define([
 				precipSelected = _.find(testView.context.selectedDatasets, isPrecip);
 				nwisSelected = _.find(testView.context.selectedDatasets, isNWIS);
 				acisSelected = _.find(testView.context.selectedDatasets, isACIS);
+				ecSelected = _.find(testView.context.selectedDatasets, isEC);
 
 				expect(testView.render).toHaveBeenCalled();
 				expect(testView.context.hasSelectedVariables).toBe(true);
@@ -158,10 +167,11 @@ define([
 				expect(nwisSelected.variables.length).toBe(0);
 				expect(acisSelected.variables.length).toBe(0);
 				expect(precipSelected.variables.length).toBe(0);
+				expect(ecSelected.variables.length).toBe(0);
 			});
 
 			it('Expects that if a precip variable is selected the view is rendered with the appropriate context', function() {
-				var precipSelected, nwisSelected, acisSelected, glcfsSelected;
+				var precipSelected, nwisSelected, acisSelected, glcfsSelected, ecSelected;
 				var precipModelToUpdate = datasetCollections[Config.PRECIP_DATASET].at(1);
 				var precipVariableToUpdate = precipModelToUpdate.get('variables').at(0);
 
@@ -170,6 +180,7 @@ define([
 				precipSelected = _.find(testView.context.selectedDatasets, isPrecip);
 				nwisSelected = _.find(testView.context.selectedDatasets, isNWIS);
 				acisSelected = _.find(testView.context.selectedDatasets, isACIS);
+				ecSelected = _.find(testView.context.selectedDatasets, isEC);
 
 				expect(testView.render).toHaveBeenCalled();
 				expect(testView.context.hasSelectedVariables).toBe(true);
@@ -185,10 +196,11 @@ define([
 				expect(glcfsSelected.variables.length).toBe(0);
 				expect(nwisSelected.variables.length).toBe(0);
 				expect(acisSelected.variables.length).toBe(0);
+				expect(ecSelected.variables.length).toBe(0);
 			});
 
 			it('Expects that if a nwis variable is selected the view is rendered with the appropriate context', function() {
-				var precipSelected, nwisSelected, acisSelected, glcfsSelected;
+				var precipSelected, nwisSelected, acisSelected, glcfsSelected, ecSelected;
 				var nwisModelToUpdate = datasetCollections[Config.NWIS_DATASET].at(0);
 				var nwisVariableToUpdate = nwisModelToUpdate.get('variables').at(1);
 				nwisVariableToUpdate.set('selected', true);
@@ -196,6 +208,7 @@ define([
 				nwisSelected = _.find(testView.context.selectedDatasets, isNWIS);
 				acisSelected = _.find(testView.context.selectedDatasets, isACIS);
 				glcfsSelected = _.find(testView.context.selectedDatasets, isGLCFS);
+				ecSelected = _.find(testView.context.selectedDatasets, isEC);
 
 				expect(testView.render).toHaveBeenCalled();
 				expect(testView.context.hasSelectedVariables).toBe(true);
@@ -203,6 +216,7 @@ define([
 				expect(acisSelected.variables.length).toBe(0);
 				expect(precipSelected.variables.length).toBe(0);
 				expect(glcfsSelected.variables.length).toBe(0);
+				expect(ecSelected.variables.length).toBe(0);
 				expect(nwisSelected.variables.length).toBe(1);
 				expect(nwisSelected.variables[0]).toEqual({
 					modelId : nwisModelToUpdate.cid,
@@ -215,7 +229,7 @@ define([
 			});
 
 			it('Expects that if a acis variable is selected the view is rendered with the appropriate context', function() {
-				var precipSelected, nwisSelected, acisSelected, glcfsSelected;
+				var precipSelected, nwisSelected, acisSelected, glcfsSelected, ecSelected;
 				var acisModelToUpdate = datasetCollections[Config.ACIS_DATASET].at(0);
 				var acisVariableToUpdate = acisModelToUpdate.get('variables').at(0);
 
@@ -224,12 +238,14 @@ define([
 				nwisSelected = _.find(testView.context.selectedDatasets, isNWIS);
 				acisSelected = _.find(testView.context.selectedDatasets, isACIS);
 				glcfsSelected = _.find(testView.context.selectedDatasets, isGLCFS);
+				ecSelected = _.find(testView.context.selectedDatasets, isEC);
 
 				expect(testView.render).toHaveBeenCalled();
 				expect(testView.context.hasSelectedVariables).toBe(true);
 				expect(precipSelected.variables.length).toBe(0);
 				expect(nwisSelected.variables.length).toBe(0);
 				expect(glcfsSelected.variables.length).toBe(0);
+				expect(ecSelected.variables.length).toBe(0);
 				expect(acisSelected.variables.length).toBe(1);
 				expect(acisSelected.variables[0]).toEqual({
 					modelId : acisModelToUpdate.cid,
@@ -238,6 +254,35 @@ define([
 					startDate : '2002-04-11',
 					endDate : '2006-11-23',
 					property : 'ACIS Variable 1'
+				});
+			});
+
+			it('Expects that if a ec variable is selected the view is rendered with the appropriate context', function() {
+				var precipSelected, nwisSelected, acisSelected, glcfsSelected, ecSelected;
+				var ecModelToUpdate = datasetCollections[Config.EC_DATASET].at(0);
+				var ecVariableToUpdate = ecModelToUpdate.get('variables').at(0);
+
+				ecVariableToUpdate.set('selected', true);
+				precipSelected = _.find(testView.context.selectedDatasets, isPrecip);
+				nwisSelected = _.find(testView.context.selectedDatasets, isNWIS);
+				acisSelected = _.find(testView.context.selectedDatasets, isACIS);
+				glcfsSelected = _.find(testView.context.selectedDatasets, isGLCFS);
+				ecSelected = _.find(testView.context.selectedDatasets, isEC);
+
+				expect(testView.render).toHaveBeenCalled();
+				expect(testView.context.hasSelectedVariables).toBe(true);
+				expect(precipSelected.variables.length).toBe(0);
+				expect(nwisSelected.variables.length).toBe(0);
+				expect(glcfsSelected.variables.length).toBe(0);
+				expect(acisSelected.variables.length).toBe(0);
+				expect(ecSelected.variables.length).toBe(1);
+				expect(ecSelected.variables[0]).toEqual({
+					modelId : ecModelToUpdate.cid,
+					variableId : ecVariableToUpdate.cid,
+					siteId : '01A234',
+					startDate : '2002-04-11',
+					endDate : '2006-11-23',
+					property : 'EC Variable 1'
 				});
 			});
 		});
@@ -264,6 +309,11 @@ define([
 							{selected : true, startDate : startDate, endDate : endDate, description : 'ACIS Variable 1'}
 					])}
 				]);
+				datasetCollections[Config.EC_DATASET].reset([
+					{lat: '43', lon: '-91', siteId: '01A234', variables: new BaseVariableCollection([
+						{selected: true, startDate: startDate, endDate: endDate, description: 'EC Variable 1'}
+					])}
+				]);
 
 				testView = new VariableSummaryView({
 					$el : $testDiv,
@@ -276,6 +326,7 @@ define([
 				var selectedPrecipVariableModel = datasetCollections[Config.PRECIP_DATASET].at(1).get('variables').at(0);
 				var selectedNWISVariableModel = datasetCollections[Config.NWIS_DATASET].at(0).get('variables').at(0);
 				var selectedACISVariableModel = datasetCollections[Config.ACIS_DATASET].at(0).get('variables').at(0);
+				var selectedECVariableModel = datasetCollections[Config.EC_DATASET].at(0).get('variables').at(0);
 
 				testView.$('button[data-variable-id="' + selectedPrecipVariableModel.cid + '"]').trigger('click');
 
@@ -288,6 +339,10 @@ define([
 				testView.$('button[data-variable-id="' + selectedACISVariableModel.cid + '"]').trigger('click');
 
 				expect(selectedACISVariableModel.get('selected')).toBe(false);
+
+				testView.$('button[data-variable-id="' + selectedECVariableModel.cid + '"]').trigger('click');
+
+				expect(selectedECVariableModel.get('selected')).toBe(false);
 			});
 		});
 	});

@@ -13,7 +13,7 @@ define([
 ], function(Squire, $, _, moment, Config, geoSpatialUtils, BaseDatasetCollection, BaseVariableCollection) {
 	"use strict";
 
-	describe('models/WorkflowStateModel', function() {
+	fdescribe('models/WorkflowStateModel', function() {
 		var injector;
 		var WorkflowStateModel, testModel;
 
@@ -103,17 +103,17 @@ define([
 			expect(testModel.attributes.datasetCollections[Config.ACIS_DATASET]).toBeDefined();
 			expect(testModel.attributes.datasetCollections[Config.GLCFS_DATASET]).toBeDefined();
 		});
-		
+
 		describe('Tests for getSitesWithSelectedVariables', function() {
 			it('Expects an empty array if dataCollections have not been initialized', function() {
 				expect(testModel.getSelectedVariables()).toEqual([]);
 			});
-			
+
 			it('Expects an empty array if dataCollections is empty', function() {
 				testModel.initializeDatasetCollections();
 				expect(testModel.getSelectedVariables()).toEqual([]);
 			});
-			
+
 			it('Expects model containing the sites to be returned if variables are selected', function() {
 				testModel.set('datasetCollections', {
 					NWIS : new BaseDatasetCollection([
@@ -310,7 +310,7 @@ define([
 		});
 
 		//Disabling these tests as two of these tests fail in Chrome but not Firefox.
-		xdescribe('Tests for updating the variables property', function() {
+		xdescribe('Tests for updating the variableKinds property', function() {
 			var updateStartSpy, updateFinishedSpy, resetSpy;
 			beforeEach(function() {
 				updateStartSpy = jasmine.createSpy('updateStartSpy');
@@ -485,6 +485,24 @@ define([
 
 				expect(result.start.format(Config.DATE_FORMAT)).toEqual('2007-12-04');
 				expect(result.end.format(Config.DATE_FORMAT)).toEqual('2008-01-04');
+			});
+
+			it('Expects that if the step changes to PROCESS_DATA_STEP when t startDate and/or endDate are not defined and the selected variables have a date range less than a month, then outputDateRange will be the dateRange of the selected variables', function() {
+				var result;
+				testModel.set('datasetCollections', {
+					NWIS : new BaseDatasetCollection([
+						{variables : new BaseVariableCollection([
+								{selected : true, startDate : moment('2001-01-04', Config.DATE_FORMAT), endDate : moment('2001-01-20', Config.DATE_FORMAT)},
+								{startDate : moment('2001-01-20', Config.DATE_FORMAT), endDate : moment('2012-01-04', Config.DATE_FORMAT)}
+						])}
+					])
+				});
+				testModel.set('step', Config.CHOOSE_DATA_BY_SITE_VARIABLES_STEP);
+				testModel.set('step', Config.PROCESS_DATA_STEP);
+				result = testModel.get('outputDateRange');
+
+				expect(result.start.format(Config.DATE_FORMAT)).toEqual('2001-01-04');
+				expect(result.end.format(Config.DATE_FORMAT)).toEqual('2001-01-20');
 			});
 		});
 

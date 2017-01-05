@@ -236,12 +236,15 @@ define([
 					var selectedVarsDateRange = this.getSelectedVarsDateRange();
 					var selectedVars = this.getSelectedVariables();
 
+					var outputDateRangeStart;
+
 					if ((dataDateFilter.start) && (dataDateFilter.end)) {
 						outputDateRange = dataDateFilter;
 					}
 					else {
+						outputDateRangeStart = moment(selectedVarsDateRange.end).subtract(1, 'month');
 						outputDateRange = {
-							start : moment(selectedVarsDateRange.end).subtract(1, 'month'),
+							start : outputDateRangeStart.isBefore(selectedVarsDateRange.start) ? moment(selectedVarsDateRange.start) : outputDateRangeStart,
 							end : selectedVarsDateRange.end
 						};
 					}

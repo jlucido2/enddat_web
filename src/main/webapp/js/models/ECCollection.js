@@ -18,11 +18,17 @@ define([
 	var DATASET_NAME = 'EC';
 
 
+	/*
+	 * @constructs a BaseDatasetCollection. The collection is designed to retrieve information from the real-time hydrometric data
+	 * provided by Environment Canada. For each site, it is assumed there are two variables, water level and discharge. Hourly data
+	 * is available for the last 2 complete days of data plus the current incomplete day. Daily data is available for the last 30 days plus
+	 * the current incomplete day
+	 */
 	var collection = BaseDatasetCollection.extend({
 
 		_getModelsInBoundingBox : function(boundingBox) {
 			var endDate = moment();
-			var startDateDaily = moment().subtract(31, 'days');
+			var startDateDaily = moment().subtract(30, 'days');
 			var startDateHourly = moment().subtract(2, 'days');
 
 			/*

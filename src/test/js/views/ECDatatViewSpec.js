@@ -9,7 +9,7 @@ define([
 ], function($, moment, Backbone, ECDataView) {
 	"use strict";
 
-	fdescribe('views/ECDataView', function() {
+	describe('views/ECDataView', function() {
 		var testView;
 		var testModel;
 		var $testDiv;

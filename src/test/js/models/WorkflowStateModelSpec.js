@@ -13,7 +13,7 @@ define([
 ], function(Squire, $, _, moment, Config, geoSpatialUtils, BaseDatasetCollection, BaseVariableCollection) {
 	"use strict";
 
-	fdescribe('models/WorkflowStateModel', function() {
+	describe('models/WorkflowStateModel', function() {
 		var injector;
 		var WorkflowStateModel, testModel;
 

@@ -13,7 +13,7 @@ define([
 	 * @constructs
 	 * @param {Object} options
 	 *		@prop {Jquery selector element} $el
-	 *		@prop {Backbone.Model} model - represents a single ACIS site
+	 *		@prop {Backbone.Model} model - represents a single EC site
 	 *		@prop {String} distanceToProjectLocation
 	 */
 	var view = BaseDataView.extend({

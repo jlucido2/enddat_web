@@ -10,7 +10,6 @@ define([
 	/*
 	 * @constructs - the collection contains models which describe a site's data. At minimum this
 	 * includes the following properties:
-	 *		@prop {String} siteNo - uniquely identifies the site
 	 *		@prop {String} name - a human readable name for the site
 	 *		@prop {String} lat - the latitude in degrees of the location of the site
 	 *		@prop {String} lon - the longitude in degrees of the location of the site

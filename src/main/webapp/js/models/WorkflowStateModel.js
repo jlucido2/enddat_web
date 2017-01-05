@@ -11,8 +11,10 @@ define([
 	'models/NWISCollection',
 	'models/PrecipitationCollection',
 	'models/ACISCollection',
+	'models/ECCollection',
 	'models/AOIModel'
-], function(_, $, moment, Backbone, Config, VariableDatasetMapping, GLCFSCollection, NWISCollection, PrecipitationCollection, ACISCollection, AOIModel) {
+], function(_, $, moment, Backbone, Config, VariableDatasetMapping,
+	GLCFSCollection, NWISCollection, PrecipitationCollection, ACISCollection, ECCollection, AOIModel) {
 	"use strict";
 
 	var DEFAULT_CHOSEN_DATASETS = ['NWIS'];
@@ -56,7 +58,8 @@ define([
 					[Config.GLCFS_DATASET, new GLCFSCollection()],
 					[Config.NWIS_DATASET, new NWISCollection()],
 					[Config.PRECIP_DATASET, new PrecipitationCollection()],
-					[Config.ACIS_DATASET, new ACISCollection()]
+					[Config.ACIS_DATASET, new ACISCollection()],
+					[Config.EC_DATASET, new ECCollection()]
 				]);
 				this.set('datasetCollections', datasetCollections);
 
@@ -79,11 +82,11 @@ define([
 				.flatten()
 				.value();
 		},
-		
+
 		/*
 		 * @returns {Array of Backbone.models} - contains selected site models for each dataset
 		 */
-		
+
 		getSitesWithSelectedVariables : function() {
 			var datasetCollections = this.get('datasetCollections');
 			var datasetSelectedSites = _.map(datasetCollections, function(datasetCollection) {
@@ -91,7 +94,7 @@ define([
 			});
 			return _.flatten(datasetSelectedSites);
 		},
-		
+
 		/*
 		 * Model event handlers
 		 */
@@ -233,12 +236,15 @@ define([
 					var selectedVarsDateRange = this.getSelectedVarsDateRange();
 					var selectedVars = this.getSelectedVariables();
 
+					var outputDateRangeStart;
+
 					if ((dataDateFilter.start) && (dataDateFilter.end)) {
 						outputDateRange = dataDateFilter;
 					}
 					else {
+						outputDateRangeStart = moment(selectedVarsDateRange.end).subtract(1, 'month');
 						outputDateRange = {
-							start : moment(selectedVarsDateRange.end).subtract(1, 'month'),
+							start : outputDateRangeStart.isBefore(selectedVarsDateRange.start) ? moment(selectedVarsDateRange.start) : outputDateRangeStart,
 							end : selectedVarsDateRange.end
 						};
 					}

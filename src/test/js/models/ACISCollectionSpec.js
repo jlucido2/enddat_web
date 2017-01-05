@@ -108,7 +108,7 @@ define([
 						(model.attributes.lat === 43.1022) &&
 						(model.attributes.lon === -89.4961) &&
 						(model.attributes.name === 'MIDDLETON 0.5 E');
-				})
+				});
 				expect(siteModel).toBeDefined();
 				expect(siteModel.attributes.networks.length).toBe(1);
 			});

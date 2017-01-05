@@ -103,6 +103,24 @@
 	</servlet-mapping>
 	
 	<servlet>
+		<servlet-name>ECServlet</servlet-name>
+		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
+		<init-param>
+			<param-name>forward-url-param</param-name>
+			<param-value>enddat.endpoint.ecan</param-value>
+		</init-param>
+		<init-param>
+			<param-name>readTimeout</param-name>
+			<param-value>300000</param-value>
+		</init-param>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>ECServlet</servlet-name>
+		<url-pattern>/ecan/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
 		<servlet-name>CidaThreddsServlet</servlet-name>
 		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
 		<init-param>

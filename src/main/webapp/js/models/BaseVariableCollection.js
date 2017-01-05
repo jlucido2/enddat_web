@@ -8,8 +8,13 @@ define([
 ], function(_, Backbone, moment, dateUtils) {
 	"use strict";
 	/*
-	 * Models are expected to have startDate and endDate property and to use the selected property to indicate that
-	 * this model has been chosen (for further processing)
+	 * Models are expected to have the following properties:
+	 *		@prop {moment} startDate - The start date for the date range of this variable
+	 *		@prop {moment} endDate - The end date for the date range of this variable
+	 *		@prop {VariableParameter} variable
+	 *	In addition the selected Boolean property will be used to identify variables that have been selected for
+	 *	Additional properties may be added for additional variable data fields
+	 *
 	 */
 	var collection = Backbone.Collection.extend({
 

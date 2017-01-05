@@ -14,9 +14,10 @@ define([
 	'views/GLCFSDataView',
 	'views/ACISDataView',
 	'views/NWISDataView',
-	'views/PrecipDataView'
+	'views/PrecipDataView',
+	'views/ECDataView'
 ], function(_, Backbone, L, Config, selectFilterControl, $utils, LUtils, VariableDatasetMapping, BySiteLayerView, ByVariableTypeLayerView,
-			GLCFSDataView, ACISDataView, NWISDataView, PrecipDataView) {
+			GLCFSDataView, ACISDataView, NWISDataView, PrecipDataView, ECDataView) {
 	"use strict";
 
 	var siteIcons = _.mapObject(Config.DATASET_ICON, function(value) {
@@ -39,18 +40,24 @@ define([
 		return model.get('name');
 	};
 
+	var getECTitle = function(model) {
+		return model.get('name');
+	};
+
 	var getTitle = _.object([
   		[Config.GLCFS_DATASET, getGLCFSTitle],
 		[Config.NWIS_DATASET, getNWISTitle],
 		[Config.PRECIP_DATASET, getPrecipTitle],
-		[Config.ACIS_DATASET, getACISTitle]
+		[Config.ACIS_DATASET, getACISTitle],
+		[Config.EC_DATASET, getECTitle]
 	]);
 
 	var DataViews =_.object([
   		[Config.GLCFS_DATASET, GLCFSDataView],
 		[Config.NWIS_DATASET, NWISDataView],
 		[Config.PRECIP_DATASET, PrecipDataView],
-		[Config.ACIS_DATASET, ACISDataView]
+		[Config.ACIS_DATASET, ACISDataView],
+		[Config.EC_DATASET, ECDataView]
 	]);
 
 	var getVariableKindsOptions = function(model) {
@@ -94,7 +101,8 @@ define([
 				[Config.GLCFS_DATASET, undefined],
 				[Config.NWIS_DATASET, undefined],
 				[Config.PRECIP_DATASET, undefined],
-				[Config.ACIS_DATASET, undefined]
+				[Config.ACIS_DATASET, undefined],
+				[Config.EC_DATASET, undefined]
 			]);
 
 			if (this.model.has('datasetCollections')) {

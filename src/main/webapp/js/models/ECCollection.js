@@ -38,7 +38,7 @@ define([
 					variableParameter : new VariableParameter({
 						name: DATASET_NAME,
 						value: site.id + ':' + site.prov + ':' + varValue,
-						colName: colName + ':' + site.id,
+						colName: colName + ':' + site.id
 					}),
 					description: colName
 				};
@@ -101,7 +101,7 @@ define([
 					context : this
 				});
 			} else {
-				this.reset(getModelsInBoundingBox(boundingBox));
+				this.reset(this._getModelsInBoundingBox(boundingBox));
 				log.debug('There are ' + this.length + ' EC sites');
 				deferred.resolve();
 			}

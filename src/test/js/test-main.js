@@ -41,7 +41,7 @@ require.config({
 		'squire': '/base/src/main/webapp/bower_components/Squire.js/src/Squire',
 		'bootstrap': '/base/src/main/webapp/bower_components/bootstrap/dist/js/bootstrap',
 		'jquery': '/base/src/main/webapp/bower_components/jquery/dist/jquery',
-		"jquery.ui.widget": '/base/src/main/webapp/bower_components/blueimp-file-upload/js/vendor/jquery.ui.widget',
+		"jquery-ui/ui/widget": '/base/src/main/webapp/bower_components/blueimp-file-upload/js/vendor/jquery.ui.widget',
 		'blueimp-file-upload': '/base/src/main/webapp/bower_components/blueimp-file-upload/js/jquery.fileupload',
 		'select2': '/base/src/main/webapp/bower_components/select2/dist/js/select2.full',
 		'underscore': '/base/src/main/webapp/bower_components/underscore/underscore',

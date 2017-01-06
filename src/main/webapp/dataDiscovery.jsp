@@ -73,7 +73,7 @@
 				paths: {
 					"bootstrap" :  '../bower_components/bootstrap/dist/js/bootstrap',
 					"jquery": '../bower_components/jquery/dist/jquery',
-					'jquery.ui.widget' : '../bower_components/blueimp-file-upload/js/vendor/jquery.ui.widget',
+					'jquery-ui/ui/widget' : '../bower_components/blueimp-file-upload/js/vendor/jquery.ui.widget',
 					'blueimp-file-upload': '../bower_components/blueimp-file-upload/js/jquery.fileupload',
 					"backbone": '../bower_components/backbone/backbone',
 					"underscore": '../bower_components/underscore/underscore',
@@ -81,7 +81,7 @@
 					"handlebars": '../bower_components/handlebars/handlebars',
 					"text": '../bower_components/text/text',
 					"hbs" : '../bower_components/requirejs-hbs/hbs',
-					'leaflet' : '../bower_components/leaflet/dist/leaflet',
+					'leaflet' : '../bower_components/leaflet/dist/leaflet-src',
 					'leaflet-providers' : '../bower_components/leaflet-providers/leaflet-providers',
 					'leaflet-draw' : '../bower_components/leaflet-draw/dist/leaflet.draw',
 					'loglevel' : '../bower_components/loglevel/dist/loglevel',

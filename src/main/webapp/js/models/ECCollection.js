@@ -28,8 +28,7 @@ define([
 
 		_getModelsInBoundingBox : function(boundingBox) {
 			var endDate = moment();
-			var startDateDaily = moment().subtract(30, 'days');
-			var startDateHourly = moment().subtract(2, 'days');
+			var startDate = moment().subtract(30, 'days');
 
 			/*
 			 * @param {Object} site
@@ -37,9 +36,9 @@ define([
 			 * @param {String} varValue - string which identifies the variable
 			 * @param {String} colName - string which will be concated with the site.id to form colName
 			 */
-			var getVariable = function(site, isHourly, varValue, colName) {
+			var getVariable = function(site, varValue, colName) {
 				return {
-					startDate: isHourly ? startDateHourly: startDateDaily,
+					startDate: startDate,
 					endDate : endDate,
 					variableParameter : new VariableParameter({
 						name: DATASET_NAME,
@@ -56,10 +55,8 @@ define([
 				})
 				.map(function(site) {
 					var variables = [
-						getVariable(site, true, 'hourly:water', 'Hourly Water Level (m)'),
-						getVariable(site, true, 'hourly:discharge', 'Hourly Discharge (cms)'),
-						getVariable(site, false, 'daily:water', 'Daily Water Level (m)'),
-						getVariable(site, false, 'daily:discharge', 'Daily Discharge (cms)')
+						getVariable(site, 'daily:water', 'Water Level (m)'),
+						getVariable(site, 'daily:discharge', 'Discharge (cms)')
 					];
 					return new Backbone.Model({
 						siteId : site.id,

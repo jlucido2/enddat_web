@@ -45,7 +45,6 @@ define([
 				on : jasmine.createSpy('onSpy'),
 				off : jasmine.createSpy('offSpy')
 			});
-			spyOn(L.control, 'layers').and.callThrough();
 			spyOn(BaseView.prototype, 'initialize').and.callThrough();
 			spyOn(BaseView.prototype, 'remove').and.callThrough();
 
@@ -57,7 +56,7 @@ define([
 			});
 			testModel.set('step', Config.SPECIFY_AOI_STEP);
 			testModel.initializeDatasetCollections();
-			
+
 			spyOn(MapView.prototype, 'createGeoJsonLayer').and.callThrough();
 			testView = new MapView({
 				el : '#test-div',
@@ -77,10 +76,6 @@ define([
 			expect(BaseView.prototype.initialize).toHaveBeenCalled();
 		});
 
-		it('Expects that the layer switcher control and legend control are created', function() {
-			expect(L.control.layers).toHaveBeenCalled();
-			expect(testView.defaultControls.length).toBe(2);
-		});
 
 		it('Expects that a project location marker is created', function() {
 			expect(testView.projLocationMarker).toBeDefined();
@@ -90,7 +85,7 @@ define([
 			expect(testView.drawnAOIFeature).toBeDefined();
 			expect(testView.drawAOIControl).toBeDefined();
 		});
-		
+
 		it('Expects layers to be created from geoJSON', function() {
 			expect(testView.createGeoJsonLayer).toHaveBeenCalledWith(jasmine.any(String), jasmine.any(L.Icon));
 			expect(testView.createGeoJsonLayer.calls.count()).toEqual(2);
@@ -104,9 +99,10 @@ define([
 				expect(L.map).toHaveBeenCalled();
 			});
 
-			it('Expects the layer switch control to be added to the map', function() {
+			it('Expects the layer switch control to be created to the map', function() {
+				spyOn(L.control, 'layers').and.callThrough();
 				testView.render();
-				expect(addControlSpy).toHaveBeenCalledWith(testView.defaultControls[0]);
+				expect(L.control.layers).toHaveBeenCalled();
 			});
 
 			it('Expects that the project location marker is not added to the map if location is not defined in the workflow state', function() {

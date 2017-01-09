@@ -92,8 +92,8 @@ define([
 				fakeServer.respondWith(RESPONSE);
 				fakeServer.respond();
 
-				expect(testCollection.at(0).get('variables').length).toBe(4);
-				expect(testCollection.at(1).get('variables').length).toBe(4);
+				expect(testCollection.at(0).get('variables').length).toBe(2);
+				expect(testCollection.at(1).get('variables').length).toBe(2);
 			});
 
 			it('Expects that a second call to fetch with a different bounding box returns the sites in that bounding box', function() {

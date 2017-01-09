@@ -287,15 +287,21 @@ define([
 				expect(updateStartSpy).toHaveBeenCalled();
 			});
 
-			it('Expects an dataset:updateFinished event handler will be called with an empty array once all of the chosen datasets have been fetched', function() {
+			it('Expects an dataset:updateFinished event handler will be called with an empty array once all of the chosen datasets have been fetched', function(done) {
 				updateFinishedSpy.calls.reset();
 				fetchSiteDeferred.resolve();
-				expect(updateFinishedSpy).toHaveBeenCalled();
+				setTimeout(function() {
+					expect(updateFinishedSpy).toHaveBeenCalled();
+					done();
+				}, 100);
 			});
 
-			it('Expects that if any of the dataset fetches failed, the event handler will be called with the array of failed datasets', function() {
+			it('Expects that if any of the dataset fetches failed, the event handler will be called with the array of failed datasets', function(done) {
 				fetchSiteDeferred.reject();
-				expect(updateFinishedSpy).toHaveBeenCalledWith([Config.NWIS_DATASET]);
+				setTimeout(function() {
+					expect(updateFinishedSpy).toHaveBeenCalledWith([Config.NWIS_DATASET]);
+					done();
+				}, 100);
 			});
 
 			it('Expects that a dataset:updateFinished event handler will be called with an empty array if no datasets have been chosen', function() {

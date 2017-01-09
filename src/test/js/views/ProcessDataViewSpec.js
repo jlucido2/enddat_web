@@ -316,12 +316,12 @@ define([
 					end : moment('2004-01-04', Config.DATE_FORMAT)
 				});
 
-				expect($startDate.data('DateTimePicker').minDate()).toEqual(moment('2000-01-04', Config.DATE_FORMAT));
-				expect($startDate.data('DateTimePicker').maxDate()).toEqual(moment('2004-01-04', Config.DATE_FORMAT));
-				expect($startDate.data('DateTimePicker').date()).toEqual(moment('2002-01-04', Config.DATE_FORMAT));
-				expect($endDate.data('DateTimePicker').minDate()).toEqual(moment('2002-01-04', Config.DATE_FORMAT));
-				expect($endDate.data('DateTimePicker').maxDate()).toEqual(moment('2005-06-01', Config.DATE_FORMAT));
-				expect($endDate.data('DateTimePicker').date()).toEqual(moment('2004-01-04', Config.DATE_FORMAT));
+				expect($startDate.data('DateTimePicker').minDate().format(Config.DATE_FORMAT)).toEqual('2000-01-04');
+				expect($startDate.data('DateTimePicker').maxDate().format(Config.DATE_FORMAT)).toEqual('2004-01-04');
+				expect($startDate.data('DateTimePicker').date().format(Config.DATE_FORMAT)).toEqual('2002-01-04');
+				expect($endDate.data('DateTimePicker').minDate().format(Config.DATE_FORMAT)).toEqual('2002-01-04');
+				expect($endDate.data('DateTimePicker').maxDate().format(Config.DATE_FORMAT)).toEqual('2005-06-01');
+				expect($endDate.data('DateTimePicker').date().format(Config.DATE_FORMAT)).toEqual('2004-01-04');
 			});
 
 			it('Expects the remaining output configuration DOM elements to be updated when the model is updated', function() {

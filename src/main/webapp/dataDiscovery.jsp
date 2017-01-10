@@ -73,7 +73,7 @@
 				paths: {
 					"bootstrap" :  '../bower_components/bootstrap/dist/js/bootstrap',
 					"jquery": '../bower_components/jquery/dist/jquery',
-					'jquery.ui.widget' : '../bower_components/blueimp-file-upload/js/vendor/jquery.ui.widget',
+					'jquery-ui/ui/widget' : '../bower_components/blueimp-file-upload/js/vendor/jquery.ui.widget',
 					'blueimp-file-upload': '../bower_components/blueimp-file-upload/js/jquery.fileupload',
 					"backbone": '../bower_components/backbone/backbone',
 					"underscore": '../bower_components/underscore/underscore',

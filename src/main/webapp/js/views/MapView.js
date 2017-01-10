@@ -19,7 +19,7 @@ define([
 ], function(_, $, L, leafletDraw, leafletProviders, log, module, Config, variableDatasetMapping, $utils, LUtils, legendControl,
 		BaseView, SitesLayerView, hbTemplate) {
 
-	L.Icon.Default.imagePath = 'bower_components/leaflet/dist/images';
+	L.Icon.Default.imagePath = 'bower_components/leaflet/dist/images/';
 
 	var MAP_DIV_ID = 'map-div';
 
@@ -33,13 +33,12 @@ define([
 		 *		@prop {WorkflowStateModel} model
 		 */
 		initialize : function(options) {
-			
+
 			var yellowTriangleIcon;
 			var greenTriangleIcon;
 			var publicBeachesLayer;
-			var usgsModelBeachesLayer
-			
-			
+			var usgsModelBeachesLayer;
+
 			BaseView.prototype.initialize.apply(this, arguments);
 
 			this.baseLayers = {
@@ -47,31 +46,27 @@ define([
 				'World Physical': L.tileLayer.provider('Esri.WorldPhysical'),
 				'World Imagery' : L.tileLayer.provider('Esri.WorldImagery')
 			};
-			
+
 			// add public beaches
 			yellowTriangleIcon = L.icon({
 				iconUrl: Config.BEACH_ICONS['Public Beaches'].iconUrl,
 				iconSize: Config.BEACH_ICONS['Public Beaches'].iconSize
 			});
 			publicBeachesLayer = this.createGeoJsonLayer('json/publicBeaches.json', yellowTriangleIcon);
-			
+
 			// add USGS model beaches
 			greenTriangleIcon = L.icon({
 				iconUrl: Config.BEACH_ICONS['USGS Model Beaches'].iconUrl,
 				iconSize: Config.BEACH_ICONS['USGS Model Beaches'].iconSize
 			});
 			usgsModelBeachesLayer = this.createGeoJsonLayer('json/usgsModelBeaches.json', greenTriangleIcon);
-			
+
 			this.beachOverlays = {
 				"Public Beaches": publicBeachesLayer,
 				"USGS Model Beaches": usgsModelBeachesLayer
 			};
 
 			this.legendControl = legendControl({opened : false});
-			this.defaultControls = [
-				L.control.layers(this.baseLayers, this.beachOverlays),
-				this.legendControl
-			];
 
 			this.projLocationMarker = L.marker([0, 0], {
 				draggable : true,
@@ -120,10 +115,10 @@ define([
 				zoom : 4,
 				layers : [this.baseLayers['World Street']]
 			});
-			
-			_.each(this.defaultControls, function(control) {
-				this.map.addControl(control);
-			}, this);
+
+			this.map.addControl(this.legendControl);
+			// Leaflet 1.x will throw an exception if the layer control is created before the map has been initialized with a layer
+			this.map.addControl(L.control.layers(this.baseLayers, this.beachOverlays))
 
 			// Set up the map event handlers for the draw control to update the aoi model.
 			this.map.on('draw:created', function(ev) {
@@ -162,7 +157,7 @@ define([
 				this.sitesLayerView = undefined;
 			}
 		},
-		
+
 		/*
 		 * @param {String} dataPath - absolute or relative path to GeoJSON data
 		 * @param {L.Icon} markerIcon - Leaflet icon (i.e. L.icon)

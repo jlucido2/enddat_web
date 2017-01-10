@@ -26,10 +26,10 @@ define([
 				south : '42'
 			};
 			var SITE_RESPONSE = '<?xml version="1.0" encoding="UTF-8"?>' +
-				'<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:gml="http://www.opengis.net/gml/3.2" ' + 
+				'<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:gml="http://www.opengis.net/gml/3.2" ' +
 				'xmlns:sb="http://sciencebase.gov/catalog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
 				'numberMatched="1" numberReturned="1" timeStamp="2016-06-13T22:34:11.213Z" ' +
-				'xsi:schemaLocation="http://sciencebase.gov/catalog ' + 
+				'xsi:schemaLocation="http://sciencebase.gov/catalog ' +
 				'https://www.sciencebase.gov:443/catalogMaps/mapping/ows/57507405e4b033c61ac3d5f4?service=WFS&amp;version=2.0.0&amp;request=DescribeFeatureType&amp;typeName=sb%3Amichigan ' +
 				'http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd ' +
 				'http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd">' +
@@ -40,10 +40,10 @@ define([
 				'<gml:lowerCorner>-87.5999984741211 41.95234298706055</gml:lowerCorner><gml:upperCorner>-87.5999984741211 41.95234298706055</gml:upperCorner></gml:Envelope></gml:boundedBy>' +
 				'<sb:the_geom><gml:Point srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4269"><gml:pos>-87.5999984741211 41.95234298706055</gml:pos></gml:Point></sb:the_geom>' +
 				'<sb:nx>16.0</sb:nx><sb:ny>19.0</sb:ny><sb:X1>-87</sb:X1><sb:X2>42</sb:X2></sb:michigan></wfs:member></wfs:FeatureCollection>';
-			
+
 			var fetchPromise;
 			var successSpy, failSpy;
-			
+
 			beforeEach(function() {
 				successSpy = jasmine.createSpy('successSpy');
 				failSpy = jasmine.createSpy('failSpy');
@@ -64,16 +64,19 @@ define([
 				expect(fakeServer.requests[0].url).toContain('bbox=' + encodeURIComponent(bbox.south + ',' + bbox.west + ',' + bbox.north + ',' + bbox.east));
 			});
 
-			it('Expects that failed ajax response for the site service causes the promise to be rejected and the collection cleared', function() {
+			it('Expects that failed ajax response for the site service causes the promise to be rejected and the collection cleared', function(done) {
 				fakeServer.respondWith(/http:dummyservice\/wfs\//, [500, {'Content-Type' : 'text'}, 'Internal server error']);
 				fakeServer.respond();
 
-				expect(successSpy).not.toHaveBeenCalled();
-				expect(failSpy).toHaveBeenCalled();
-				expect(testCollection.length).toBe(0);
+				setTimeout(function() {
+					expect(successSpy).not.toHaveBeenCalled();
+					expect(failSpy).toHaveBeenCalled();
+					expect(testCollection.length).toBe(0);
+					done();
+				}, 100);
 			});
 
-			it('Expects that a successfully ajax response with an exception report causes the promise to be rejected and the collection cleared', function() {
+			it('Expects that a successfully ajax response with an exception report causes the promise to be rejected and the collection cleared', function(done) {
 				fakeServer.respondWith(/http:dummyservice\/wfs\//, [200, {'Content-Type' : 'text/xml'}, '<ows:ExceptionReport xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0.0" xsi:schemaLocation="http://www.opengis.net/ows/1.1 https://www.sciencebase.gov:443/catalogMaps/schemas/ows/1.1.0/owsAll.xsd">' +
 					'<ows:Exception exceptionCode="NoApplicableCode">' +
 					'<ows:ExceptionText>java.lang.NullPointerException' +
@@ -82,34 +85,40 @@ define([
 					'</ows:ExceptionReport>']);
 				fakeServer.respond();
 
-				expect(successSpy).not.toHaveBeenCalled();
-				expect(failSpy).toHaveBeenCalled();
-				expect(testCollection.length).toBe(0);
+				setTimeout(function() {
+					expect(successSpy).not.toHaveBeenCalled();
+					expect(failSpy).toHaveBeenCalled();
+					expect(testCollection.length).toBe(0);
+					done();
+				}, 100);
 			});
 
-			it('Expects that a successful respond for the site and dds services causes the promise to be resolved and the collection to be updated with the contents of the response', function() {
+			it('Expects that a successful respond for the site and dds services causes the promise to be resolved and the collection to be updated with the contents of the response', function(done) {
 				fakeServer.respondWith(/http:dummyservice\/wfs\//, [200, {'Content-Type' : 'text/xml'}, SITE_RESPONSE]);
 				fakeServer.respond();
 
-				expect(failSpy).not.toHaveBeenCalled();
-				expect(successSpy).toHaveBeenCalled();
-				expect(testCollection.length).toBe(1);
-				
-				var variableCollection0 = testCollection.at(0);
-				expect(variableCollection0.attributes.lat).toEqual('42');
-				expect(variableCollection0.attributes.lon).toEqual('-87');
-				expect(variableCollection0.attributes.elevation).toBe(null);
-				expect(variableCollection0.attributes.elevationUnit).toBe(null);
-				expect(variableCollection0.attributes.siteNo).toBe('19:16');
-				expect(variableCollection0.attributes.name).toBe('19:16');
-				expect(variableCollection0.attributes.datasetName).toBe('GLCFS');
-				
-				var variable0 = variableCollection0.get('variables').at(0);
-				expect(variable0.attributes.x).toEqual('16');
-				expect(variable0.attributes.y).toEqual('19');
-				expect(variable0.attributes.variableParameter.name).toEqual('GRID');
-				expect(variable0.attributes.variableParameter.value).toEqual('19:16:-1:0:ci:::0');
-				expect(variable0.attributes.variableParameter.colName).toEqual('Ice Concentration (fraction): [16,19]');
+				setTimeout(function() {
+					expect(failSpy).not.toHaveBeenCalled();
+					expect(successSpy).toHaveBeenCalled();
+					expect(testCollection.length).toBe(1);
+
+					var variableCollection0 = testCollection.at(0);
+					expect(variableCollection0.attributes.lat).toEqual('42');
+					expect(variableCollection0.attributes.lon).toEqual('-87');
+					expect(variableCollection0.attributes.elevation).toBe(null);
+					expect(variableCollection0.attributes.elevationUnit).toBe(null);
+					expect(variableCollection0.attributes.siteNo).toBe('19:16');
+					expect(variableCollection0.attributes.name).toBe('19:16');
+					expect(variableCollection0.attributes.datasetName).toBe('GLCFS');
+
+					var variable0 = variableCollection0.get('variables').at(0);
+					expect(variable0.attributes.x).toEqual('16');
+					expect(variable0.attributes.y).toEqual('19');
+					expect(variable0.attributes.variableParameter.name).toEqual('GRID');
+					expect(variable0.attributes.variableParameter.value).toEqual('19:16:-1:0:ci:::0');
+					expect(variable0.attributes.variableParameter.colName).toEqual('Ice Concentration (fraction): [16,19]');
+					done();
+				}, 100);
 			});
 		});
 	});

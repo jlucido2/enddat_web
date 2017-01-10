@@ -118,7 +118,7 @@ define([
 
 				testModel.set('variableKinds', []);
 
-				expect($select.val()).toEqual(null);
+				expect($select.val()).toEqual([]);
 			});
 		});
 

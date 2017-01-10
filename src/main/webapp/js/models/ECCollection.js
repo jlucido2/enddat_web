@@ -40,6 +40,7 @@ define([
 				return {
 					startDate: startDate,
 					endDate : endDate,
+					parameter : varValue,
 					variableParameter : new VariableParameter({
 						name: DATASET_NAME,
 						value: site.id + ':' + site.prov + ':' + varValue,

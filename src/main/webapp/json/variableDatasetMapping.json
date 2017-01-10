@@ -102,6 +102,13 @@
 					{"parameterCd" : "00060", "statCd" : "00000"},
 					{"parameterCd" : "00061", "statCd" : "00000"}
 				]
+			},
+			{
+				"name" : "EC",
+				"filter" : [
+					{"parameter" : "daily:water"},
+					{"parameter" : "daily:discharge"}
+				]
 			}
 		]
 	}

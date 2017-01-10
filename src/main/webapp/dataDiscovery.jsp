@@ -81,7 +81,7 @@
 					"handlebars": '../bower_components/handlebars/handlebars',
 					"text": '../bower_components/text/text',
 					"hbs" : '../bower_components/requirejs-hbs/hbs',
-					'leaflet' : '../bower_components/leaflet/dist/leaflet-src',
+					'leaflet' : '../bower_components/leaflet/dist/leaflet',
 					'leaflet-providers' : '../bower_components/leaflet-providers/leaflet-providers',
 					'leaflet-draw' : '../bower_components/leaflet-draw/dist/leaflet.draw',
 					'loglevel' : '../bower_components/loglevel/dist/loglevel',

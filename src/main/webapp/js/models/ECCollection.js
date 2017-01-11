@@ -32,7 +32,6 @@ define([
 
 			/*
 			 * @param {Object} site
-			 * @param {Boolean} isHourly - True if hourly variable, otherwise Daily
 			 * @param {String} varValue - string which identifies the variable
 			 * @param {String} colName - string which will be concated with the site.id to form colName
 			 */

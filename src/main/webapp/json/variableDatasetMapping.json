@@ -17,7 +17,7 @@
 		]
 	},
 	"maxTemperature" : {
-		"displayName" : "Maximum Temperature",
+		"displayName" : "Maximum Air Temperature",
 		"datasets" : [
 		    {
 				"name" : "ACIS",
@@ -28,7 +28,7 @@
 		]
 	},
 	"minTemperature" : {
-		"displayName" : "Minimum Temperature",
+		"displayName" : "Minimum Air Temperature",
 		"datasets" : [
 			{
 				"name" : "ACIS",
@@ -39,7 +39,7 @@
 		]
 	},
 	"aveTemperature" : {
-		"displayName" : "Average Temperature",
+		"displayName" : "Average Air Temperature",
 		"datasets" : [
 			{
 				"name" : "ACIS",
@@ -111,6 +111,31 @@
 				]
 			}
 		]
+	},
+	"airVelocity" : {
+		"displayName" : "Air Velocity",
+		"datasets" : [
+			{
+				"name" : "GLCFS",
+				"filter" : [
+					{"code" : "air_u"},
+					{"code" : "air_v"}
+				]
+			}
+		]
+	},
+	"waterVelocity" : {
+		"displayName" : "Water Velocity",
+		"datasets" : [
+			{
+				"name" : "GLCFS",
+				"filter" : [
+					{"code" : "uc"},
+					{"code" : "vc"},
+					{"code" : "utm"},
+					{"code" : "vtm"}
+				]
+			}
+		]
 	}
-	
 }

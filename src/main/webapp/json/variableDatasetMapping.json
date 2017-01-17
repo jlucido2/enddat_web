@@ -113,7 +113,7 @@
 		]
 	},
 	"airVelocity" : {
-		"displayName" : "Air Velocity,"
+		"displayName" : "Air Velocity",
 		"datasets" : [
 			{
 				"name" : "GLCFS",

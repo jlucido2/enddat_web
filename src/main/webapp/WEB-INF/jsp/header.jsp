@@ -15,6 +15,6 @@
             </div>
         </div><!-- End content -->
         
-        <h2 id="site-title"><a href="/enddat_web">Environmental Data Discovery and Transformation - BETA</a></h2>
+        <h2 id="site-title"><a href="<%=request.getContextPath()%>">Environmental Data Discovery and Transformation - BETA</a></h2>
     </div><!-- /header -->
 </div><!--/header panel-->

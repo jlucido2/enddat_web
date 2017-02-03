@@ -33,16 +33,19 @@
 %>
 
 <link rel="shortcut icon" type="image/ico" href="img/favicon.ico">
-<jsp:include page="/template/USGSHead.jsp">
-	<jsp:param name="shortName" value="Environmental Data Discovery and Transformation Service - BETA"/>
-	<jsp:param name="title" value="EnDDaT" />
-	<jsp:param name="description" value="EnDDaT is a data discovery, aggregation, and processing tool for scientific modelers focusing on Great Lakes beaches and hydro-climate data." />
-	<jsp:param name="author" value="" />
-	<jsp:param name="keywords" value="USGS, U.S. Geological Survey, water, earth science, hydrology, hydrologic, data, streamflow, stream, river, lake, flood, drought, quality, basin, watershed, environment, ground water, groundwater" />
-	<jsp:param name="publisher" value="" />
-	<jsp:param name="revisedDate" value="" />
-	<jsp:param name="nextReview" value="" />
-	<jsp:param name="expires" value="never" />
-	<jsp:param name="google-analytics-account-code" value="" />
-	<jsp:param name="development" value="<%=development%>" />
-</jsp:include>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="keywords" content="USGS, U.S. Geological Survey, water, earth science, hydrology, hydrologic, data, streamflow, stream, river, lake, flood, drought, quality, basin, watershed, environment, ground water, groundwater">
+<title>Environmental Data Discovery and Tranformation Service - BETA</title>
+<meta name="country" content="USA">
+<meta name="language" content="EN">
+<meta name="description" content="EnDDaT is a data discovery, aggregation, and processing tool for scientific modelers focusing on Great Lakes beaches and hydro-climate data.">
+<meta name="expires" content="never">
+<link type="text/css" rel="stylesheet" href="css/usgs_style.css" />
+<link type="text/css" rel="stylesheet" href="css/custom.css" />
+
+<%-- https://insight.usgs.gov/web_reengineering/SitePages/Analytics_Instructions.aspx --%>
+<%-- https://insight.usgs.gov/web_reengineering/SitePages/Analytics_FAQs.aspx --%>
+<%if (!development) { %>
+<script type="application/javascript" src="https://www2.usgs.gov/scripts/analytics/usgs-analytics.js"></script>
+<% } %>
+

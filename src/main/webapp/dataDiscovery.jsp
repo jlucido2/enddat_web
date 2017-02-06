@@ -3,37 +3,22 @@
 <html>
 	<head>
 		<%@include file="/WEB-INF/jsp/head.jsp"%>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<link rel="stylesheet" type="text/css" href="bower_components/select2/dist/css/select2.min.css" />
 		<link rel="stylesheet" type="text/css" href="bower_components/leaflet/dist/leaflet.css" />
 		<link rel="stylesheet" type="text/css" href="bower_components/leaflet-draw/dist/leaflet.draw.css" />
 		<link rel="stylesheet" type="text/css" href="bower_components/blueimp-file-upload/css/jquery.fileupload.css" />
-		<link rel="stylesheet" type="text/css" href="css/custom.css" />
-                <script>
-                    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-                       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-                    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-                ga('create', 'UA-79713582-1', 'auto');
-                ga('send', 'pageview');
-
-                </script>
 	</head>
 	<body>
 		<div class="container-fluid">
 			<header>
-				<jsp:include page="template/USGSHeader.jsp">
-					<jsp:param name="site-title" value="Environmental Data Discovery and Transformation - BETA" />
-				</jsp:include>
+				<jsp:include page="WEB-INF/jsp/header.jsp"></jsp:include>
 			</header>
 			<div id="main-content"></div>
 			<footer>
-				<jsp:include page="template/USGSFooter.jsp">
-					<jsp:param name="site-url" value="https://cida.usgs.gov/enddat" />
-					<jsp:param name="contact-info" value="<a href='mailto:enddat@usgs.gov'>Enddat Team</a>" />
+				<jsp:include page="WEB-INF/jsp/footer.jsp">
+					<jsp:param name="development" value="<%=development%>"></jsp:param>
 				</jsp:include>
-			</footer>	
+			</footer>
 		</div>
 		<script>
 			var require = {

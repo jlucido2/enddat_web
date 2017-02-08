@@ -25,9 +25,8 @@
 				<h1>The Environmental Data Discovery and Transformation System</h1>
 
 				<p>
-					<em>This user guide is based on the re-implementation of the EnDDaT user interface. The latest functionality 
-						is available at: <a href="https://cida-test.er.usgs.gov/enddat/">https://cida-test.er.usgs.gov/enddat/</a> 
-						and production is available at: <a href="https://cida.usgs.gov/enddat/">https://cida.usgs.gov/enddat/</a></em>
+					<em>This user guide is based on the re-implementation of the EnDDaT user interface: 
+					<a href="https://cida.usgs.gov/enddat/">https://cida.usgs.gov/enddat/</a></em>
 				</p>
 
 				<h2>Overview</h2>

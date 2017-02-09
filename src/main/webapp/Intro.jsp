@@ -15,7 +15,11 @@
 
 		<div id="splashContent">
 
-			<div id="tagline"><h4>Access and Integrate Environmental Observations with EnDDaT</h4></div>     
+			<div id="tagline"><h4>Access and Integrate Environmental Observations with EnDDaT</h4></div>
+			
+			<p> NOTICE: This version of EnDDaT has replaced the old interface, which can still be accessed at <a href="https://cida.usgs.gov/enddat_legacy/">https://cida.usgs.gov/enddat_legacy/</a>. This site is scheduled for 
+				deprecation in June 2017. Please email <a href="mailto:enddat@usgs.gov?Subject=New%20EnDDaT%20Feedback">enddat@usgs.gov</a> 
+				with any questions or concerns.
 
 			<h2>Overview</h2>
 			<p>
@@ -72,7 +76,7 @@
 
 			<h2>Feedback</h2>
 			<p>
-				Questions, comments, and requests are welcome.  Please email <a href="mailto:enddat@usgs.gov?Subject=EnDDaT%20BETA%20Feedback">enddat@usgs.gov</a>.
+				Questions, comments, and requests are welcome.  Please email <a href="mailto:enddat@usgs.gov?Subject=New%20EnDDaT%20Feedback">enddat@usgs.gov</a>.
 			</p>
 
 			<h2>Disclaimer</h2>

@@ -36,7 +36,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="keywords" content="USGS, U.S. Geological Survey, water, earth science, hydrology, hydrologic, data, streamflow, stream, river, lake, flood, drought, quality, basin, watershed, environment, ground water, groundwater">
-<title>Environmental Data Discovery and Tranformation Service - BETA</title>
+<title>Environmental Data Discovery and Transformation Service</title>
 <meta name="country" content="USA">
 <meta name="language" content="EN">
 <meta name="description" content="EnDDaT is a data discovery, aggregation, and processing tool for scientific modelers focusing on Great Lakes beaches and hydro-climate data.">

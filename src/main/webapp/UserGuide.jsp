@@ -25,9 +25,8 @@
 				<h1>The Environmental Data Discovery and Transformation System</h1>
 
 				<p>
-					<em>This user guide is based on the BETA re-implementation of the EnDDaT user interface. The latest functionality 
-						is available at: <a href="https://cida-test.er.usgs.gov/enddatv2/">https://cida-test.er.usgs.gov/enddatv2/</a> 
-						and production is available at: <a href="https://cida.usgs.gov/enddatv2/">https://cida.usgs.gov/enddatv2/</a></em>
+					<em>This user guide is based on the re-implementation of the EnDDaT user interface: 
+					<a href="https://cida.usgs.gov/enddat/">https://cida.usgs.gov/enddat/</a></em>
 				</p>
 
 				<h2>Overview</h2>
@@ -128,6 +127,38 @@
 				<p><img src="img/processSettings.png" alt="">  </p>
 
 				<hr>
+				
+				<p>
+					Click this ‘Upload Times’ button to upload a text file with a list of timestamps to filter the output data. If a file is not 
+					uploaded, the entire time series will be retrieved. The timezone of these dates/times will be defaulted to GMT if not specified. 
+					Acceptable formats:
+				</p>
+
+				<p>
+					7/5/2010 13:30
+					7/6/2010 09:30
+					7/7/2010 15:30
+					7/8/2010 13:30
+					7/9/2010 13:30
+				</p>
+
+				<p>
+					Or 
+					07/05/2010 13:30
+					07/06/2010 09:30
+					07/07/2010 15:30
+					07/08/2010 13:30
+					07/09/2010 13:30
+				</p>
+
+				<p>
+					Or
+					07/05/2010 13:30 CDT
+					07/06/2010 09:30 CDT
+					07/07/2010 15:30 CDT
+					07/08/2010 13:30 CDT
+					07/09/2010 13:30 CDT
+				</p>
 
 				<h3>Obtaining Data</h3>
 

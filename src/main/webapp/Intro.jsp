@@ -9,7 +9,9 @@
 		<script src="bower_components/jquery/dist/jquery<%= development ? "" : ".min"%>.js"></script>
 	</head>
 	<body>
-		<jsp:include page="WEB-INF/jsp/header.jsp"></jsp:include>
+		<jsp:include page="WEB-INF/jsp/header.jsp">
+			<jsp:param name="baseUrl" value="<%=baseUrl%>"></jsp:param>
+		</jsp:include>
 
 		<jsp:include page="WEB-INF/jsp/sidebar.jsp"></jsp:include>
 

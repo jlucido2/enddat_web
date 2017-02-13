@@ -15,6 +15,6 @@
             </div>
         </div><!-- End content -->
         
-        <h2 id="site-title"><a href="<%=request.getContextPath()%>">Environmental Data Discovery and Transformation</a></h2>
+        <h2 id="site-title"><a href='${param["baseUrl"]}'>Environmental Data Discovery and Transformation</a></h2>
     </div><!-- /header -->
 </div><!--/header panel-->

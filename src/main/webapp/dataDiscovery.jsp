@@ -11,7 +11,9 @@
 	<body>
 		<div class="container-fluid">
 			<header>
-				<jsp:include page="WEB-INF/jsp/header.jsp"></jsp:include>
+				<jsp:include page="WEB-INF/jsp/header.jsp">
+					<jsp:param name="baseUrl" value="<%=baseUrl%>"></jsp:param>
+				</jsp:include>
 			</header>
 			<div id="main-content"></div>
 			<footer>

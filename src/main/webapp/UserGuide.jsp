@@ -31,7 +31,7 @@
 					<a href="https://cida.usgs.gov/enddat/">https://cida.usgs.gov/enddat/</a></em>
 				</p>
 
-				<h2>Overview</h2>
+				<h2><a href="#overview">Overview</a></h2>
 
 				<p>
 					The Environmental Data Discovery and Transformation (EnDDaT) service is a tool used to 
@@ -44,7 +44,7 @@
 
 				<hr>
 
-				<h2>Data Discovery</h2>
+				<h2><a href="#dataDiscovery">Data Discovery</a></h2>
 
 				<p>
 					EnDDaT&#39;s data discovery starts with an area of interest. You can specify your area of interest in 
@@ -63,7 +63,7 @@
 
 				<p><img src="img/bbox.png" alt="">  </p>
 
-				<h2>Choose Data</h2>
+				<h2><a href="#chooseData">Choose Data</a></h2>
 
 				<p>
 					EnDDaT provides two methods for selecting data. The first suited to looking closely at what is available from 
@@ -110,7 +110,9 @@
 
 				<p><img src="img/byVariable.png" alt=""></p>
 
-				<h2>Data Processing</h2>
+				<div id="dataProcessing">
+					<h2><a href="#dataProcessing">Data Processing</a></h2>
+				</div>
 
 				<p>
 					EnDDaT&#39;s data processing service can apply temporal summaries, limit retrievals by date range or particular dates, 

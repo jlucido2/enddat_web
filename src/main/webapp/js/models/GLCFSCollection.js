@@ -23,27 +23,31 @@ define([
 	 *
 	 * dataset 1
 	 * http://tds.glos.us/thredds/dodsC/glos/glcfs/archivecurrent/michigan/nowcast-forcing-fmrc-2d/Lake_Michigan_-_Nowcast_Forcing_-_2D_-_Current_Year_best.ncd.html
-	 */
+	 * 
+         * dataset 2
+         * http://tds.glos.us/thredds/dodsC/glos/glcfs/archivecurrent/michigan/ncfmrc-3d/Lake_Michigan_-_Nowcast_-_3D_-_Current_Year_best.ncd.html
+ *       */
 	var DATA_VARS = [
-		{dataset : 0, code : 'ci', description : 'Ice Concentration (fraction)', variableUnit : 'fraction'},
-		{dataset : 0, code : 'depth', description : 'Bathymetry (meters)', variableUnit : 'm'},
-		{dataset : 0, code : 'eta', description : 'Height Above Model Sea Level (meters)', variableUnit : 'm'},
-		{dataset : 0, code : 'hi', description : 'Ice Thickness (meters)', variableUnit : 'm'},
-		{dataset : 0, code : 'uc', description : 'Eastward Water Velocity at Surface (m/s)', variableUnit : 'm/s'},
-		{dataset : 0, code : 'ui', description : 'Ice u-velocity (m/s)', variableUnit : 'm/s'},
-		{dataset : 0, code : 'utm', description : 'Depth-Averaged Eastward Water Velocity (m/s)', variableUnit : 'm/s'},
-		{dataset : 0, code : 'vc', description : 'Northward Water Velocity at Surface (m/s)', variableUnit : 'm/s'},
-		{dataset : 0, code : 'vi', description : 'Ice v-velocity (m/s)', variableUnit : 'm/s'},
-		{dataset : 0, code : 'vtm', description : 'Depth-Averaged Northward Water Velocity (m/s)', variableUnit : 'm/s'},
-		{dataset : 0, code : 'wvd', description : 'Wave Direction (Degrees, Oceanographic Convention, 0=toward N, 90=toward E)', variableUnit : 'Degrees, Oceanographic Convention, 0=toward N, 90=toward E'},
-		{dataset : 0, code : 'wvh', description : 'Significant Wave Height (meters)', variableUnit : 'm'},
-		{dataset : 0, code : 'wvp', description : 'Wave Period (seconds)', variableUnit : 's'},
-		{dataset : 1, code : 'air_u', description : 'Eastward Air Velocity (m/s)', variableUnit : 'm/s'},
-		{dataset : 1, code : 'air_v', description : 'Northward Air Velocity (m/s)', variableUnit : 'm/s'},
-		{dataset : 1, code : 'at', description : 'Air Temperature (Celsius)', variableUnit : 'C'},
-		{dataset : 1, code : 'cl', description : 'Cloud Cover (fraction)', variableUnit : 'fraction'},
-		{dataset : 1, code : 'depth', description : 'Bathymetry (meters)', variableUnit : 'm'},
-		{dataset : 1, code : 'dp', description : 'Dew Point (Celsius)', variableUnit : 'C'}
+		{dataset : 0, code : 'ci', sigma: -1, description : 'Ice Concentration (fraction)', variableUnit : 'fraction'},
+		{dataset : 0, code : 'depth', sigma: -1, description : 'Bathymetry (meters)', variableUnit : 'm'},
+		{dataset : 0, code : 'eta', sigma: -1, description : 'Height Above Model Sea Level (meters)', variableUnit : 'm'},
+		{dataset : 0, code : 'hi', sigma: -1, description : 'Ice Thickness (meters)', variableUnit : 'm'},
+		{dataset : 0, code : 'uc', sigma: -1, description : 'Eastward Water Velocity at Surface (m/s)', variableUnit : 'm/s'},
+		{dataset : 0, code : 'ui', sigma: -1, description : 'Ice u-velocity (m/s)', variableUnit : 'm/s'},
+		{dataset : 0, code : 'utm', sigma: -1, description : 'Depth-Averaged Eastward Water Velocity (m/s)', variableUnit : 'm/s'},
+		{dataset : 0, code : 'vc', sigma: -1, description : 'Northward Water Velocity at Surface (m/s)', variableUnit : 'm/s'},
+		{dataset : 0, code : 'vi', sigma: -1, description : 'Ice v-velocity (m/s)', variableUnit : 'm/s'},
+		{dataset : 0, code : 'vtm', sigma: -1, description : 'Depth-Averaged Northward Water Velocity (m/s)', variableUnit : 'm/s'},
+		{dataset : 0, code : 'wvd', sigma: -1, description : 'Wave Direction (Degrees, Oceanographic Convention, 0=toward N, 90=toward E)', variableUnit : 'Degrees, Oceanographic Convention, 0=toward N, 90=toward E'},
+		{dataset : 0, code : 'wvh', sigma: -1, description : 'Significant Wave Height (meters)', variableUnit : 'm'},
+		{dataset : 0, code : 'wvp', sigma: -1, description : 'Wave Period (seconds)', variableUnit : 's'},
+		{dataset : 1, code : 'air_u', sigma: -1, description : 'Eastward Air Velocity (m/s)', variableUnit : 'm/s'},
+		{dataset : 1, code : 'air_v', sigma: -1, description : 'Northward Air Velocity (m/s)', variableUnit : 'm/s'},
+		{dataset : 1, code : 'at', sigma: -1, description : 'Air Temperature (Celsius)', variableUnit : 'C'},
+		{dataset : 1, code : 'cl', sigma: -1, description : 'Cloud Cover (fraction)', variableUnit : 'fraction'},
+		{dataset : 1, code : 'depth', sigma: -1, description : 'Bathymetry (meters)', variableUnit : 'm'},
+		{dataset : 1, code : 'dp', sigma: -1, description : 'Dew Point (Celsius)', variableUnit : 'C'},
+                {dataset : 2, code : 'temp', sigma: 0, description : 'Sea Water Temperature (Celsius)', variableUnit : 'C'}
 	];
 
 	var getInteger = function(str) {
@@ -83,16 +87,15 @@ define([
 				var y = getInteger($utils.xmlFind($this, 'sb', 'ny').text());
 
 				var variables = _.map(DATA_VARS, function(dataVar) {
+                                        var vectorOpts = ':::0'; // not doing any vector options currently
 					var siteVar = _.clone(dataVar);
 					siteVar.startDate = START_DATE;
 					siteVar.endDate = today;
 					siteVar.x = x;
 					siteVar.y = y;
-					var sigma = -1; // not using any 3D datasets currently
-					var vectorOpts = ':::0'; // not doing any vector options currently
 					siteVar.variableParameter = new VariableParameter({
 						name : 'GRID',
-						value : y + ':' + x + ':' + sigma + ':' + siteVar.dataset + ':' + siteVar.code + vectorOpts,
+						value : y + ':' + x + ':' + siteVar.sigma + ':' + siteVar.dataset + ':' + siteVar.code + vectorOpts,
 						colName : siteVar.description + ': [' + x + ',' + y + ']'
 					});
 					return siteVar;

@@ -22,7 +22,7 @@ define([
 	var PRECIP_DATA_DDS_URL = 'cidathredds/' + module.config().cidaThreddsPrecipData + '.dds';
 
 	var variableId = 'precip3';
-	var variableName = 'Total precip - 1 hr';
+	var variableName = 'Total precip (mm) - 1 hr';
 
 	var getTimeBounds = function(ddsText) {
 		var lines = ddsText.split('\n');

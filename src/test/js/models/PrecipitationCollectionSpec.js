@@ -133,7 +133,7 @@ define([
 				expect(variable0.y).toEqual('557');
 				expect(variable0.variableParameter.name).toEqual('Precip');
 				expect(variable0.variableParameter.value).toEqual('557:689:125225:precip3');
-				expect(variable0.variableParameter.colName).toEqual('Total precip - 1 hr [557,689]');
+				expect(variable0.variableParameter.colName).toEqual('Total precip (mm) - 1 hr [557,689]');
 			});
 		});
 	});

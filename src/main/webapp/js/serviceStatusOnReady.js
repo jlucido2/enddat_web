@@ -28,7 +28,6 @@ $(document).ready(function() {
      * @param {String} name
      * @param {String} line
      * @returns {Object} which can be used as an element in tableTemplate's context
-     * 
      */
     var getServiceState = function(name, line) {
 	var lineInfo;
@@ -66,16 +65,14 @@ $(document).ready(function() {
 	dataType: 'text',
 	success: function(resp) {
 	    var respLines = resp.split('\n');
+	    var timeStrLine = _.find(respLines, function(line) {
+		return line.search(TIME_TOKEN) !== -1;
+	    });
 	    var timeStr = '';
-	    var timeStrIndex;
-	    var i = 0;
-	    while (timeStr === '' && i < respLines.length) {
-		timeStrIndex = respLines[i].search(TIME_TOKEN);
-		if (timeStrIndex !== -1) {
-		    timeStr = respLines[i].replace(TIME_TOKEN, '');
-		}
-		i = i + 1;
+	    if (timeStrLine) {
+		timeStr = timeStrLine.replace(TIME_TOKEN, '');
 	    }
+	    
 	    if (timeStr) {
 		$message.html('Status update at: ' + timeStr).addClass('bg-info');
 	    }

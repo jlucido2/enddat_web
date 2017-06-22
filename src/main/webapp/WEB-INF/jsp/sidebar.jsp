@@ -13,7 +13,6 @@
                 <div id="accordion-1" class="accordion-section-content">
                     <p><a href="userguide" target="_blank">User Guide</a></p>
 		    <p><a href="servicestatus" target="_blank">Service Status</a></p>
-                    <p><a href="VersionUpdates.jsp" target="_blank">Version Updates</a></p>
                 </div><!--end .accordion-section-content-->
             </div><!--accordion section-->
             

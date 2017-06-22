@@ -5,16 +5,17 @@
 /* global ENDDAT */
 
 $(document).ready(function() {
-    console.log('Starting set up code.');
     var TIME_TOKEN = /^Service status:/;
-    var URL_TOKEN = "URL:";
-    var STATUS_TOKEN = " status:";
+    var UP_TOKEN = 'UP';
     
     var TABLE_HTML = '{{#each status}}' +
 	    '<tr>' +
 	    '<td>{{name}}</td>' +
-	    '<td><a href="{{url}}">{{url}}</a></td>' +
-	    '<td>{{status}}</td>' + 
+	    '<td>{{#if status_found}}' +
+	    '{{#if is_up}}<i class="fa fa-lg fa-arrow-circle-up" style="color: green;"></i>' +
+	    '{{else}}<i class="fa fa-lg fa-arrow-circle-down" style="color: red;"></i>' +
+	    '{{/if}}' +
+	    '{{/if}}</td>' + 
 	    '</tr>' + 
 	    '{{/each}}';
     var tableTemplate = Handlebars.compile(TABLE_HTML);
@@ -24,9 +25,9 @@ $(document).ready(function() {
      * Assumes that the line contains the URL_TOKEN and that the line
      * can be split into three pieces by comma. First is the url, second is the 
      * response code, and the third is the status
-     * @param {type} name
-     * @param {type} line
-     * @returns {state object for the line}
+     * @param {String} name
+     * @param {String} line
+     * @returns {Object} which can be used as an element in tableTemplate's context
      * 
      */
     var getServiceState = function(name, line) {
@@ -36,18 +37,19 @@ $(document).ready(function() {
 	};
 	if (line) {
 	    lineInfo = line.split(',')
-	    result.url = lineInfo[0].slice(URL_TOKEN.length);
-	    result.status = lineInfo[2].slice(STATUS_TOKEN.length);
+	    result.is_up = lineInfo[2].search(UP_TOKEN) !== -1;
+	    result.status_found = true;
 	}
 	else {
 	    result.url = 'Not tested';
-	    result.status = 'Unknown';
+	    result.status_found = false;
 	}
 	return result;
     };
     
     /*
-     * @return 
+     * @param {Array of String} respLines
+     * @return {Array of Objects} which can be used as the context object status in tableTemplate
      */
     var getStatus = function(respLines) {
 	return ENDDAT.ServiceStatusConfig.map(function(serviceConfig) {
@@ -87,7 +89,6 @@ $(document).ready(function() {
 	    $message.html('Unable to retrieve the service status information').addClass('bg-danger');
 	}
     });
-    console.log('Made ajax call');
 });
 
 

@@ -14,16 +14,17 @@
 	<div class="container">
 	    <h1>Status for Enddat Services</h1>
 	    <p class="alert-messages"></p>
+	    <div class="col-sm-6">
 	    <table class="status-table table table-striped">
 		<thead>
 		    <tr>
-			<th>Name</th>
-			<th>Test URL</th>
+			<th>Service Name</th>
 			<th>Status</th>
 		    </tr>
 		</thead>
 		<tbody></tbody>
 	    </table>
+	    </div>
 	</div>
 	<jsp:include page="WEB-INF/jsp/footer.jsp">
 	    <jsp:param name="development" value="<%=development%>"></jsp:param>

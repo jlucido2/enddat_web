@@ -15,6 +15,8 @@ $(document).ready(function() {
 	    '{{#if is_up}}<i class="fa fa-lg fa-arrow-circle-up" style="color: green;"></i>' +
 	    '{{else}}<i class="fa fa-lg fa-arrow-circle-down" style="color: red;"></i>' +
 	    '{{/if}}' +
+	    '{{else}}' + 
+	    '<span>Not tested</span>' +
 	    '{{/if}}</td>' + 
 	    '</tr>' + 
 	    '{{/each}}';

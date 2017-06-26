@@ -22,6 +22,16 @@
 		<servlet-name>UserGuide</servlet-name>
 		<url-pattern>/userguide</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>ServiceStatus</servlet-name>
+		<jsp-file>/serviceStatus.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ServiceStatus</servlet-name>
+		<url-pattern>/servicestatus</url-pattern>
+	</servlet-mapping>
+	
 	<servlet>
 		<servlet-name>EnddatServiceServlet</servlet-name>
 		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>

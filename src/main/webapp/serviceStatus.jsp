@@ -12,7 +12,7 @@
 	</jsp:include>
 
 	<div class="container">
-	    <h1>Status for Enddat Services</h1>
+	    <h1>Status for Enddat Data Source Services</h1>
 	    <p class="alert-messages"></p>
 	    <div class="col-sm-6">
 	    <table class="status-table table table-striped">

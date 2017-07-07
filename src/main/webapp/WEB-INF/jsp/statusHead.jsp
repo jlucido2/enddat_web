@@ -5,8 +5,8 @@
 <%
 	String nwisstatUrlMatch = props.getProperty("enddat.status.nwisstat.urlmatch");
 	String nwisstatDisplay = props.getProperty("enddat.status.nwisstat.display");
-	String nwispmcodeUrlMatch = props.getProperty("enddat.status.nwisstat.urlmatch");
-	String nwispmcodeDisplay = props.getProperty("enddat.status.nwisstat.display");
+	String nwispmcodeUrlMatch = props.getProperty("enddat.status.nwispmcode.urlmatch");
+	String nwispmcodeDisplay = props.getProperty("enddat.status.nwispmcode.display");
 	String nwissiteUrlMatch = props.getProperty("enddat.status.nwissite.urlmatch");
 	String nwissiteDisplay = props.getProperty("enddat.status.nwissite.display");
 	String precipUrlMatch = props.getProperty("enddat.status.precip.urlmatch");
